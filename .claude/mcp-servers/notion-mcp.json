@@ -1,0 +1,10 @@
+{
+  "name": "notion-mcp",
+  "description": "MCP server for notion-mcp integration",
+  "command": "npx",
+  "args": ["@claudecodesquad/notion-mcp"],
+  "env": {
+    "API_KEY": "your-api-key-here"
+  },
+  "timeout": 30
+}

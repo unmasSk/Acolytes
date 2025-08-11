@@ -1,0 +1,10 @@
+{
+  "name": "github-mcp",
+  "description": "MCP server for github-mcp integration",
+  "command": "npx",
+  "args": ["@claudecodesquad/github-mcp"],
+  "env": {
+    "API_KEY": "your-api-key-here"
+  },
+  "timeout": 30
+}

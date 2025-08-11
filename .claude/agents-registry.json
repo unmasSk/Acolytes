@@ -1,0 +1,718 @@
+{
+  "version": "1.0.0",
+  "description": "Complete registry of all 71 Claude Code agents with their capabilities, triggers, and delegation patterns",
+  "global_agents": {
+    "coordinators": [
+      {
+        "name": "backend-coordinator",
+        "level": 1,
+        "description": "Orchestrates all backend development tasks including API design, business logic, database interactions, and server-side architecture",
+        "delegates_to": ["laravel-engineer", "fastapi-engineer", "nodejs-engineer", "graphql-engineer"],
+        "coordinates_with": ["database-coordinator", "infrastructure-coordinator"],
+        "activation_triggers": ["backend", "API", "server", "business logic", "endpoints", "REST", "microservices"],
+        "expertise": ["API design", "business logic", "database interactions", "server-side architecture"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "frontend-coordinator",
+        "level": 1,
+        "description": "Manages all client-side development including UI components, state management, routing, and user interactions",
+        "delegates_to": ["react-engineer", "vue-engineer", "angular-engineer", "nextjs-engineer", "ui-ux-engineer"],
+        "coordinates_with": ["backend-coordinator"],
+        "activation_triggers": ["frontend", "UI", "component", "client-side", "user interface", "state management", "routing"],
+        "expertise": ["UI components", "state management", "routing", "user interactions"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "database-coordinator",
+        "level": 1,
+        "description": "Oversees all database operations including schema design, query optimization, migrations, and data integrity",
+        "delegates_to": ["postgres-engineer", "mysql-engineer", "redis-engineer", "sqlite-engineer", "weaviate-engineer", "postgis-engineer"],
+        "coordinates_with": ["backend-coordinator", "migration-coordinator"],
+        "activation_triggers": ["database", "schema", "query", "migration", "data model", "SQL", "NoSQL", "optimization"],
+        "expertise": ["schema design", "query optimization", "migrations", "data integrity"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "devops-coordinator",
+        "level": 1,
+        "description": "Manages CI/CD pipelines, deployment strategies, containerization, and infrastructure automation",
+        "delegates_to": ["docker-engineer", "git-engineer", "cloud-architect"],
+        "coordinates_with": ["security-coordinator", "testing-coordinator"],
+        "activation_triggers": ["CI/CD", "pipeline", "deployment", "DevOps", "automation", "containerization"],
+        "expertise": ["CI/CD pipelines", "deployment strategies", "containerization", "infrastructure automation"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "infrastructure-coordinator",
+        "level": 1,
+        "description": "Handles cloud architecture, server provisioning, networking, and system scalability",
+        "delegates_to": ["cloud-architect", "docker-engineer", "message-queue-engineer"],
+        "coordinates_with": ["security-coordinator"],
+        "activation_triggers": ["infrastructure", "cloud", "AWS", "GCP", "Azure", "scaling", "provisioning", "networking"],
+        "expertise": ["cloud architecture", "server provisioning", "networking", "system scalability"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "security-coordinator",
+        "level": 1,
+        "description": "Oversees application security, vulnerability assessments, compliance requirements, and security best practices",
+        "delegates_to": ["security-auditor", "gdpr-compliance-engineer", "compliance-auditor", "licensing-engineer"],
+        "coordinates_with": ["all-coordinators"],
+        "activation_triggers": ["security", "vulnerability", "compliance", "authentication", "authorization", "OWASP", "GDPR"],
+        "expertise": ["application security", "vulnerability assessments", "compliance", "security best practices"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "testing-coordinator",
+        "level": 1,
+        "description": "Manages testing strategy including unit tests, integration tests, E2E tests, and performance testing",
+        "delegates_to": ["test-automation-engineer", "e2e-engineer", "performance-tester"],
+        "coordinates_with": ["all-coordinators"],
+        "activation_triggers": ["testing", "test", "unit test", "integration test", "E2E", "coverage", "TDD", "BDD"],
+        "expertise": ["unit tests", "integration tests", "E2E tests", "performance testing"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "data-coordinator",
+        "level": 1,
+        "description": "Orchestrates data pipelines, ETL processes, analytics, and machine learning workflows",
+        "delegates_to": ["data-scientist", "ml-engineer", "ai-integration-engineer"],
+        "coordinates_with": ["database-coordinator", "backend-coordinator"],
+        "activation_triggers": ["data pipeline", "ETL", "analytics", "machine learning", "ML", "AI", "data science"],
+        "expertise": ["data pipelines", "ETL processes", "analytics", "machine learning workflows"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "migration-coordinator",
+        "level": 1,
+        "description": "Specializes in system migrations, legacy code refactoring, database migrations, and platform transitions",
+        "delegates_to": ["all-engineers"],
+        "coordinates_with": ["all-coordinators"],
+        "activation_triggers": ["migration", "legacy", "refactoring", "transition", "upgrade", "modernization"],
+        "expertise": ["system migrations", "legacy code refactoring", "database migrations", "platform transitions"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "backend_engineers": [
+      {
+        "name": "laravel-engineer",
+        "level": 2,
+        "description": "Expert in Laravel PHP framework, handles Eloquent ORM, Artisan commands, middleware, service providers, queues, and Laravel ecosystem packages",
+        "works_with": ["postgres-engineer", "redis-engineer"],
+        "activation_triggers": ["Laravel", "PHP", "Eloquent", "Artisan", "Sanctum", "Passport", "Horizon", "Telescope"],
+        "expertise": ["Laravel framework", "Eloquent ORM", "RESTful APIs", "authentication", "Laravel ecosystem"],
+        "framework": "Laravel",
+        "language": "PHP",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "fastapi-engineer",
+        "level": 2,
+        "description": "Expert in FastAPI for high-performance Python APIs, handles async/await patterns, Pydantic models, dependency injection, and OpenAPI documentation",
+        "works_with": ["postgres-engineer"],
+        "activation_triggers": ["FastAPI", "Python API", "Pydantic", "async", "await", "WebSocket", "Celery", "SQLAlchemy"],
+        "expertise": ["FastAPI", "async/await", "Pydantic models", "WebSocket", "OpenAPI"],
+        "framework": "FastAPI",
+        "language": "Python",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "nodejs-engineer",
+        "level": 2,
+        "description": "Specializes in Node.js ecosystem including Express, Koa, NestJS, and microservices architecture",
+        "works_with": ["all-database-engineers"],
+        "activation_triggers": ["Node.js", "Express", "Koa", "NestJS", "npm", "Socket.io", "JavaScript backend"],
+        "expertise": ["Node.js", "Express", "microservices", "async programming", "real-time features"],
+        "framework": "Node.js",
+        "language": "JavaScript/TypeScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "graphql-engineer",
+        "level": 2,
+        "description": "Specializes in GraphQL API design, schema definition, resolvers, and subscriptions",
+        "works_with": ["any-backend-framework"],
+        "activation_triggers": ["GraphQL", "Apollo", "schema", "resolvers", "subscriptions", "DataLoader", "federation"],
+        "expertise": ["GraphQL", "Apollo Server", "schema design", "resolvers", "performance optimization"],
+        "framework": "GraphQL",
+        "language": "Any",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "frontend_engineers": [
+      {
+        "name": "react-engineer",
+        "level": 2,
+        "description": "Expert in React ecosystem including hooks, Context API, Redux/Zustand, React Router, and Next.js",
+        "works_with": ["ui-ux-engineer", "backend-coordinator"],
+        "activation_triggers": ["React", "hooks", "Redux", "Zustand", "React Router", "JSX", "component", "useState", "useEffect"],
+        "expertise": ["React", "hooks", "state management", "SSR/SSG", "performance optimization"],
+        "framework": "React",
+        "language": "JavaScript/TypeScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "vue-engineer",
+        "level": 2,
+        "description": "Specializes in Vue.js including Composition API, Vuex/Pinia, Vue Router, and Nuxt.js",
+        "works_with": ["ui-ux-engineer"],
+        "activation_triggers": ["Vue", "Vuex", "Pinia", "Vue Router", "Nuxt", "Composition API", "reactive"],
+        "expertise": ["Vue.js", "Composition API", "Vuex/Pinia", "SSR/SSG", "component libraries"],
+        "framework": "Vue.js",
+        "language": "JavaScript/TypeScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "angular-engineer",
+        "level": 2,
+        "description": "Expert in Angular framework including RxJS, Angular Material, dependency injection, and Angular Universal",
+        "works_with": ["ui-ux-engineer"],
+        "activation_triggers": ["Angular", "RxJS", "Angular Material", "NgModule", "directive", "pipe", "Observable"],
+        "expertise": ["Angular", "RxJS", "dependency injection", "Angular Universal", "micro-frontends"],
+        "framework": "Angular",
+        "language": "TypeScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "nextjs-engineer",
+        "level": 2,
+        "description": "Expert in Next.js for React applications, handles SSR/SSG/ISR strategies, API routes, middleware, and Edge Runtime",
+        "works_with": ["react-engineer"],
+        "activation_triggers": ["Next.js", "SSR", "SSG", "ISR", "API routes", "Edge Runtime", "getServerSideProps", "getStaticProps"],
+        "expertise": ["Next.js", "SSR/SSG/ISR", "API routes", "image optimization", "routing patterns"],
+        "framework": "Next.js",
+        "language": "JavaScript/TypeScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "ui-ux-engineer",
+        "level": 2,
+        "description": "Specializes in user interface design implementation, design systems, accessibility standards (WCAG), and responsive design",
+        "works_with": ["all-frontend-engineers"],
+        "activation_triggers": ["UI", "UX", "design system", "accessibility", "WCAG", "responsive", "CSS", "Tailwind", "Material-UI"],
+        "expertise": ["design systems", "accessibility", "responsive design", "CSS architectures", "animation"],
+        "framework": "Any",
+        "language": "CSS/JavaScript",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "database_engineers": [
+      {
+        "name": "postgres-engineer",
+        "level": 2,
+        "description": "Expert in PostgreSQL including advanced queries, indexing strategies, partitioning, and performance tuning",
+        "works_with": ["postgis-engineer", "all-backend-engineers"],
+        "activation_triggers": ["PostgreSQL", "Postgres", "PL/pgSQL", "index", "partition", "JSONB", "CTE", "window function"],
+        "expertise": ["PostgreSQL", "indexing", "performance tuning", "replication", "PL/pgSQL"],
+        "database": "PostgreSQL",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "mysql-engineer",
+        "level": 2,
+        "description": "Specializes in MySQL/MariaDB optimization, replication, clustering with Galera, and performance tuning",
+        "works_with": ["all-backend-engineers"],
+        "activation_triggers": ["MySQL", "MariaDB", "Galera", "InnoDB", "stored procedure", "trigger"],
+        "expertise": ["MySQL/MariaDB", "replication", "clustering", "performance tuning", "high availability"],
+        "database": "MySQL/MariaDB",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "redis-engineer",
+        "level": 2,
+        "description": "Specializes in Redis for caching, session management, pub/sub messaging, and data structures",
+        "works_with": ["all-backend-engineers"],
+        "activation_triggers": ["Redis", "cache", "session", "pub/sub", "Redis Cluster", "Redis Streams", "Lua scripting"],
+        "expertise": ["Redis", "caching strategies", "pub/sub", "Redis Cluster", "real-time features"],
+        "database": "Redis",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "sqlite-engineer",
+        "level": 2,
+        "description": "Expert in SQLite for embedded databases, mobile applications, and local storage",
+        "works_with": ["mobile-developer"],
+        "activation_triggers": ["SQLite", "embedded database", "local storage", "offline-first", "mobile database"],
+        "expertise": ["SQLite", "embedded databases", "full-text search", "JSON support", "encryption"],
+        "database": "SQLite",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "weaviate-engineer",
+        "level": 2,
+        "description": "Expert in Weaviate vector database for AI applications, semantic search, and recommendation systems",
+        "works_with": ["ml-engineer", "ai-integration-engineer"],
+        "activation_triggers": ["Weaviate", "vector database", "semantic search", "embeddings", "recommendation"],
+        "expertise": ["Weaviate", "vector databases", "semantic search", "vectorization", "ML integration"],
+        "database": "Weaviate",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "postgis-engineer",
+        "level": 2,
+        "description": "Specializes in PostGIS for spatial databases, handles geometric operations, spatial indexing, and geographic queries",
+        "works_with": ["postgres-engineer", "mapbox-engineer"],
+        "activation_triggers": ["PostGIS", "spatial", "geographic", "GIS", "geometry", "location-based", "coordinates"],
+        "expertise": ["PostGIS", "spatial databases", "geometric operations", "spatial indexing", "mapping"],
+        "database": "PostGIS",
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "infrastructure_engineers": [
+      {
+        "name": "docker-engineer",
+        "level": 2,
+        "description": "Expert in Docker containerization, Dockerfile optimization, multi-stage builds, and Docker Compose orchestration",
+        "works_with": ["infrastructure-coordinator", "devops-coordinator"],
+        "activation_triggers": ["Docker", "container", "Dockerfile", "Docker Compose", "image", "registry", "multi-stage"],
+        "expertise": ["Docker", "containerization", "Dockerfile optimization", "Docker Compose", "security"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "cloud-architect",
+        "level": 2,
+        "description": "Expert in cloud platforms (AWS, GCP, Azure), designs scalable architectures, handles IaC with Terraform/CloudFormation",
+        "works_with": ["infrastructure-coordinator"],
+        "activation_triggers": ["AWS", "GCP", "Azure", "cloud", "Terraform", "CloudFormation", "serverless", "Lambda", "CDN"],
+        "expertise": ["cloud platforms", "scalable architectures", "IaC", "serverless", "multi-region"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "message-queue-engineer",
+        "level": 2,
+        "description": "Specializes in message queue systems (RabbitMQ, Kafka, AWS SQS), handles event-driven architectures",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["RabbitMQ", "Kafka", "SQS", "message queue", "pub/sub", "event-driven", "dead letter"],
+        "expertise": ["message queues", "event-driven architecture", "pub/sub patterns", "microservices communication"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "devops_engineers": [
+      {
+        "name": "git-engineer",
+        "level": 2,
+        "description": "Expert in Git version control, branching strategies (GitFlow, GitHub Flow), and Git hooks",
+        "works_with": ["devops-coordinator"],
+        "activation_triggers": ["Git", "GitFlow", "GitHub Flow", "merge", "rebase", "branch", "hook", "monorepo"],
+        "expertise": ["Git", "branching strategies", "merge conflicts", "Git automation", "CI/CD triggers"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "devops-troubleshooter",
+        "level": 2,
+        "description": "Specializes in debugging production issues, analyzing logs, and performance bottlenecks",
+        "works_with": ["all-engineers"],
+        "activation_triggers": ["debug", "production issue", "logs", "troubleshoot", "root cause", "incident"],
+        "expertise": ["debugging", "log analysis", "performance bottlenecks", "incident response", "monitoring"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "logging-engineer",
+        "level": 2,
+        "description": "Expert in logging architectures, structured logging, and log aggregation systems",
+        "works_with": ["observability-engineer"],
+        "activation_triggers": ["logging", "ELK", "Elasticsearch", "Logstash", "Kibana", "Fluentd", "log aggregation"],
+        "expertise": ["logging architectures", "structured logging", "ELK stack", "log retention", "alerting"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "observability-engineer",
+        "level": 2,
+        "description": "Specializes in observability platforms (Datadog, New Relic, Prometheus), implements distributed tracing",
+        "works_with": ["apm-engineer", "logging-engineer"],
+        "activation_triggers": ["observability", "Datadog", "New Relic", "Prometheus", "Grafana", "metrics", "tracing"],
+        "expertise": ["observability platforms", "distributed tracing", "dashboards", "SLO/SLI", "metrics"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "apm-engineer",
+        "level": 2,
+        "description": "Expert in Application Performance Monitoring, handles performance profiling, memory leak detection",
+        "works_with": ["observability-engineer"],
+        "activation_triggers": ["APM", "performance monitoring", "profiling", "memory leak", "bottleneck", "transaction tracing"],
+        "expertise": ["APM", "performance profiling", "memory analysis", "custom metrics", "optimization"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "security_engineers": [
+      {
+        "name": "security-auditor",
+        "level": 2,
+        "description": "Performs security audits, vulnerability assessments, and penetration testing",
+        "works_with": ["security-coordinator"],
+        "activation_triggers": ["security audit", "vulnerability", "penetration testing", "OWASP", "threat modeling"],
+        "expertise": ["security audits", "vulnerability assessment", "penetration testing", "OWASP", "remediation"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "gdpr-compliance-engineer",
+        "level": 2,
+        "description": "Specializes in GDPR compliance, data privacy regulations, and consent management",
+        "works_with": ["security-coordinator"],
+        "activation_triggers": ["GDPR", "privacy", "data protection", "consent", "right to erasure", "data portability"],
+        "expertise": ["GDPR compliance", "data privacy", "consent management", "data retention", "privacy laws"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "licensing-engineer",
+        "level": 2,
+        "description": "Expert in software licensing, open source compliance, and dependency license scanning",
+        "works_with": ["devops-coordinator"],
+        "activation_triggers": ["license", "open source", "MIT", "GPL", "Apache", "compliance", "attribution"],
+        "expertise": ["software licensing", "open source compliance", "license compatibility", "CI/CD automation"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "compliance-auditor",
+        "level": 2,
+        "description": "Handles regulatory compliance (SOC2, HIPAA, PCI-DSS), implements compliance controls",
+        "works_with": ["security-coordinator"],
+        "activation_triggers": ["SOC2", "HIPAA", "PCI-DSS", "compliance", "audit trail", "regulatory"],
+        "expertise": ["regulatory compliance", "compliance controls", "audit trails", "documentation"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "testing_engineers": [
+      {
+        "name": "test-automation-engineer",
+        "level": 2,
+        "description": "Expert in test automation frameworks (Selenium, Cypress, Playwright), implements test strategies",
+        "works_with": ["testing-coordinator"],
+        "activation_triggers": ["test automation", "Selenium", "Cypress", "Playwright", "test framework", "CI/CD tests"],
+        "expertise": ["test automation", "test frameworks", "parallel execution", "CI/CD integration"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "e2e-engineer",
+        "level": 2,
+        "description": "Specializes in end-to-end testing, user journey validation, and cross-browser testing",
+        "works_with": ["test-automation-engineer"],
+        "activation_triggers": ["E2E", "end-to-end", "user journey", "cross-browser", "visual regression"],
+        "expertise": ["E2E testing", "user journey validation", "cross-browser testing", "visual regression"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "performance-tester",
+        "level": 2,
+        "description": "Expert in performance testing tools (JMeter, K6, Gatling), conducts load testing, stress testing",
+        "works_with": ["apm-engineer"],
+        "activation_triggers": ["performance testing", "load testing", "stress testing", "JMeter", "K6", "Gatling"],
+        "expertise": ["performance testing", "load testing", "stress testing", "capacity planning", "bottlenecks"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "ai_ml_engineers": [
+      {
+        "name": "ai-integration-engineer",
+        "level": 2,
+        "description": "Specializes in integrating AI models (OpenAI, Anthropic, Hugging Face) into applications",
+        "works_with": ["ml-engineer", "data-scientist"],
+        "activation_triggers": ["AI integration", "OpenAI", "Anthropic", "Hugging Face", "LLM", "prompt engineering", "RAG"],
+        "expertise": ["AI integration", "prompt engineering", "model fine-tuning", "RAG systems", "token optimization"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "ml-engineer",
+        "level": 2,
+        "description": "Expert in machine learning pipelines, model training, and deployment with MLOps practices",
+        "works_with": ["data-scientist", "ai-integration-engineer"],
+        "activation_triggers": ["machine learning", "ML", "TensorFlow", "PyTorch", "scikit-learn", "MLOps", "model training"],
+        "expertise": ["ML pipelines", "model training", "MLOps", "feature engineering", "A/B testing"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "data-scientist",
+        "level": 2,
+        "description": "Specializes in data analysis, statistical modeling, and predictive analytics",
+        "works_with": ["ml-engineer", "data-coordinator"],
+        "activation_triggers": ["data science", "statistics", "predictive analytics", "EDA", "feature selection"],
+        "expertise": ["data analysis", "statistical modeling", "predictive analytics", "data visualization"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "specialized_engineers": [
+      {
+        "name": "mapbox-engineer",
+        "level": 2,
+        "description": "Expert in Mapbox integration for mapping applications, handles map styling, geocoding, and routing",
+        "works_with": ["postgis-engineer"],
+        "activation_triggers": ["Mapbox", "map", "geocoding", "routing", "geolocation", "clustering"],
+        "expertise": ["Mapbox", "map styling", "geocoding", "routing", "real-time location"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "billing-engineer",
+        "level": 2,
+        "description": "Specializes in payment processing (Stripe, PayPal), subscription management, and invoice generation",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["billing", "payment", "Stripe", "PayPal", "subscription", "invoice", "PCI"],
+        "expertise": ["payment processing", "subscription management", "PCI compliance", "webhooks", "dunning"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "email-engineer",
+        "level": 2,
+        "description": "Expert in email systems, transactional emails (SendGrid, AWS SES), and email template management",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["email", "SendGrid", "AWS SES", "transactional", "deliverability", "bounce"],
+        "expertise": ["email systems", "transactional emails", "deliverability", "email tracking", "bulk sending"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "notification-engineer",
+        "level": 2,
+        "description": "Specializes in notification systems including push notifications, in-app notifications, and SMS",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["notification", "push notification", "SMS", "in-app", "Firebase", "Twilio"],
+        "expertise": ["push notifications", "in-app notifications", "SMS", "delivery optimization", "cross-platform"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "search-engineer",
+        "level": 2,
+        "description": "Expert in search implementation, handles full-text search, faceted search, and search relevance tuning",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["search", "Elasticsearch", "Algolia", "full-text", "faceted", "autocomplete"],
+        "expertise": ["search implementation", "full-text search", "faceted search", "relevance tuning", "analytics"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "cms-engineer",
+        "level": 2,
+        "description": "Specializes in content management systems (headless CMS, Strapi, Contentful)",
+        "works_with": ["backend-coordinator"],
+        "activation_triggers": ["CMS", "content management", "Strapi", "Contentful", "headless CMS"],
+        "expertise": ["CMS", "content modeling", "API integration", "versioning", "multi-language"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "changelog-engineer",
+        "level": 2,
+        "description": "Expert in changelog generation, semantic versioning, and release note automation",
+        "works_with": ["devops-coordinator"],
+        "activation_triggers": ["changelog", "release notes", "semantic versioning", "version", "release"],
+        "expertise": ["changelog generation", "semantic versioning", "release automation", "CI/CD integration"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "docs-engineer",
+        "level": 2,
+        "description": "Specializes in documentation systems (Docusaurus, MkDocs), API documentation (OpenAPI, Swagger)",
+        "works_with": ["all-engineers"],
+        "activation_triggers": ["documentation", "Docusaurus", "MkDocs", "OpenAPI", "Swagger", "technical writing"],
+        "expertise": ["documentation systems", "API documentation", "technical writing", "versioning"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "utility_engineers": [
+      {
+        "name": "debugging-engineer",
+        "level": 2,
+        "description": "Expert in debugging techniques, profiling tools, and error analysis across all languages and frameworks",
+        "works_with": ["all-engineers"],
+        "activation_triggers": ["debug", "error", "memory leak", "race condition", "bug", "profiling"],
+        "expertise": ["debugging", "profiling", "error analysis", "memory leaks", "race conditions"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "memory-engineer",
+        "level": 2,
+        "description": "Manages project memory base, documentation structure, and information architecture",
+        "works_with": ["all-engineers"],
+        "activation_triggers": ["memory", "knowledge base", "documentation structure", "wiki", "information architecture"],
+        "expertise": ["memory management", "documentation structure", "information architecture", "knowledge persistence"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "clarification-engineer",
+        "level": 2,
+        "description": "Specializes in requirement clarification, ambiguity resolution, and specification refinement",
+        "works_with": ["all-coordinators"],
+        "activation_triggers": ["clarification", "requirements", "ambiguity", "specification", "edge cases"],
+        "expertise": ["requirement clarification", "ambiguity resolution", "specification refinement", "edge cases"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "prompt-engineer",
+        "level": 2,
+        "description": "Expert in crafting effective prompts for AI systems, optimizes Claude and other LLM interactions",
+        "works_with": ["ai-integration-engineer"],
+        "activation_triggers": ["prompt", "LLM", "few-shot", "chain-of-thought", "prompt template"],
+        "expertise": ["prompt engineering", "few-shot examples", "chain-of-thought", "LLM optimization"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "system-engineer",
+        "level": 2,
+        "description": "Oversees system architecture, handles system design patterns, and ensures architectural consistency",
+        "works_with": ["all-coordinators"],
+        "activation_triggers": ["system architecture", "design patterns", "ADR", "technical debt", "system design"],
+        "expertise": ["system architecture", "design patterns", "ADRs", "technical debt", "system evolution"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "project-engineer",
+        "level": 2,
+        "description": "Manages project structure, codebase organization, and development workflows",
+        "works_with": ["all-engineers"],
+        "activation_triggers": ["project structure", "codebase", "monorepo", "build system", "developer tooling"],
+        "expertise": ["project structure", "codebase organization", "build systems", "developer tooling"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "business_analysts": [
+      {
+        "name": "business-analyst",
+        "level": 2,
+        "description": "Analyzes business requirements, creates user stories, and defines acceptance criteria",
+        "works_with": ["project-planner", "requirements-analyst"],
+        "activation_triggers": ["business requirements", "user story", "acceptance criteria", "stakeholder"],
+        "expertise": ["business analysis", "user stories", "acceptance criteria", "stakeholder communication"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "project-planner",
+        "level": 2,
+        "description": "Creates project timelines, sprint planning, and resource allocation",
+        "works_with": ["all-coordinators"],
+        "activation_triggers": ["project timeline", "sprint", "milestone", "resource allocation", "Gantt"],
+        "expertise": ["project planning", "sprint planning", "resource allocation", "milestone tracking"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "requirements-analyst",
+        "level": 2,
+        "description": "Specializes in requirement gathering, analysis, and documentation",
+        "works_with": ["business-analyst", "clarification-engineer"],
+        "activation_triggers": ["requirements", "use case", "requirement specification", "traceability"],
+        "expertise": ["requirement gathering", "requirement analysis", "use cases", "traceability"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "risk-analyst",
+        "level": 2,
+        "description": "Identifies project risks, creates mitigation strategies, and maintains risk registers",
+        "works_with": ["project-planner"],
+        "activation_triggers": ["risk", "mitigation", "risk register", "risk assessment", "contingency"],
+        "expertise": ["risk identification", "mitigation strategies", "risk registers", "technical debt assessment"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "user-researcher",
+        "level": 2,
+        "description": "Conducts user research, usability testing, and creates user personas",
+        "works_with": ["ui-ux-engineer"],
+        "activation_triggers": ["user research", "usability", "persona", "user journey", "A/B testing"],
+        "expertise": ["user research", "usability testing", "user personas", "journey mapping", "UX insights"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "tech-stack-selector",
+        "level": 2,
+        "description": "Evaluates and recommends technology choices based on project requirements",
+        "works_with": ["all-coordinators"],
+        "activation_triggers": ["technology selection", "framework comparison", "tech stack", "technology choice"],
+        "expertise": ["technology evaluation", "framework comparison", "team expertise assessment", "alignment"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "metrics-analyst",
+        "level": 2,
+        "description": "Defines and tracks KPIs, creates analytics dashboards, and provides data-driven insights",
+        "works_with": ["data-coordinator"],
+        "activation_triggers": ["KPI", "metrics", "analytics", "dashboard", "funnel analysis", "cohort"],
+        "expertise": ["KPI definition", "analytics dashboards", "funnel analysis", "cohort analysis"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "cost-optimizer",
+        "level": 2,
+        "description": "Analyzes and optimizes infrastructure costs, identifies cost-saving opportunities",
+        "works_with": ["infrastructure-coordinator"],
+        "activation_triggers": ["cost optimization", "infrastructure cost", "cloud cost", "budget", "cost analysis"],
+        "expertise": ["cost analysis", "infrastructure optimization", "cloud cost management", "budget tracking"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      },
+      {
+        "name": "incident-responder",
+        "level": 2,
+        "description": "Manages incident response procedures, coordinates emergency fixes, and handles post-mortems",
+        "works_with": ["devops-troubleshooter"],
+        "activation_triggers": ["incident", "emergency", "post-mortem", "runbook", "outage"],
+        "expertise": ["incident response", "emergency coordination", "post-mortems", "runbooks", "alerting"],
+        "tools": ["Read", "Write", "Edit", "MultiEdit", "Bash", "Grep", "Glob"]
+      }
+    ],
+    "analysis_specialists": [
+      {
+        "name": "discovery-engineer",
+        "level": 2,
+        "description": "Analyzes project structure, stack, dependencies, and configuration for comprehensive discovery",
+        "works_with": ["quality-engineer", "architecture-engineer"],
+        "activation_triggers": ["project analysis", "discovery", "stack detection", "dependency audit"],
+        "expertise": ["project analysis", "stack detection", "dependency audit", "API mapping", "schema analysis"],
+        "tools": ["Read", "Grep", "Glob", "Bash"]
+      },
+      {
+        "name": "quality-engineer",
+        "level": 2,
+        "description": "Analyzes code quality, testing, security, performance, and documentation coverage",
+        "works_with": ["discovery-engineer", "architecture-engineer"],
+        "activation_triggers": ["quality assessment", "code quality", "test coverage", "security scan"],
+        "expertise": ["quality assessment", "test coverage", "security scanning", "performance metrics", "documentation"],
+        "tools": ["Read", "Grep", "Glob", "Bash"]
+      },
+      {
+        "name": "architecture-engineer",
+        "level": 2,
+        "description": "Analyzes design patterns, code organization, integrations, and technical debt",
+        "works_with": ["discovery-engineer", "quality-engineer"],
+        "activation_triggers": ["architecture analysis", "design patterns", "technical debt", "code organization"],
+        "expertise": ["architecture review", "design patterns", "technical debt", "integration mapping", "improvements"],
+        "tools": ["Read", "Grep", "Glob", "Bash"]
+      }
+    ]
+  },
+  "delegation_patterns": {
+    "backend_flow": {
+      "trigger": "backend work needed",
+      "flow": "backend-coordinator → [laravel-engineer | fastapi-engineer | nodejs-engineer] → database-coordinator → [postgres-engineer | mysql-engineer]"
+    },
+    "frontend_flow": {
+      "trigger": "UI work needed",
+      "flow": "frontend-coordinator → [react-engineer | vue-engineer | angular-engineer] → ui-ux-engineer"
+    },
+    "full_stack_flow": {
+      "trigger": "full feature implementation",
+      "flow": "backend-coordinator + frontend-coordinator → respective engineers → testing-coordinator"
+    },
+    "security_flow": {
+      "trigger": "security concern",
+      "flow": "security-coordinator → security-auditor → compliance-auditor → all-coordinators"
+    },
+    "performance_flow": {
+      "trigger": "performance issue",
+      "flow": "apm-engineer → [database-coordinator | backend-coordinator] → performance-tester"
+    },
+    "deployment_flow": {
+      "trigger": "deployment needed",
+      "flow": "devops-coordinator → docker-engineer → cloud-architect → infrastructure-coordinator"
+    }
+  },
+  "stack_detection_mapping": {
+    "Laravel": ["backend-coordinator", "laravel-engineer", "postgres-engineer", "redis-engineer"],
+    "FastAPI": ["backend-coordinator", "fastapi-engineer", "postgres-engineer"],
+    "React": ["frontend-coordinator", "react-engineer", "ui-ux-engineer"],
+    "Vue": ["frontend-coordinator", "vue-engineer", "ui-ux-engineer"],
+    "Angular": ["frontend-coordinator", "angular-engineer", "ui-ux-engineer"],
+    "Next.js": ["frontend-coordinator", "nextjs-engineer", "react-engineer"],
+    "PostgreSQL": ["database-coordinator", "postgres-engineer"],
+    "MySQL": ["database-coordinator", "mysql-engineer"],
+    "Redis": ["redis-engineer"],
+    "Docker": ["docker-engineer", "devops-coordinator"],
+    "AWS": ["cloud-architect", "infrastructure-coordinator"],
+    "GCP": ["cloud-architect", "infrastructure-coordinator"],
+    "Azure": ["cloud-architect", "infrastructure-coordinator"]
+  }
+}

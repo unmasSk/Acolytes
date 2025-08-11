@@ -1,0 +1,10 @@
+{
+  "name": "figma-mcp",
+  "description": "MCP server for figma-mcp integration",
+  "command": "npx",
+  "args": ["@claudecodesquad/figma-mcp"],
+  "env": {
+    "API_KEY": "your-api-key-here"
+  },
+  "timeout": 30
+}

@@ -1,0 +1,10 @@
+{
+  "name": "slack-mcp",
+  "description": "MCP server for slack-mcp integration",
+  "command": "npx",
+  "args": ["@claudecodesquad/slack-mcp"],
+  "env": {
+    "API_KEY": "your-api-key-here"
+  },
+  "timeout": 30
+}

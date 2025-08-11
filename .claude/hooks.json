@@ -1,0 +1,48 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "echo 'Orchestrator initialized with memory persistence system'"
+      }
+    ],
+    "SubagentStart": [
+      {
+        "comment": "When a subagent is invoked, load its specific memory",
+        "matcher": "laravel-specialist",
+        "command": "cat .claude/memory/backend/laravel.md 2>/dev/null || echo 'No prior Laravel memory'"
+      },
+      {
+        "matcher": "postgres-expert",
+        "command": "cat .claude/memory/database/postgres.md 2>/dev/null || echo 'No prior PostgreSQL memory'"
+      }
+    ],
+    "SubagentStop": [
+      {
+        "comment": "After subagent completes, save new memory",
+        "matcher": "laravel-specialist",
+        "command": "echo '[Session: $(date)] Laravel work completed' >> .claude/memory/backend/laravel.md"
+      },
+      {
+        "matcher": "postgres-expert", 
+        "command": "echo '[Session: $(date)] PostgreSQL work completed' >> .claude/memory/database/postgres.md"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "tool": "Edit|Write",
+        "matcher": ".*\\.php$",
+        "command": "echo 'PHP file modified: {filename}' >> .claude/memory/backend/activity.log"
+      },
+      {
+        "tool": "Edit|Write",
+        "matcher": ".*\\.sql$|.*migration.*",
+        "command": "echo 'Database change: {filename}' >> .claude/memory/database/activity.log"
+      },
+      {
+        "tool": "Edit|Write",
+        "matcher": ".*/auth/.*",
+        "command": "echo 'Auth module updated: {filename}' >> .claude/memory/modules/auth.md"
+      }
+    ]
+  }
+}
