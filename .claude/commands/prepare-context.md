@@ -1,166 +1,166 @@
 ---
-description: Prepara contexto completo para invocar agentes con toda la información necesaria
+description: Prepares complete context to invoke agents with all necessary information
 ---
 
-# Prepare Context - Preparador de Contexto Completo
+# Prepare Context - Complete Context Preparer
 
-Este comando analiza un módulo y prepara TODO el contexto necesario para invocar agentes correctamente.
+This command analyzes a module and prepares ALL the necessary context to invoke agents correctly.
 
-## Uso
+## Usage
 
 ```bash
 /prepare-context dream
 ```
 
-## Lo que hace
+## What it does
 
-1. **Analiza el módulo completo** usando `module_analyzer.py`
-2. **Genera el contexto** para el agente dinámico
-3. **Prepara las instrucciones** para el engineer
-4. **Te da los prompts listos** para copiar y pegar
+1. **Analyzes the complete module** using `module_analyzer.py`
+2. **Generates the context** for the dynamic agent
+3. **Prepares the instructions** for the engineer
+4. **Gives you ready prompts** to copy and paste
 
-## Proceso
+## Process
 
-### Paso 1: Analizar módulo
+### Step 1: Analyze module
 
 ```bash
 python .claude/scripts/module_analyzer.py /src/dream
 ```
 
-Esto genera un análisis completo en `.claude/memory/modules/dream_analysis.json`
+This generates a complete analysis in `.claude/memory/modules/dream_analysis.json`
 
-### Paso 2: Generar contexto para agente dinámico
+### Step 2: Generate context for dynamic agent
 
-Te proporciono el prompt completo:
+I provide you the complete prompt:
 
 ```markdown
-@dream-agent, necesito [TU TAREA AQUÍ].
+@dream-agent, I need [YOUR TASK HERE].
 
-CONTEXTO DEL MÓDULO:
-- Ruta: /src/dream
-- Estructura:
-[TREE COMPLETO DEL MÓDULO - 500+ líneas si hace falta]
+MODULE CONTEXT:
+- Path: /src/dream
+- Structure:
+[COMPLETE MODULE TREE - 500+ lines if needed]
 
-- Archivos principales:
-[LISTA DE TODOS LOS ARCHIVOS CON SU PROPÓSITO]
+- Main files:
+[LIST OF ALL FILES WITH THEIR PURPOSE]
 
-- Patrones detectados:
-[TODOS LOS PATRONES EN USO]
+- Detected patterns:
+[ALL PATTERNS IN USE]
 
-- Convenciones del proyecto:
-[TODAS LAS CONVENCIONES]
+- Project conventions:
+[ALL CONVENTIONS]
 
-- Dependencias:
-[INTERNAS Y EXTERNAS]
+- Dependencies:
+[INTERNAL AND EXTERNAL]
 
-- Comunicación:
-[ENDPOINTS, EVENTOS, TABLAS]
+- Communication:
+[ENDPOINTS, EVENTS, TABLES]
 
-- Configuración:
-[VARIABLES DE ENTORNO]
+- Configuration:
+[ENVIRONMENT VARIABLES]
 
-- Tests existentes:
-[ESTRUCTURA DE TESTS]
+- Existing tests:
+[TEST STRUCTURE]
 
-- TODOs pendientes:
-[TODOS Y FIXMES]
+- Pending TODOs:
+[TODOS AND FIXMES]
 
-- Cambios recientes:
-[ÚLTIMOS 20 COMMITS]
+- Recent changes:
+[LAST 20 COMMITS]
 
-TAREA ESPECÍFICA:
-[DESCRIPCIÓN DETALLADA DE LO QUE NECESITAS]
+SPECIFIC TASK:
+[DETAILED DESCRIPTION OF WHAT YOU NEED]
 
-¿Dónde y cómo debo implementar esto considerando todo el contexto anterior?
+Where and how should I implement this considering all the above context?
 ```
 
-### Paso 3: Preparar contexto para engineer
+### Step 3: Prepare context for engineer
 
-Después de que el agente dinámico responda, te preparo el prompt para el engineer:
+After the dynamic agent responds, I prepare the prompt for the engineer:
 
 ```markdown
-@engineer-laravel, implementa lo siguiente:
+@engineer-laravel, implement the following:
 
-CONTEXTO DEL PROYECTO COMPLETO:
-- Framework: [DETECTADO]
-- Estructura: [TODA]
-- Convenciones NO NEGOCIABLES:
-  [LISTA COMPLETA DE CONVENCIONES]
+COMPLETE PROJECT CONTEXT:
+- Framework: [DETECTED]
+- Structure: [ALL]
+- NON-NEGOTIABLE Conventions:
+  [COMPLETE LIST OF CONVENTIONS]
   
-ESPECIFICACIONES DEL dream-agent:
-[TODO LO QUE RESPONDIÓ]
+SPECIFICATIONS FROM dream-agent:
+[EVERYTHING IT RESPONDED]
 
-ARCHIVOS QUE NECESITAS CONOCER:
-[CONTENIDO DE ARCHIVOS RELEVANTES]
+FILES YOU NEED TO KNOW:
+[RELEVANT FILES CONTENT]
 
-EJEMPLOS DEL PROYECTO:
-[CÓDIGO SIMILAR YA IMPLEMENTADO]
+PROJECT EXAMPLES:
+[SIMILAR CODE ALREADY IMPLEMENTED]
 
-ADVERTENCIAS CRÍTICAS:
-[TODO LO QUE NO DEBES HACER]
+CRITICAL WARNINGS:
+[EVERYTHING YOU SHOULDN'T DO]
 
-MÉTRICAS OBJETIVO:
+TARGET METRICS:
 - Coverage: >80%
 - Complejidad: <10
 - Performance: <100ms
 ```
 
-### Paso 4: Contexto para revisión
+### Step 4: Context for review
 
-Para la revisión final:
+For the final review:
 
 ```markdown
-@dream-agent, revisa esta implementación:
+@dream-agent, review this implementation:
 
-CONTEXTO ORIGINAL:
-[LO QUE PEDISTE INICIALMENTE]
+ORIGINAL CONTEXT:
+[WHAT YOU INITIALLY REQUESTED]
 
-IMPLEMENTACIÓN REALIZADA:
-[DIFF COMPLETO O RESUMEN]
+IMPLEMENTATION PERFORMED:
+[COMPLETE DIFF OR SUMMARY]
 
-ARCHIVOS CAMBIADOS:
-[LISTA CON LÍNEAS]
+CHANGED FILES:
+[LIST WITH LINES]
 
-MÉTRICAS ALCANZADAS:
-[TODAS LAS MÉTRICAS]
+ACHIEVED METRICS:
+[ALL METRICS]
 
-VALIDACIONES NECESARIAS:
-- ¿Sigue los patrones del módulo?
-- ¿Respeta las convenciones?
-- ¿No duplica código existente?
-- ¿Los tests son suficientes?
-- ¿Hay algún FLAG para otros módulos?
+NECESSARY VALIDATIONS:
+- Does it follow module patterns?
+- Does it respect conventions?
+- Does it not duplicate existing code?
+- Are the tests sufficient?
+- Is there any FLAG for other modules?
 ```
 
-## Ventajas
+## Advantages
 
-1. **Garantiza contexto completo** - No te olvidas de nada
-2. **Evita errores** - Los agentes tienen toda la info
-3. **Ahorra tiempo** - No tienes que escribir todo manualmente
-4. **Consistencia** - Siempre el mismo formato
+1. **Guarantees complete context** - You don't forget anything
+2. **Avoids errors** - Agents have all the info
+3. **Saves time** - You don't have to write everything manually
+4. **Consistency** - Always the same format
 
-## Ejemplo completo
+## Complete example
 
 ```bash
-# 1. Preparar contexto
+# 1. Prepare context
 /prepare-context dream
 
-# 2. Copiar el prompt generado y enviarlo a dream-agent
-@dream-agent [PROMPT GENERADO]
+# 2. Copy the generated prompt and send it to dream-agent
+@dream-agent [GENERATED PROMPT]
 
-# 3. Copiar el prompt para engineer
-@engineer-laravel [PROMPT GENERADO]
+# 3. Copy the prompt for engineer
+@engineer-laravel [GENERATED PROMPT]
 
-# 4. Copiar el prompt de revisión
-@dream-agent [PROMPT DE REVISIÓN]
+# 4. Copy the review prompt
+@dream-agent [REVIEW PROMPT]
 ```
 
-## Notas importantes
+## Important notes
 
-- **NO importa el tamaño** - Si el contexto son 20,000 tokens, se incluyen
-- **Mejor sobrar que faltar** - Más contexto = menos errores
-- **Los agentes lo necesitan** - Sin contexto, hacen código genérico
+- **Size doesn't matter** - If the context is 20,000 tokens, they are included
+- **Better too much than too little** - More context = fewer errors
+- **Agents need it** - Without context, they make generic code
 
 ---
 
-*Este comando asegura que SIEMPRE das contexto completo a los agentes*
+*This command ensures you ALWAYS give complete context to agents*

@@ -1,6 +1,6 @@
 # 🚀 ClaudeSquad Agents - Estado Actual
 
-## 📊 Agentes Completados: 6 de 73
+## 📊 Agentes Completados: 12 de 73
 
 ### ✅ Agentes COMPLETADOS con documentación completa:
 
@@ -174,17 +174,201 @@
 
 ---
 
-## 📝 Agentes PENDIENTES (67 de 73)
+## 7. 🚀 **coordinator-devops** (596 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo transformaciones sistémicas DevOps)  
+
+### ¿Qué hace?
+- El "DIOS del DevOps" que ve TODO el ecosistema
+- Carga TODAS las pipelines CI/CD (~100k tokens)
+- Orquesta Jenkins, GitHub Actions, GitLab CI, Azure DevOps
+- Gestiona Terraform, Kubernetes, Ansible, CloudFormation
+- Coordina GitOps con ArgoCD/Flux
+- Implementa observabilidad con Prometheus/Grafana/Jaeger
+- Maneja DevSecOps y compliance (SOC2, HIPAA)
+- Toma decisiones de migración de plataformas
+
+### ¿Cuándo se usa?
+- Transformación DevOps organizacional
+- Migración entre plataformas CI/CD (Jenkins → GitHub Actions)
+- Implementación de GitOps empresa-wide
+- Establecer prácticas SRE
+- Multi-cloud orchestration (AWS + Azure + GCP)
+- Zero-trust security en pipelines
+- Plataformas self-service para developers
+
+### NO se usa para:
+- Añadir un pipeline individual
+- Desplegar una sola aplicación
+- Crear un dashboard Grafana
+- Arreglar un pipeline roto
+
+---
+
+## 8. 🌐 **coordinator-infrastructure** (625 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo transformaciones sistémicas de infraestructura)  
+
+### ¿Qué hace?
+- El "DIOS de la Infraestructura" que ve TODO
+- Carga TODOS los recursos cloud (~100k tokens)
+- Orquesta AWS, Azure, GCP, on-premise
+- Gestiona Terraform, Pulumi, Crossplane, CloudFormation
+- Controla toda la topología de red global
+- Implementa zero-trust y microsegmentación
+- Optimiza millones en costos cloud
+- Maneja disaster recovery y alta disponibilidad
+
+### ¿Cuándo se usa?
+- Migración cloud completa de organización
+- Estrategia multi-cloud (AWS + Azure + GCP)
+- Expansión global de infraestructura
+- Transformación completa a Infrastructure as Code
+- Optimización de millones en cloud spend
+- Implementación zero-trust architecture
+- Consolidación de data centers
+
+### NO se usa para:
+- Provisionar un solo VM
+- Crear una VPC individual
+- Añadir un load balancer
+- Configurar un bucket S3
+
+---
+
+## 9. 🔐 **coordinator-security** (618 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo transformaciones sistémicas de seguridad)  
+
+### ¿Qué hace?
+- El "DIOS de la Seguridad" que ve TODO el panorama de amenazas
+- Carga TODAS las políticas de seguridad (~100k tokens)
+- Orquesta zero-trust, SASE, ZTNA enterprise-wide
+- Gestiona compliance multi-framework (SOC2, ISO27001, HIPAA, PCI-DSS)
+- Controla toda la gestión de vulnerabilidades
+- Implementa threat intelligence y threat hunting
+- Maneja IAM, PAM, SSO, MFA globalmente
+- Coordina SOC y respuesta a incidentes
+
+### ¿Cuándo se usa?
+- Implementación zero-trust arquitectura completa
+- Establecimiento de SOC (Security Operations Center)
+- Certificaciones múltiples simultáneas
+- Transformación post-breach
+- Integración de seguridad en M&A
+- DevSecOps transformation
+- SASE/ZTNA deployment global
+
+### NO se usa para:
+- Parchear una vulnerabilidad
+- Crear un security group
+- Añadir MFA a una app
+- Investigar un incidente aislado
+
+---
+
+## 10. 🧪 **coordinator-testing** (618 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo transformaciones sistémicas de testing)  
+
+### ¿Qué hace?
+- El "DIOS del Testing" que ve TODO el panorama de calidad
+- Carga TODAS las suites de tests (~100k tokens)
+- Orquesta unit, integration, E2E, API, performance tests
+- Gestiona frameworks: Jest, Pytest, Cypress, Playwright
+- Controla shift-left, continuous testing, chaos engineering
+- Implementa AI-powered testing y self-healing tests
+- Maneja quality gates, coverage metrics, test automation
+- Coordina BDD/TDD, risk-based testing
+
+### ¿Cuándo se usa?
+- Implementación shift-left testing organizacional
+- Continuous testing en todos los pipelines
+- 100% test automation goal
+- Testing Center of Excellence
+- AI-powered testing adoption
+- Chaos engineering implementation
+- Zero-defect release strategy
+
+### NO se usa para:
+- Escribir un test case
+- Arreglar un test flaky
+- Ejecutar una suite
+- Crear un script de automation
+
+---
+
+## 11. 📊 **coordinator-data** (618 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo transformaciones sistémicas de datos)  
+
+### ¿Qué hace?
+- El "DIOS de los Datos" que ve TODO el ecosistema de datos
+- Carga TODOS los pipelines, warehouses, lakes (~100k tokens)
+- Orquesta data mesh, lakehouse, data fabric architectures
+- Gestiona ETL/ELT, streaming (Kafka, Flink), batch (Spark)
+- Controla Snowflake, BigQuery, Databricks, Redshift
+- Implementa data governance, lineage, quality
+- Maneja BI tools, ML platforms, feature stores
+- Coordina medallion architecture (Bronze/Silver/Gold)
+
+### ¿Cuándo se usa?
+- Implementación data mesh organizacional
+- Migración a lakehouse architecture
+- Real-time analytics platform
+- Data marketplace creation
+- ML platform at scale
+- Legacy data modernization
+- Multi-cloud data strategy
+
+### NO se usa para:
+- Crear un pipeline individual
+- Escribir un ETL job
+- Configurar una base de datos
+- Construir un dashboard
+
+---
+
+## 12. 🔄 **coordinator-migration** (618 líneas)
+**Modelo:** opus  
+**Categoría:** coordinator  
+**Activación:** manual (solo migraciones sistémicas)  
+
+### ¿Qué hace?
+- El "DIOS de las Migraciones" que orquesta transformaciones completas
+- Carga TODOS los sistemas legacy (~100k tokens)
+- Orquesta monolith → microservices, on-premise → cloud
+- Gestiona strangler fig, expand-contract, blue-green patterns
+- Controla zero-downtime migrations, CDC, ETL
+- Implementa rollback strategies, feature flags
+- Maneja database migrations (Liquibase, Flyway, Prisma)
+- Coordina mainframe decommissioning
+
+### ¿Cuándo se usa?
+- Monolith to microservices transformation
+- On-premise to cloud migration
+- Legacy modernization programs
+- Zero-downtime migrations
+- Database platform changes (Oracle → PostgreSQL)
+- Mainframe decommissioning
+- Technology stack overhauls
+
+### NO se usa para:
+- Simple library upgrades
+- Minor version updates
+- Single table migrations
+- Small dependency updates
+
+---
+
+## 📝 Agentes PENDIENTES (61 de 73)
 
 Los siguientes agentes tienen YAML básico pero contenido en [TODO]:
-
-### Coordinadores (6)
-- coordinator-devops
-- coordinator-infrastructure
-- coordinator-security
-- coordinator-testing
-- coordinator-data
-- coordinator-migration
 
 ### Engineers Backend (8)
 - engineer-fastapi
@@ -293,12 +477,18 @@ Basándome en la arquitectura ClaudeSquad, los próximos agentes críticos serí
 ├── coordinator-backend.md ✅
 ├── coordinator-frontend.md ✅
 ├── coordinator-database.md ✅
-└── [67 agentes más en TODO]
+├── coordinator-devops.md ✅
+├── coordinator-infrastructure.md ✅
+├── coordinator-security.md ✅
+├── coordinator-testing.md ✅
+├── coordinator-data.md ✅
+├── coordinator-migration.md ✅
+└── [61 agentes más en TODO]
 ```
 
 ---
 
 *Total de agentes: 73*  
-*Completados: 6*  
-*Pendientes: 67*  
+*Completados: 12*  
+*Pendientes: 61*  
 *Última actualización: 2024-12-09*
