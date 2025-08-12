@@ -5,7 +5,14 @@
       "Bash(docker-compose:*)",
       "Bash(mkdir:*)",
       "Bash(tree:*)",
-      "WebFetch(domain:docs.anthropic.com)"
+      "WebFetch(domain:docs.anthropic.com)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(rm:*)",
+      "Bash(git clone:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(mv:*)",
+      "Bash(mkdir:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

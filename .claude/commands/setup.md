@@ -296,7 +296,165 @@ Testing Clarification:
 - "E2E tests configured but broken"
 ```
 
-### Phase 3: Comprehensive Configuration Review
+### Phase 3: Module Detection & Dynamic Agent Generation
+
+Analyzing project structure to generate specialized agents...
+
+```bash
+# Step 1: Detect modules in the project
+echo "🔍 Scanning project structure..."
+
+# Find main directories with substantial code
+find . -type d -name "node_modules" -prune -o \
+       -type d -name ".git" -prune -o \
+       -type d -mindepth 1 -maxdepth 3 \
+       -exec sh -c 'echo "$(find "$1" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.php" -o -name "*.py" \) | wc -l) $1"' _ {} \; \
+       | sort -rn | head -20
+
+# Step 2: Analyze each module
+for module_path in backend/api backend/payments backend/auth frontend/components services/email; do
+    if [ -d "$module_path" ]; then
+        echo "📊 Analyzing module: $module_path"
+        
+        # Count files and lines
+        file_count=$(find "$module_path" -type f -name "*.js" -o -name "*.ts" -o -name "*.php" | wc -l)
+        line_count=$(find "$module_path" -type f -name "*.js" -o -name "*.ts" -o -name "*.php" -exec wc -l {} + | tail -1 | awk '{print $1}')
+        
+        # Detect main technology
+        if [ -f "$module_path/composer.json" ]; then
+            tech="PHP/Laravel"
+        elif [ -f "$module_path/package.json" ]; then
+            tech="JavaScript/Node"
+        elif [ -f "$module_path/requirements.txt" ]; then
+            tech="Python"
+        else
+            tech="Mixed"
+        fi
+        
+        echo "  Files: $file_count | Lines: $line_count | Tech: $tech"
+    fi
+done
+
+# Step 3: Generate dynamic agent for each module
+echo "🤖 Generating dynamic agents..."
+```
+
+```python
+# Dynamic agent generation using external template
+def generate_dynamic_agent(module_name, module_path, analysis):
+    """Generate a dynamic agent file for a specific module using template"""
+    
+    # Load the template
+    template_path = ".claude/resources/templates/dynamic-agent-initial.md"
+    with open(template_path, 'r') as f:
+        template = f.read()
+    
+    # Prepare data for template
+    template_data = {
+        "module_name": module_name,
+        "module_name_title": module_name.title(),
+        "module_path": module_path,
+        "version": "1.0.0",
+        "created_date": datetime.now().isoformat(),
+        "last_updated": datetime.now().isoformat(),
+        "technology_stack": analysis['technology'],
+        "file_count": analysis['file_count'],
+        "line_count": analysis['line_count'],
+        "test_coverage": analysis.get('coverage', 0),
+        "complexity_score": analysis.get('complexity', 5),
+        "primary_purpose": analysis['purpose'],
+        "tree_structure": analysis['tree_structure'],
+        "key_files": analysis['key_files'],
+        "components": analysis.get('components', []),
+        "internal_dependencies": analysis.get('internal_deps', []),
+        "external_dependencies": analysis.get('external_deps', []),
+        "patterns": analysis.get('patterns', []),
+        "conventions": analysis.get('conventions', []),
+        "antipatterns": analysis.get('antipatterns', []),
+        # ... more fields as needed
+    }
+    
+    # Render template (using simple replacement for now)
+    agent_content = template
+    for key, value in template_data.items():
+        agent_content = agent_content.replace(f"{{{{{key}}}}}", str(value))
+    
+    # Save to .claude/agents/
+    agent_file = f".claude/agents/{module_name}-agent.md"
+    save_to_file(agent_file, agent_content)
+    
+    print(f"✅ Generated {agent_file}")
+    return agent_file
+
+def upgrade_dynamic_agent(agent_name, changes_detected):
+    """Upgrade an existing dynamic agent when module changes"""
+    
+    # Load upgrade template
+    upgrade_template_path = ".claude/resources/templates/dynamic-agent-upgrade.md"
+    current_agent_path = f".claude/agents/{agent_name}.md"
+    
+    # Analyze what changed
+    upgrade_data = analyze_changes(current_agent_path, changes_detected)
+    
+    # Apply upgrade template
+    upgraded_content = render_upgrade(upgrade_template_path, upgrade_data)
+    
+    # Backup old version
+    backup_path = f".claude/agents/backup/{agent_name}-v{upgrade_data['old_version']}.md"
+    
+    # Save upgraded version
+    save_to_file(current_agent_path, upgraded_content)
+    
+    print(f"⬆️ Upgraded {agent_name} from v{upgrade_data['old_version']} to v{upgrade_data['new_version']}")
+```
+
+#### 🤖 Dynamic Agent Generation
+
+Creating specialized agents for your project modules:
+
+```yaml
+Generated Agents:
+1. api-agent.md
+   - Module: /backend/api
+   - Expertise: REST endpoints, middleware, validation
+   - Lines of Code: 12,450
+   - Key Files: 47 controllers, 23 middleware, 89 routes
+   
+2. payments-agent.md
+   - Module: /backend/payments
+   - Expertise: Stripe integration, invoicing, webhooks
+   - Lines of Code: 3,200
+   - Key Files: PaymentService, StripeGateway, InvoiceGenerator
+   
+3. auth-agent.md
+   - Module: /backend/auth
+   - Expertise: JWT, OAuth2, 2FA, permissions
+   - Lines of Code: 2,100
+   - Key Files: AuthController, JWTService, PermissionMiddleware
+```
+
+#### 📁 Memory System Initialization
+
+Creating project memory structure:
+
+```
+.claude/memory/
+├── context/
+│   ├── architecture.md      # Your project's architecture
+│   ├── decisions.md         # Technical decisions log
+│   ├── conventions.md       # Coding standards
+│   └── stack.md            # Technology stack details
+├── modules/
+│   ├── api/                # API module knowledge
+│   ├── payments/           # Payments module knowledge
+│   └── auth/               # Auth module knowledge
+├── sessions/
+│   └── current.json        # Current session context
+└── consolidated/
+    └── patterns.json       # Learned patterns
+```
+
+### Phase 4: Comprehensive Configuration Review
 
 ```markdown
 📊 COMPLETE PROJECT CONFIGURATION:
@@ -347,12 +505,12 @@ Testing Clarification:
 🎯 Priority improvements?
 ```
 
-### Phase 4: Enhanced CLAUDE.md Generation
+### Phase 5: Enhanced CLAUDE.md Generation with Dynamic Agents
 
-Generate comprehensive orchestrator configuration:
+Generate comprehensive orchestrator configuration with dynamic agent mapping:
 
 ```markdown
-# Project Orchestrator Configuration v2.0
+# Project Orchestrator Configuration v3.0 - ClaudeSquad Edition
 
 ## Project Identity
 - Name: [Project Name]
@@ -360,14 +518,56 @@ Generate comprehensive orchestrator configuration:
 - Stage: [Development/Production]
 - Version: [Current Version]
 
-## Your Role as Orchestrator
-You are the intelligent orchestrator for this [type] application, coordinating between [X] specialized engineers and managing all aspects of development, testing, deployment, and monitoring.
+## 🤖 Dynamic Agents Generated for YOUR Project
+
+### Module-Specific Agents (Created by /setup)
+These agents have deep knowledge of your specific modules:
+
+1. **api-agent** 
+   - Module: /backend/api
+   - Expertise: Your REST endpoints, middleware, validation rules
+   - Key Knowledge: 47 controllers, 23 middleware, 89 routes
+   - Reviews: All API-related implementations
+   
+2. **payments-agent**
+   - Module: /backend/payments  
+   - Expertise: Your Stripe integration, invoicing, webhooks
+   - Key Knowledge: PaymentService, StripeGateway, InvoiceGenerator
+   - Reviews: All payment-related code
+   
+3. **auth-agent**
+   - Module: /backend/auth
+   - Expertise: Your JWT setup, OAuth2, 2FA, permissions
+   - Key Knowledge: AuthController, JWTService, PermissionMiddleware  
+   - Reviews: All authentication code
+
+### Global Specialist Engineers (From ClaudeSquad)
+These engineers implement based on dynamic agent guidance:
+
+- **engineer-laravel**: Laravel implementation expert
+- **engineer-react**: React development specialist
+- **coordinator-database**: Database operations coordinator
+- **testing-automation**: Test implementation specialist
+- **auditor-security**: Security review specialist
+
+## 🔄 Orchestration Workflow
+
+When you request: "Implement OAuth in the API"
+
+1. I consult **api-agent** for module context
+2. api-agent provides conventions, patterns, existing auth
+3. I instruct **engineer-laravel** with this context
+4. engineer-laravel implements following api-agent's guidance
+5. **api-agent reviews** the implementation
+6. If issues found, engineer-laravel fixes them
+7. Knowledge saved to project memory
 
 ## Complete Technology Stack
 [Detailed stack with all versions and configurations]
 
 ## Available Engineers & Specialists
-[Complete list with specialization areas]
+- Dynamic Agents: [List of generated agents]
+- Global Engineers: [List of ClaudeSquad engineers]
 
 ## Language Configuration Matrix
 - User Interface: [languages]
