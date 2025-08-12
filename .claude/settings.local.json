@@ -12,7 +12,8 @@
       "WebFetch(domain:github.com)",
       "Bash(mv:*)",
       "Bash(mkdir:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

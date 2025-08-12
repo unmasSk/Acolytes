@@ -1,11 +1,12 @@
 # 🚀 ClaudeSquad
 
-> Complete multi-agent orchestration system for Claude Code with 71 specialized engineers. Transform Claude into an intelligent project orchestrator that delegates complex tasks to domain experts. Enterprise-grade setup automation, comprehensive project analysis, and persistent memory system.
+> Complete multi-agent orchestration system for Claude Code with 71 specialized engineers, dynamic agent generation, and **persistent memory system**. Transform Claude into an intelligent project orchestrator that delegates complex tasks to domain experts with cumulative learning capabilities.
 
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-blue)](https://www.anthropic.com/claude)
 [![Agents](https://img.shields.io/badge/Engineers-71-green)](./.claude/agents)
+[![Memory](https://img.shields.io/badge/Memory-Persistent-red)](./.claude/memory)
 [![Setup](https://img.shields.io/badge/Setup-Automated-orange)](./.claude/commands/setup.md)
-[![Version](https://img.shields.io/badge/Version-1.0.0-purple)](./ESTADO-ACTUAL-PROYECTO.md)
+[![Version](https://img.shields.io/badge/Version-2.0.0-purple)](./MEJORAS-INVESTIGACION/ROADMAP-COMPLETO.md)
 
 ## 🎯 What is ClaudeSquad?
 
@@ -53,16 +54,28 @@ Three specialized engineers analyze your project:
 - `quality-engineer` - Tests, security, performance
 - `architecture-engineer` - Patterns, tech debt, improvements
 
-### 🧠 Persistent Memory System
+### 🧠 Persistent Memory System v2.0
 
-Engineers maintain domain-specific memory:
+**NEW**: Agents now maintain memory between invocations! Each agent starts fresh but automatically loads their previous knowledge.
+
 ```
 .claude/memory/
-├── backend/        # Backend patterns and solutions
-├── frontend/       # UI/UX decisions and components
-├── database/       # Schema and optimizations
-└── modules/        # Feature-specific knowledge
+├── agents/           # Per-agent persistent knowledge
+│   ├── dream-agent/
+│   │   ├── knowledge.json    # Module understanding
+│   │   ├── history.json      # Previous interactions
+│   │   └── patterns.json     # Detected patterns
+│   └── [agent-name]/
+├── context/          # Project-wide context
+├── flags/            # Cross-domain communications
+└── sessions/         # Session tracking
 ```
+
+**How it works:**
+1. **SubagentStop hook** automatically saves agent knowledge
+2. Next invocation loads previous memory
+3. Agents build cumulative expertise over time
+4. Cross-domain flags enable agent collaboration
 
 ### 🔄 Cross-Domain Communication
 

@@ -298,11 +298,11 @@ Testing Clarification:
 
 ### Phase 3: Module Detection & Dynamic Agent Generation
 
-Analyzing project structure to generate specialized agents...
+I'll detect your project modules and have our specialist create perfect agents for each one.
 
 ```bash
 # Step 1: Detect modules in the project
-echo "🔍 Scanning project structure..."
+echo "🔍 Scanning project structure for modules with substantial code..."
 
 # Find main directories with substantial code
 find . -type d -name "node_modules" -prune -o \
@@ -310,8 +310,36 @@ find . -type d -name "node_modules" -prune -o \
        -type d -mindepth 1 -maxdepth 3 \
        -exec sh -c 'echo "$(find "$1" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.php" -o -name "*.py" \) | wc -l) $1"' _ {} \; \
        | sort -rn | head -20
+```
 
-# Step 2: Analyze each module
+For each significant module found, I'll invoke our Agent Creator specialist:
+
+```markdown
+@agent-creator, create dynamic agents for these modules:
+
+PROJECT CONTEXT:
+- Framework: [detected from package.json/composer.json]
+- Architecture: [detected patterns]
+- Conventions: [detected from existing code]
+- Testing: [detected framework and coverage]
+
+MODULES NEEDING AGENTS:
+1. /src/api - API module with [X] files
+2. /src/payments - Payment processing with [Y] files
+3. /src/auth - Authentication system with [Z] files
+[... all detected modules ...]
+
+For each module, create a complete agent that:
+- Knows EVERYTHING about the module from birth
+- Has the complete structure embedded
+- Understands all functions and their purposes
+- Knows all dependencies and communications
+- Has all patterns and conventions documented
+
+Each agent should be self-sufficient and never need to "learn" - they should be born knowing everything.
+```
+
+# Step 2: Agent Creator analyzes each module
 for module_path in backend/api backend/payments backend/auth frontend/components services/email; do
     if [ -d "$module_path" ]; then
         echo "📊 Analyzing module: $module_path"

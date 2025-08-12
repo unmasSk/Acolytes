@@ -51,7 +51,7 @@ ClaudeSquad genera automáticamente:
 ## 📋 ROADMAP SIN TIEMPOS - ORDEN LÓGICO DE IMPLEMENTACIÓN
 
 ### FASE 1: FUNDACIÓN - Estructura Base
-#### 1.1 Reorganizar Estructura de Carpetas
+#### 1.1 Reorganizar Estructura de Carpetas ✅ COMPLETADO
 
 ⚠️ **CORRECCIÓN IMPORTANTE (2024-12-08):**
 La documentación oficial de Claude Code NO confirma si se permiten subdirectorios en `.claude/agents/`.
@@ -84,10 +84,10 @@ ACTUAL:                          NUEVO (ESTRUCTURA PLANA CONFIRMADA):
 - [ ] Campos: name, description, model, tools, activation, priority
 - [ ] Estandarizar nombres a kebab-case
 
-#### 1.3 Crear Context Manager Central
-- [ ] Crear `00-core/context-manager.md` (adaptado de wshobson)
-- [ ] Definir protocolo de consulta inicial
-- [ ] Integrar con todos los agentes
+#### 1.3 Crear Context Manager Central ✅ COMPLETADO
+- [x] Crear `context-manager.md` (adaptado de wshobson)
+- [x] Definir protocolo de consulta inicial
+- [x] Integrar con todos los agentes
 
 ---
 
@@ -120,24 +120,29 @@ ACTUAL:                          NUEVO (ESTRUCTURA PLANA CONFIRMADA):
 
 ### FASE 3: DIFERENCIACIÓN - Lo Único de ClaudeSquad
 
-#### 3.1 Sistema de Generación Dinámica de Agentes (/setup)
+#### 3.1 Sistema de Generación Dinámica de Agentes (/setup) ✅ COMPLETADO
 
-##### 3.1.1 Análisis Inteligente del Proyecto
+##### 3.1.1 Análisis Inteligente del Proyecto con Agent Creator
 **El comando `/setup` funciona con proyectos VACÍOS o EXISTENTES:**
 
-```python
-def analyze_project():
-    """Analiza proyecto completo, detecta módulos y tecnologías"""
-    return {
-        "project_type": detect_project_type(),  # Laravel, React, Django, etc
-        "modules": find_modules(),              # api/, payments/, etc
-        "framework": detect_framework(),        # Framework principal
-        "database": detect_database(),          # PostgreSQL, MySQL, etc
-        "patterns": detect_patterns(),          # Repository, MVC, etc
-        "tests": find_test_structure(),         # PHPUnit, Jest, etc
-        "complexity": calculate_complexity()    # Métricas del proyecto
-    }
+```markdown
+/setup detecta módulos
+    ↓
+Claude invoca: "@agent-creator analiza estos módulos y crea sus agentes"
+    ↓
+agent-creator (ESPECIALISTA IA):
+    - Analiza CADA módulo completamente
+    - Lee TODOS los archivos
+    - Entiende el propósito y patrones
+    - Crea agentes con conocimiento COMPLETO embebido
+    ↓
+Agentes dinámicos creados con 10,000+ líneas si hace falta
 ```
+
+**DECISIÓN CLAVE (2024-12-09)**: 
+- NO usamos scripts Python para analizar
+- Usamos un AGENTE ESPECIALISTA (agent-creator) que entiende contexto
+- Los agentes dinámicos nacen con TODO el conocimiento, no aprenden después
 
 ##### 3.1.2 Template Inteligente para Agentes Dinámicos
 **Cada agente dinámico captura TODO sobre su módulo:**
@@ -289,8 +294,9 @@ context_summary:
 
 ### FASE 4: MEMORIA - Sistema POR PROYECTO
 
-#### 4.1 Estructura de Memoria Local (Por Proyecto)
+#### 4.1 Estructura de Memoria Local (Por Proyecto) ✅ COMPLETADO
 **DECISIÓN CLAVE: La memoria es POR PROYECTO, no global**
+**IMPLEMENTADO 2024-12-09**: Sistema completo con hooks y Python
 
 ```
 /mi-proyecto/.claude/memory/     # Memoria SOLO de este proyecto
@@ -314,14 +320,14 @@ context_summary:
     └── knowledge_graph.json   # Grafo de conocimiento
 ```
 
-#### 4.2 Scripts de Captura y Carga
+#### 4.2 Scripts de Captura y Carga ✅ COMPLETADO
 ```python
-Scripts necesarios:
-- capture_memory.py      # Al terminar subagente
-- load_memory.py        # Al iniciar subagente
-- consolidate_daily.py  # Consolidación diaria
-- consolidate_weekly.py # Consolidación semanal
-- extract_patterns.py   # Extracción de insights
+Scripts implementados:
+- memory_manager.py      # Script unificado que maneja todo:
+  - save_from_stdin     # Al terminar subagente (SubagentStop)
+  - load [agent]        # Carga manual de memoria
+  - consolidate [agent] # Consolidación de memoria
+  - track_file_change   # Tracking de cambios (PostToolUse)
 ```
 
 #### 4.3 Sistema de Flags Cross-Domain
@@ -330,15 +336,20 @@ Scripts necesarios:
 - [ ] Priority queue para delegaciones
 - [ ] Trazabilidad completa
 
-#### 4.4 Hooks para Automatización
+#### 4.4 Hooks para Automatización ✅ COMPLETADO
 ```json
 {
-  "SubagentStart": ["load_memory.py"],
-  "SubagentStop": ["capture_memory.py"],
-  "PostToolUse": ["track_changes.py"],
-  "SessionEnd": ["consolidate_session.py"]
+  "SubagentStop": [
+    {"matcher": ".*-agent$", "command": "python .claude/scripts/memory_manager.py save_from_stdin"},
+    {"matcher": "engineer-.*", "command": "python .claude/scripts/memory_manager.py save_from_stdin"},
+    {"matcher": "coordinator-.*", "command": "python .claude/scripts/memory_manager.py save_from_stdin"}
+  ],
+  "PostToolUse": [
+    {"tool": "Edit|Write|MultiEdit", "command": "python .claude/scripts/memory_manager.py track_file_change"}
+  ]
 }
 ```
+**Nota**: SubagentStart no es necesario porque los agentes siempre inician fresh
 
 ---
 
