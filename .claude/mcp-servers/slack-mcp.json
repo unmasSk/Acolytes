@@ -2,7 +2,7 @@
   "name": "slack-mcp",
   "description": "MCP server for slack-mcp integration",
   "command": "npx",
-  "args": ["@claudecodesquad/slack-mcp"],
+  "args": ["@ClaudeSquad/slack-mcp"],
   "env": {
     "API_KEY": "your-api-key-here"
   },

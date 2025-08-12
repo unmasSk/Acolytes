@@ -1,5 +1,5 @@
 ---
-description: orchestrate command for ClaudeCodeSquad
+description: orchestrate command for ClaudeSquad
 ---
 
 [TODO: Define command functionality]

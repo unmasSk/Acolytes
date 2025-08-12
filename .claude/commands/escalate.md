@@ -1,5 +1,5 @@
 ---
-description: escalate command for ClaudeCodeSquad
+description: escalate command for ClaudeSquad
 ---
 
 [TODO: Define command functionality]

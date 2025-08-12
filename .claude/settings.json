@@ -9,7 +9,7 @@
   "hooks": {
     "SessionStart": [
       {
-        "command": "echo 'ClaudeCodeSquad ecosystem initialized'"
+        "command": "echo 'ClaudeSquad ecosystem initialized'"
       }
     ]
   },

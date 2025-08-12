@@ -1,5 +1,5 @@
 ---
-description: analyze command for ClaudeCodeSquad
+description: analyze command for ClaudeSquad
 ---
 
 [TODO: Define command functionality]

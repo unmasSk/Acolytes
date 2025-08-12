@@ -1,5 +1,5 @@
 ---
-description: delegate command for ClaudeCodeSquad
+description: delegate command for ClaudeSquad
 ---
 
 [TODO: Define command functionality]

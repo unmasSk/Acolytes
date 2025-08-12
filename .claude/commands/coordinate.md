@@ -1,5 +1,5 @@
 ---
-description: coordinate command for ClaudeCodeSquad
+description: coordinate command for ClaudeSquad
 ---
 
 [TODO: Define command functionality]

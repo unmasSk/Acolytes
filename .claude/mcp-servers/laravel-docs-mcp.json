@@ -2,7 +2,7 @@
   "name": "laravel-docs-mcp",
   "description": "MCP server for laravel-docs-mcp integration",
   "command": "npx",
-  "args": ["@claudecodesquad/laravel-docs-mcp"],
+  "args": ["@ClaudeSquad/laravel-docs-mcp"],
   "env": {
     "API_KEY": "your-api-key-here"
   },

@@ -2,7 +2,7 @@
   "name": "postgres-docs-mcp",
   "description": "MCP server for postgres-docs-mcp integration",
   "command": "npx",
-  "args": ["@claudecodesquad/postgres-docs-mcp"],
+  "args": ["@ClaudeSquad/postgres-docs-mcp"],
   "env": {
     "API_KEY": "your-api-key-here"
   },
