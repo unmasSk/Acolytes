@@ -1076,17 +1076,31 @@ priority: high
 ```
 
 #### ✅ Estructura Categórica Clara
+
+⚠️ **CORRECCIÓN IMPORTANTE (2024-12-08):**
+La documentación oficial NO confirma si `.claude/agents/` permite subdirectorios.
+Usar estructura PLANA con prefijos para organización.
+
 ```
-.claude/agents/
-├── 01-coordinators/      # 9 coordinadores
-├── 02-backend/           # Backend engineers
-├── 03-frontend/          # Frontend engineers
-├── 04-database/          # Database specialists
-├── 05-devops/            # DevOps & Infrastructure
-├── 06-security/          # Security & Compliance
-├── 07-testing/           # Testing & QA
-├── 08-data-ai/           # Data Science & AI
-└── 09-utilities/         # Utility & Support agents
+.claude/agents/  (ESTRUCTURA PLANA CONFIRMADA)
+├── context-manager.md
+├── coord-backend.md      # Coordinadores con prefijo coord-
+├── coord-frontend.md
+├── coord-database.md
+├── eng-laravel.md        # Engineers con prefijo eng-
+├── eng-react.md
+├── eng-postgres.md
+├── spec-security.md      # Specialists con prefijo spec-
+├── spec-testing.md
+├── util-debugger.md      # Utilities con prefijo util-
+└── dyn-[module].md       # Dinámicos con prefijo dyn-
+
+# Organización por prefijos:
+# coord- = Coordinadores (9)
+# eng-   = Engineers (40+)
+# spec-  = Specialists (15+)
+# util-  = Utilities (5+)
+# dyn-   = Generados dinámicamente
 ```
 
 #### ✅ Context Manager Central

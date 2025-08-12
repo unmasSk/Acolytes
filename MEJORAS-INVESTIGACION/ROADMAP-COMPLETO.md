@@ -32,21 +32,31 @@ ClaudeSquad genera automáticamente:
 
 ### FASE 1: FUNDACIÓN - Estructura Base
 #### 1.1 Reorganizar Estructura de Carpetas
+
+⚠️ **CORRECCIÓN IMPORTANTE (2024-12-08):**
+La documentación oficial de Claude Code NO confirma si se permiten subdirectorios en `.claude/agents/`.
+Los ejemplos muestran estructura PLANA. Por seguridad, usar estructura plana con prefijos.
+
 ```
-ACTUAL:                          NUEVO:
+ACTUAL:                          NUEVO (ESTRUCTURA PLANA CONFIRMADA):
 .claude/agents/                  .claude/agents/
-├── [71 archivos planos]         ├── 00-core/
-                                 │   └── context-manager.md
-                                 ├── 01-coordinators/
-                                 ├── 02-backend/
-                                 ├── 03-frontend/
-                                 ├── 04-database/
-                                 ├── 05-devops/
-                                 ├── 06-security/
-                                 ├── 07-testing/
-                                 ├── 08-data-ai/
-                                 ├── 09-utilities/
-                                 └── 10-dynamic/ (generados)
+├── [71 archivos planos]         ├── context-manager.md
+                                 ├── coord-backend.md
+                                 ├── coord-frontend.md
+                                 ├── coord-database.md
+                                 ├── eng-laravel.md
+                                 ├── eng-react.md
+                                 ├── eng-postgres.md
+                                 ├── spec-security.md
+                                 ├── spec-testing.md
+                                 └── [... todos planos con prefijos ...]
+
+# Usar prefijos para organización:
+# coord- = Coordinadores
+# eng-   = Engineers
+# spec-  = Specialists
+# util-  = Utilities
+# dyn-   = Dinámicos (generados)
 ```
 
 #### 1.2 Migrar a YAML Frontmatter Estándar
