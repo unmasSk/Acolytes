@@ -79,10 +79,34 @@ ACTUAL:                          NUEVO (ESTRUCTURA PLANA CONFIRMADA):
 # dyn-   = Dinámicos (generados)
 ```
 
-#### 1.2 Migrar a YAML Frontmatter Estándar
-- [ ] Añadir YAML a los 71 agentes existentes
-- [ ] Campos: name, description, model, tools, activation, priority
-- [ ] Estandarizar nombres a kebab-case
+#### 1.2 Migrar a YAML Frontmatter Estándar ⚠️ EN PROGRESO
+**Estado actual (2024-12-09):**
+- [x] engineer-laravel.md ✅ COMPLETADO - 1400 líneas
+- [x] context-manager.md ✅ COMPLETADO - 466 líneas
+- [x] agent-creator.md ✅ COMPLETADO - 240 líneas
+- [x] coordinator-backend.md ✅ COMPLETADO - 688 líneas
+- [x] coordinator-frontend.md ✅ COMPLETADO - 676 líneas
+- [x] coordinator-database.md ✅ COMPLETADO - 719 líneas
+- [x] Corregido model: sonnet-3.5 → sonnet en todos los agentes
+- [x] Documentado en DOCS/AGENT-YAML-FINDINGS.md que campos extra no causan errores
+- [ ] Otros 67 agentes tienen YAML básico pero contenido en [TODO]
+- [ ] Decisión: Completar SOLO los agentes críticos ahora, resto al final
+
+**Formato target (como engineer-laravel):**
+```yaml
+---
+name: engineer-[specialty]
+description: [Detailed description]
+model: haiku|sonnet|opus  # Basado en complejidad
+version: 2.0.0
+category: engineer|coordinator|specialist
+priority: high|medium|low
+tools: [List of tools including MCP]
+activation: auto|manual
+expertise_level: junior|senior|expert
+quality_level: mvp|production|enterprise|hyperscale
+---
+```
 
 #### 1.3 Crear Context Manager Central ✅ COMPLETADO
 - [x] Crear `context-manager.md` (adaptado de wshobson)
@@ -477,6 +501,13 @@ SÍ a través de Claude y memoria del proyecto
 ---
 
 ### FASE 8: DOCUMENTACIÓN - Professional Grade
+
+#### Documentos Creados
+- ✅ `DOCS/AGENT-YAML-FINDINGS.md` (2024-12-09)
+  - Investigación completa sobre campos YAML válidos
+  - Campos confirmados vs campos custom
+  - Evidencia de que campos extra no causan errores
+  - Correcciones aplicadas (model: sonnet-3.5 → sonnet)
 
 #### 8.1 Documentación de Usuario
 - [ ] README principal actualizado

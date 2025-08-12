@@ -1,11 +1,11 @@
 ---
-name: database-architect
-description: Expert specialist in database-architect domain with deep technical memory
+name: engineer-database
+description: Expert database engineer with deep technical memory for schema, performance, and reliability
 model: sonnet
 tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
 ---
 
-# database-architect - [TODO: Complete agent definition]
+# engineer-database - [TODO: Complete agent definition]
 
 ## Role
 

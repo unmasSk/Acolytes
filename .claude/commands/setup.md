@@ -12,28 +12,28 @@ First, let me verify your development environment...
 
 ```yaml
 Checking prerequisites:
-- Git version and configuration
-- Node.js/npm/yarn versions
-- PHP/Composer (if applicable)
-- Python/pip (if applicable)
-- Docker/Docker Compose
-- IDE/Editor configuration
-- Shell environment (bash/zsh/powershell)
-- Operating system details
-- File permissions
-- Network connectivity
+  - Git version and configuration
+  - Node.js/npm/yarn versions
+  - PHP/Composer (if applicable)
+  - Python/pip (if applicable)
+  - Docker/Docker Compose
+  - IDE/Editor configuration
+  - Shell environment (bash/zsh/powershell)
+  - Operating system details
+  - File permissions
+  - Network connectivity
 
 Missing tools detected:
-- [List of missing prerequisites]
-- Installation commands provided
-- Alternative solutions suggested
+  - [List of missing prerequisites]
+  - Installation commands provided
+  - Alternative solutions suggested
 ```
 
 ## Detection Phase
 
 Analyzing project type (new vs existing)...
 
-*[Checking for package.json, composer.json, requirements.txt, Gemfile, go.mod, .env, docker-compose.yml, and CI/CD configs]*
+_[Checking for package.json, composer.json, requirements.txt, Gemfile, go.mod, .env, docker-compose.yml, and CI/CD configs]_
 
 ---
 
@@ -46,206 +46,220 @@ I see this is a new project. I'll gather complete requirements through a convers
 Based on your description, I'll explore these areas:
 
 ### 1. BUSINESS & DOMAIN
+
 ```yaml
 Core Questions:
-- What problem are you solving?
-- Who are the users/stakeholders?
-- What's the business model?
-- Competition/alternatives?
-- Success metrics/KPIs?
-- Timeline and milestones?
-- Budget constraints?
-- Scalability expectations?
+  - What problem are you solving?
+  - Who are the users/stakeholders?
+  - What's the business model?
+  - Competition/alternatives?
+  - Success metrics/KPIs?
+  - Timeline and milestones?
+  - Budget constraints?
+  - Scalability expectations?
 ```
 
 ### 2. TECHNICAL ARCHITECTURE
+
 ```yaml
 Stack Decisions:
-- Why this language/framework?
-- Monolith vs microservices?
-- API design (REST/GraphQL/gRPC)?
-- Real-time requirements (WebSockets/SSE)?
-- Background jobs/queues?
-- Caching strategy?
-- Search functionality?
-- File storage (S3/local/CDN)?
+  - Why this language/framework?
+  - Monolith vs microservices?
+  - API design (REST/GraphQL/gRPC)?
+  - Real-time requirements (WebSockets/SSE)?
+  - Background jobs/queues?
+  - Caching strategy?
+  - Search functionality?
+  - File storage (S3/local/CDN)?
 ```
 
 ### 3. DATABASE & DATA
+
 ```yaml
 Data Architecture:
-- Database choice rationale?
-- ACID vs eventual consistency?
-- Data volume expectations?
-- Backup/recovery strategy?
-- Data retention policies?
-- GDPR/privacy requirements?
-- Analytics/reporting needs?
-- Data migration from existing?
+  - Database choice rationale?
+  - ACID vs eventual consistency?
+  - Data volume expectations?
+  - Backup/recovery strategy?
+  - Data retention policies?
+  - GDPR/privacy requirements?
+  - Analytics/reporting needs?
+  - Data migration from existing?
 ```
 
 ### 4. SECURITY & COMPLIANCE
+
 ```yaml
 Security Requirements:
-- Authentication method (JWT/OAuth/SAML)?
-- Authorization model (RBAC/ABAC)?
-- Encryption requirements (at rest/in transit)?
-- OWASP compliance level?
-- PCI-DSS/HIPAA/SOC2 needed?
-- Secrets management strategy?
-- API rate limiting?
-- DDoS protection?
-- Audit logging requirements?
-- Penetration testing schedule?
+  - Authentication method (JWT/OAuth/SAML)?
+  - Authorization model (RBAC/ABAC)?
+  - Encryption requirements (at rest/in transit)?
+  - OWASP compliance level?
+  - PCI-DSS/HIPAA/SOC2 needed?
+  - Secrets management strategy?
+  - API rate limiting?
+  - DDoS protection?
+  - Audit logging requirements?
+  - Penetration testing schedule?
 ```
 
 ### 5. INFRASTRUCTURE & DEPLOYMENT
+
 ```yaml
 Infrastructure Planning:
-- Cloud provider (AWS/GCP/Azure/Self-hosted)?
-- Container orchestration (K8s/ECS/Swarm)?
-- Serverless components?
-- CDN strategy (CloudFlare/CloudFront)?
-- Multi-region requirements?
-- Load balancing approach?
-- Auto-scaling triggers?
-- Disaster recovery plan?
-- Infrastructure as Code (Terraform/CloudFormation)?
+  - Cloud provider (AWS/GCP/Azure/Self-hosted)?
+  - Container orchestration (K8s/ECS/Swarm)?
+  - Serverless components?
+  - CDN strategy (CloudFlare/CloudFront)?
+  - Multi-region requirements?
+  - Load balancing approach?
+  - Auto-scaling triggers?
+  - Disaster recovery plan?
+  - Infrastructure as Code (Terraform/CloudFormation)?
 ```
 
 ### 6. CI/CD & DEVOPS
+
 ```yaml
 Pipeline Configuration:
-- Version control (GitHub/GitLab/Bitbucket)?
-- Branching strategy (GitFlow/GitHub Flow)?
-- CI/CD platform (Actions/Jenkins/CircleCI)?
-- Deployment strategy (Blue-green/Canary/Rolling)?
-- Environments (dev/staging/prod/more)?
-- Automated testing gates?
-- Code quality gates?
-- Security scanning in pipeline?
-- Dependency vulnerability scanning?
-- Container registry?
+  - Version control (GitHub/GitLab/Bitbucket)?
+  - Branching strategy (GitFlow/GitHub Flow)?
+  - CI/CD platform (Actions/Jenkins/CircleCI)?
+  - Deployment strategy (Blue-green/Canary/Rolling)?
+  - Environments (dev/staging/prod/more)?
+  - Automated testing gates?
+  - Code quality gates?
+  - Security scanning in pipeline?
+  - Dependency vulnerability scanning?
+  - Container registry?
 ```
 
 ### 7. MONITORING & OBSERVABILITY
+
 ```yaml
 Observability Stack:
-- APM tool (DataDog/New Relic/AppDynamics)?
-- Error tracking (Sentry/Rollbar/Bugsnag)?
-- Log aggregation (ELK/Splunk/CloudWatch)?
-- Custom metrics/KPIs?
-- Alerting rules and channels?
-- SLA/SLO definitions?
-- Uptime monitoring (Pingdom/UptimeRobot)?
-- Distributed tracing?
-- Performance budgets?
-- Cost monitoring?
+  - APM tool (DataDog/New Relic/AppDynamics)?
+  - Error tracking (Sentry/Rollbar/Bugsnag)?
+  - Log aggregation (ELK/Splunk/CloudWatch)?
+  - Custom metrics/KPIs?
+  - Alerting rules and channels?
+  - SLA/SLO definitions?
+  - Uptime monitoring (Pingdom/UptimeRobot)?
+  - Distributed tracing?
+  - Performance budgets?
+  - Cost monitoring?
 ```
 
 ### 8. TESTING STRATEGY
+
 ```yaml
 Quality Assurance:
-- Test coverage target (70%/80%/90%)?
-- Unit/Integration/E2E ratio?
-- TDD/BDD approach?
-- Performance testing tools?
-- Load testing thresholds?
-- Security testing (SAST/DAST)?
-- Accessibility testing?
-- Cross-browser testing?
-- Mobile testing strategy?
-- Chaos engineering?
+  - Test coverage target (70%/80%/90%)?
+  - Unit/Integration/E2E ratio?
+  - TDD/BDD approach?
+  - Performance testing tools?
+  - Load testing thresholds?
+  - Security testing (SAST/DAST)?
+  - Accessibility testing?
+  - Cross-browser testing?
+  - Mobile testing strategy?
+  - Chaos engineering?
 ```
 
 ### 9. DOCUMENTATION & KNOWLEDGE
+
 ```yaml
 Documentation Plans:
-- API documentation (OpenAPI/GraphQL schema)?
-- Code documentation standards?
-- Architecture diagrams (C4/UML)?
-- Database ERD generation?
-- Runbook creation?
-- Onboarding documentation?
-- Video tutorials needed?
-- Knowledge base platform?
-- Changelog automation?
-- Public vs internal docs?
+  - API documentation (OpenAPI/GraphQL schema)?
+  - Code documentation standards?
+  - Architecture diagrams (C4/UML)?
+  - Database ERD generation?
+  - Runbook creation?
+  - Onboarding documentation?
+  - Video tutorials needed?
+  - Knowledge base platform?
+  - Changelog automation?
+  - Public vs internal docs?
 ```
 
 ### 10. ACCESSIBILITY & I18N
+
 ```yaml
 Accessibility Requirements:
-- WCAG compliance level (A/AA/AAA)?
-- Screen reader support?
-- Keyboard navigation complete?
-- Color contrast requirements?
-- Languages to support?
-- RTL language support?
-- Date/time localization?
-- Currency/number formats?
-- Translation workflow?
-- Content moderation per locale?
+  - WCAG compliance level (A/AA/AAA)?
+  - Screen reader support?
+  - Keyboard navigation complete?
+  - Color contrast requirements?
+  - Languages to support?
+  - RTL language support?
+  - Date/time localization?
+  - Currency/number formats?
+  - Translation workflow?
+  - Content moderation per locale?
 ```
 
 ### 11. TEAM & COLLABORATION
+
 ```yaml
 Team Structure:
-- Team size and roles?
-- Remote/hybrid/onsite?
-- Time zones involved?
-- Communication tools (Slack/Teams)?
-- Project management (Jira/Linear/Asana)?
-- Code review process?
-- Pair programming practices?
-- Knowledge sharing sessions?
-- On-call rotation?
-- External contractors/vendors?
+  - Team size and roles?
+  - Remote/hybrid/onsite?
+  - Time zones involved?
+  - Communication tools (Slack/Teams)?
+  - Project management (Jira/Linear/Asana)?
+  - Code review process?
+  - Pair programming practices?
+  - Knowledge sharing sessions?
+  - On-call rotation?
+  - External contractors/vendors?
 ```
 
 ### 12. DEVELOPMENT ENVIRONMENT
+
 ```yaml
 Developer Experience:
-- Local development setup?
-- Docker development environment?
-- Hot reload requirements?
-- Seed data management?
-- Development tools/extensions?
-- Linting/formatting standards?
-- Pre-commit hooks?
-- IDE configurations shared?
-- Development documentation?
-- Onboarding time target?
+  - Local development setup?
+  - Docker development environment?
+  - Hot reload requirements?
+  - Seed data management?
+  - Development tools/extensions?
+  - Linting/formatting standards?
+  - Pre-commit hooks?
+  - IDE configurations shared?
+  - Development documentation?
+  - Onboarding time target?
 ```
 
 ### 13. LANGUAGE & COMMUNICATION
+
 ```yaml
 Language Configuration:
-- User interface language(s)?
-- Documentation language?
-- Code comments language?
-- Variable/function naming convention?
-- Git commit message language?
-- Error messages language?
-- Log messages language?
-- Support communication language?
-- Legal documents language?
-- Marketing content language?
+  - User interface language(s)?
+  - Documentation language?
+  - Code comments language?
+  - Variable/function naming convention?
+  - Git commit message language?
+  - Error messages language?
+  - Log messages language?
+  - Support communication language?
+  - Legal documents language?
+  - Marketing content language?
 ```
 
 ### 14. USER EXPERIENCE LEVEL
+
 ```yaml
 Your Experience Profile:
-- Years in programming?
-- Experience with chosen stack?
-- Familiarity with cloud services?
-- DevOps experience level?
-- Preference for explanations (detailed/concise)?
-- Learning style (examples/theory/hands-on)?
-- Biggest knowledge gaps?
-- Previous similar projects?
-- Preferred resources/documentation?
-- Mentorship needs?
+  - Years in programming?
+  - Experience with chosen stack?
+  - Familiarity with cloud services?
+  - DevOps experience level?
+  - Preference for explanations (detailed/concise)?
+  - Learning style (examples/theory/hands-on)?
+  - Biggest knowledge gaps?
+  - Previous similar projects?
+  - Preferred resources/documentation?
+  - Mentorship needs?
 ```
 
 ---
@@ -258,21 +272,21 @@ Delegating to specialized analysts and additional inspectors:
 
 ```yaml
 Core Analysts:
-- discovery-engineer → Structure, stack, dependencies
-- quality-engineer → Tests, security, documentation
-- architecture-engineer → Patterns, organization, debt
+  - discovery-engineer → Structure, stack, dependencies
+  - quality-engineer → Tests, security, documentation
+  - architecture-engineer → Patterns, organization, debt
 
 Additional Inspections:
-- Security audit (OWASP compliance check)
-- Performance baseline (current metrics)
-- Dependency audit (outdated/vulnerable)
-- License compliance scan
-- Accessibility audit (WCAG check)
-- Docker/container analysis
-- CI/CD pipeline review
-- Database schema analysis
-- API endpoint inventory
-- Environment configs audit
+  - Security audit (OWASP compliance check)
+  - Performance baseline (current metrics)
+  - Dependency audit (outdated/vulnerable)
+  - License compliance scan
+  - Accessibility audit (WCAG check)
+  - Docker/container analysis
+  - CI/CD pipeline review
+  - Database schema analysis
+  - API endpoint inventory
+  - Environment configs audit
 ```
 
 ### Phase 2: Intelligent Clarification
@@ -281,19 +295,19 @@ If ambiguities are detected:
 
 ```yaml
 Stack Clarification:
-- "Multiple Node versions in .nvmrc and package.json"
-- "Both REST and GraphQL endpoints found"
-- "Docker configs present but not used in CI"
+  - "Multiple Node versions in .nvmrc and package.json"
+  - "Both REST and GraphQL endpoints found"
+  - "Docker configs present but not used in CI"
 
 Security Clarification:
-- "Auth middleware found but not consistently applied"
-- "Secrets in .env but also hardcoded values found"
-- "CORS configuration seems incomplete"
+  - "Auth middleware found but not consistently applied"
+  - "Secrets in .env but also hardcoded values found"
+  - "CORS configuration seems incomplete"
 
 Testing Clarification:
-- "Test files exist but CI doesn't run them"
-- "Coverage reports outdated by 6 months"
-- "E2E tests configured but broken"
+  - "Test files exist but CI doesn't run them"
+  - "Coverage reports outdated by 6 months"
+  - "E2E tests configured but broken"
 ```
 
 ### Phase 3: Module Detection & Dynamic Agent Generation
@@ -318,65 +332,33 @@ For each significant module found, I'll invoke our Agent Creator specialist:
 @agent-creator, create dynamic agents for these modules:
 
 PROJECT CONTEXT:
+
 - Framework: [detected from package.json/composer.json]
 - Architecture: [detected patterns]
 - Conventions: [detected from existing code]
 - Testing: [detected framework and coverage]
 
 MODULES NEEDING AGENTS:
-1. /src/api - API module with [X] files
-2. /src/payments - Payment processing with [Y] files
-3. /src/auth - Authentication system with [Z] files
-[... all detected modules ...]
 
-For each module, create a complete agent that:
-- Knows EVERYTHING about the module from birth
-- Has the complete structure embedded
-- Understands all functions and their purposes
-- Knows all dependencies and communications
-- Has all patterns and conventions documented
+from datetime import datetime
+from pathlib import Path
+from pybars import Compiler # pip install pybars3
 
-Each agent should be self-sufficient and never need to "learn" - they should be born knowing everything.
-```
-
-# Step 2: Agent Creator analyzes each module
-for module_path in backend/api backend/payments backend/auth frontend/components services/email; do
-    if [ -d "$module_path" ]; then
-        echo "📊 Analyzing module: $module_path"
-        
-        # Count files and lines
-        file_count=$(find "$module_path" -type f -name "*.js" -o -name "*.ts" -o -name "*.php" | wc -l)
-        line_count=$(find "$module_path" -type f -name "*.js" -o -name "*.ts" -o -name "*.php" -exec wc -l {} + | tail -1 | awk '{print $1}')
-        
-        # Detect main technology
-        if [ -f "$module_path/composer.json" ]; then
-            tech="PHP/Laravel"
-        elif [ -f "$module_path/package.json" ]; then
-            tech="JavaScript/Node"
-        elif [ -f "$module_path/requirements.txt" ]; then
-            tech="Python"
-        else
-            tech="Mixed"
-        fi
-        
-        echo "  Files: $file_count | Lines: $line_count | Tech: $tech"
-    fi
-done
-
-# Step 3: Generate dynamic agent for each module
-echo "🤖 Generating dynamic agents..."
-```
-
-```python
 # Dynamic agent generation using external template
+
+def save_to_file(path, content):
+Path(path).parent.mkdir(parents=True, exist_ok=True)
+with open(path, "w", encoding="utf-8") as f:
+f.write(content)
+
 def generate_dynamic_agent(module_name, module_path, analysis):
-    """Generate a dynamic agent file for a specific module using template"""
-    
+"""Generate a dynamic agent file for a specific module using template"""
+
     # Load the template
     template_path = ".claude/resources/templates/dynamic-agent-initial.md"
     with open(template_path, 'r') as f:
         template = f.read()
-    
+
     # Prepare data for template
     template_data = {
         "module_name": module_name,
@@ -385,7 +367,61 @@ def generate_dynamic_agent(module_name, module_path, analysis):
         "version": "1.0.0",
         "created_date": datetime.now().isoformat(),
         "last_updated": datetime.now().isoformat(),
-        "technology_stack": analysis['technology'],
+        "technology_stack": analysis.get('technology', 'Unknown'),
+        "file_count": analysis['file_count'],
+        "line_count": analysis['line_count'],
+        "test_coverage": analysis.get('coverage', 0),
+        "complexity_score": analysis.get('complexity', 5),
+        "primary_purpose": analysis.get('purpose', ''),
+        "tree_structure": analysis.get('tree_structure', ''),
+        "key_files": analysis.get('key_files', []),
+        "components": analysis.get('components', []),
+        "internal_dependencies": analysis.get('internal_deps', []),
+        "external_dependencies": analysis.get('external_deps', []),
+        "patterns": analysis.get('patterns', []),
+        "conventions": analysis.get('conventions', []),
+        "antipatterns": analysis.get('antipatterns', []),
+        # ... more fields as needed
+    }
+
+    # Render Handlebars template
+    compiler = Compiler()
+    template_fn = compiler.compile(template)
+    agent_content = template_fn(template_data)
+
+    # Save to .claude/agents/
+    agent_file = f".claude/agents/{module_name}-agent.md"
+    save_to_file(agent_file, agent_content)
+
+    print(f"✅ Generated {agent_file}")
+    return agent_file
+        "file_count": analysis['file_count'],
+        "line_count": analysis['line_count'],
+        "test_coverage": analysis.get('coverage', 0),
+        "complexity_score": analysis.get('complexity', 5),
+        "primary_purpose": analysis.get('purpose', ''),
+        "tree_structure": analysis.get('tree_structure', ''),
+        "key_files": analysis.get('key_files', []),
+        "components": analysis.get('components', []),
+        "internal_dependencies": analysis.get('internal_deps', []),
+        "external_dependencies": analysis.get('external_deps', []),
+        "patterns": analysis.get('patterns', []),
+        "conventions": analysis.get('conventions', []),
+        "antipatterns": analysis.get('antipatterns', []),
+        # ... more fields as needed
+    }
+
+    # Render Handlebars template
+    compiler = Compiler()
+    template_fn = compiler.compile(template)
+    agent_content = template_fn(template_data)
+
+    # Save to .claude/agents/
+    agent_file = f".claude/agents/{module_name}-agent.md"
+    save_to_file(agent_file, agent_content)
+
+    print(f"✅ Generated {agent_file}")
+    return agent_file
         "file_count": analysis['file_count'],
         "line_count": analysis['line_count'],
         "test_coverage": analysis.get('coverage', 0),
@@ -401,38 +437,38 @@ def generate_dynamic_agent(module_name, module_path, analysis):
         "antipatterns": analysis.get('antipatterns', []),
         # ... more fields as needed
     }
-    
+
     # Render template (using simple replacement for now)
     agent_content = template
     for key, value in template_data.items():
         agent_content = agent_content.replace(f"{{{{{key}}}}}", str(value))
-    
+
     # Save to .claude/agents/
     agent_file = f".claude/agents/{module_name}-agent.md"
     save_to_file(agent_file, agent_content)
-    
+
     print(f"✅ Generated {agent_file}")
     return agent_file
 
 def upgrade_dynamic_agent(agent_name, changes_detected):
-    """Upgrade an existing dynamic agent when module changes"""
-    
+"""Upgrade an existing dynamic agent when module changes"""
+
     # Load upgrade template
     upgrade_template_path = ".claude/resources/templates/dynamic-agent-upgrade.md"
     current_agent_path = f".claude/agents/{agent_name}.md"
-    
+
     # Analyze what changed
     upgrade_data = analyze_changes(current_agent_path, changes_detected)
-    
+
     # Apply upgrade template
     upgraded_content = render_upgrade(upgrade_template_path, upgrade_data)
-    
+
     # Backup old version
     backup_path = f".claude/agents/backup/{agent_name}-v{upgrade_data['old_version']}.md"
-    
+
     # Save upgraded version
     save_to_file(current_agent_path, upgraded_content)
-    
+
     print(f"⬆️ Upgraded {agent_name} from v{upgrade_data['old_version']} to v{upgrade_data['new_version']}")
 ```
 
@@ -447,13 +483,13 @@ Generated Agents:
    - Expertise: REST endpoints, middleware, validation
    - Lines of Code: 12,450
    - Key Files: 47 controllers, 23 middleware, 89 routes
-   
+
 2. payments-agent.md
    - Module: /backend/payments
    - Expertise: Stripe integration, invoicing, webhooks
    - Lines of Code: 3,200
    - Key Files: PaymentService, StripeGateway, InvoiceGenerator
-   
+
 3. auth-agent.md
    - Module: /backend/auth
    - Expertise: JWT, OAuth2, 2FA, permissions
@@ -488,6 +524,7 @@ Creating project memory structure:
 📊 COMPLETE PROJECT CONFIGURATION:
 
 **CORE STACK:**
+
 - Backend: [framework, version, architecture]
 - Frontend: [framework, version, build tool]
 - Database: [type, version, ORM/ODM]
@@ -496,6 +533,7 @@ Creating project memory structure:
 - Search: [Elasticsearch/Algolia, setup]
 
 **INFRASTRUCTURE:**
+
 - Deployment: [platform, method]
 - Containers: [Docker/K8s setup]
 - CI/CD: [platform, pipeline stages]
@@ -503,6 +541,7 @@ Creating project memory structure:
 - Monitoring: [APM, logs, metrics]
 
 **QUALITY & SECURITY:**
+
 - Test Coverage: [current %, framework]
 - Security: [auth method, vulnerabilities]
 - Code Quality: [linting, formatting]
@@ -510,6 +549,7 @@ Creating project memory structure:
 - Accessibility: [WCAG level, issues]
 
 **DEVELOPMENT PRACTICES:**
+
 - Git Flow: [branching strategy]
 - Code Review: [process, tools]
 - Dependencies: [outdated count, vulnerabilities]
@@ -517,12 +557,14 @@ Creating project memory structure:
 - Performance: [current metrics]
 
 **LANGUAGE SETTINGS:**
+
 - User Communication: [detected]
 - Documentation: [detected]
 - Code/Comments: [detected]
 - Commits: [detected]
 
 **TEAM CONFIGURATION:**
+
 - Contributors: [active count]
 - Last Activity: [date]
 - Issue/PR Velocity: [metrics]
@@ -541,6 +583,7 @@ Generate comprehensive orchestrator configuration with dynamic agent mapping:
 # Project Orchestrator Configuration v3.0 - ClaudeSquad Edition
 
 ## Project Identity
+
 - Name: [Project Name]
 - Type: [Application Type]
 - Stage: [Development/Production]
@@ -549,27 +592,27 @@ Generate comprehensive orchestrator configuration with dynamic agent mapping:
 ## 🤖 Dynamic Agents Generated for YOUR Project
 
 ### Module-Specific Agents (Created by /setup)
+
 These agents have deep knowledge of your specific modules:
 
-1. **api-agent** 
+1. **api-agent**
    - Module: /backend/api
    - Expertise: Your REST endpoints, middleware, validation rules
    - Key Knowledge: 47 controllers, 23 middleware, 89 routes
    - Reviews: All API-related implementations
-   
 2. **payments-agent**
-   - Module: /backend/payments  
+   - Module: /backend/payments
    - Expertise: Your Stripe integration, invoicing, webhooks
    - Key Knowledge: PaymentService, StripeGateway, InvoiceGenerator
    - Reviews: All payment-related code
-   
 3. **auth-agent**
    - Module: /backend/auth
    - Expertise: Your JWT setup, OAuth2, 2FA, permissions
-   - Key Knowledge: AuthController, JWTService, PermissionMiddleware  
+   - Key Knowledge: AuthController, JWTService, PermissionMiddleware
    - Reviews: All authentication code
 
 ### Global Specialist Engineers (From ClaudeSquad)
+
 These engineers implement based on dynamic agent guidance:
 
 - **engineer-laravel**: Laravel implementation expert
@@ -591,13 +634,16 @@ When you request: "Implement OAuth in the API"
 7. Knowledge saved to project memory
 
 ## Complete Technology Stack
+
 [Detailed stack with all versions and configurations]
 
 ## Available Engineers & Specialists
+
 - Dynamic Agents: [List of generated agents]
 - Global Engineers: [List of ClaudeSquad engineers]
 
 ## Language Configuration Matrix
+
 - User Interface: [languages]
 - API Responses: [language]
 - Documentation: [public/internal languages]
@@ -608,6 +654,7 @@ When you request: "Implement OAuth in the API"
 - Error Messages: [user/system languages]
 
 ## User Experience Profile
+
 - Programming Level: [detailed level]
 - Stack Expertise: [per technology]
 - Preferred Learning: [style]
@@ -615,9 +662,11 @@ When you request: "Implement OAuth in the API"
 - Learning Goals: [areas]
 
 ## Architecture & Patterns
+
 [Complete architectural documentation]
 
 ## Security Configuration
+
 - Authentication: [method, provider]
 - Authorization: [model, implementation]
 - Encryption: [at rest, in transit]
@@ -625,51 +674,64 @@ When you request: "Implement OAuth in the API"
 - Audit: [logging strategy]
 
 ## Infrastructure Blueprint
+
 - Cloud Platform: [provider, services]
 - Deployment: [strategy, automation]
 - Scaling: [rules, limits]
 - Disaster Recovery: [RTO, RPO]
 
 ## CI/CD Pipeline
+
 [Complete pipeline configuration with stages]
 
 ## Monitoring & Alerting
+
 - APM: [tool, key metrics]
 - Logs: [aggregation, retention]
 - Alerts: [rules, channels]
 - SLOs: [definitions]
 
 ## Testing Strategy
+
 - Coverage Target: [percentage]
 - Test Types: [ratios]
 - Performance: [benchmarks]
 - Security: [scan schedule]
 
 ## Development Workflow
+
 [Detailed workflows for common tasks]
 
 ## Delegation Patterns
+
 [Specific patterns for each engineer]
 
 ## Memory System Structure
+
 [Complete memory organization]
 
 ## Critical Issues & Tech Debt
+
 [Prioritized list with remediation plans]
 
 ## Performance Targets & Metrics
+
 [Specific, measurable targets]
 
 ## Team Conventions & Standards
+
 [Coding standards, review process, etc.]
 
 ## Integration Points
+
 [External services, APIs, webhooks]
 
 ## Documentation Standards
+
 [Requirements and templates]
 
 ## Emergency Procedures
+
 [Incident response, rollback procedures]
 ```
 
@@ -679,38 +741,38 @@ Generate essential configuration files:
 
 ```yaml
 Creating project templates:
-- .env.example (with all required variables)
-- .gitignore (comprehensive, stack-specific)
-- docker-compose.yml (development environment)
-- docker-compose.prod.yml (production setup)
-- .github/workflows/ci.yml (complete CI pipeline)
-- .github/workflows/deploy.yml (deployment pipeline)
-- .github/PULL_REQUEST_TEMPLATE.md
-- .github/ISSUE_TEMPLATE/bug_report.md
-- .github/ISSUE_TEMPLATE/feature_request.md
-- .eslintrc.json / .phpcs.xml (linting)
-- .prettierrc (formatting)
-- .editorconfig (editor settings)
-- .husky/pre-commit (git hooks)
-- .husky/commit-msg (conventional commits)
-- sonar-project.properties (code quality)
-- jest.config.js / phpunit.xml (testing)
-- .vscode/settings.json (IDE config)
-- .vscode/extensions.json (recommended extensions)
-- CONTRIBUTING.md (contribution guide)
-- SECURITY.md (security policy)
-- CODE_OF_CONDUCT.md (community standards)
-- CHANGELOG.md (with keepachangelog format)
-- README.md (comprehensive template)
-- docs/ARCHITECTURE.md (C4 diagrams)
-- docs/API.md (endpoint documentation)
-- docs/DEPLOYMENT.md (deployment guide)
-- docs/DEVELOPMENT.md (local setup)
-- terraform/main.tf (if using IaC)
-- k8s/deployment.yaml (if using Kubernetes)
-- monitoring/alerts.yml (alert rules)
-- scripts/setup.sh (one-click setup)
-- scripts/backup.sh (backup automation)
+  - .env.example (with all required variables)
+  - .gitignore (comprehensive, stack-specific)
+  - docker-compose.yml (development environment)
+  - docker-compose.prod.yml (production setup)
+  - .github/workflows/ci.yml (complete CI pipeline)
+  - .github/workflows/deploy.yml (deployment pipeline)
+  - .github/PULL_REQUEST_TEMPLATE.md
+  - .github/ISSUE_TEMPLATE/bug_report.md
+  - .github/ISSUE_TEMPLATE/feature_request.md
+  - .eslintrc.json / .phpcs.xml (linting)
+  - .prettierrc (formatting)
+  - .editorconfig (editor settings)
+  - .husky/pre-commit (git hooks)
+  - .husky/commit-msg (conventional commits)
+  - sonar-project.properties (code quality)
+  - jest.config.js / phpunit.xml (testing)
+  - .vscode/settings.json (IDE config)
+  - .vscode/extensions.json (recommended extensions)
+  - CONTRIBUTING.md (contribution guide)
+  - SECURITY.md (security policy)
+  - CODE_OF_CONDUCT.md (community standards)
+  - CHANGELOG.md (with keepachangelog format)
+  - README.md (comprehensive template)
+  - docs/ARCHITECTURE.md (C4 diagrams)
+  - docs/API.md (endpoint documentation)
+  - docs/DEPLOYMENT.md (deployment guide)
+  - docs/DEVELOPMENT.md (local setup)
+  - terraform/main.tf (if using IaC)
+  - k8s/deployment.yaml (if using Kubernetes)
+  - monitoring/alerts.yml (alert rules)
+  - scripts/setup.sh (one-click setup)
+  - scripts/backup.sh (backup automation)
 ```
 
 ### Phase 6: Agent Installation
@@ -778,12 +840,14 @@ Validation:
 ☑ Alerts defined
 
 **QUICK STARTS:**
+
 - Run tests: npm test / composer test
 - Start dev: npm run dev / php artisan serve
 - Build: npm run build / composer build
 - Deploy: npm run deploy / ./deploy.sh
 
 **NEXT STEPS:**
+
 1. Review generated templates
 2. Customize configurations
 3. Set up environment variables
@@ -804,26 +868,26 @@ Based on domain and initial answers, I'll suggest:
 
 ```yaml
 Domain-Specific Defaults:
-- E-commerce → Payment integration, inventory, shipping
-- SaaS → Subscription, multi-tenant, billing
-- Healthcare → HIPAA, audit trails, encryption
-- Finance → PCI-DSS, transaction logs, compliance
-- Education → LMS features, progress tracking
-- Government → Accessibility, security, audit
+  - E-commerce → Payment integration, inventory, shipping
+  - SaaS → Subscription, multi-tenant, billing
+  - Healthcare → HIPAA, audit trails, encryption
+  - Finance → PCI-DSS, transaction logs, compliance
+  - Education → LMS features, progress tracking
+  - Government → Accessibility, security, audit
 
 Stack-Specific Setup:
-- Laravel → Sanctum, Horizon, Telescope, Nova
-- React → Redux/Zustand, Router, Testing Library
-- Node.js → Express/Fastify, PM2, clustering
-- Python → FastAPI/Django, Celery, pytest
+  - Laravel → Sanctum, Horizon, Telescope, Nova
+  - React → Redux/Zustand, Router, Testing Library
+  - Node.js → Express/Fastify, PM2, clustering
+  - Python → FastAPI/Django, Celery, pytest
 
 Common Integrations:
-- Stripe/PayPal for payments
-- SendGrid/SES for emails
-- S3/Cloudinary for files
-- Algolia/Elasticsearch for search
-- Redis for cache/queues
-- Sentry for error tracking
+  - Stripe/PayPal for payments
+  - SendGrid/SES for emails
+  - S3/Cloudinary for files
+  - Algolia/Elasticsearch for search
+  - Redis for cache/queues
+  - Sentry for error tracking
 ```
 
 ## Error Recovery & Troubleshooting
@@ -832,13 +896,13 @@ If setup fails at any point:
 
 ```yaml
 Error Handling:
-- Automatic rollback points
-- Clear error messages
-- Suggested fixes
-- Manual override options
-- Skip problematic steps
-- Partial setup recovery
-- Support contact info
+  - Automatic rollback points
+  - Clear error messages
+  - Suggested fixes
+  - Manual override options
+  - Skip problematic steps
+  - Partial setup recovery
+  - Support contact info
 ```
 
 ## Ready to Begin
@@ -847,4 +911,4 @@ This comprehensive setup will take 5-10 minutes but will save hours of configura
 
 **Start setup? [yes/no]**
 
-*Note: You can save progress and resume anytime by using `/setup --resume`*
+_Note: You can save progress and resume anytime by using `/setup --resume`_

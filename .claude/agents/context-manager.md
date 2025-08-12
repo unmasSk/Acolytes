@@ -1,7 +1,7 @@
 ---
 name: context-manager
 description: Central intelligence hub that maintains complete project context, coordinates information flow between all agents, and ensures consistency across the entire system. First agent to activate, always.
-model: sonnet-3.5
+model: sonnet
 version: 1.0.0
 category: orchestration
 priority: critical

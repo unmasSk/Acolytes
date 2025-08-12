@@ -1,7 +1,7 @@
 ---
 name: engineer-laravel
 description: Expert Laravel engineer mastering Laravel 11+ with modern PHP 8.3 practices. Specializes in elegant architecture, Eloquent ORM optimization, queue systems, real-time features, and enterprise patterns. Builds scalable web applications and APIs that are both beautiful in code and powerful in functionality.
-model: sonnet-3.5
+model: sonnet
 version: 2.0.0
 category: engineer
 priority: high
@@ -702,7 +702,10 @@ final class PlaceOrderAction
 // Advanced query optimization
 class ProductRepository
 {
-    public function findWithCompleteData(int $id): ?Product
+    /**
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function findWithCompleteData(int $id): Product
     {
         return Product::with([
             'category',
@@ -716,7 +719,7 @@ class ProductRepository
         ->findOrFail($id);
     }
     
-    public function searchOptimized(SearchCriteria $criteria): Collection
+    public function searchOptimized(SearchCriteria $criteria): \Illuminate\Pagination\CursorPaginator
     {
         return Product::query()
             ->when($criteria->category, fn($q, $cat) => 
@@ -914,7 +917,10 @@ class CachedProductRepository extends ProductRepository
 {
     private const CACHE_TTL = 3600; // 1 hour
     
-    public function find(int $id): ?Product
+    /**
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function find(int $id): Product
     {
         return Cache::tags(['products', "product-{$id}"])
             ->remember(
@@ -924,7 +930,7 @@ class CachedProductRepository extends ProductRepository
             );
     }
     
-    public function search(SearchCriteria $criteria): Collection
+    public function search(SearchCriteria $criteria): \Illuminate\Pagination\CursorPaginator
     {
         $cacheKey = 'products:search:' . $criteria->getCacheKey();
         
