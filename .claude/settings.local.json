@@ -22,7 +22,8 @@
       "Bash(npm:*)",
       "Bash(yarn --version)",
       "Bash(py:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
