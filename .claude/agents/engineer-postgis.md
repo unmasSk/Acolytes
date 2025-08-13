@@ -2,7 +2,7 @@
 name: postgis-specialist
 description: Expert specialist in postgis-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # postgis-specialist - [TODO: Complete agent definition]

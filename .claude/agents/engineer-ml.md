@@ -2,7 +2,7 @@
 name: ml-engineer
 description: Expert specialist in ml-engineer domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # ml-engineer - [TODO: Complete agent definition]

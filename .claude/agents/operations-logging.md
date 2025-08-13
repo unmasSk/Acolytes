@@ -2,7 +2,7 @@
 name: logging-architect
 description: Expert specialist in logging-architect domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # logging-architect - [TODO: Complete agent definition]

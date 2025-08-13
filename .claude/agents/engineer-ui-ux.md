@@ -2,7 +2,7 @@
 name: ui-ux-designer
 description: Expert specialist in ui-ux-designer domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # ui-ux-designer - [TODO: Complete agent definition]

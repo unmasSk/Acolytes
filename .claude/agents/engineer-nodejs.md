@@ -2,7 +2,7 @@
 name: nodejs-expert
 description: Expert specialist in nodejs-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # nodejs-expert - [TODO: Complete agent definition]

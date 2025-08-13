@@ -2,7 +2,7 @@
 name: test-automation-specialist
 description: Expert specialist in test-automation-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # test-automation-specialist - [TODO: Complete agent definition]

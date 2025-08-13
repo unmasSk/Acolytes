@@ -2,7 +2,7 @@
 name: cost-optimizer
 description: Expert specialist in cost-optimizer domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # cost-optimizer - [TODO: Complete agent definition]

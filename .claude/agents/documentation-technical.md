@@ -2,7 +2,7 @@
 name: docs-specialist
 description: Expert specialist in docs-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # docs-specialist - [TODO: Complete agent definition]

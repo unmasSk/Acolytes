@@ -2,7 +2,7 @@
 name: memory-keeper
 description: Expert specialist in memory-keeper domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # memory-keeper - [TODO: Complete agent definition]

@@ -9,7 +9,23 @@
   "hooks": {
     "SessionStart": [
       {
-        "command": "echo 'ClaudeSquad ecosystem initialized'"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'ClaudeSquad Memory System Active'"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": ".*-agent$|engineer-.*|coordinator-.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Agent completed'"
+          }
+        ]
       }
     ]
   },

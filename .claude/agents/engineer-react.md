@@ -2,7 +2,7 @@
 name: react-pro
 description: Expert specialist in react-pro domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # react-pro - [TODO: Complete agent definition]

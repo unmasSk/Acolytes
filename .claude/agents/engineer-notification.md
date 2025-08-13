@@ -2,7 +2,7 @@
 name: notification-expert
 description: Expert specialist in notification-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # notification-expert - [TODO: Complete agent definition]

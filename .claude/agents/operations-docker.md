@@ -2,7 +2,7 @@
 name: docker-specialist
 description: Expert specialist in docker-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # docker-specialist - [TODO: Complete agent definition]

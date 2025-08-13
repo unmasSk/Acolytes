@@ -2,7 +2,7 @@
 name: incident-responder
 description: Expert specialist in incident-responder domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # incident-responder - [TODO: Complete agent definition]

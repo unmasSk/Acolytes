@@ -2,7 +2,7 @@
 name: weaviate-specialist
 description: Expert specialist in weaviate-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # weaviate-specialist - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: search-specialist
 description: Expert specialist in search-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # search-specialist - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: quality-engineer
 description: Analyzes code quality, testing, security, performance, and documentation coverage
 model: sonnet
-tools: Read, Grep, Glob, Bash
+
 ---
 
 # quality-engineer - Project Analysis Specialist

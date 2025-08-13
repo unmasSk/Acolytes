@@ -2,7 +2,7 @@
 name: gdpr-compliance-expert
 description: Expert specialist in gdpr-compliance-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # gdpr-compliance-expert - [TODO: Complete agent definition]

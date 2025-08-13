@@ -1,10 +1,142 @@
----
-description: Comprehensive project setup with environment verification, security, CI/CD, and complete configuration
+# 🚀 COMANDO /setup - DOCUMENTACIÓN OFICIAL
+
+## ⚡ FLOW OBLIGATORIO DEL COMANDO
+
+### 1️⃣ **FASE 1: ANÁLISIS PARALELO** (NO SECUENCIAL)
+```yaml
+INVOCACIÓN:
+  modo: PARALELO
+  agentes:
+    - setup-context
+    - setup-codebase  
+    - setup-infrastructure
+    - setup-environment
+  ejecución: TODOS AL MISMO TIEMPO
+```
+
+### 2️⃣ **FASE 2: CREACIÓN DE CLAUDE.MD**
+```yaml
+CLAUDE:
+  - Recibe información de los 4 agentes
+  - Fabrica CLAUDE.md con toda la info
+  - Estima qué agentes necesita crear
+  - Prepara lista de agentes para agent-creator
+```
+
+### 3️⃣ **FASE 3: CREACIÓN DE AGENTES**
+```yaml
+INVOCACIÓN:
+  agente: agent-creator
+  modo: PARALELO (si cada agente es contexto nuevo)
+  tareas:
+    - Crear cada agente en .claude/agents/
+    - Crear memoria inicial en .claude/memory/agents/[agent_name]/
+    - Cada invocación independiente si es contexto nuevo
+```
+
+### 4️⃣ **FASE 4: FINALIZACIÓN**
+```yaml
+CLAUDE:
+  - Confirma todo creado
+  - Presenta resumen al usuario
+  - Lista agentes disponibles
+  - Estado del sistema
+```
+
+## 📁 **ESTRUCTURA CREADA POR /setup**
+
+```
+[PROJECT_ROOT]/
+├── .claude/                      # EN EL PROYECTO ANALIZADO
+│   ├── CLAUDE.md                 # Instrucciones del proyecto
+│   ├── agents/                   # Agentes dinámicos
+│   │   ├── calculator-agent.md
+│   │   ├── emissions-agent.md
+│   │   └── ...
+│   ├── memory/                   # Memoria persistente
+│   │   └── agents/
+│   │       ├── calculator_agent/
+│   │       │   └── knowledge.json
+│   │       └── emissions_agent/
+│   │           └── knowledge.json
+│   ├── hooks.json               # Hooks para memoria
+│   └── commands/                 # Comandos custom del proyecto
+```
+
+## ❓ **DECISIÓN DE ARQUITECTURA**
+
+### **OPCIÓN A: Una invocación de agent-creator**
+```python
+# agent-creator recibe TODOS los agentes
+invocación = [
+  "crear calculator-agent",
+  "crear emissions-agent", 
+  "crear ui-agent"
+]
+# Problema: Mucho contexto en una sola ventana
+```
+
+### **OPCIÓN B: Invocaciones paralelas** ✅ RECOMENDADO
+```python
+# Cada agente en su propia ventana de contexto
+parallel_invoke([
+  "agent-creator: crear calculator-agent",
+  "agent-creator: crear emissions-agent",
+  "agent-creator: crear ui-agent"
+])
+# Ventaja: Contexto limpio por agente
+```
+
+## 🔧 **UBICACIÓN DE HOOKS Y COMANDOS**
+
+### **RESPUESTA DEFINITIVA:**
+
+```yaml
+HOOKS:
+  ubicación: .claude/hooks.json
+  razón: "Específicos del proyecto, no globales"
+  
+COMANDOS:
+  ubicación: .claude/commands/
+  razón: "Personalizados por proyecto"
+  
+GLOBAL_VS_LOCAL:
+  - .claude/: "En el proyecto analizado"
+  - NO en ClaudeSquad: "Es plantilla, no destino"
+```
+
+## ⚠️ **REGLAS INMUTABLES**
+
+1. **NUNCA** hacer análisis sin crear
+2. **SIEMPRE** invocar los 4 setup en PARALELO
+3. **SIEMPRE** crear TODOS los archivos
+4. **NUNCA** preguntar si crear o no
+5. **SIEMPRE** agent-creator en paralelo si es posible
+
+## 🎯 **EJEMPLO DE EJECUCIÓN CORRECTA**
+
+```bash
+Usuario: /setup C:\proyecto\ejemplo
+
+Claude:
+1. [PARALELO] Invoca 4 agentes setup → recibe 4 análisis
+2. Crea CLAUDE.md con toda la info
+3. Detecta necesita 3 agentes
+4. [PARALELO] Invoca agent-creator 3 veces
+5. Confirma: "✅ Setup completo: 3 agentes creados"
+```
+
+## ❌ **ERRORES COMUNES**
+
+- ❌ Invocar setup agents secuencialmente
+- ❌ Solo hacer análisis sin crear nada
+- ❌ Preguntar al usuario qué crear
+- ❌ No crear memoria de agentes
+- ❌ Crear en ClaudeSquad en vez del proyecto target
+
 ---
 
-# Advanced Project Setup & Complete Configuration
-
-I will perform a comprehensive analysis and setup of your development environment, covering everything from basic stack to security, deployment, and monitoring.
+**ESTE ES EL FLOW OFICIAL. NO HAY INTERPRETACIONES.**
 
 ## Phase 0: Environment Verification
 
@@ -29,11 +161,19 @@ Missing tools detected:
   - Alternative solutions suggested
 ```
 
-## Detection Phase
+## Detection Phase - PARALLEL PROJECT ANALYSIS
 
-Analyzing project type (new vs existing)...
+I'll analyze your project using 4 specialized agents running in PARALLEL for maximum speed and depth.
 
-_[Checking for package.json, composer.json, requirements.txt, Gemfile, go.mod, .env, docker-compose.yml, and CI/CD configs]_
+```bash
+# Invoking all 4 analyzers simultaneously:
+@setup-context    → Understanding what your project IS and WHY it exists
+@setup-environment → Checking what tools and capabilities are available  
+@setup-codebase   → Analyzing code structure, quality, and modules
+@setup-infrastructure → Discovering deployment, databases, and services
+```
+
+_This parallel analysis takes ~30-60 seconds and provides complete project intelligence._
 
 ---
 
@@ -271,10 +411,11 @@ Your Experience Profile:
 Delegating to specialized analysts and additional inspectors:
 
 ```yaml
-Core Analysts:
-  - discovery-engineer → Structure, stack, dependencies
-  - quality-engineer → Tests, security, documentation
-  - architecture-engineer → Patterns, organization, debt
+Core Analysts (run in PARALLEL):
+  - setup-context → Project purpose, phase, decisions, roadmap
+  - setup-environment → OS, tools, versions, capabilities
+  - setup-codebase → Code structure, modules, quality, patterns
+  - setup-infrastructure → Docker, databases, CI/CD, services
 
 Additional Inspections:
   - Security audit (OWASP compliance check)
@@ -310,9 +451,20 @@ Testing Clarification:
   - "E2E tests configured but broken"
 ```
 
-### Phase 3: Module Detection & Dynamic Agent Generation
+### Phase 2: Intelligent Result Processing
 
-I'll detect your project modules and have our specialist create perfect agents for each one.
+After receiving analysis from all 4 agents, I'll:
+
+```yaml
+1. COMBINE insights to understand your project completely
+2. IDENTIFY modules that need specialized agents
+3. DETERMINE which agents would be most valuable
+4. PLAN the optimal agent creation strategy
+```
+
+### Phase 3: Dynamic Agent Generation
+
+Based on the analysis, I'll create specialized agents for your project:
 
 ```bash
 # Step 1: Detect modules in the project
@@ -326,19 +478,29 @@ find . -type d -name "node_modules" -prune -o \
        | sort -rn | head -20
 ```
 
-For each significant module found, I'll invoke our Agent Creator specialist:
+For each significant module identified by setup-codebase, I'll invoke our Agent Creator:
 
 ```markdown
-@agent-creator, create dynamic agents for these modules:
+@agent-creator, create a dynamic agent for module: [module_name]
 
-PROJECT CONTEXT:
+CONTEXT FROM ANALYZERS:
+- Project Type: [from setup-context]
+- Environment: [from setup-environment]  
+- Module Details: [from setup-codebase]
+- Infrastructure: [from setup-infrastructure]
 
-- Framework: [detected from package.json/composer.json]
-- Architecture: [detected patterns]
-- Conventions: [detected from existing code]
-- Testing: [detected framework and coverage]
+MODULE SPECIFICS:
+- Path: /path/to/module
+- Files: X files
+- Language: [detected]
+- Purpose: [identified]
+- Complexity: [measured]
 
-MODULES NEEDING AGENTS:
+CREATE an expert agent that:
+1. Knows EVERYTHING about this module
+2. Creates its own memory folder
+3. Indexes all module files
+4. Understands patterns and conventions
 
 from datetime import datetime
 from pathlib import Path

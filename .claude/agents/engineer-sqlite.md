@@ -2,7 +2,7 @@
 name: sqlite-expert
 description: Expert specialist in sqlite-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # sqlite-expert - [TODO: Complete agent definition]

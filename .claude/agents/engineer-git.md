@@ -2,7 +2,7 @@
 name: git-expert
 description: Expert specialist in git-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # git-expert - [TODO: Complete agent definition]

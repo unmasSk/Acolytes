@@ -2,7 +2,7 @@
 name: devops-troubleshooter
 description: Expert specialist in devops-troubleshooter domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # devops-troubleshooter - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: apm-specialist
 description: Expert specialist in apm-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # apm-specialist - [TODO: Complete agent definition]

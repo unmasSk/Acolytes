@@ -2,7 +2,7 @@
 name: business-analyst
 description: Expert specialist in business-analyst domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # business-analyst - [TODO: Complete agent definition]

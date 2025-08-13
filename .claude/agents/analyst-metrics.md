@@ -2,7 +2,7 @@
 name: metrics-analyst
 description: Expert specialist in metrics-analyst domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # metrics-analyst - [TODO: Complete agent definition]

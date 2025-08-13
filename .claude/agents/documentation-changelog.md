@@ -2,7 +2,7 @@
 name: changelog-specialist
 description: Expert specialist in changelog-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # changelog-specialist - [TODO: Complete agent definition]

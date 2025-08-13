@@ -5,7 +5,7 @@ model: opus
 version: 2.0.0
 category: coordinator
 priority: critical
-tools:
+
   - Read
   - Write
   - Edit

@@ -2,7 +2,7 @@
 name: analyst-data-scientist
 description: Expert specialist in data-scientist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # data-scientist - [TODO: Complete agent definition]

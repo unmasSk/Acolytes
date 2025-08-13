@@ -2,7 +2,7 @@
 name: system-architect
 description: Expert specialist in system-architect domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # system-architect - [TODO: Complete agent definition]

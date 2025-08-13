@@ -2,7 +2,7 @@
 name: discovery-engineer
 description: Analyzes project structure, stack, dependencies, and configuration for comprehensive discovery
 model: sonnet
-tools: Read, Grep, Glob, Bash
+
 ---
 
 # discovery-engineer - Project Analysis Specialist

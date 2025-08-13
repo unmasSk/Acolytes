@@ -2,7 +2,7 @@
 name: requirements-analyst
 description: Expert specialist in requirements-analyst domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # requirements-analyst - [TODO: Complete agent definition]

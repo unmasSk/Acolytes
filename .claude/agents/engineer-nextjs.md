@@ -2,7 +2,7 @@
 name: nextjs-specialist
 description: Expert specialist in nextjs-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # nextjs-specialist - [TODO: Complete agent definition]

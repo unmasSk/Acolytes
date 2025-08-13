@@ -2,7 +2,7 @@
 name: vue-specialist
 description: Expert specialist in vue-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # vue-specialist - [TODO: Complete agent definition]

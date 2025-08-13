@@ -2,7 +2,7 @@
 name: tech-stack-selector
 description: Expert specialist in tech-stack-selector domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # tech-stack-selector - [TODO: Complete agent definition]

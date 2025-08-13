@@ -2,7 +2,7 @@
 name: project-architect
 description: Expert specialist in project-architect domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # project-architect - [TODO: Complete agent definition]

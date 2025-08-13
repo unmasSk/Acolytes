@@ -2,7 +2,7 @@
 name: engineer-database
 description: Expert database engineer with deep technical memory for schema, performance, and reliability
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # engineer-database - [TODO: Complete agent definition]

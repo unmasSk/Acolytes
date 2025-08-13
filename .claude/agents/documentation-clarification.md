@@ -2,7 +2,7 @@
 name: clarification-assistant
 description: Expert specialist in clarification-assistant domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # clarification-assistant - [TODO: Complete agent definition]

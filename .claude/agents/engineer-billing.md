@@ -2,7 +2,7 @@
 name: billing-specialist
 description: Expert specialist in billing-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # billing-specialist - [TODO: Complete agent definition]

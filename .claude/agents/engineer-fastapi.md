@@ -2,7 +2,7 @@
 name: fastapi-expert
 description: Expert specialist in fastapi-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # fastapi-expert - [TODO: Complete agent definition]

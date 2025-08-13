@@ -5,7 +5,7 @@ model: sonnet
 version: 1.0.0
 category: orchestration
 priority: critical
-tools:
+
   - Read
   - Write
   - Edit

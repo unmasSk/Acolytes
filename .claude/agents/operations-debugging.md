@@ -2,7 +2,7 @@
 name: error-detective
 description: Expert specialist in error-detective domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # error-detective - [TODO: Complete agent definition]

@@ -4,12 +4,32 @@
 
 **IMPORTANTE**: Los agentes NO mantienen contexto entre invocaciones. Cada vez que invocas un agente, es una ventana de contexto NUEVA. Por eso tenemos un sistema de memoria persistente.
 
-### 🧠 Cómo Funciona la Memoria
+### 🧠 PROTOCOLO OBLIGATORIO DE MEMORIA
 
-1. **SubagentStart**: Al invocar cualquier agente, automáticamente carga su memoria previa
-2. **Durante ejecución**: El agente tiene acceso a todo su conocimiento histórico
-3. **SubagentStop**: Al terminar, guarda automáticamente nuevos aprendizajes
-4. **Próxima invocación**: El agente "recuerda" todo lo anterior
+**TÚ (Claude) DEBES hacer esto ANTES de invocar cualquier agente:**
+
+1. **CARGAR MEMORIA**: Ejecuta `bash: python ~/.claude/scripts/memory_manager.py load [agent-name]`
+2. **CAPTURAR OUTPUT**: El comando devuelve la memoria del agente
+3. **INCLUIR EN PROMPT**: Pon esa memoria AL INICIO del prompt del agente
+4. **SubagentStop**: Al terminar, el hook guarda automáticamente nuevos aprendizajes
+
+### ✅ EJEMPLO CORRECTO de invocación:
+```
+# PASO 1: Cargar memoria (TÚ DEBES HACER ESTO)
+Bash: python ~/.claude/scripts/memory_manager.py load dream-agent
+
+# PASO 2: Invocar agente CON la memoria incluida
+@dream-agent
+[MEMORIA DEL PASO 1 AQUÍ]
+
+[TAREA ACTUAL]
+```
+
+### ❌ SI NO CARGAS LA MEMORIA:
+- El agente NO recordará nada previo
+- Perderá todo su contexto histórico  
+- Repetirá errores ya solucionados
+- No mantendrá consistencia
 
 ## 📋 Protocolo de Invocación de Agentes Dinámicos
 

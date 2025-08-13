@@ -2,7 +2,7 @@
 name: project-planner
 description: Expert specialist in project-planner domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # project-planner - [TODO: Complete agent definition]

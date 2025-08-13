@@ -2,7 +2,7 @@
 name: architecture-engineer
 description: Analyzes design patterns, code organization, integrations, and technical debt
 model: sonnet
-tools: Read, Grep, Glob, Bash
+
 ---
 
 # architecture-engineer - Project Analysis Specialist

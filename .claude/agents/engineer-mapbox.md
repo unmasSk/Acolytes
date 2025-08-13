@@ -2,7 +2,7 @@
 name: mapbox-expert
 description: Expert specialist in mapbox-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # mapbox-expert - [TODO: Complete agent definition]

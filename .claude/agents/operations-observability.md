@@ -2,7 +2,7 @@
 name: observability-engineer
 description: Expert specialist in observability-engineer domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # observability-engineer - [TODO: Complete agent definition]

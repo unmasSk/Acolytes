@@ -2,7 +2,7 @@
 name: risk-analyst
 description: Expert specialist in risk-analyst domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # risk-analyst - [TODO: Complete agent definition]

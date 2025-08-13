@@ -2,7 +2,7 @@
 name: cloud-architect
 description: Expert specialist in cloud-architect domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # cloud-architect - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: angular-expert
 description: Expert specialist in angular-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # angular-expert - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: postgres-expert
 description: Expert specialist in postgres-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # postgres-expert - [TODO: Complete agent definition]

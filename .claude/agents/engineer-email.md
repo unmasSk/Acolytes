@@ -2,7 +2,7 @@
 name: email-specialist
 description: Expert specialist in email-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # email-specialist - [TODO: Complete agent definition]

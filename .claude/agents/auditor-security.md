@@ -2,7 +2,7 @@
 name: security-auditor
 description: Expert specialist in security-auditor domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # security-auditor - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: compliance-auditor
 description: Expert specialist in compliance-auditor domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # compliance-auditor - [TODO: Complete agent definition]

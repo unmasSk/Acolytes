@@ -2,7 +2,7 @@
 name: ai-integration-specialist
 description: Expert specialist in ai-integration-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # ai-integration-specialist - [TODO: Complete agent definition]

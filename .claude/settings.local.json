@@ -13,7 +13,16 @@
       "Bash(git add:*)",
       "WebSearch",
       "Bash(claude agent list)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(dir \"C:\\Users\\bextia\\Desktop\\acolyte\\ClaudeSquad\\.claude\" /s /b)",
+      "Bash(dir \"C:\\Users\\bextia\\Desktop\\acolyte\\ClaudeSquad\\.claude\\memory\\agents\")",
+      "Bash(dir:*)",
+      "Bash(node:*)",
+      "Bash(npm:*)",
+      "Bash(yarn --version)",
+      "Bash(py:*)",
+      "Bash(cp:*)"
     ],
     "deny": [],
     "ask": []

@@ -2,7 +2,7 @@
 name: accessibility-auditor
 description: Expert specialist in accessibility-auditor domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # accessibility-auditor - [TODO: Complete agent definition]

@@ -2,7 +2,7 @@
 name: graphql-specialist
 description: Expert specialist in graphql-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # graphql-specialist - [TODO: Complete agent definition]

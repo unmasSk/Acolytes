@@ -2,7 +2,7 @@
 name: licensing-specialist
 description: Expert specialist in licensing-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # licensing-specialist - [TODO: Complete agent definition]

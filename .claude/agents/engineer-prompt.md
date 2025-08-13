@@ -2,7 +2,7 @@
 name: prompt-optimizer
 description: Expert specialist in prompt-optimizer domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # prompt-optimizer - [TODO: Complete agent definition]

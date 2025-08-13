@@ -2,7 +2,7 @@
 name: redis-specialist
 description: Expert specialist in redis-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # redis-specialist - [TODO: Complete agent definition]

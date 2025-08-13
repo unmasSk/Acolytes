@@ -2,7 +2,7 @@
 name: user-researcher
 description: Expert specialist in user-researcher domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # user-researcher - [TODO: Complete agent definition]

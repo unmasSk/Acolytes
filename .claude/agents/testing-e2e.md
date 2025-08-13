@@ -2,7 +2,7 @@
 name: e2e-specialist
 description: Expert specialist in e2e-specialist domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # e2e-specialist - [TODO: Complete agent definition]

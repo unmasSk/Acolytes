@@ -2,7 +2,7 @@
 name: performance-tester
 description: Expert specialist in performance-tester domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # performance-tester - [TODO: Complete agent definition]

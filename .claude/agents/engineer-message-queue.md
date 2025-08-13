@@ -2,7 +2,7 @@
 name: message-queue-expert
 description: Expert specialist in message-queue-expert domain with deep technical memory
 model: sonnet
-tools: Read, Write, Edit, MultiEdit, Bash, Grep, Glob
+
 ---
 
 # message-queue-expert - [TODO: Complete agent definition]
