@@ -98,9 +98,14 @@ I create a dynamic agent with:
 ```markdown
 ---
 name: [module]-agent
+description: Expert specialist in [module] domain with deep technical memory
 module_path: [path]
 created_by: agent-creator
 analysis_size: [X] characters
+created_date: [ISO date]
+activation: manual
+priority: high
+# NO tools: field - inherits ALL tools from ClaudeSquad system
 ---
 
 # [Module] Agent - Complete Module Expert
@@ -136,12 +141,50 @@ analysis_size: [X] characters
 
 ## How I Help
 
-When invoked, I already know:
+**FIRST ACTION: Auto-Load Memory**
+When invoked, I automatically load my complete memory via Read tool:
+```bash
+# My system prompt includes:
+# Read .claude/memory/agents/[my-name]/knowledge.json
+# Read .claude/memory/agents/[my-name]/patterns.json
+# Read .claude/memory/agents/[my-name]/index.json
+# Then I include all context in every response
+```
+
+Then I help with complete knowledge of:
 - Where everything is
-- How everything works
+- How everything works  
 - What patterns to follow
 - What to avoid
 - How to maintain consistency
+
+## Cross-Domain Flag Detection
+
+**CRITICAL**: When I detect something that affects OTHER modules:
+
+1. **Identify Impact**: Database issues, security concerns, API changes, etc.
+2. **Create Flag**: Write to `.claude/memory/flags/pending.json`:
+   ```json
+   {
+     "type": "DATABASE_INVESTIGATION|SECURITY_REVIEW|API_CHANGE|PERFORMANCE_ISSUE",
+     "module_affected": "target-module-name",
+     "found_by": "[module]-agent", 
+     "description": "Detailed description of issue",
+     "severity": "critical|high|medium|low",
+     "timestamp": "ISO-date",
+     "context": "Specific context for target agent"
+   }
+   ```
+3. **Notify Claude**: Include in my response: "🚩 FLAG CREATED: [type] for [module]"
+
+## Self-Documentation Protocol
+
+Every task completion triggers:
+1. **Update memory files** with new knowledge
+2. **Add to history.json** with timestamp  
+3. **Document ALL changes** - even minor consultations
+4. **Update agent file** if major capability added
+5. **Create flags** if other modules affected
 ```
 
 The agent is created with 10,000+ lines if necessary - context size doesn't matter, COMPLETE knowledge matters.
@@ -274,18 +317,25 @@ When I create `dream-agent`, I generate:
     "Data transformation pipeline",
     "Redis caching integration"
   ],
-  "business_context": "Critical module for user dream tracking feature"
+  "business_context": "Critical module for user dream tracking feature",
+  "last_updated": "2024-12-09T10:30:00Z",
+  "total_files": 23,
+  "lines_of_code": 5847,
+  "test_coverage": "89%"
 }
 
 // .claude/memory/agents/dream-agent/patterns.json
 {
   "design_patterns": ["Repository", "Service Layer", "Factory"],
+  "architectural_patterns": ["Clean Architecture", "CQRS"],
   "conventions": {
     "naming": "PascalCase for classes, camelCase for methods",
     "file_size": "max 300 lines",
-    "method_size": "max 30 lines"
+    "method_size": "max 30 lines",
+    "test_pattern": "Feature tests for controllers, Unit tests for services"
   },
-  "anti_patterns_found": ["God object in DreamService needs refactoring"]
+  "anti_patterns_found": ["God object in DreamService needs refactoring"],
+  "security_patterns": ["Input validation", "SQL injection protection"]
 }
 
 // .claude/memory/agents/dream-agent/index.json
@@ -294,14 +344,72 @@ When I create `dream-agent`, I generate:
     "controllers/DreamController.php": {
       "purpose": "REST API endpoints",
       "functions": ["index", "create", "process", "delete"],
-      "lines": 287
+      "lines": 287,
+      "dependencies": ["DreamService", "DreamRepository"],
+      "last_modified": "2024-12-08"
     },
     "services/DreamService.php": {
       "purpose": "Business logic",
       "functions": ["processData", "validateInput", "transform"],
-      "lines": 456
+      "lines": 456,
+      "dependencies": ["CacheService", "QueueService"],
+      "complexity": "high"
     }
+  },
+  "total_files": 23,
+  "file_types": {
+    "controllers": 3,
+    "services": 5,
+    "models": 4,
+    "tests": 11
   }
+}
+
+// .claude/memory/agents/dream-agent/dependencies.json
+{
+  "internal_dependencies": [
+    "AuthModule::validate()",
+    "PaymentModule::charge()",
+    "NotificationModule::send()"
+  ],
+  "external_dependencies": [
+    "laravel/framework ^11.0",
+    "predis/predis ^2.0",
+    "aws/aws-sdk-php ^3.0"
+  ],
+  "services": ["Redis", "PostgreSQL", "S3"],
+  "database_tables": ["dreams", "dream_metadata", "dream_logs"]
+}
+
+// .claude/memory/agents/dream-agent/context.json
+{
+  "business_importance": "High - core feature for user engagement",
+  "technical_debt": [
+    "DreamService.php is getting too large (456 lines)",
+    "Missing error handling in webhook processing",
+    "Need to add rate limiting to API endpoints"
+  ],
+  "todos": [
+    "Add caching to expensive queries",
+    "Implement async processing for large datasets",
+    "Add comprehensive logging"
+  ],
+  "known_issues": [
+    "Performance degradation with >1000 dreams per user",
+    "Memory leak in data transformation pipeline"
+  ]
+}
+
+// .claude/memory/agents/dream-agent/history.json
+{
+  "created": "2024-12-09T10:15:00Z",
+  "created_by": "agent-creator",
+  "analysis_duration": "45 seconds",
+  "files_analyzed": 23,
+  "analysis_depth": "complete",
+  "memory_size": "156KB",
+  "last_self_check": "2024-12-09T10:30:00Z",
+  "upgrades": []
 }
 ```
 

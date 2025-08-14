@@ -600,7 +600,13 @@ def loadDatabaseMemory():
         'migrations': load('.claude/memory/database/migrations/'),
         'performance': load('.claude/memory/database/performance/'),
         'security': load('.claude/memory/database/security/'),
-        'operations': load('.claude/memory/database/operations/')
+        'operations': load('.claude/memory/database/operations/'),
+        
+        # Dynamic agent memories
+        'agent_memories': load_all('.claude/memory/agents/*/'),
+        
+        # Cross-domain flags
+        'pending_flags': load('.claude/memory/flags/pending.json')
     }
     return memory
 ```

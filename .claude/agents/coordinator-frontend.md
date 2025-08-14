@@ -566,7 +566,13 @@ def loadUIMemory():
         'design_system': load('.claude/memory/design/'),
         'performance': load('.claude/memory/performance/'),
         'user_analytics': load('.claude/memory/analytics/'),
-        'ab_tests': load('.claude/memory/experiments/')
+        'ab_tests': load('.claude/memory/experiments/'),
+        
+        # Dynamic agent memories
+        'agent_memories': load_all('.claude/memory/agents/*/'),
+        
+        # Cross-domain flags
+        'pending_flags': load('.claude/memory/flags/pending.json')
     }
     return memory
 ```

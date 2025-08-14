@@ -1,0 +1,8 @@
+# Claude Code local settings (personal configurations)
+.claude/settings.local.json
+
+# Session files (temporary conversation logs)
+SESSIONS/
+
+# Development and research notes (not for public repo)
+MEJORAS-INVESTIGACION/

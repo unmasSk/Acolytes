@@ -15,7 +15,6 @@ priority: high
   - Glob
   - context7      # Real-time Laravel documentation
   - magic         # Component generation
-  - memory        # Persistent knowledge
   - pint         # Laravel code formatter
   - phpstan      # Static analysis tool
   - psalm        # Type checker

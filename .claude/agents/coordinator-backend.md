@@ -591,8 +591,12 @@ def loadProjectMemory():
         # Previous refactorings
         'refactorings': load('.claude/memory/refactorings/history.json'),
         
-        # Technical debt registry
-        'tech_debt': load('.claude/memory/debt/registry.json')
+        
+        # Dynamic agent memories
+        'agent_memories': load_all('.claude/memory/agents/*/'),
+        
+        # Cross-domain flags
+        'pending_flags': load('.claude/memory/flags/pending.json')
     }
     
     return memory

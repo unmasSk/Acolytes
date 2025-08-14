@@ -305,12 +305,33 @@ Edit .claude/memory/agents/{{module_name}}-agent/dependencies.json
 
 I use Read + Edit tools to update MY OWN memory JSON files.
 
+### Cross-Domain Flag Detection
+
+**CRITICAL**: When I detect something that affects OTHER modules:
+
+1. **Identify Impact**: Database issues, security concerns, API changes, etc.
+2. **Create Flag**: Write to `.claude/memory/flags/pending.json`:
+   ```json
+   {
+     "type": "DATABASE_INVESTIGATION|SECURITY_REVIEW|API_CHANGE|PERFORMANCE_ISSUE",
+     "module_affected": "target-module-name",
+     "found_by": "{{module_name}}-agent", 
+     "description": "Detailed description of issue",
+     "severity": "critical|high|medium|low",
+     "timestamp": "ISO-date",
+     "context": "Specific context for target agent"
+   }
+   ```
+3. **Notify Claude**: Include in my response: "🚩 FLAG CREATED: [type] for [module]"
+
 ### Self-Documentation Protocol
 
-Every significant change triggers:
-1. Update relevant memory JSON files
-2. Add entry to history.json with timestamp
-3. Update my own agent file if major capability added
+Every task completion triggers:
+1. **Update memory files** with new knowledge
+2. **Add to history.json** with timestamp  
+3. **Document ALL changes** - even minor consultations
+4. **Update agent file** if major capability added
+5. **Create flags** if other modules affected
 
 
 ### Performance Profile

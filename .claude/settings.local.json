@@ -23,7 +23,10 @@
       "Bash(yarn --version)",
       "Bash(py:*)",
       "Bash(cp:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:www.siddharthbharath.com)"
     ],
     "deny": [],
     "ask": []
