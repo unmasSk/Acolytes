@@ -1,0 +1,134 @@
+[
+  {
+    "id": "flag_1755267890_database",
+    "type": "DATABASE_INVESTIGATION",
+    "module_affected": "database",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact database domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:24:50.700750",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "6e410c9bd9bb"
+    },
+    "status": "pending"
+  },
+  {
+    "id": "flag_1755267890_security",
+    "type": "SECURITY_REVIEW",
+    "module_affected": "security",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact security domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:24:50.701267",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "6e410c9bd9bb"
+    },
+    "status": "pending"
+  },
+  {
+    "id": "flag_1755267890_api",
+    "type": "API_CHANGE",
+    "module_affected": "api",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact api domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:24:50.709285",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "6e410c9bd9bb"
+    },
+    "status": "pending"
+  },
+  {
+    "id": "flag_1755267923_database",
+    "type": "DATABASE_INVESTIGATION",
+    "module_affected": "database",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact database domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:25:23.242680",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "f899c070f8ab"
+    },
+    "status": "pending"
+  },
+  {
+    "id": "flag_1755267923_security",
+    "type": "SECURITY_REVIEW",
+    "module_affected": "security",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact security domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:25:23.243345",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "f899c070f8ab"
+    },
+    "status": "pending"
+  },
+  {
+    "id": "flag_1755267923_api",
+    "type": "API_CHANGE",
+    "module_affected": "api",
+    "found_by": "audit-agent-review",
+    "description": "File change in .claude/agents/specialist-git.md may impact api domain",
+    "severity": "high",
+    "timestamp": "2025-08-15T16:25:23.252823",
+    "context": {
+      "file_path": ".claude/agents/specialist-git.md",
+      "complexity_indicators": [
+        "database_changes",
+        "security_concerns",
+        "api_changes",
+        "configuration",
+        "testing",
+        "documentation"
+      ],
+      "audit_id": "f899c070f8ab"
+    },
+    "status": "pending"
+  }
+]
