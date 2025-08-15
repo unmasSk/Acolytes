@@ -30,7 +30,8 @@ Claude (Main Conversation) = DIRECT ORCHESTRATOR
         └── [created based on your project modules]
 ```
 
-**Key Innovation:** 
+**Key Innovation:**
+
 - **Direct delegation** - No coordinators, Claude delegates directly
 - **Dynamic module agents** - Created by agent-creator for your specific project
 - **Cross-domain FLAGS** - Agents communicate via pending.json for coordination
@@ -51,9 +52,10 @@ claude /setup
 ### 📊 Comprehensive Project Analysis
 
 Four specialized agents analyze your project:
+
 - `setup-context` - Project purpose, architecture, decisions
 - `setup-codebase` - Code structure, modules, patterns, quality
-- `setup-infrastructure` - Deployment, databases, CI/CD, external services  
+- `setup-infrastructure` - Deployment, databases, CI/CD, external services
 - `setup-environment` - Tools, versions, system capabilities
 
 ### 🧠 Dual Memory Systems
@@ -61,6 +63,7 @@ Four specialized agents analyze your project:
 ClaudeSquad uses **TWO different memory systems** for different purposes:
 
 #### 1. **JSON Memory System** (Project-Local)
+
 Located in `.claude/memory/` within each project. Used by dynamic agents for module-specific knowledge:
 
 ```
@@ -80,6 +83,7 @@ Located in `.claude/memory/` within each project. Used by dynamic agents for mod
 ```
 
 **Characteristics:**
+
 - ✅ Git-versioned with your project
 - ✅ Full control over structure
 - ✅ Project-specific data
@@ -87,21 +91,26 @@ Located in `.claude/memory/` within each project. Used by dynamic agents for mod
 - ❌ Not shared between projects
 
 #### 2. **MCP Memory Server** (Global Knowledge Graph)
+
 A persistent knowledge graph that maintains context across ALL Claude sessions and projects:
 
 ```javascript
 // Example: Creating project context
-mcp__server-memory__create_entities([{
-  name: "MYPROJECT-INIT-CONTEXT",
-  entityType: "ProjectContext",
-  observations: ["Project setup complete", "Using React + FastAPI"]
-}])
+mcp__server -
+  memory__create_entities([
+    {
+      name: "MYPROJECT-INIT-CONTEXT",
+      entityType: "ProjectContext",
+      observations: ["Project setup complete", "Using React + FastAPI"],
+    },
+  ]);
 
 // Example: Searching for context
-mcp__server-memory__search_nodes("MYPROJECT-INIT-CONTEXT")
+mcp__server - memory__search_nodes("MYPROJECT-INIT-CONTEXT");
 ```
 
 **Characteristics:**
+
 - ✅ Persists between ALL Claude sessions
 - ✅ Searchable knowledge graph
 - ✅ Project separation (PROJECTNAME-INIT-CONTEXT pattern)
@@ -110,6 +119,7 @@ mcp__server-memory__search_nodes("MYPROJECT-INIT-CONTEXT")
 - ❌ Requires MCP server installation
 
 **How they work together:**
+
 1. **MCP Memory Server** maintains high-level project context and session continuity
 2. **JSON Memory** stores detailed module knowledge for dynamic agents
 3. **FLAGS system** uses JSON for active coordination
@@ -122,13 +132,14 @@ mcp__server-memory__search_nodes("MYPROJECT-INIT-CONTEXT")
 ```yaml
 Flow:
   1. api-agent discovers database performance issue
-  2. Creates flag in pending.json: "DATABASE_INVESTIGATION" 
+  2. Creates flag in pending.json: "DATABASE_INVESTIGATION"
   3. Notifies Claude: "🚩 FLAG CREATED: DATABASE_INVESTIGATION for database"
   4. Claude reads pending.json and delegates directly to database-agent
   5. database-agent resolves issue and moves flag to processed.json
 ```
 
 **Benefits:**
+
 - Zero information loss across domains
 - Automatic coordination without manual intervention
 - Complete audit trail of cross-domain discoveries
@@ -168,12 +179,12 @@ git clone https://github.com/yourusername/ClaudeSquad.git
 cd ClaudeSquad
 
 # 2. Copy to global Claude directory (Windows)
+New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude" | Out-Null
 Copy-Item ".\.claude\*" "$env:USERPROFILE\.claude\" -Recurse -Force
 
 # 2. Copy to global Claude directory (Mac/Linux)
-cp -r .claude/* ~/.claude/
-
-# 3. Navigate to your project
+mkdir -p ~/.claude
+cp -r .claude/* ~/.claude/# 3. Navigate to your project
 cd /path/to/your/project
 
 # 4. Run setup
@@ -188,7 +199,7 @@ claude /setup
 "Build a user authentication system with 2FA"
 # Claude automatically:
 # → Uses setup agents to analyze project
-# → Agent-creator creates auth-agent with complete auth module knowledge  
+# → Agent-creator creates auth-agent with complete auth module knowledge
 # → Engineer-laravel implements with auth-agent specifications
 # → Security-auditor reviews implementation
 ```
@@ -207,7 +218,7 @@ claude /setup
 "The checkout process is slow"
 # Real system flow:
 # → api-agent investigates, finds N+1 queries
-# → Creates FLAG: "DATABASE_INVESTIGATION for checkout optimization"  
+# → Creates FLAG: "DATABASE_INVESTIGATION for checkout optimization"
 # → Claude delegates to database-agent
 # → Database-agent optimizes queries, documents solution
 # → Solution: 500ms → 15ms (33x improvement)
@@ -216,6 +227,7 @@ claude /setup
 ## 📦 Available Agents (77 Total)
 
 ### 🔧 Setup & Creation Agents (4)
+
 - `setup-context` - Analyzes project purpose and architecture
 - `setup-codebase` - Analyzes code structure and patterns
 - `setup-infrastructure` - Analyzes deployment and services
@@ -239,45 +251,66 @@ claude /setup
 
 ## 🛠️ Setup Process
 
-### Phase 0: Environment Verification
+### Phase 1: Environment Verification
+
 - Checks Git, Node, Docker, permissions
 - Identifies missing tools
 - Provides installation commands
 
-### Phase 1: Parallel Project Analysis  
+### Phase 2: Environment Detection
+
+- Detects OS, shell, and available commands
+- Writes .claude/memory/environment.json
+- Ensures cross-platform compatibility
+
+### Phase 3: Memory Server Project Context
+
+- Creates PROJECTNAME-INIT-CONTEXT automatically
+- Enables persistence across sessions
+- Prevents cross-project contamination
+
+### Phase 4: Parallel Project Analysis
+
 - Real parallel analysis by 4 setup agents
 - Environment, codebase, infrastructure, context
 
-### Phase 2: Language Configuration
+### Phase 5: Language Configuration
+
 - User interaction language preferences
 - Documentation and code comment languages
 
-### Phase 3: CLAUDE.md Generation
+### Phase 6: CLAUDE.md Generation
+
 - Custom CLAUDE.md with FLAGS protocol
 - Project-specific agent recommendations
 
-### Phase 4: Dynamic Agent Creation
+### Phase 7: Dynamic Agent Creation
+
 - Agent-creator analyzes modules
 - Creates project-specific agents in parallel
 - Each agent gets complete module knowledge
 
-### Phase 5: FLAGS System Setup
+### Phase 8: FLAGS System Setup
+
 - Creates .claude/memory/flags/ structure
 - Initializes pending.json and processed.json
 
-### Phase 6: System Ready
+### Phase 9: System Ready
+
 - All agents available for direct invocation
 - Cross-domain communication configured
 
 ## 📋 What Gets Configured
 
 ### For New Projects
+
 - 14 comprehensive requirement areas
 - Business domain to deployment strategy
 - Security, compliance, monitoring
 - Team structure and workflows
 
 ### For Existing Projects
+
 - Complete stack detection
 - Dependency audit
 - Security vulnerability scan
@@ -285,6 +318,7 @@ claude /setup
 - Technical debt assessment
 
 ### Generated Files (30+)
+
 - `.env.example`
 - `docker-compose.yml`
 - `.github/workflows/ci.yml`
@@ -295,6 +329,7 @@ claude /setup
 ## 🌍 Language Configuration
 
 Claude adapts to your preferences:
+
 - User communication language
 - Documentation language
 - Code comments language
@@ -305,7 +340,7 @@ Claude adapts to your preferences:
 ## 📈 System Benefits
 
 - **Direct Delegation:** No coordinator overhead, Claude delegates directly
-- **Module Expertise:** Dynamic agents know YOUR specific code intimately  
+- **Module Expertise:** Dynamic agents know YOUR specific code intimately
 - **Cross-Domain Coordination:** FLAGS system prevents information loss
 - **Persistent Memory:** Agents build cumulative knowledge over time
 - **Real Parallelism:** Up to 10 agents work simultaneously
@@ -350,6 +385,7 @@ Claude adapts to your preferences:
 ## 🤝 Contributing
 
 This project is production-ready for basic usage. Key areas for contribution:
+
 - Testing and validation framework
 - Advanced command implementations (agent-health, prepare-context)
 - Performance optimization
@@ -375,4 +411,4 @@ MIT License - Free for commercial and personal use
 
 **Transform your Claude Code into a complete development team today!** 🚀
 
-*Ready for production use: 77 agents, FLAGS system, dynamic agent creation, and persistent memory all implemented.*
+_Ready for production use: 77 agents, FLAGS system, dynamic agent creation, and persistent memory all implemented._

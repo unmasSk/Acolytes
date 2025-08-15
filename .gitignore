@@ -2,7 +2,7 @@
 .claude/settings.local.json
 
 # Session files (temporary conversation logs)
-SESSIONS/*
+SESSIONS/**
 
 # Development and research notes (not for public repo)
-MEJORAS-INVESTIGACION/*
+MEJORAS-INVESTIGACION/**

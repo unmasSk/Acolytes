@@ -171,67 +171,77 @@ mcp__server-memory__delete_relations({
 ### 1. Gestión de Agentes
 ```javascript
 // Registrar un nuevo agente
-create_entities([{
-  name: "engineer-react",
-  entityType: "Agent",
-  observations: [
-    "Especialista en React 18+",
-    "Integra con context7",
-    "1200 líneas de documentación"
-  ]
-}])
+mcp__server-memory__create_entities({
+  entities: [{
+    name: "engineer-react",
+    entityType: "Agent",
+    observations: [
+      "Especialista en React 18+",
+      "Integra con context7",
+      "1200 líneas de documentación"
+    ]
+  }]
+})
 
 // Relacionar con el proyecto
-create_relations([{
-  from: "ClaudeSquad Project",
-  to: "engineer-react",
-  relationType: "contains"
-}])
+mcp__server-memory__create_relations({
+  relations: [{
+    from: "ClaudeSquad Project",
+    to: "engineer-react",
+    relationType: "contains"
+  }]
+})
 ```
 
 ### 2. Tracking de Decisiones Arquitectónicas
 ```javascript
 // Crear decisión
-create_entities([{
-  name: "Decision: Usar MCP Memory",
-  entityType: "ArchitecturalDecision",
-  observations: [
-    "Fecha: 14 Agosto 2025",
-    "Razón: Persistencia entre sesiones",
-    "Alternativa considerada: Solo JSON local"
-  ]
-}])
+mcp__server-memory__create_entities({
+  entities: [{
+    name: "Decision: Usar MCP Memory",
+    entityType: "ArchitecturalDecision",
+    observations: [
+      "Fecha: 14 Agosto 2025",
+      "Razón: Persistencia entre sesiones",
+      "Alternativa considerada: Solo JSON local"
+    ]
+  }]
+})
 
 // Relacionar con proyecto
-create_relations([{
-  from: "ClaudeSquad Project",
-  to: "Decision: Usar MCP Memory",
-  relationType: "implements_decision"
-}])
+mcp__server-memory__create_relations({
+  relations: [{
+    from: "ClaudeSquad Project",
+    to: "Decision: Usar MCP Memory",
+    relationType: "implements_decision"
+  }]
+})
 ```
 
 ### 3. Sistema FLAGS Integration
 ```javascript
 // Cuando se crea un FLAG
-create_entities([{
-  name: "FLAG-2025-08-14-001",
-  entityType: "FLAG",
-  observations: [
-    "Tipo: Cross-domain",
-    "Módulo afectado: Authentication",
-    "Prioridad: Alta",
-    "Estado: Pendiente"
-  ]
-}])
+mcp__server-memory__create_entities({
+  entities: [{
+    name: "FLAG-2025-08-14-001",
+    entityType: "FLAG",
+    observations: [
+      "Tipo: Cross-domain",
+      "Módulo afectado: Authentication",
+      "Prioridad: Alta",
+      "Estado: Pendiente"
+    ]
+  }]
+})
 
 // Relacionar con agentes
-create_relations([
-  {
+mcp__server-memory__create_relations({
+  relations: [{
     from: "FLAG-2025-08-14-001",
     to: "engineer-laravel",
     relationType: "requires_action"
-  }
-])
+  }]
+})
 ```
 
 ### 4. Búsquedas Inteligentes
@@ -340,7 +350,7 @@ read_graph()
 // Buscar el nombre exacto
 
 // Crear si no existe
-create_entities([{name: "entidad", ...}])
+mcp__server-memory__create_entities({entities: [{name: "entidad", ...}]})
 ```
 
 ### Datos no persisten
@@ -366,23 +376,27 @@ read_graph()
 ### Inicialización para ClaudeSquad
 ```javascript
 // Crear estructura base
-create_entities([
-  {name: "ClaudeSquad Project", entityType: "Project", observations: [...]},
-  {name: "engineer-laravel", entityType: "Agent", observations: [...]},
-  {name: "FLAGS System", entityType: "System", observations: [...]}
-])
+mcp__server-memory__create_entities({
+  entities: [
+    {name: "ClaudeSquad Project", entityType: "Project", observations: [...]},
+    {name: "engineer-laravel", entityType: "Agent", observations: [...]},
+    {name: "FLAGS System", entityType: "System", observations: [...]}
+  ]
+})
 
 // Crear relaciones fundamentales
-create_relations([
-  {from: "ClaudeSquad Project", to: "engineer-laravel", relationType: "has_gold_standard"},
-  {from: "ClaudeSquad Project", to: "FLAGS System", relationType: "implements"}
-])
+mcp__server-memory__create_relations({
+  relations: [
+    {from: "ClaudeSquad Project", to: "engineer-laravel", relationType: "has_gold_standard"},
+    {from: "ClaudeSquad Project", to: "FLAGS System", relationType: "implements"}
+  ]
+})
 ```
 
 ### Consultas Frecuentes
 ```javascript
 // Ver todo el conocimiento
-read_graph()
+mcp__server-memory__read_graph()
 
 // Buscar agentes
 search_nodes("Agent")
