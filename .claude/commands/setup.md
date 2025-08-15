@@ -11,7 +11,7 @@ This hybrid version merges the **technical depth and safeguards** of the origina
 1. **NEVER** analyze without creating agents
 2. **ALWAYS** invoke 4 setup agents in REAL PARALLEL (multiple Task calls)
 3. **ALWAYS** create ALL required files and memory
-4. **NEVER** ask whether to create — just create
+4. **NEVER** ask whether to create — just create (exception: explicit language preference prompts in Phase 5)
 5. **ALWAYS** use multiple Task calls for agent creation
 
 ---
@@ -28,7 +28,6 @@ Checking prerequisites:
   - Python/pip (if applicable)
   - Docker/Docker Compose
   - IDE/Editor configuration
-  - Shell environment (bash/zsh/powershell)
   - Operating system details
   - File permissions
   - Network connectivity
@@ -41,47 +40,22 @@ If missing:
 
 ---
 
-### 2️⃣ **PHASE 2: ENVIRONMENT DETECTION**
 
-After verifying prerequisites, detect the shell environment for optimal command execution.
-
-```yaml
-EXECUTION:
-  command: /detect-env
-  purpose: "Detect OS, shell, and available commands"
-  output: ".claude/memory/environment.json"
-  
-DETECTION:
-  - Operating System (Windows/WSL/Linux/macOS)
-  - Shell Environment (Git Bash/PowerShell/Bash/Zsh)
-  - Unix Commands Availability
-  - PowerShell Availability
-  - Path Format Preferences
-  
-BENEFITS:
-  - All agents use appropriate commands
-  - No cross-platform errors
-  - Optimal performance
-  - Persistent detection
-```
-
-**Why this phase:**
-- Ensures all subsequent agents use the correct commands
-- Prevents "command not found" errors on Windows
-- Enables true cross-platform compatibility
-- Creates `.claude/memory/environment.json` for all agents to read
-
----
-
-### 3️⃣ **PHASE 3: MEMORY SERVER PROJECT CONTEXT**
+### 2️⃣ **PHASE 2: MEMORY SERVER PROJECT CONTEXT**
 
 Automatically create project-specific context in Memory Server for persistence across sessions.
 
 ```yaml
 EXECUTION:
+  # PSEUDOCODE - adapt to your shell (examples below)
+  
   # Get project name from current directory
-  PROJECT_NAME=$(basename "$(pwd)")
-  CONTEXT_NAME="${PROJECT_NAME}-INIT-CONTEXT"
+  PROJECT_NAME=$(basename "$(pwd)")           # Bash/Zsh
+  CONTEXT_NAME="${PROJECT_NAME}-INIT-CONTEXT" # Bash/Zsh
+  
+  # PowerShell equivalent:
+  # $PROJECT_NAME = Split-Path -Leaf (Get-Location)
+  # $CONTEXT_NAME = "$PROJECT_NAME-INIT-CONTEXT"
   
   # Try to load global user context
   GLOBAL_CONTEXT=$(mcp__server-memory__search_nodes("GLOBAL-USER-CONTEXT"))
@@ -92,15 +66,18 @@ EXECUTION:
     "entityType": "ProjectContext",
     "observations": [
       "PROJECT: ${PROJECT_NAME}",
-      "LOCATION: $(pwd)",
-      "SETUP_DATE: $(date -Iseconds)",
+      "LOCATION: $(pwd)",                # Bash/Zsh
+      "SETUP_DATE: $(date -Iseconds)",   # Bash/Zsh
+      # PowerShell equivalents:
+      # "LOCATION: $(Get-Location)",
+      # "SETUP_DATE: $(Get-Date -Format o)",
       "STATUS: Initializing with /setup command",
-      "ENVIRONMENT: Detected in Phase 2",
-      "NEXT_STEP: Parallel agent analysis in Phase 4"
+      "NEXT_STEP: Parallel agent analysis in Phase 3"
     ]
   }])
   
   # Create relation to global context if it exists
+  # Bash/Zsh:
   if [ "$GLOBAL_CONTEXT" != "empty" ]; then
     mcp__server-memory__create_relations([{
       "from": "GLOBAL-USER-CONTEXT",
@@ -108,6 +85,15 @@ EXECUTION:
       "relationType": "has_project"
     }])
   fi
+  
+  # PowerShell equivalent:
+  # if ($GLOBAL_CONTEXT -ne "empty") {
+  #   mcp__server-memory__create_relations([{
+  #     "from": "GLOBAL-USER-CONTEXT",
+  #     "to": $CONTEXT_NAME,
+  #     "relationType": "has_project"
+  #   }])
+  # }
 
 Benefits:
   - Each project gets unique context (no cross-contamination)
@@ -130,7 +116,7 @@ Examples:
 
 ---
 
-### 4️⃣ **PHASE 4: PARALLEL ANALYSIS**
+### 3️⃣ **PHASE 3: PARALLEL ANALYSIS**
 
 Execute **REAL PARALLEL** analysis using **4 specialized agents**:
 
@@ -160,7 +146,7 @@ INVOCATION:
 
 ---
 
-### 5️⃣ **PHASE 5: LANGUAGE CONFIGURATION**
+### 4️⃣ **PHASE 4: LANGUAGE CONFIGURATION**
 
 **ALWAYS ASK USER BEFORE CREATING CLAUDE.MD:**
 - User interaction language
@@ -168,7 +154,7 @@ INVOCATION:
 - Public documentation language
 - Comments and docstrings language
 
-### 6️⃣ **PHASE 6: CLAUDE.MD CREATION**
+### 5️⃣ **PHASE 5: CLAUDE.MD CREATION**
 
 ```yaml
 CLAUDE:
@@ -186,7 +172,7 @@ CLAUDE:
 
 ---
 
-### 7️⃣ **PHASE 7: AGENT CREATION**
+### 6️⃣ **PHASE 6: AGENT CREATION**
 
 ```yaml
 INVOCATION:
@@ -213,7 +199,7 @@ Example:
 
 ---
 
-### 8️⃣ **PHASE 8: FLAGS SYSTEM CONFIGURATION**
+### 7️⃣ **PHASE 7: FLAGS SYSTEM CONFIGURATION**
 
 ```yaml
 FLAGS_SYSTEM:
@@ -223,7 +209,7 @@ FLAGS_SYSTEM:
   - Update CLAUDE.md with flags instructions
 ```
 
-### 9️⃣ **PHASE 9: FINALIZATION**
+### 8️⃣ **PHASE 8: FINALIZATION**
 
 ```yaml
 CLAUDE:
@@ -392,9 +378,9 @@ Interactive Q&A covering **14 comprehensive areas**:
 
 ### Phase 1: Comprehensive Parallel Analysis
 - setup-context
-- setup-environment
 - setup-codebase
 - setup-infrastructure
+- setup-environment
 
 ### Phase 2: Language Configuration
 **ALWAYS ASK USER:**
@@ -500,31 +486,33 @@ GLOBAL_VS_LOCAL:
 User: /setup C:\project\example
 
 Claude:
-1. [Phase 0] Environment verification ✅
+1. [Phase 1] Environment verification ✅
 
-2. [Phase 1 - REAL PARALLEL] "Analyze this project IN PARALLEL using 4 specialized agents:
+2. [Phase 2] Memory Server project context created/updated (EXAMPLE-INIT-CONTEXT) ✅
+
+3. [Phase 3 - REAL PARALLEL] "Analyze this project IN PARALLEL using 4 specialized agents:
    [Task 1] setup-context
-   [Task 2] setup-codebase  
+   [Task 2] setup-codebase
    [Task 3] setup-infrastructure
    [Task 4] setup-environment"
 
-3. [Phase 2] Language Configuration:
+4. [Phase 4] Language Configuration:
    "What language preferences:
    - User interaction: English/Spanish?
    - Private documentation: English/Spanish?
    - Public documentation: English?
    - Comments/docstrings: English/Spanish?"
 
-4. [Phase 3] Creates complete CLAUDE.md with language preferences
+5. [Phase 5] Creates complete CLAUDE.md with language preferences + aggregated analysis
 
-5. [Phase 4 - REAL PARALLEL] "Create these agents IN PARALLEL:
+6. [Phase 6 - REAL PARALLEL] "Create these agents IN PARALLEL:
    [Task 1] agent-creator → api-agent (creates .claude/memory/agents/api-agent/)
    [Task 2] agent-creator → database-agent (creates .claude/memory/agents/database-agent/)
    [Task 3] agent-creator → frontend-agent (creates .claude/memory/agents/frontend-agent/)"
 
-6. [Phase 5] Configure flags system: Creates .claude/memory/flags/ structure
+7. [Phase 7] Configure flags system: Creates .claude/memory/flags/ structure
 
-7. [Phase 6] Confirms: "✅ Setup complete: 3 agents created with full memory systems + flags communication"
+8. [Phase 8] Confirms: "✅ Setup complete: 3 agents created with full memory systems + flags communication"
 ```
 
 ---

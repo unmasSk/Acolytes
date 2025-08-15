@@ -57,12 +57,13 @@ find . -type f -name "*.py" | wc -l
 find . -type d -maxdepth 3 | head -20
 
 # Module Detection (directories with substantial code)
-for dir in $(find . -type d -maxdepth 2 -not -path "*/\.*" -not -path "*/node_modules*"); do
-  count=$(find "$dir" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.php" -o -name "*.py" \) | wc -l)
-  if [ $count -gt 50 ]; then
-    echo "$dir: $count files"
-  fi
-done
+find . -maxdepth 2 -type d -not -path "*/\.*" -not -path "*/node_modules*" -print0 | \
+  while IFS= read -r -d '' dir; do
+    count=$(find "$dir" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.php" -o -name "*.py" \) | wc -l)
+    if [ "$count" -gt 50 ]; then
+      echo "$dir: $count files"
+    fi
+  done
 
 # Test Detection
 find . -type f -name "*.test.*" -o -name "*.spec.*" | wc -l

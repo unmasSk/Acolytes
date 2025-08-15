@@ -67,7 +67,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de la Investigación de Módulos"
+- Especialista en Investigación de Módulos
 - Lee TODOS los archivos de un módulo
 - Entiende el propósito y la historia del código
 - Detecta TODOS los patrones (obvios y ocultos)
@@ -93,7 +93,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS del Backend" que ve TODO
+- Master Backend Orchestrator con visibilidad completa
 - Carga TODOS los módulos del backend (~100k tokens)
 - Lee todos los agentes dinámicos (\*-agent.md)
 - Analiza dependencias entre módulos
@@ -129,7 +129,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS del Frontend" que ve TODO el UI
+- Master Frontend Orchestrator con visibilidad completa del UI
 - Carga TODOS los componentes y design system (~100k tokens)
 - Orquesta Design Tokens y Component Library
 - Gestiona Core Web Vitals y bundle optimization
@@ -166,7 +166,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de los Datos" que ve TODA la arquitectura de datos
+- Master Data Orchestrator con visibilidad completa de arquitectura de datos
 - Carga TODOS los schemas (SQL, NoSQL, Vector, etc.) (~100k tokens)
 - Orquesta migraciones zero-downtime con expand-contract pattern
 - Gestiona sharding, replicación y alta disponibilidad
@@ -203,7 +203,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS del DevOps" que ve TODO el ecosistema
+- Master DevOps Orchestrator con visibilidad completa del ecosistema
 - Carga TODAS las pipelines CI/CD (~100k tokens)
 - Orquesta Jenkins, GitHub Actions, GitLab CI, Azure DevOps
 - Gestiona Terraform, Kubernetes, Ansible, CloudFormation
@@ -239,7 +239,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de la Infraestructura" que ve TODO
+- Master Infrastructure Orchestrator con visibilidad completa
 - Carga TODOS los recursos cloud (~100k tokens)
 - Orquesta AWS, Azure, GCP, on-premise
 - Gestiona Terraform, Pulumi, Crossplane, CloudFormation
@@ -275,7 +275,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de la Seguridad" que ve TODO el panorama de amenazas
+- Master Security Orchestrator con visibilidad completa del panorama de amenazas
 - Carga TODAS las políticas de seguridad (~100k tokens)
 - Orquesta zero-trust, SASE, ZTNA enterprise-wide
 - Gestiona compliance multi-framework (SOC2, ISO27001, HIPAA, PCI-DSS)
@@ -311,7 +311,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS del Testing" que ve TODO el panorama de calidad
+- Master Testing Orchestrator con visibilidad completa del panorama de calidad
 - Carga TODAS las suites de tests (~100k tokens)
 - Orquesta unit, integration, E2E, API, performance tests
 - Gestiona frameworks: Jest, Pytest, Cypress, Playwright
@@ -347,7 +347,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de los Datos" que ve TODO el ecosistema de datos
+- Master Data Ecosystem Orchestrator con visibilidad completa
 - Carga TODOS los pipelines, warehouses, lakes (~100k tokens)
 - Orquesta data mesh, lakehouse, data fabric architectures
 - Gestiona ETL/ELT, streaming (Kafka, Flink), batch (Spark)
@@ -383,7 +383,7 @@
 
 ### ¿Qué hace?
 
-- El "DIOS de las Migraciones" que orquesta transformaciones completas
+- Master Migration Orchestrator que gestiona transformaciones completas
 - Carga TODOS los sistemas legacy (~100k tokens)
 - Orquesta monolith → microservices, on-premise → cloud
 - Gestiona strangler fig, expand-contract, blue-green patterns

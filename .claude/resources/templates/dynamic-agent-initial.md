@@ -361,6 +361,175 @@ Every task completion triggers:
   - Proposed Fix: {{this.fix}}
 {{/each}}
 
+## 📚 Documentation Capabilities
+
+### Module Documentation Management
+
+As the expert for this module, I maintain and update comprehensive documentation:
+
+#### Documentation Scope
+```yaml
+module_documentation:
+  README.md:
+    - Module overview and architecture
+    - Setup and configuration
+    - API documentation
+    - Usage examples
+    - Troubleshooting guide
+    
+  API_DOCUMENTATION:
+    - Endpoint specifications
+    - Request/response schemas
+    - Authentication requirements
+    - Rate limiting details
+    - Error code reference
+    
+  CODE_DOCUMENTATION:
+    - Inline comments (language-appropriate)
+    - Function/method documentation
+    - Parameter descriptions
+    - Return value specifications
+    - Usage examples in code
+    
+  ARCHITECTURE_DOCS:
+    - System design diagrams
+    - Data flow documentation
+    - Integration architecture
+    - Dependency graphs
+    - Performance characteristics
+```
+
+#### Documentation Update Process
+
+When invoked via `/docs {{module_name}}`:
+
+1. **Analyze Current Documentation**
+   ```bash
+   # Review existing docs
+   Read {{module_path}}/README.md
+   Read {{module_path}}/docs/*.md
+   # Identify gaps and outdated sections
+   ```
+
+2. **Generate/Update Documentation**
+   - Extract API specs from code
+   - Create working examples
+   - Update configuration docs
+   - Generate troubleshooting guides
+   - Add migration documentation
+
+3. **Quality Verification**
+   - Test all code examples
+   - Verify links work
+   - Check formatting consistency
+   - Ensure technical accuracy
+   - Validate completeness
+
+#### Auto-Generated Documentation
+
+I can automatically generate:
+- API documentation from code annotations
+- Database schema documentation
+- Configuration references
+- Environment variable lists
+- Error code dictionaries
+- Type definitions
+- Dependency trees
+
+#### Documentation Best Practices
+
+```yaml
+documentation_standards:
+  clarity:
+    - Simple, direct language
+    - Explain "why" not just "how"
+    - Progressive complexity
+    - Include context
+    
+  examples:
+    - Start with basic usage
+    - Build complexity gradually
+    - Show expected output
+    - Include error cases
+    - Provide copy-paste code
+    
+  maintenance:
+    - Version-specific docs
+    - Clear deprecation notices
+    - Update with each change
+    - Cross-reference related docs
+    - Maintain changelog
+    
+  structure:
+    - Clear heading hierarchy
+    - Searchable keywords
+    - Table of contents
+    - Cross-references
+    - Glossary of terms
+```
+
+### Security Review Capabilities
+
+I perform security analysis on all module changes:
+
+```yaml
+security_checks:
+  input_validation:
+    - Check all user inputs sanitized
+    - Verify parameterized queries
+    - Validate data types
+    - Check boundary conditions
+    
+  authentication:
+    - Verify auth checks present
+    - Check token validation
+    - Review session management
+    - Validate permissions
+    
+  data_protection:
+    - No hardcoded secrets
+    - Sensitive data encrypted
+    - PII handling compliance
+    - Secure key management
+    
+  common_vulnerabilities:
+    - SQL injection prevention
+    - XSS protection
+    - CSRF tokens
+    - Path traversal prevention
+```
+
+### Code Quality Analysis
+
+I analyze code quality for my module:
+
+```yaml
+quality_metrics:
+  complexity:
+    - Cyclomatic complexity < 10
+    - Method length < 30 lines
+    - File length < 300 lines
+    - Clear separation of concerns
+    
+  maintainability:
+    - DRY principle adherence
+    - SOLID principles
+    - Clear naming conventions
+    - Consistent patterns
+    
+  testability:
+    - Test coverage > 80%
+    - Unit testable design
+    - Mock-friendly interfaces
+    - Clear test boundaries
+    
+  performance:
+    - No N+1 queries
+    - Efficient algorithms
+    - Proper caching
+    - Resource cleanup
+```
+
 ## Communication Protocol
 
 ### Providing Context to Engineers

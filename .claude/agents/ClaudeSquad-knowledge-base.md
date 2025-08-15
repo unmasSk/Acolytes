@@ -173,15 +173,17 @@ Agent Categories:
 ```yaml
 Core Commands:
   setup.md:
-    purpose: "Automated 6-phase project configuration"
+    purpose: "Automated 9-phase project configuration"
     phases:
-      - "Phase 0: Environment verification"
-      - "Phase 1: Parallel analysis by 4 setup agents"
-      - "Phase 2: Language configuration"
-      - "Phase 3: CLAUDE.md generation"
-      - "Phase 4: Dynamic agent creation"
-      - "Phase 5: FLAGS system setup"
-      - "Phase 6: System ready notification"
+      - "Phase 1: Environment verification"
+      - "Phase 2: Environment detection"
+      - "Phase 3: Memory Server project context"
+      - "Phase 4: Parallel analysis by 4 setup agents"
+      - "Phase 5: Language configuration"
+      - "Phase 6: CLAUDE.md generation"
+      - "Phase 7: Dynamic agent creation"
+      - "Phase 8: FLAGS system setup"
+      - "Phase 9: System ready notification"
     status: FULLY_IMPLEMENTED
 
   agent-health.md:

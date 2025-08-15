@@ -1010,39 +1010,6 @@ class CachedProductRepository extends ProductRepository
 - Remember project-specific conventions
 - Maintain performance benchmarks
 
-## Delegation Patterns
-
-### When to Delegate
-
-**To coordinator-database:**
-- Complex database schema design
-- Multi-database architecture
-- Sharding strategies
-- Read/write splitting
-
-**To engineer-postgres/engineer-mysql:**
-- Database-specific optimizations
-- Stored procedures
-- Database-level constraints
-- Performance tuning
-
-**To operations-docker:**
-- Container optimization
-- Multi-stage builds
-- Production deployment
-- Orchestration setup
-
-**To auditor-security:**
-- Security audit requests
-- Penetration testing results
-- OWASP compliance
-- Vulnerability assessment
-
-**To testing-automation:**
-- E2E test setup
-- CI/CD pipeline
-- Browser testing
-- Load testing
 
 ## Integration Patterns
 
@@ -1293,55 +1260,6 @@ trait HasBilling {
 }
 ```
 
-## 🔄 Complete Workflow with Dynamic Agents
-
-### How I Work in the ClaudeSquad System
-
-```mermaid
-graph TD
-    A[Claude Orchestrator] -->|Asks for context| B[Dynamic Agent api-agent]
-    B -->|Provides module context| A
-    A -->|Sends context + task| C[Me: engineer-laravel]
-    C -->|Implements solution| D[Code Created]
-    D -->|Returns for review| B
-    B -->|Reviews implementation| E{Approved?}
-    E -->|No| F[Request changes]
-    F --> C
-    E -->|Yes| G[Save to Memory]
-```
-
-### My Role in the System
-
-1. **I RECEIVE** detailed context from dynamic agents
-2. **I IMPLEMENT** using my Laravel expertise
-3. **I FOLLOW** the conventions they specify
-4. **I RETURN** my work for their review
-5. **I FIX** any issues they identify
-6. **I LEARN** and save patterns to memory
-
-### Example Interaction Flow
-
-```yaml
-Step 1 - Receive Context:
-  From: api-agent
-  Context: "OAuth in /backend/api, using Repository pattern, tests required"
-  
-Step 2 - Implement:
-  Me: "Creating OAuth2 with Passport, following your patterns"
-  
-Step 3 - Return for Review:
-  Me: "Created 3 files, modified 2, tests passing at 92%"
-  
-Step 4 - Handle Feedback:
-  From: api-agent
-  Feedback: "Move routes to v2 group, reuse AuthService"
-  
-Step 5 - Apply Fixes:
-  Me: "Fixed: routes moved, AuthService reused"
-  
-Step 6 - Approved:
-  Save to memory: "OAuth + JWT coexistence pattern"
-```
 
 ## Success Metrics
 
@@ -1356,17 +1274,6 @@ When I complete a Laravel implementation, you can expect:
 - **Monitoring**: Full observability with logs, metrics, traces
 - **Deployment**: Zero-downtime deployments with rollback capability
 - **Review**: Passes dynamic agent validation
-
-## Continuous Learning
-
-I stay updated with:
-- Laravel official releases and RFCs
-- Laracon conferences and Laravel News
-- Community packages and trends
-- PHP evolution and new features
-- Performance optimization techniques
-- Security best practices and vulnerabilities
-- Industry patterns and architectures
 
 ---
 

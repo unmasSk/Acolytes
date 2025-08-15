@@ -90,11 +90,11 @@ try {
       observations: [{
         entityName: "SESSION-INIT-CONTEXT",
         contents: [
-          `ÚLTIMA SESIÓN: ${timestamp}`,
-          `LOGROS: ${sessionSummary.accomplishments.join(", ")}`,
-          `PENDIENTE: ${sessionSummary.pending.join(", ")}`,
-          `CALIDAD: Accuracy ${sessionSummary.quality.accuracy}/10, Helpfulness ${sessionSummary.quality.helpfulness}/10`,
-          `PRÓXIMOS PASOS: ${sessionSummary.pending[0] || "Continuar desarrollo"}`
+          `LAST SESSION: ${timestamp}`,
+          `ACCOMPLISHMENTS: ${sessionSummary.accomplishments.join(", ")}`,
+          `PENDING: ${sessionSummary.pending.join(", ")}`,
+          `QUALITY: Accuracy ${sessionSummary.quality.accuracy}/10, Helpfulness ${sessionSummary.quality.helpfulness}/10`,
+          `NEXT STEPS: ${sessionSummary.pending[0] || "Continue development"}`
         ]
       }]
     });
@@ -120,18 +120,18 @@ try {
       name: sessionName,
       entityType: "Session",
       observations: [
-        `Fecha: ${timestamp}`,
-        `Tareas completadas: ${sessionSummary.accomplishments.join("; ")}`,
-        `Investigación: ${sessionSummary.research.join("; ")}`,
+        `Date: ${timestamp}`,
+        `Tasks completed: ${sessionSummary.accomplishments.join("; ")}`,
+        `Research: ${sessionSummary.research.join("; ")}`,
         `Testing: ${sessionSummary.testing.join("; ")}`,
-        `Decisiones: ${sessionSummary.decisions.join("; ")}`,
-        `Pendiente: ${sessionSummary.pending.join("; ")}`,
-        `Calidad - Accuracy: ${sessionSummary.quality.accuracy}/10`,
-        `Calidad - Helpfulness: ${sessionSummary.quality.helpfulness}/10`,
+        `Decisions: ${sessionSummary.decisions.join("; ")}`,
+        `Pending: ${sessionSummary.pending.join("; ")}`,
+        `Quality - Accuracy: ${sessionSummary.quality.accuracy}/10`,
+        `Quality - Helpfulness: ${sessionSummary.quality.helpfulness}/10`,
         `Hallucinations: ${sessionSummary.quality.hallucinations}`,
-        `Errores: ${sessionSummary.quality.errors.join("; ") || "Ninguno"}`,
-        `Efectividad: ${sessionSummary.quality.effectiveness}`,
-        `Notas: ${sessionSummary.notes || "Sin notas adicionales"}`
+        `Errors: ${sessionSummary.quality.errors.join("; ") || "None"}`,
+        `Effectiveness: ${sessionSummary.quality.effectiveness}`,
+        `Notes: ${sessionSummary.notes || "No additional notes"}`
       ]
     }]
   });
@@ -153,8 +153,11 @@ try {
 } catch (error) {
   console.error("⚠️ Memory Server unavailable, saving to file instead");
   
-  // Fallback: Save to SESSIONS directory
-  const fallbackPath = `/SESSIONS/${sessionDate}_session-summary.json`;
+  // Fallback: Save to SESSIONS directory (relative to project root)
+  // Note: Ensure SESSIONS directory exists at project root before writing
+  // If directory doesn't exist, use: mkdir -p SESSIONS (bash) or New-Item -ItemType Directory -Force SESSIONS (PowerShell)
+  const fallbackDir = `SESSIONS`; // Relative to project root
+  const fallbackPath = `${fallbackDir}/${sessionDate}_session-summary.json`;
   await Write(fallbackPath, JSON.stringify(sessionSummary, null, 2));
   
   console.log(`📁 Session saved to ${fallbackPath}`);
@@ -196,7 +199,8 @@ After saving, provide clear feedback:
 ## Error Handling
 
 ### Memory Server Unavailable
-- Save to `/SESSIONS/` directory as JSON
+- Save to `SESSIONS/` directory (relative to project root) as JSON
+- Ensure directory exists before writing (mkdir -p SESSIONS or equivalent)
 - Provide import instructions for next session
 - Warn user about manual recovery needed
 
