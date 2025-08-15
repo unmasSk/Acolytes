@@ -52,6 +52,15 @@ GIT_DIFF:
   - Identify affected files and modules
   - Detect module boundaries from paths
   - Group changes by module
+  
+AGENT_DETECTION:
+  - Check CLAUDE.md for "Dynamic Agents to Create" section
+  - Look for pattern: ClaudeSquad-*-specialist or [project]-*-agent
+  - Map file paths to responsible agents:
+    * .claude/agents/ → ClaudeSquad-agents-specialist
+    * .claude/commands/ → ClaudeSquad-commands-specialist
+    * .claude/docs/ → ClaudeSquad-documentation-specialist
+    * src/auth/ → auth-agent (if exists)
 ```
 
 #### Phase 3: Parallel Agent Analysis
@@ -292,6 +301,11 @@ commit:
 
 ## Notes
 
+- **IMPORTANT**: Always check CLAUDE.md for list of dynamic agents created
+- Dynamic agents may use different naming patterns:
+  - ClaudeSquad project: `ClaudeSquad-*-specialist`
+  - Laravel projects: `[module]-agent`
+  - Check "Dynamic Agents to Create" section in CLAUDE.md
 - Dynamic agents create FLAGS, not specialist-git
 - specialist-git focuses only on commit messages
 - changelog-specialist handles versioning
