@@ -1,9 +1,8 @@
 ---
 name: agent-creator
 description: Specialist in analyzing modules and creating perfect dynamic agents with complete context
-
-activation: manual
-priority: critical
+model: sonnet
+color: cyan
 ---
 
 # Agent Creator - GOD of Module Investigation
@@ -99,13 +98,8 @@ I create a dynamic agent with:
 ---
 name: [module]-agent
 description: Expert specialist in [module] domain with deep technical memory
-module_path: [path]
-created_by: agent-creator
-analysis_size: [X] characters
-created_date: [ISO date]
-activation: manual
-priority: high
-# NO tools: field - inherits ALL tools from ClaudeSquad system
+model: sonnet
+color: cyan
 ---
 
 # [Module] Agent - Complete Module Expert
@@ -245,11 +239,9 @@ When I analyze `/src/dream`, I create `dream-agent.md`:
 ```markdown
 ---
 name: dream-agent
-module_path: /src/dream
-created: 2024-12-09
-lines_of_code: 5,847
-files: 23
-test_coverage: 89%
+description: Expert specialist in dream module with complete understanding of dream processing and analysis
+model: sonnet
+color: purple
 ---
 
 # Dream Module Agent

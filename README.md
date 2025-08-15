@@ -56,9 +56,12 @@ Four specialized agents analyze your project:
 - `setup-infrastructure` - Deployment, databases, CI/CD, external services  
 - `setup-environment` - Tools, versions, system capabilities
 
-### 🧠 Agent Memory System
+### 🧠 Dual Memory Systems
 
-**Dynamic agents maintain persistent knowledge** about their modules in JSON format:
+ClaudeSquad uses **TWO different memory systems** for different purposes:
+
+#### 1. **JSON Memory System** (Project-Local)
+Located in `.claude/memory/` within each project. Used by dynamic agents for module-specific knowledge:
 
 ```
 .claude/memory/
@@ -76,11 +79,41 @@ Four specialized agents analyze your project:
     └── processed.json  # Resolved flags history
 ```
 
-**How it works:**
-1. **Agent-creator** creates agents with complete module knowledge
-2. **Agents update** their own memory after each task
-3. **FLAGS system** enables cross-module coordination
-4. **Memory persists** between Claude sessions
+**Characteristics:**
+- ✅ Git-versioned with your project
+- ✅ Full control over structure
+- ✅ Project-specific data
+- ❌ Doesn't persist between Claude sessions
+- ❌ Not shared between projects
+
+#### 2. **MCP Memory Server** (Global Knowledge Graph)
+A persistent knowledge graph that maintains context across ALL Claude sessions and projects:
+
+```javascript
+// Example: Creating project context
+mcp__server-memory__create_entities([{
+  name: "MYPROJECT-INIT-CONTEXT",
+  entityType: "ProjectContext",
+  observations: ["Project setup complete", "Using React + FastAPI"]
+}])
+
+// Example: Searching for context
+mcp__server-memory__search_nodes("MYPROJECT-INIT-CONTEXT")
+```
+
+**Characteristics:**
+- ✅ Persists between ALL Claude sessions
+- ✅ Searchable knowledge graph
+- ✅ Project separation (PROJECTNAME-INIT-CONTEXT pattern)
+- ✅ Relationships between concepts
+- ❌ Not Git-versioned
+- ❌ Requires MCP server installation
+
+**How they work together:**
+1. **MCP Memory Server** maintains high-level project context and session continuity
+2. **JSON Memory** stores detailed module knowledge for dynamic agents
+3. **FLAGS system** uses JSON for active coordination
+4. **Session saves** update both systems
 
 ### 🚩 Cross-Domain FLAGS System
 
@@ -107,6 +140,25 @@ Flow:
 - Claude Code installed (`npm install -g @anthropic-ai/claude-code`)
 - Git configured
 - Your preferred IDE
+
+### Optional: MCP Servers for Enhanced Features
+
+ClaudeSquad works out-of-the-box, but installing MCP servers adds powerful capabilities:
+
+```bash
+# Memory Server - For persistent session context
+claude mcp add-npm @modelcontextprotocol/server-memory
+
+# Context7 - For real-time documentation
+claude mcp add-npm @context7/mcp-server
+
+# Git Server - For advanced Git operations
+claude mcp add-npm @modelcontextprotocol/server-git
+
+# Additional servers (optional)
+claude mcp add-npm @modelcontextprotocol/server-fetch  # Web fetching
+claude mcp add-npm @modelcontextprotocol/server-time   # Time operations
+```
 
 ### Installation
 
@@ -262,9 +314,11 @@ Claude adapts to your preferences:
 
 - [Project Status](./ESTADO-ACTUAL-PROYECTO.md) - Current implementation status
 - [FLAGS System](./.claude/docs/flags-system.md) - Cross-domain communication
-- [Memory System](./.claude/docs/memory-system-real.md) - Agent memory architecture
+- [JSON Memory System](./.claude/docs/memory-system-real.md) - Local agent memory architecture
+- [MCP Memory Server](./.claude/docs/memory-server-usage-guide.md) - Global persistent knowledge graph
 - [Setup Command](./.claude/commands/setup.md) - Complete setup documentation
 - [All 77 Agents](./.claude/agents/) - Complete agent catalog
+- [Context7 Usage](./.claude/docs/context7-usage-guide.md) - Real-time documentation access
 
 ## 🚧 Current Status
 

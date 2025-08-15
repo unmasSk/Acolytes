@@ -16,7 +16,7 @@ This hybrid version merges the **technical depth and safeguards** of the origina
 
 ---
 
-### 0️⃣ **PHASE 0: ENVIRONMENT VERIFICATION**
+### 1️⃣ **PHASE 1: ENVIRONMENT VERIFICATION**
 
 Before any project analysis begins, the system validates your development environment.
 
@@ -41,7 +41,96 @@ If missing:
 
 ---
 
-### 1️⃣ **PHASE 1: PARALLEL ANALYSIS**
+### 2️⃣ **PHASE 2: ENVIRONMENT DETECTION**
+
+After verifying prerequisites, detect the shell environment for optimal command execution.
+
+```yaml
+EXECUTION:
+  command: /detect-env
+  purpose: "Detect OS, shell, and available commands"
+  output: ".claude/memory/environment.json"
+  
+DETECTION:
+  - Operating System (Windows/WSL/Linux/macOS)
+  - Shell Environment (Git Bash/PowerShell/Bash/Zsh)
+  - Unix Commands Availability
+  - PowerShell Availability
+  - Path Format Preferences
+  
+BENEFITS:
+  - All agents use appropriate commands
+  - No cross-platform errors
+  - Optimal performance
+  - Persistent detection
+```
+
+**Why this phase:**
+- Ensures all subsequent agents use the correct commands
+- Prevents "command not found" errors on Windows
+- Enables true cross-platform compatibility
+- Creates `.claude/memory/environment.json` for all agents to read
+
+---
+
+### 3️⃣ **PHASE 3: MEMORY SERVER PROJECT CONTEXT**
+
+Automatically create project-specific context in Memory Server for persistence across sessions.
+
+```yaml
+EXECUTION:
+  # Get project name from current directory
+  PROJECT_NAME=$(basename "$(pwd)")
+  CONTEXT_NAME="${PROJECT_NAME}-INIT-CONTEXT"
+  
+  # Try to load global user context
+  GLOBAL_CONTEXT=$(mcp__server-memory__search_nodes("GLOBAL-USER-CONTEXT"))
+  
+  # Create or update project-specific context
+  mcp__server-memory__create_entities([{
+    "name": "${CONTEXT_NAME}",
+    "entityType": "ProjectContext",
+    "observations": [
+      "PROJECT: ${PROJECT_NAME}",
+      "LOCATION: $(pwd)",
+      "SETUP_DATE: $(date -Iseconds)",
+      "STATUS: Initializing with /setup command",
+      "ENVIRONMENT: Detected in Phase 2",
+      "NEXT_STEP: Parallel agent analysis in Phase 4"
+    ]
+  }])
+  
+  # Create relation to global context if it exists
+  if [ "$GLOBAL_CONTEXT" != "empty" ]; then
+    mcp__server-memory__create_relations([{
+      "from": "GLOBAL-USER-CONTEXT",
+      "to": "${CONTEXT_NAME}",
+      "relationType": "has_project"
+    }])
+  fi
+
+Benefits:
+  - Each project gets unique context (no cross-contamination)
+  - Persistent across all Claude sessions
+  - Automatic project name detection
+  - No user intervention required
+  - Projects remain completely separate
+  
+Examples:
+  - ClaudeSquad/ → CLAUDESQUAD-INIT-CONTEXT
+  - my-app/ → MY-APP-INIT-CONTEXT
+  - api-gateway/ → API-GATEWAY-INIT-CONTEXT
+```
+
+**Why this phase:**
+- Ensures each project has its own Memory Server context
+- Prevents mixing data between different projects
+- Enables persistence of project-specific information
+- Allows future sessions to load project context with: `mcp__server-memory__search_nodes("PROJECTNAME-INIT-CONTEXT")`
+
+---
+
+### 4️⃣ **PHASE 4: PARALLEL ANALYSIS**
 
 Execute **REAL PARALLEL** analysis using **4 specialized agents**:
 
@@ -71,7 +160,7 @@ INVOCATION:
 
 ---
 
-### 2️⃣ **PHASE 2: LANGUAGE CONFIGURATION**
+### 5️⃣ **PHASE 5: LANGUAGE CONFIGURATION**
 
 **ALWAYS ASK USER BEFORE CREATING CLAUDE.MD:**
 - User interaction language
@@ -79,7 +168,7 @@ INVOCATION:
 - Public documentation language
 - Comments and docstrings language
 
-### 3️⃣ **PHASE 3: CLAUDE.MD CREATION**
+### 6️⃣ **PHASE 6: CLAUDE.MD CREATION**
 
 ```yaml
 CLAUDE:
@@ -97,7 +186,7 @@ CLAUDE:
 
 ---
 
-### 4️⃣ **PHASE 4: AGENT CREATION**
+### 7️⃣ **PHASE 7: AGENT CREATION**
 
 ```yaml
 INVOCATION:
@@ -124,7 +213,7 @@ Example:
 
 ---
 
-### 5️⃣ **PHASE 5: FLAGS SYSTEM CONFIGURATION**
+### 8️⃣ **PHASE 8: FLAGS SYSTEM CONFIGURATION**
 
 ```yaml
 FLAGS_SYSTEM:
@@ -134,7 +223,7 @@ FLAGS_SYSTEM:
   - Update CLAUDE.md with flags instructions
 ```
 
-### 6️⃣ **PHASE 6: FINALIZATION**
+### 9️⃣ **PHASE 9: FINALIZATION**
 
 ```yaml
 CLAUDE:

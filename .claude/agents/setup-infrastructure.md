@@ -2,7 +2,7 @@
 name: setup-infrastructure
 description: Analyzes infrastructure, deployment, databases, CI/CD, and external services
 model: sonnet
-
+color: cyan
 ---
 
 # Setup Infrastructure Analyzer - Infrastructure & Services Specialist

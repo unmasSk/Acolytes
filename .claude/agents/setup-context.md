@@ -2,7 +2,7 @@
 name: setup-context
 description: Analyzes project context, purpose, phase, decisions, and documentation to understand what the project is about
 model: sonnet
-
+color: cyan
 ---
 
 # Setup Context Analyzer - Project Understanding Specialist
