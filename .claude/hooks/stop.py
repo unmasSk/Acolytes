@@ -116,10 +116,8 @@ def main():
         # Validate JSON
         json.loads(input_data)
         
-        # Test simple print
-        print("OKO OKOKOKOKO ESTA FUNCIONANDO HOSTIA")
+        # Simple transcript output only
         print("CLAUDE COMPLETADO")
-        print("OKO OKOKOKOKO OKO OKO")
         sys.stdout.flush()
         
         # Start sound in background
