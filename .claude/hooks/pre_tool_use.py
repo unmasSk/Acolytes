@@ -127,6 +127,23 @@ def is_env_file_access(tool_name, tool_input):
     
     return False
 
+def is_dangerous_git_operation(tool_name, tool_input):
+    """Check if git MCP operation could expose .git directory."""
+    if tool_name != 'mcp__server-git__git_add':
+        return False
+    
+    # Check if trying to add everything including .git
+    if isinstance(tool_input, dict):
+        files = tool_input.get('files', [])
+        if files:
+            # Convert to string to handle various formats
+            files_str = str(files).lower()
+            # Dangerous patterns that could include .git
+            dangerous_patterns = ['.', '*', 'all', '.git']
+            return any(pattern in files_str for pattern in dangerous_patterns)
+    
+    return False
+
 def log_to_sqlite(tool_data, blocked=False, block_reason=None):
     """Log tool usage to SQLite database"""
     try:
@@ -207,6 +224,13 @@ def main():
             print("BLOCKED: Access to .env files containing sensitive data is prohibited", file=sys.stderr)
             print("Use .env.sample for template files instead", file=sys.stderr)
             sys.exit(2)  # Exit code 2 blocks tool call and shows error to Claude
+        
+        # Check for dangerous Git MCP operations
+        if is_dangerous_git_operation(tool_name, tool_input):
+            log_to_sqlite(input_data, blocked=True, block_reason="Git MCP operation could expose .git directory")
+            print("BLOCKED: Git MCP operation with '.' or '*' could commit .git directory", file=sys.stderr)
+            print("Use 'git add -A' via Bash tool instead for safety", file=sys.stderr)
+            sys.exit(2)
         
         # Check for ANY deletion commands
         if tool_name == 'Bash':
