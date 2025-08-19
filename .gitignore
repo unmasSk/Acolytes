@@ -1,3 +1,10 @@
+# 🚨 CRITICAL: Git repository protection - NEVER commit internal Git files!
+.git/
+*.git/
+.git*
+*/.git/
+**/.git/
+
 # Environment variables - NEVER commit these!
 .env
 .env.local
@@ -30,3 +37,41 @@ __pycache__/
 
 # Audio files (SFX directory)
 .claude/resources/sfx/
+
+# 🛡️ Additional Git and system protections
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# Lock files (prevent corruption)
+*.lock
+package-lock.json
+yarn.lock
+
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Version control backups
+*.orig
+*.rej
+
+# Node modules (if you use JS/Node tools)
+node_modules/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# Backup files
+*.backup
+*.bak
+*_backup
+*_bak
