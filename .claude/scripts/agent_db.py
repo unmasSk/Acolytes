@@ -11,8 +11,8 @@ Commands:
   list-agents              - List all agents
   query [sql]              - Run read-only query
   execute [sql]            - Run write operation
-  create-flag              - Create inter-module communication flag
-  get_flags [module]       - Get pending flags for a module
+  create-flag              - Create flag targeting specific agent (action_required >= 100 chars, change_description >= 50 chars)
+  get_flags [target_agent] - Get pending flags for specific agent
 """
 import sqlite3
 import json
@@ -49,11 +49,32 @@ def execute(sql, params=None):
     conn.close()
     return json.dumps({"affected": affected, "id": last_id})
 
-def create_flag(flag_type, source_module, source_agent, affected_modules, 
+def create_flag(flag_type, source_agent, target_agent, 
                 change_description, action_required, impact_level='medium',
                 related_files=None, code_location=None, example_usage=None,
-                session_id=None):
+                context=None, session_id=None):
     """Create a FLAG for inter-module communication about changes"""
+    
+    # QUALITY VALIDATION
+    if len(action_required) < 100:
+        return json.dumps({
+            "error": "action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.",
+            "current_length": len(action_required),
+            "required_length": 100
+        })
+    
+    if len(change_description) < 50:
+        return json.dumps({
+            "error": "change_description must be at least 50 characters. Describe what changed and why.",
+            "current_length": len(change_description),
+            "required_length": 50
+        })
+    
+    if not target_agent and impact_level in ['high', 'critical']:
+        return json.dumps({
+            "error": "High/critical impact flags must have specific target_agent specified."
+        })
+    
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
@@ -63,14 +84,9 @@ def create_flag(flag_type, source_module, source_agent, affected_modules,
         row = cursor.fetchone()
         session_id = row[0] if row else None
     
-    # Validate and sanitize affected_modules (keep as comma-separated TEXT)
-    if isinstance(affected_modules, list):
-        # Validate each module name
-        for module in affected_modules:
-            if not re.match(r'^[a-zA-Z0-9_\-\.]+$', module.strip()):
-                conn.close()
-                return json.dumps({"error": f"Invalid module name: {module}"})
-        affected_modules = ', '.join(affected_modules)
+    # Validate target_agent format
+    if target_agent and not target_agent.startswith('@'):
+        target_agent = f"@{target_agent}"
     
     # Validate and sanitize related_files (keep as comma-separated TEXT)
     if related_files and isinstance(related_files, list):
@@ -78,32 +94,30 @@ def create_flag(flag_type, source_module, source_agent, affected_modules,
     
     cursor = conn.execute("""
         INSERT INTO flags (
-            session_id, flag_type, source_module, source_agent, affected_modules,
+            chain_origin_id, session_id, flag_type, source_agent, target_agent,
             change_description, action_required, impact_level, related_files,
-            code_location, example_usage, status, created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)
+            code_location, example_usage, context, status, created_at, locked
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, FALSE)
     """, (
-        session_id, flag_type, source_module, source_agent, affected_modules,
+        None, session_id, flag_type, source_agent, target_agent,
         change_description, action_required, impact_level, related_files,
-        code_location, example_usage, timestamp
+        code_location, example_usage, json.dumps(context) if context else None, timestamp
     ))
     conn.commit()
     flag_id = cursor.lastrowid
     conn.close()
-    return f"FLAG #{flag_id} created: {flag_type} from {source_module} affecting {affected_modules}"
+    return f"FLAG #{flag_id} created: {flag_type} from {source_agent} targeting {target_agent}"
 
-def get_pending_flags(module=None):
-    """Get pending flags that affect a specific module"""
+def get_pending_flags(target_agent=None):
+    """Get pending flags targeting a specific agent"""
     sql = "SELECT * FROM flags WHERE status='pending'"
     params = []
-    if module:
-        # Validate module name to prevent SQL injection
-        if not re.match(r'^[a-zA-Z0-9_\-\.]+$', module):
-            return json.dumps({"error": f"Invalid module name: {module}"})
-        
-        # Safe check if module is in the affected_modules list (comma-separated)
-        sql += " AND (',' || affected_modules || ',' LIKE ?)"
-        params.append(f'%,{module},%')
+    if target_agent:
+        # Validate agent name format
+        if not target_agent.startswith('@'):
+            target_agent = f"@{target_agent}"
+        sql += " AND target_agent = ?"
+        params.append(target_agent)
     sql += " ORDER BY CASE impact_level WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END, created_at ASC"
     return query(sql, params)
 
@@ -130,7 +144,7 @@ def create_agent(name):
     try:
         # Insert agent
         cursor = conn.execute(
-            "INSERT INTO agents (name, created_at) VALUES (?, ?)",
+            "INSERT INTO agents_dynamic (name, module, created_at) VALUES (?, 'unknown', ?)",
             (name, timestamp)
         )
         agent_id = cursor.lastrowid
@@ -165,7 +179,7 @@ def update_memory(agent_name, memory_type, content):
     
     try:
         # Get agent_id
-        cursor = conn.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
+        cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (agent_name,))
         row = cursor.fetchone()
         if not row:
             return json.dumps({"error": f"Agent '{agent_name}' not found"})
@@ -200,7 +214,7 @@ def get_memory(agent_name, memory_type):
     cursor = conn.execute("""
         SELECT m.content, m.updated_at
         FROM agent_memory m
-        JOIN agents a ON m.agent_id = a.id
+        JOIN agents_dynamic a ON m.agent_id = a.id
         WHERE a.name = ? AND m.memory_type = ?
     """, (agent_name, memory_type))
     
@@ -225,7 +239,7 @@ def update_health(agent_name, drift_score, status, memory_size_kb=None,
     conn = sqlite3.connect(DB_PATH)
     
     # Get agent_id
-    cursor = conn.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
+    cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (agent_name,))
     agent = cursor.fetchone()
     if not agent:
         conn.close()
@@ -280,7 +294,7 @@ def get_agent_health(agent_name=None):
             h.memory_size_warning, h.needs_compaction, h.checked_at,
             h.recommendations
         FROM agent_health h
-        JOIN agents a ON h.agent_id = a.id
+        JOIN agents_dynamic a ON h.agent_id = a.id
     """
     params = []
     
@@ -309,7 +323,7 @@ def create_todo(task, priority='medium', category=None, module=None,
     # Get agent_id if assigned_to is an agent name
     agent_id = None
     if assigned_to:
-        cursor = conn.execute("SELECT id FROM agents WHERE name = ?", (assigned_to,))
+        cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (assigned_to,))
         agent = cursor.fetchone()
         if agent:
             agent_id = agent[0]
@@ -381,7 +395,7 @@ def get_todos(status=None, assigned_to=None, module=None, limit=20):
             a.name as agent_name,
             s.title as session_title
         FROM todos t
-        LEFT JOIN agents a ON t.agent_id = a.id
+        LEFT JOIN agents_dynamic a ON t.agent_id = a.id
         LEFT JOIN sessions s ON t.session_id = s.id
         WHERE 1=1
     """
@@ -551,10 +565,116 @@ def unlock_flag(flag_id):
     finally:
         conn.close()
 
+def cleanup_orphaned_jobs():
+    """Clean up jobs that should be completed but are still marked as active"""
+    conn = sqlite3.connect(DB_PATH)
+    
+    # Find jobs with no recent sessions (more than 24 hours old)
+    cursor = conn.execute("""
+        SELECT j.id FROM jobs j
+        WHERE j.status = 'active' 
+        AND NOT EXISTS (
+            SELECT 1 FROM sessions s 
+            WHERE s.job_id = j.id 
+            AND datetime(s.created_at) > datetime('now', '-1 day')
+        )
+    """)
+    
+    orphaned_jobs = cursor.fetchall()
+    
+    if orphaned_jobs:
+        # Mark them as paused with reason
+        for job in orphaned_jobs:
+            conn.execute("""
+                UPDATE jobs SET 
+                    status = 'paused',
+                    paused_at = ?,
+                    pause_reason = 'Auto-paused: No recent sessions detected'
+                WHERE id = ?
+            """, (get_timestamp(), job[0]))
+        
+        conn.commit()
+        result = f"Cleaned up {len(orphaned_jobs)} orphaned jobs"
+    else:
+        result = "No orphaned jobs found"
+    
+    conn.close()
+    return json.dumps({"message": result, "jobs_cleaned": len(orphaned_jobs)})
+
+def list_available_agents():
+    """List all available agents from catalog and dynamic agents"""
+    conn = sqlite3.connect(DB_PATH)
+    
+    try:
+        # Get global agents from catalog
+        cursor = conn.execute("""
+            SELECT name, type, module, description 
+            FROM agents_catalog 
+            WHERE status = 'active' 
+            ORDER BY type, module, name
+        """)
+        global_agents = cursor.fetchall()
+        
+        # Get dynamic agents
+        cursor = conn.execute("""
+            SELECT name, module, created_at 
+            FROM agents_dynamic 
+            ORDER BY name
+        """)
+        dynamic_agents = cursor.fetchall()
+        
+        result = {
+            "global_agents": [
+                {
+                    "name": agent[0],
+                    "type": agent[1], 
+                    "module": agent[2],
+                    "description": agent[3]
+                } for agent in global_agents
+            ],
+            "dynamic_agents": [
+                {
+                    "name": agent[0],
+                    "module": agent[1],
+                    "created_at": agent[2]
+                } for agent in dynamic_agents
+            ],
+            "total_global": len(global_agents),
+            "total_dynamic": len(dynamic_agents)
+        }
+        
+        return json.dumps(result, indent=2)
+        
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+    finally:
+        conn.close()
+
 def create_flag_for_agent(flag_type, source_agent, target_agent, change_description, 
                          action_required, impact_level='medium', related_files=None,
-                         code_location=None, example_usage=None, context=None):
+                         code_location=None, example_usage=None, context=None, chain_origin_id=None):
     """Create a FLAG targeting a specific agent (new system)"""
+    
+    # QUALITY VALIDATION
+    if len(action_required) < 100:
+        return json.dumps({
+            "error": "action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.",
+            "current_length": len(action_required),
+            "required_length": 100
+        })
+    
+    if len(change_description) < 50:
+        return json.dumps({
+            "error": "change_description must be at least 50 characters. Describe what changed and why.",
+            "current_length": len(change_description),
+            "required_length": 50
+        })
+    
+    if not target_agent and impact_level in ['high', 'critical']:
+        return json.dumps({
+            "error": "High/critical impact flags must have specific target_agent specified."
+        })
+    
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
@@ -570,12 +690,12 @@ def create_flag_for_agent(flag_type, source_agent, target_agent, change_descript
     try:
         cursor = conn.execute("""
             INSERT INTO flags (
-                session_id, flag_type, source_module, source_agent, target_agent,
+                chain_origin_id, session_id, flag_type, source_agent, target_agent,
                 change_description, action_required, impact_level, related_files,
                 code_location, example_usage, context, status, created_at, locked
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, FALSE)
         """, (
-            session_id, flag_type, source_agent, source_agent, target_agent,
+            chain_origin_id, session_id, flag_type, source_agent, target_agent,
             change_description, action_required, impact_level, related_files,
             code_location, example_usage, json.dumps(context) if context else None, timestamp
         ))
@@ -605,6 +725,7 @@ if __name__ == "__main__":
         print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get_flags, update-health, get-health")
         print("TODO Commands: create-todo, update-todo-status, get-todos, create-todo-from-flag")
         print("NEW FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, create-flag-for-agent")
+        print("MAINTENANCE Commands: cleanup-jobs")
         sys.exit(1)
     
     command = sys.argv[1]
@@ -626,7 +747,11 @@ if __name__ == "__main__":
                 sys.exit(1)
             agent_name = sys.argv[2]
             memory_type = sys.argv[3]
-            content = json.loads(sys.argv[4])
+            try:
+                content = json.loads(sys.argv[4])
+            except json.JSONDecodeError as e:
+                print(json.dumps({"error": f"Invalid JSON: {e}"}))
+                sys.exit(1)
             print(update_memory(agent_name, memory_type, content))
         
         elif command == "get-memory":
@@ -639,12 +764,20 @@ if __name__ == "__main__":
         
         elif command == "query":
             sql = sys.argv[2]
-            params = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
+            try:
+                params = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
+            except json.JSONDecodeError as e:
+                print(json.dumps({"error": f"Invalid JSON params: {e}"}))
+                sys.exit(1)
             print(query(sql, params))
         
         elif command == "execute":
             sql = sys.argv[2]
-            params = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
+            try:
+                params = json.loads(sys.argv[3]) if len(sys.argv) > 3 else None
+            except json.JSONDecodeError as e:
+                print(json.dumps({"error": f"Invalid JSON params: {e}"}))
+                sys.exit(1)
             print(execute(sql, params))
         
         elif command == "create-flag":
@@ -653,9 +786,8 @@ if __name__ == "__main__":
             parser = argparse.ArgumentParser()
             parser.add_argument('command')
             parser.add_argument('--flag_type', required=True)
-            parser.add_argument('--source_module', required=True)
             parser.add_argument('--source_agent', required=True)
-            parser.add_argument('--affected_modules', required=True)
+            parser.add_argument('--target_agent', required=True)
             parser.add_argument('--change_description', required=True)
             parser.add_argument('--action_required', required=True)
             parser.add_argument('--impact_level', default='medium')
@@ -665,15 +797,15 @@ if __name__ == "__main__":
             
             args = parser.parse_args(sys.argv[1:])
             print(create_flag(
-                args.flag_type, args.source_module, args.source_agent,
-                args.affected_modules, args.change_description, args.action_required,
+                args.flag_type, args.source_agent, args.target_agent,
+                args.change_description, args.action_required,
                 args.impact_level, args.related_files, args.code_location,
                 args.example_usage
             ))
         
         elif command == "get_flags":
-            module = sys.argv[2] if len(sys.argv) > 2 else None
-            print(get_pending_flags(module))
+            target_agent = sys.argv[2] if len(sys.argv) > 2 else None
+            print(get_pending_flags(target_agent))
         
         elif command == "update-health":
             # Parse arguments for health update
@@ -775,6 +907,12 @@ if __name__ == "__main__":
             flag_id = int(sys.argv[2])
             print(unlock_flag(flag_id))
         
+        elif command == "list-agents":
+            print(list_available_agents())
+        
+        elif command == "cleanup-jobs":
+            print(cleanup_orphaned_jobs())
+        
         elif command == "create-flag-for-agent":
             import argparse
             parser = argparse.ArgumentParser()
@@ -789,6 +927,7 @@ if __name__ == "__main__":
             parser.add_argument('--code_location', default=None)
             parser.add_argument('--example_usage', default=None)
             parser.add_argument('--context', default=None)
+            parser.add_argument('--chain_origin_id', type=int, default=None)
             
             args = parser.parse_args(sys.argv[1:])
             context = json.loads(args.context) if args.context else None
@@ -797,7 +936,7 @@ if __name__ == "__main__":
             print(create_flag_for_agent(
                 args.flag_type, args.source_agent, args.target_agent,
                 args.change_description, args.action_required, args.impact_level,
-                related_files, args.code_location, args.example_usage, context
+                related_files, args.code_location, args.example_usage, context, args.chain_origin_id
             ))
         
         else:

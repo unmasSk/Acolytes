@@ -61,10 +61,9 @@ CREATE TABLE IF NOT EXISTS jobs (
 CREATE TABLE IF NOT EXISTS sessions (
     id TEXT PRIMARY KEY,  -- "session_a1b2c3d4e5f6", "session_9f8e7d6c5b4a", etc.
     job_id TEXT NOT NULL,
-    title TEXT,
+    claude_session_id TEXT,  -- Real Claude session UUID from .jsonl files
     accomplishments JSON,
     decisions JSON,
-    pending JSON,
     bugs_fixed JSON,
     errors_encountered JSON,
     breakthrough_moment TEXT,
@@ -84,19 +83,18 @@ CREATE TABLE IF NOT EXISTS messages (
     total_exchanges INTEGER,          -- Number of user-assistant exchanges
     duration_minutes INTEGER,         -- Session duration
     created_at TEXT NOT NULL,
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
 -- 6. FLAGS
 -- Inter-module communication system for changes that affect other modules
 CREATE TABLE IF NOT EXISTS flags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    chain_origin_id INTEGER,              -- Links to original FLAG in chain (NULL for origin flags)
     session_id TEXT,                      -- Session where flag was created
     flag_type TEXT NOT NULL,              -- change/new_feature/refactor/deprecation/breaking_change/enhancement
-    source_module TEXT NOT NULL,          -- Module that made the change
     source_agent TEXT NOT NULL,           -- Agent that created the flag
-    affected_modules TEXT,                -- Comma-separated list of affected modules (legacy)
-    target_agent TEXT,                    -- NEW: Specific agent target (@agent-name)
+    target_agent TEXT,                    -- Specific agent target (@agent-name)
     change_description TEXT NOT NULL,     -- What changed (e.g., "Created global TIME utility")
     action_required TEXT NOT NULL,        -- What other modules need to do
     impact_level TEXT DEFAULT 'medium',   -- low/medium/high/critical (impact, not error severity)
@@ -111,7 +109,8 @@ CREATE TABLE IF NOT EXISTS flags (
     completed_at TEXT,                     -- When all affected modules adapted
     completed_by TEXT,                     -- Agents that completed the adaptation
     notes TEXT,                            -- Resolution notes or comments
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL,
+    FOREIGN KEY (chain_origin_id) REFERENCES flags(id) ON DELETE SET NULL
 );
 
 -- 7. AGENT HEALTH
@@ -138,7 +137,7 @@ CREATE TABLE IF NOT EXISTS agent_health (
     last_upgrade_at TEXT,                  -- When agent was last upgraded
     upgraded_by TEXT,                      -- Who upgraded (auto/manual/agent)
     FOREIGN KEY (agent_id) REFERENCES agents_dynamic(id) ON DELETE CASCADE,
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
 -- 8. TOOL LOGS
@@ -160,16 +159,14 @@ CREATE TABLE IF NOT EXISTS tool_logs (
     hook_message TEXT,                     -- Hook block reason
     duration_ms INTEGER,                  -- Execution time
     timestamp TEXT NOT NULL,               -- When tool was called
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
 -- 9. TODOS
 CREATE TABLE IF NOT EXISTS todos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     task TEXT NOT NULL,
-    priority TEXT DEFAULT 'medium',        -- low/medium/high/critical
     status TEXT DEFAULT 'pending',         -- pending/in_progress/completed/blocked/cancelled
-    due_date TEXT,
     created_at TEXT NOT NULL,
     completed_at TEXT,
     
@@ -183,9 +180,9 @@ CREATE TABLE IF NOT EXISTS todos (
     actual_hours REAL,                     -- Actual time spent
     start_date TEXT,                       -- When work started
     reminder_at TEXT,                      -- When to remind
+    due_date TEXT,
     
     -- Categorization and context
-    category TEXT,                         -- bug/feature/refactor/docs/test/maintenance
     module TEXT,                           -- Module affected
     tags JSON,                             -- Tags for search and filtering
     dependencies JSON,                     -- Array of TODO IDs that block this
@@ -209,8 +206,8 @@ CREATE TABLE IF NOT EXISTS todos (
     ai_suggested BOOLEAN DEFAULT 0,       -- If suggested by AI
     context JSON,                          -- Additional context
     
-    FOREIGN KEY (agent_id) REFERENCES agents(id),
-    FOREIGN KEY (session_id) REFERENCES sessions(id)
+    FOREIGN KEY (agent_id) REFERENCES agents_dynamic(id) ON DELETE SET NULL,
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
 -- INDEXES
@@ -218,13 +215,18 @@ CREATE INDEX IF NOT EXISTS idx_jobs_active ON jobs(completed_at) WHERE completed
 CREATE INDEX IF NOT EXISTS idx_sessions_job ON sessions(job_id);
 CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
 CREATE INDEX IF NOT EXISTS idx_flags_pending ON flags(status) WHERE status = 'pending';
-CREATE INDEX IF NOT EXISTS idx_flags_source ON flags(source_module, source_agent);
+CREATE INDEX IF NOT EXISTS idx_flags_source ON flags(source_agent);
 CREATE INDEX IF NOT EXISTS idx_flags_session ON flags(session_id);
 CREATE INDEX IF NOT EXISTS idx_flags_workable ON flags(target_agent, locked, status) WHERE locked = FALSE AND status = 'pending';
 CREATE INDEX IF NOT EXISTS idx_flags_target ON flags(target_agent, status);
+CREATE INDEX IF NOT EXISTS idx_flags_chain ON flags(chain_origin_id);
 CREATE INDEX IF NOT EXISTS idx_agent_memory ON agent_memory(agent_id, memory_type);
 CREATE INDEX IF NOT EXISTS idx_tool_logs_session ON tool_logs(session_id, timestamp);
 CREATE INDEX IF NOT EXISTS idx_sessions_time ON sessions(datetime(created_at) DESC);
+
+-- UNIQUE CONSTRAINTS
+-- Ensure only one job can be active at a time
+CREATE UNIQUE INDEX IF NOT EXISTS idx_only_one_active_job ON jobs (status) WHERE status = 'active';
 
 -- VIEWS
 CREATE VIEW IF NOT EXISTS latest_session AS
@@ -337,3 +339,30 @@ INSERT OR IGNORE INTO agents_catalog (name, type, module, description, capabilit
 
 -- Planning Agents
 ('@plan.strategy', 'plan', 'strategy', 'Project management and strategic planning expert', '["Project management tools (Jira, Asana)", "agile methodologies", "resource planning", "timeline management", "Gantt charts"]', '["Project planning", "resource allocation", "sprint planning", "roadmap creation", "timeline management"]');
+
+-- TRIGGERS FOR FLAGS QUALITY CONTROL
+CREATE TRIGGER validate_flag_quality
+BEFORE INSERT ON flags
+BEGIN
+  SELECT CASE
+    WHEN LENGTH(NEW.action_required) < 100 
+    THEN RAISE(ABORT, 'action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.')
+    WHEN LENGTH(NEW.change_description) < 50 
+    THEN RAISE(ABORT, 'change_description must be at least 50 characters. Describe what changed and why.')
+    WHEN NEW.target_agent IS NULL AND NEW.impact_level IN ('high', 'critical')
+    THEN RAISE(ABORT, 'High/critical impact flags must have specific target_agent specified.')
+  END;
+END;
+
+CREATE TRIGGER validate_flag_quality_update
+BEFORE UPDATE ON flags
+BEGIN
+  SELECT CASE
+    WHEN LENGTH(NEW.action_required) < 100 
+    THEN RAISE(ABORT, 'action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.')
+    WHEN LENGTH(NEW.change_description) < 50 
+    THEN RAISE(ABORT, 'change_description must be at least 50 characters. Describe what changed and why.')
+    WHEN NEW.target_agent IS NULL AND NEW.impact_level IN ('high', 'critical')
+    THEN RAISE(ABORT, 'High/critical impact flags must have specific target_agent specified.')
+  END;
+END;

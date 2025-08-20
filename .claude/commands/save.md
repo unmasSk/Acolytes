@@ -11,83 +11,113 @@ description: Save session and messages to SQLite with job tracking
 
 Saves the current session and messages to SQLite database with comprehensive metrics and job tracking.
 
-## Context
+## CLAUDE'S ROLE
 
-- Current active session was created by session_start.py hook and needs to be closed
-- Session ID is available from database (sessions table where ended_at IS NULL)
+**YOU MUST ANALYZE THE REAL CONVERSATION MANUALLY**
 
-## Instructions
+The script CANNOT read our conversation content. YOU must:
 
-**IMPORTANT: Analyze the current conversation to fill both sessions and messages tables**
+1. **READ** our entire conversation from start to finish
+2. **EXTRACT** real accomplishments, decisions, problems solved
+3. **IDENTIFY** breakthrough moments and actual issues encountered  
+4. **PROVIDE** this analyzed data to the script for saving
 
-## Analysis Approach
+## What Claude Must Analyze
 
-Extract data for SESSIONS table:
+**ACCOMPLISHMENTS**: What we actually did
+- Files created/modified with specific names
+- Problems solved (be specific)
+- Features implemented
+- Scripts fixed/improved
 
-- **ID**: Generated session ID (session_a1b2c3d4e5f6)
-- **Job ID**: Current or specified job identifier
-- **Title**: Auto-generated session title from main accomplishment
-- **Accomplishments**: Tasks completed, files created/modified, problems solved
-- **Decisions**: Important choices made, architectural decisions, tool selections
-- **Pending**: Tasks left incomplete, next steps identified
-- **Bugs Fixed**: Specific bugs resolved during session
-- **Errors Encountered**: Problems faced and how they were handled
-- **Breakthrough Moment**: The key insight or solution that unlocked progress
-- **Next Session Priority**: What should be done FIRST next time
-- **Quality Score**: Dynamic score (1-10) based on session productivity and error count
-- **Created At**: Timestamp when session was created by session_start.py hook
-- **Ended At**: Timestamp when session was closed by this save command
+**DECISIONS**: Important choices we made
+- Technical approaches chosen
+- Architecture decisions
+- Tool selections and why
 
-Generate data for MESSAGES table:
+**BUGS FIXED**: Actual problems resolved
+- Specific errors we encountered and fixed
+- Scripts that were broken and are now working
+- Issues with implementation that got resolved
 
-- **Session ID**: Same as sessions.id
-- **Conversation Flow**: Chronological narrative of what happened from start to finish
-- **Total Exchanges**: Count of user-assistant message pairs in conversation
-- **Duration Minutes**: Session length in minutes
-- **Created At**: When summary was created
+**ERRORS ENCOUNTERED**: Problems we faced
+- Things that didn't work as expected
+- Mistakes that had to be corrected
+- Technical barriers we hit
+
+**BREAKTHROUGH MOMENT**: Key insight that unlocked progress
+- The "aha!" moment that solved a big problem
+- Critical realization that changed our approach
+
+**NEXT PRIORITY**: What should be done first next time
+- Based on what we learned and what's left incomplete
+- Most important next step
+
+## Script Execution
+
+The script will:
+- Get session duration from database timestamps  
+- Count tool exchanges from tool_logs
+- Accept the conversation analysis YOU provide
+- Save everything to database
 
 ## Execute
 
-- `uv run .claude/scripts/save_session.py` - Close current session and save analysis to database
+1. **FIRST**: Analyze our conversation manually
+2. **THEN**: `uv run .claude/scripts/save_session.py` with your analysis
 
 ## Response Format
 
+After analyzing the conversation and executing the script, present results in this beautiful format:
+
 ```markdown
-## 📊 Session Saved Successfully
+==============================================================================
 
-**Session ID**: {session_id}
-**Job**: {job_id}
-**Quality Score**: {quality_score}/10
+# 📊 Session Saved Successfully
 
-### 🎯 Accomplishments ({accomplishments_count})
+## Session Information
+- **Session ID**: {session_id}  
+- **Job**: {job_id}  
+- **Quality Score**: {quality_score}/10 ⭐  
+- **Duration**: {duration_minutes} minutes  
+- **Total Exchanges**: {total_exchanges}  
 
-{accomplishments_list}
+## 🎯 Accomplishments ({accomplishments_count})
 
-### 🐛 Bugs Fixed ({bugs_count})
+{accomplishments_list_with_bullets}
 
-{bugs_list}
+## 🐛 Bugs Fixed ({bugs_count})
 
-### ❌ Errors Encountered ({errors_count})
+{bugs_list_with_bullets}
 
-{errors_list}
+## ⚠️ Errors Encountered ({errors_count})
 
-### 💡 Breakthrough Moment
+{errors_list_with_bullets}
 
-"{breakthrough_moment}"
+## 💡 Breakthrough Moment
 
-### 🚀 Next Session Priority
+> "{breakthrough_moment}"
 
-"{next_priority}"
+## 🚀 Next Session Priority
 
-### ⏳ Pending Tasks ({pending_count})
+**{next_priority}**
 
-{pending_list}
+## ⏳ Pending Tasks ({pending_count})
 
-**Next Session**: When you return, say "Continue job **{job_id}**" to load all context
+{pending_list_with_bullets}
 
-### 💬 Conversation Summary
+## 💬 Conversation Summary
 
-## A detailed chronological narrative has been saved to MESSAGES table (ID: {message_id}).
+A detailed chronological narrative has been saved to the **MESSAGES** table.
 
-## Session duration: {duration_minutes} minutes | Total exchanges: {total_exchanges}
+**Message ID**: {message_id}  
+**Technical Metrics**: {tool_count} tools used ({successful_tools} successful, {failed_tools} failed)
+
+### 🔄 Next Session
+
+When you return, say **"Continue job {job_id}"** to load all context and continue where we left off.
+
+*Session closed at {timestamp}* ✨
+
+==============================================================================
 ```

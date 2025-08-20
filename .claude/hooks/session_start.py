@@ -29,6 +29,9 @@ import sqlite3
 import subprocess
 import secrets
 import time
+import os
+import re
+import shutil
 from pathlib import Path
 from datetime import datetime
 
@@ -39,9 +42,71 @@ except ImportError:
     pass  # dotenv is optional
 
 
+def backup_database():
+    """Create database backup with timestamp and maintain max 10 files"""
+    try:
+        DB_PATH = Path(".claude/memory/project.db")
+        if not DB_PATH.exists():
+            return
+        
+        # Create backup directory
+        backup_dir = Path(".claude/memory/backup")
+        backup_dir.mkdir(exist_ok=True)
+        
+        # Create backup filename with timestamp (no seconds)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M')
+        backup_filename = f"project_{timestamp}.db"
+        backup_path = backup_dir / backup_filename
+        
+        # Copy database to backup
+        shutil.copy2(DB_PATH, backup_path)
+        
+        # Clean old backups - keep only 10 most recent
+        backup_files = sorted(backup_dir.glob("project_*.db"), key=lambda f: f.stat().st_mtime)
+        if len(backup_files) > 10:
+            files_to_delete = backup_files[:-10]  # Remove all but last 10
+            for old_file in files_to_delete:
+                old_file.unlink()
+                
+    except Exception:
+        pass  # Fail silently to not break session start
+
+
+def get_latest_claude_session_id():
+    """Get the most recent Claude session UUID from .jsonl files"""
+    try:
+        # Path to Claude sessions directory
+        claude_sessions_path = Path.home() / ".claude" / "projects" / "C--Users-bextia-Desktop-acolyte-ClaudeSquad"
+        
+        if not claude_sessions_path.exists():
+            return None
+        
+        # Get all .jsonl files
+        jsonl_files = list(claude_sessions_path.glob("*.jsonl"))
+        
+        if not jsonl_files:
+            return None
+        
+        # Find the most recent file by modification time
+        latest_file = max(jsonl_files, key=lambda f: f.stat().st_mtime)
+        
+        # Extract UUID from filename (remove .jsonl extension)
+        uuid_match = re.match(r'^([a-f0-9-]{36})\.jsonl$', latest_file.name)
+        if uuid_match:
+            return uuid_match.group(1)
+        
+        return None
+        
+    except Exception:
+        return None
+
+
 def create_new_session():
     """Create new session at start and return session_id for hooks"""
     try:
+        # Backup database first
+        backup_database()
+        
         DB_PATH = Path(".claude/memory/project.db")
         if not DB_PATH.exists():
             return None
@@ -52,21 +117,69 @@ def create_new_session():
         conn = sqlite3.connect(str(DB_PATH))
         cursor = conn.cursor()
         
-        # Get active job or create default
-        cursor.execute("SELECT id FROM jobs WHERE status = 'active' ORDER BY created_at DESC LIMIT 1")
+        # Get the active job (guaranteed to be exactly 1 by DB constraint)
+        cursor.execute("SELECT id FROM jobs WHERE status = 'active'")
         active_job = cursor.fetchone()
-        job_id = active_job[0] if active_job else "project-closure"
         
-        # Create initial session record
+        if not active_job:
+            # No active job found - inform user about available options
+            cursor.execute("SELECT id, title, status FROM jobs WHERE status = 'paused' ORDER BY created_at DESC LIMIT 3")
+            paused_jobs = cursor.fetchall()
+            
+            conn.close()
+            
+            # Create session without job_id and show informative message
+            context_parts = [
+                "WARNING: NO ACTIVE JOB FOUND",
+                "=" * 40,
+                "",
+                "No active job found at this time.",
+                "To continue, you need to activate an existing job:",
+                ""
+            ]
+            
+            if paused_jobs:
+                context_parts.append("AVAILABLE JOBS:")
+                for job in paused_jobs:
+                    title = job[1] or "No title"
+                    context_parts.append(f"   - {job[0]} - {title} ({job[2]})")
+                context_parts.append("")
+                context_parts.append("To activate a job: UPDATE jobs SET status='active' WHERE id='job-id'")
+                context_parts.append("To see all jobs: /jobs --list")
+            else:
+                context_parts.append("No jobs available.")
+                context_parts.append("Consider creating a new job manually in the database.")
+            
+            context_parts.append("")
+            context_parts.append("Session will be created without job assignment.")
+            context_parts.append("=" * 40)
+            
+            # Output the informative message
+            output = {
+                "hookSpecificOutput": {
+                    "hookEventName": "SessionStart", 
+                    "additionalContext": "\n".join(context_parts)
+                }
+            }
+            import json
+            import sys
+            print(json.dumps(output))
+            sys.exit(0)
+            
+        job_id = active_job[0]
+        
+        # Get the latest Claude session UUID
+        claude_session_id = get_latest_claude_session_id()
+        
+        # Create initial session record with the active job and Claude UUID
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         cursor.execute("""
-            INSERT INTO sessions (id, job_id, created_at)
-            VALUES (?, ?, ?)
-        """, (session_id, job_id, timestamp))
+            INSERT INTO sessions (id, job_id, claude_session_id, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (session_id, job_id, claude_session_id, timestamp))
         
         conn.commit()
         conn.close()
-        
         
         return session_id
         
@@ -156,13 +269,6 @@ def load_job_context_from_db():
                 context_parts.append("\nPRIORITY:")
                 context_parts.append(f"   {last_session['next_session_priority']}")
             
-            if last_session['pending']:
-                pending_items = json.loads(last_session['pending'])
-                if pending_items:
-                    context_parts.append(f"\nPENDING ({len(pending_items)}):")
-                    for item in pending_items[:3]:
-                        context_parts.append(f"   • {item}")
-            
             context_parts.append("=" * 60)
             conn.close()
             return "\n".join(context_parts) if context_parts else None
@@ -175,8 +281,8 @@ def load_job_context_from_db():
         
         # Get last session info from this job
         cursor.execute("""
-            SELECT id, title, next_session_priority, breakthrough_moment, 
-                   pending, accomplishments, ended_at
+            SELECT id, next_session_priority, breakthrough_moment, 
+                   accomplishments, ended_at
             FROM sessions 
             WHERE job_id = ? AND ended_at IS NOT NULL
             ORDER BY created_at DESC 
@@ -187,16 +293,20 @@ def load_job_context_from_db():
         if last_session:
             context_parts.append("\nPREVIOUS SESSION SUMMARY:")
             
+            # Show accomplishments from last session
+            if last_session['accomplishments']:
+                try:
+                    accs = json.loads(last_session['accomplishments'])
+                    if isinstance(accs, list) and accs:
+                        context_parts.append("   Recent accomplishments:")
+                        for acc in accs[:3]:  # Show max 3 from last session
+                            context_parts.append(f"   • {acc}")
+                except (json.JSONDecodeError, TypeError):
+                    pass  # Skip malformed JSON
+            
             if last_session['next_session_priority']:
                 context_parts.append("\nPRIORITY FOR THIS SESSION:")
                 context_parts.append(f"   {last_session['next_session_priority']}")
-            
-            if last_session['pending']:
-                pending_items = json.loads(last_session['pending'])
-                if pending_items:
-                    context_parts.append(f"\nPENDING TASKS ({len(pending_items)}):")
-                    for item in pending_items[:5]:  # Show max 5
-                        context_parts.append(f"   • {item}")
             
             if last_session['breakthrough_moment']:
                 context_parts.append("\nLAST BREAKTHROUGH:")
@@ -227,8 +337,12 @@ def load_job_context_from_db():
         all_accomplishments = []
         for row in cursor.fetchall():
             if row['accomplishments']:
-                accs = json.loads(row['accomplishments'])
-                all_accomplishments.extend(accs)
+                try:
+                    accs = json.loads(row['accomplishments'])
+                    if isinstance(accs, list):
+                        all_accomplishments.extend(accs)
+                except (json.JSONDecodeError, TypeError):
+                    continue  # Skip malformed JSON
         
         if all_accomplishments:
             context_parts.append("\nRECENT ACCOMPLISHMENTS:")

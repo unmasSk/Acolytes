@@ -90,6 +90,54 @@ I examine:
 - **TODOs** - Pending work and technical debt
 - **History** - Recent changes and evolution
 
+### 1.5. Agent Strategy Decision
+
+**CRITICAL**: I decide if a module needs one or multiple agents:
+
+#### Single Agent Strategy (Default)
+```yaml
+When to use:
+  - Module has < 50 files
+  - Single responsibility (auth, payments, etc.)
+  - Cohesive functionality
+  - No clear sub-domains
+
+Agent naming:
+  - "auth-agent" (for /auth module)
+  - "payment-agent" (for /payment module)
+  - "notification-agent" (for /notification module)
+
+Specialization: "full_module"
+```
+
+#### Multi-Agent Strategy (Large Modules)
+```yaml
+When to use:
+  - Module has > 50 files
+  - Multiple distinct responsibilities
+  - Clear sub-domains within module
+  - Different technology stacks within module
+
+Agent naming patterns:
+  - "api-agent" (core API functionality)
+  - "api-auth-agent" (authentication endpoints)  
+  - "api-payment-agent" (payment endpoints)
+  - "api-webhook-agent" (webhook system)
+
+Specialization examples:
+  - "core_functionality"
+  - "authentication_endpoints"
+  - "payment_processing"
+  - "webhook_system"
+```
+
+#### Decision Process:
+1. **Analyze module size and complexity**
+2. **Identify distinct sub-domains**
+3. **Check for technology boundaries**
+4. **Evaluate maintenance complexity**
+5. **Choose strategy and naming pattern**
+
 ### 2. Agent Generation
 
 I load and use the template from `.claude/resources/templates/dynamic-agent-initial.md`:
@@ -97,12 +145,15 @@ I load and use the template from `.claude/resources/templates/dynamic-agent-init
 ```markdown
 1. Read the template file from .claude/resources/templates/dynamic-agent-initial.md
 2. Replace all {{variables}} with actual values from my analysis
-3. Save the generated agent to .claude/agents/[module]-agent.md
+3. Save the generated agent to .claude/agents/[agent-name].md
 
 Variables I replace:
-- {{module_name}} → "authentication" (example)
+- {{agent_name}} → "auth-agent" OR "api-auth-agent" (if specialized)
+- {{agent_title}} → "Authentication" OR "API Authentication" (title case)
+- {{module_name}} → "auth" (base module name)
 - {{module_name_title}} → "Authentication" (title case)
 - {{module_path}} → "/src/auth"
+- {{specialization}} → "full_module" OR "authentication_endpoints" (if specialized)
 - {{technology_stack}} → "Node.js, Express, JWT"
 - {{file_count}} → 23
 - {{line_count}} → 5847
@@ -154,10 +205,54 @@ The generated agent will have 10,000+ lines if necessary - completeness matters 
 
 ### 3. Agent File Creation
 
-I create a comprehensive agent file with instructions for the agent to analyze its module:
+I create comprehensive agent files with instructions for each agent to analyze its specialization:
 
+#### Single Agent Example:
 ```
-.claude/agents/[module]-agent.md  # The agent file with complete template
+.claude/agents/auth-agent.md  # Handles entire /auth module
+```
+
+#### Multi-Agent Example:
+```
+.claude/agents/api-agent.md       # Core API functionality
+.claude/agents/api-auth-agent.md  # Authentication endpoints
+.claude/agents/api-payment-agent.md # Payment endpoints  
+.claude/agents/api-webhook-agent.md # Webhook system
+```
+
+#### Variable Assignment Examples:
+
+**Single Agent (auth module):**
+```yaml
+agent_name: "auth-agent"
+agent_title: "Authentication"
+module_name: "auth"
+specialization: "full_module"
+module_path: "/src/auth"
+```
+
+**Multi-Agent (api module):**
+```yaml
+# Core API agent
+agent_name: "api-agent"
+agent_title: "API Core"
+module_name: "api"
+specialization: "core_functionality"
+module_path: "/src/api"
+
+# Authentication API agent  
+agent_name: "api-auth-agent"
+agent_title: "API Authentication"
+module_name: "api"
+specialization: "authentication_endpoints"
+module_path: "/src/api/auth"
+
+# Payment API agent
+agent_name: "api-payment-agent" 
+agent_title: "API Payment"
+module_name: "api"
+specialization: "payment_processing"
+module_path: "/src/api/payment"
 ```
 
 The agent will be responsible for filling its own 8 memory types when invoked in Phase 8:
