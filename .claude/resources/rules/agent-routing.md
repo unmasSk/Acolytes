@@ -492,10 +492,10 @@ MULTIPLE_TARGETS:
 
 ```bash
 # EVERY agent activation MUST start with:
-python agent_db.py get-agent-flags "@{your-agent-name}"
+python .claude/scripts/agent_db.py get-agent-flags "@{your-agent-name}"
 
 # Example for auth-agent:
-python agent_db.py get-agent-flags "@auth-agent"
+python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
 
 # If FLAGS exist, MUST process them BEFORE doing anything else
 ```
@@ -504,7 +504,7 @@ python agent_db.py get-agent-flags "@auth-agent"
 
 ```bash
 # When you change something that affects others:
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "interface_change" \
   --source_agent "@auth-agent" \
   --target_agent "@api-agent" \
@@ -517,7 +517,7 @@ python agent_db.py create-flag \
 
 ```bash
 # After processing a FLAG:
-python agent_db.py execute \
+python .claude/scripts/agent_db.py execute \
   "UPDATE flags SET status='completed', completed_at='$(date +%Y-%m-%d %H:%M)', completed_by='@auth-agent' WHERE id=45"
 ```
 
@@ -555,13 +555,13 @@ NEW_PROJECT_FLOW:
 ```yaml
 EXAMPLE_INTERACTION:
   1_auth_agent_works:
-    Check: python agent_db.py get-agent-flags "@auth-agent"
+    Check: python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
     Result: "0 pending flags"
     Work: "Creates login endpoint"
     Detects: "API module needs new endpoint"
     Creates_FLAG:
       command: |
-        python agent_db.py create-flag \
+        python .claude/scripts/agent_db.py create-flag \
           --flag_type "new_feature" \
           --source_agent "@auth-agent" \
           --target_agent "@api-agent" \
@@ -570,13 +570,13 @@ EXAMPLE_INTERACTION:
           --example_usage "POST /auth/login {email, password}"
   
   2_api_agent_activates_later:
-    Check: python agent_db.py get-agent-flags "@api-agent"
+    Check: python .claude/scripts/agent_db.py get-agent-flags "@api-agent"
     Result: "1 pending flag from @auth-agent"
     Reads: "Need to add /auth/login route"
     Work: "Adds route to gateway"
     Completes_FLAG:
       command: |
-        python agent_db.py execute \
+        python .claude/scripts/agent_db.py execute \
           "UPDATE flags SET status='completed' WHERE id=46"
 ```
 
@@ -615,15 +615,17 @@ CASCADE_FLAGS:
 ### Creating Complex Workflows
 
 ```bash
-# Sequential workflow example
-python agent_db.py create-workflow \
-  --type "sequential" \
-  --steps '[
-    {"target": "@payment-agent", "action": "Implement Stripe integration"},
-    {"target": "@test.quality", "action": "Create payment tests"},
-    {"target": "@audit.security", "action": "Review implementation"},
-    {"target": "@ops.deployment", "action": "Deploy with feature flag"}
-  ]'
+# NOT IMPLEMENTED - This is conceptual design for future workflows
+# Currently, workflows are managed manually through FLAGS
+# Sequential workflow example (FUTURE):
+# python .claude/scripts/agent_db.py create-workflow \
+#   --type "sequential" \
+#   --steps '[
+#     {"target": "@payment-agent", "action": "Implement Stripe integration"},
+#     {"target": "@test.quality", "action": "Create payment tests"},
+#     {"target": "@audit.security", "action": "Review implementation"},
+#     {"target": "@ops.deployment", "action": "Deploy with feature flag"}
+#   ]'
 ```
 
 ## 🎯 Practical Examples for Common Scenarios
@@ -632,27 +634,27 @@ python agent_db.py create-workflow \
 
 ```bash
 # 1. Claude activates auth-agent
-python agent_db.py get-agent-flags "@auth-agent"
+python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
 # No flags, proceed
 
 # 2. auth-agent needs help from specialist
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "consultation_needed" \
   --source_agent "@auth-agent" \
   --target_agent "@service.auth" \
   --change_description "Need JWT implementation strategy" \
-  --action_required "Provide JWT best practices for Node.js"
+  --action_required "Provide JWT best practices for Node.js including token expiration times, refresh token strategy, algorithm selection (HS256 vs RS256), and security considerations"
 
 # 3. service.auth responds (when activated by Claude)
-python agent_db.py get-agent-flags "@service.auth"
+python .claude/scripts/agent_db.py get-agent-flags "@service.auth"
 # Sees flag, provides strategy via new FLAG back
 
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "consultation_response" \
   --source_agent "@service.auth" \
   --target_agent "@auth-agent" \
   --change_description "JWT strategy provided" \
-  --action_required "Use RS256, 15min access, 7day refresh" \
+  --action_required "Use RS256 algorithm with 15 minute access tokens and 7 day refresh tokens. Store keys securely in environment variables. Implement token rotation on refresh for enhanced security" \
   --example_usage "See context field for full implementation guide" \
   --context '{"access_token_ttl": 900, "refresh_token_ttl": 604800, "algorithm": "RS256"}'
 ```
@@ -661,7 +663,7 @@ python agent_db.py create-flag \
 
 ```bash
 # 1. database.postgres makes change
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "breaking_change" \
   --source_agent "@database.postgres" \
   --target_agent "@auth-agent,@api-agent,@order-agent" \
@@ -671,11 +673,11 @@ python agent_db.py create-flag \
 
 # 2. Each agent processes when activated
 # auth-agent:
-python agent_db.py get-agent-flags "@auth-agent"
+python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
 # Sees critical flag, updates queries first
 
 # 3. Complete flag when done
-python agent_db.py execute \
+python .claude/scripts/agent_db.py execute \
   "UPDATE flags SET status='completed', completed_by='@auth-agent' WHERE id=47"
 ```
 
@@ -683,7 +685,7 @@ python agent_db.py execute \
 
 ```bash
 # payment-agent needs security review
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "review_request" \
   --source_agent "@payment-agent" \
   --target_agent "@audit.security" \
@@ -702,7 +704,7 @@ python agent_db.py create-flag \
 """
 ACTIVATION PROTOCOL:
 1. CHECK FLAGS FIRST:
-   flags = bash('python agent_db.py get-agent-flags "@{my-name}"')
+   flags = bash('python .claude/scripts/agent_db.py get-agent-flags "@{my-name}"')
    
 2. PROCESS CRITICAL FLAGS:
    for flag in flags.where(impact='critical'):
@@ -728,7 +730,7 @@ ACTIVATION PROTOCOL:
 """
 SPECIALIST ACTIVATION:
 1. CHECK FLAGS:
-   flags = bash('python agent_db.py get-agent-flags "@specialist.{my-specialty}"')
+   flags = bash('python .claude/scripts/agent_db.py get-agent-flags "@specialist.{my-specialty}"')
    
 2. PROVIDE CONSULTATION:
    for flag in flags:
@@ -748,7 +750,7 @@ SPECIALIST ACTIVATION:
 # auth-agent starts working immediately
 
 # RIGHT - Always check first
-python agent_db.py get-agent-flags "@auth-agent"
+python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
 # Then proceed with work
 ```
 
@@ -758,7 +760,7 @@ python agent_db.py get-agent-flags "@auth-agent"
 # This leaves FLAGS pending forever
 
 # RIGHT - Always complete after processing
-python agent_db.py execute "UPDATE flags SET status='completed' WHERE id=48"
+python .claude/scripts/agent_db.py execute "UPDATE flags SET status='completed' WHERE id=48"
 ```
 
 ### ❌ DON'T: Create Circular FLAGS
@@ -776,26 +778,27 @@ python agent_db.py execute "UPDATE flags SET status='completed' WHERE id=48"
 
 ```bash
 # View all pending FLAGS
-python agent_db.py query "SELECT * FROM pending_flags"
+python .claude/scripts/agent_db.py query "SELECT * FROM pending_flags"
 
 # Check FLAGS for specific agent
-python agent_db.py get-agent-flags "@auth-agent"
+python .claude/scripts/agent_db.py get-agent-flags "@auth-agent"
 
-# See workflow status
-python agent_db.py workflow-status 123
+# See workflow status (NOT IMPLEMENTED - use query instead)
+# python .claude/scripts/agent_db.py workflow-status 123
+# Use: python .claude/scripts/agent_db.py query "SELECT * FROM flags WHERE chain_origin_id=123"
 
 # View communication matrix
-python agent_db.py query "SELECT * FROM agent_communication_matrix"
+python .claude/scripts/agent_db.py query "SELECT * FROM agent_communication_matrix"
 ```
 
 ## 🔧 Quick Reference Commands
 
 ```bash
 # CHECK FLAGS (start of every activation)
-python agent_db.py get-agent-flags "@{agent-name}"
+python .claude/scripts/agent_db.py get-agent-flags "@{agent-name}"
 
 # CREATE FLAG (when affecting others)
-python agent_db.py create-flag \
+python .claude/scripts/agent_db.py create-flag \
   --source_agent "@{my-name}" \
   --target_agent "@{target-name}" \
   --change_description "What changed" \
@@ -803,11 +806,11 @@ python agent_db.py create-flag \
   --impact_level "high"  # critical|high|medium|low
 
 # COMPLETE FLAG (after processing)
-python agent_db.py execute \
+python .claude/scripts/agent_db.py execute \
   "UPDATE flags SET status='completed', completed_by='@{my-name}' WHERE id={flag-id}"
 
 # CREATE WORKFLOW (complex multi-step)
-python agent_db.py create-workflow \
+python .claude/scripts/agent_db.py create-workflow \
   --type "sequential" \
   --steps '[...]'
 ```

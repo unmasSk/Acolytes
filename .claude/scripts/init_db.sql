@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
 );
 
 -- 3. AGENT MEMORY
--- memory_type must be one of these 8 types:
+-- memory_type must be one of these 9 types:
 -- 'knowledge': Core understanding - purpose, features, architecture, TODOs
 -- 'structure': Code organization - files, classes, functions, APIs, endpoints
 -- 'patterns': Best practices - conventions, anti-patterns, design patterns
@@ -35,10 +35,11 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
 -- 'operations': DevOps - config, deployment, monitoring, migrations, CI/CD
 -- 'context': Business logic - decisions, history, roadmap, stakeholders
 -- 'domain': Specialized - ML models, GraphQL schemas, i18n, specific to domain
+-- 'interactions': Recent interactions - last consultations, implementations, delegations
 CREATE TABLE IF NOT EXISTS agent_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     agent_id INTEGER NOT NULL,
-    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'dependencies', 'quality', 'operations', 'context', 'domain')) NOT NULL,
+    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'dependencies', 'quality', 'operations', 'context', 'domain', 'interactions')) NOT NULL,
     content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
@@ -124,7 +125,7 @@ CREATE TABLE IF NOT EXISTS agent_health (
     status TEXT NOT NULL,                  -- healthy/degraded/critical/oversized
     file_count_current INTEGER,            -- Current files in module
     file_count_baseline INTEGER,           -- Files when agent was created/updated
-    memory_size_kb INTEGER,                -- Total size of all 8 memories
+    memory_size_kb INTEGER,                -- Total size of all 9 memories
     memory_size_warning TEXT,              -- null/large/critical
     largest_memory_type TEXT,              -- Which memory is largest
     needs_compaction BOOLEAN DEFAULT 0,   -- If memories need cleaning

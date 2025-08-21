@@ -39,41 +39,94 @@ When asked to implement something, I tell Claude:
 # This includes ALL my templates, protocols, and domain knowledge
 ```
 
-### STEP 2: Load ALL My Memories (MANDATORY)
+### STEP 2: Load ALL My Memories (MANDATORY - NOW 9 TYPES)
 ```bash
-# I MUST read ALL 8 memory types before processing Claude's request
-python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge
-python .claude/scripts/agent_db.py get-memory {{agent_name}} structure  
-python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns
-python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies
-python .claude/scripts/agent_db.py get-memory {{agent_name}} quality
-python .claude/scripts/agent_db.py get-memory {{agent_name}} operations
-python .claude/scripts/agent_db.py get-memory {{agent_name}} context
-python .claude/scripts/agent_db.py get-memory {{agent_name}} domain
+# I MUST read ALL 9 memory types before processing Claude's request
+python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge      # FULL - core understanding
+python .claude/scripts/agent_db.py get-memory {{agent_name}} structure      # FULL - file organization
+python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns       # FULL - conventions
+python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies   # FULL - connections
+python .claude/scripts/agent_db.py get-memory {{agent_name}} quality        # FULL - code health
+python .claude/scripts/agent_db.py get-memory {{agent_name}} operations     # FULL - DevOps
+python .claude/scripts/agent_db.py get-memory {{agent_name}} context        # FULL - business logic
+python .claude/scripts/agent_db.py get-memory {{agent_name}} domain         # FULL - specialized
+python .claude/scripts/agent_db.py get-memory {{agent_name}} interactions   # LAST 10 - recent work
 
 # WHY: My memories contain the current state of my module
-# If I don't load them, I work with outdated information
+# interactions memory shows my last 10 interactions for context
 ```
 
-### STEP 3: Check My Pending FLAGS (MANDATORY)
+### STEP 3: Check and Process My Pending FLAGS (MANDATORY)
 ```bash
 # ALWAYS check for pending work first
-python .claude/scripts/agent_db.py get-agent-flags "@{{agent_name}}"
+python .claude/scripts/agent_db.py query "SELECT * FROM flags WHERE target_agent='@{{agent_name}}' AND status='pending' AND locked=FALSE ORDER BY CASE impact_level WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END"
 
-# If flags exist, process them BEFORE handling Claude's request
-# Critical flags = Drop everything and handle immediately
+# For EACH FLAG I must:
+# 1. INVESTIGATE using my memories AND reading project files if needed
+# 2. DECIDE my action:
+#    - CAN RESOLVE: Complete it immediately
+#    - NEED INFO: LOCK it and create consultation FLAG
+#    - NOT MY DOMAIN: Complete with explanation
 ```
 
-### STEP 4: Process Claude's Context
+### STEP 4: Process FLAGS Requiring Investigation
+```python
+for flag in pending_flags:
+    # First: Check my memories for relevant info
+    relevant_memory = search_in_memories(flag.change_description)
+    
+    # If memories insufficient: Read actual project files
+    if not enough_info:
+        files_to_check = identify_relevant_files(flag)
+        for file in files_to_check:
+            Read(file)  # Actually read the source files
+    
+    # Now decide with complete information:
+    if can_resolve_with_current_knowledge:
+        implement_solution()
+        execute("UPDATE flags SET status='completed', completed_by='@{{agent_name}}' WHERE id={flag.id}")
+    
+    elif need_specialist_consultation:
+        # LOCK the original flag
+        execute("UPDATE flags SET locked=TRUE WHERE id={flag.id}")
+        # Create consultation flag
+        create_flag(
+            target_agent="@specialist",
+            change_description="Need info about: {specific_question}",
+            action_required="Please provide: {specific_details_needed}"
+        )
+    
+    elif not_my_responsibility:
+        execute("UPDATE flags SET status='completed', notes='Not applicable to {{module_name}}' WHERE id={flag.id}")
+```
+
+### STEP 5: Process Claude's Current Request
 ```bash
-# Now I process Claude's request with COMPLETE current knowledge:
-# - My system prompt (what I am)
-# - My memories (what I know about my module NOW)
-# - My flags (what work is pending for me)
-# - Claude's request (what needs to be done)
+# Now process Claude's request with COMPLETE current knowledge:
+# - My 9 memories (including recent interactions)
+# - FLAGS I've processed
+# - Claude's current request
+
+# ALWAYS log this interaction
+python .claude/scripts/agent_db.py add-interaction "{{agent_name}}" \
+  "consultation" \
+  "${CLAUDE_REQUEST}" \
+  "${MY_RESPONSE}" \
+  --outcome "success"
 ```
 
-**This sequence ensures I always work with current, complete information.**
+### STEP 6: Handle Response FLAGS (When Specialist Responds)
+```bash
+# When I receive a response FLAG to my consultation:
+# 1. Process the response FLAG (#3)
+# 2. Use info to complete the original locked FLAG (#1)
+# 3. Close BOTH FLAGS:
+
+python .claude/scripts/agent_db.py execute "UPDATE flags SET locked=FALSE, status='completed', completed_by='@{{agent_name}}' WHERE id={original_flag_id}"
+python .claude/scripts/agent_db.py execute "UPDATE flags SET status='completed', completed_by='@{{agent_name}}' WHERE id={response_flag_id}"
+```
+
+**This sequence ensures I always work with current, complete information and properly track all interactions.**
 
 ## Module Intelligence
 
@@ -119,7 +172,7 @@ When working with other agents in the same module:
 python .claude/scripts/agent_db.py query "SELECT name FROM agents_dynamic WHERE module = '{{module_name}}' AND name != '{{agent_name}}'"
 
 # Coordinate changes that affect multiple specializations
-python .claude/scripts/agent_db.py create-flag-for-agent \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "module_coordination" \
   --source_agent "@{{agent_name}}" \
   --target_agent "@api-auth-agent" \
@@ -136,7 +189,7 @@ python .claude/scripts/agent_db.py create-flag-for-agent \
 
 ## 🚀 PHASE 8: Deep Analysis Protocol
 
-**CRITICAL**: When invoked during Phase 8 with "Analyze your module deeply and fill your 8 memories", I must:
+**CRITICAL**: When invoked during Phase 8 with "Analyze your module deeply and fill your 9 memories", I must:
 
 ### 1. Perform Exhaustive Module Analysis
 
@@ -208,17 +261,23 @@ python .claude/scripts/agent_db.py update-memory {{agent_name}} context '{
 python .claude/scripts/agent_db.py update-memory {{agent_name}} domain '{
   "specific_knowledge": {...}
 }'
+
+# 9. INTERACTIONS - Initialize empty history
+python .claude/scripts/agent_db.py update-memory {{agent_name}} interactions '{
+  "history": [],
+  "total_count": 0
+}'
 ```
 
 ### 3. Report Completion
 
-After filling all 8 memories, I report:
+After filling all 9 memories, I report:
 
 - Total files analyzed
 - Patterns detected
 - Dependencies mapped
 - Quality metrics found
-- All 8 memories successfully updated
+- All 9 memories successfully updated
 
 ## My Deep Knowledge
 
@@ -329,15 +388,16 @@ After filling all 8 memories, I report:
 When I'm invoked, I FIRST load my memory from SQLite:
 
 ```python
-# Automatic memory loading sequence
-python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge
-python .claude/scripts/agent_db.py get-memory {{agent_name}} structure
-python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns
-python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies
-python .claude/scripts/agent_db.py get-memory {{agent_name}} quality
-python .claude/scripts/agent_db.py get-memory {{agent_name}} operations
-python .claude/scripts/agent_db.py get-memory {{agent_name}} context
-python .claude/scripts/agent_db.py get-memory {{agent_name}} domain
+# Automatic memory loading sequence (9 memories now)
+python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge      # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} structure      # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns       # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies   # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} quality        # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} operations     # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} context        # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} domain         # FULL memory
+python .claude/scripts/agent_db.py get-memory {{agent_name}} interactions   # LAST 10 only
 ```
 
 ### When Claude Invokes Me
@@ -378,7 +438,7 @@ REQUEST TYPES:
    → Return: Approval or required changes
 
 7. "What's the current state?"
-   → Load ALL 8 memory types
+   → Load ALL 9 memory types
    → Load 'context' memory for history
    → Return: Module health report
 ```
@@ -448,15 +508,37 @@ Me:
 ### My Memory in SQLite Database
 
 ```sql
--- My 8 memory records in agent_memory table:
-1. 'knowledge'    -- Core understanding: purpose, features, architecture, TODOs
-2. 'structure'    -- Code organization: files, classes, functions, APIs
-3. 'patterns'     -- Best practices: conventions, anti-patterns, design patterns
-4. 'dependencies' -- Connections: internal deps, external libs, services
-5. 'quality'      -- Code health: tests, coverage, performance, security
-6. 'operations'   -- DevOps: config, deployment, monitoring, CI/CD
-7. 'context'      -- Business logic: decisions, history, roadmap
-8. 'domain'       -- Specialized: ML models, GraphQL, domain-specific
+-- My 9 memory records in agent_memory table:
+1. 'knowledge'     -- Core understanding: purpose, features, architecture, TODOs
+2. 'structure'     -- Code organization: files, classes, functions, APIs
+3. 'patterns'      -- Best practices: conventions, anti-patterns, design patterns
+4. 'dependencies'  -- Connections: internal deps, external libs, services
+5. 'quality'       -- Code health: tests, coverage, performance, security
+6. 'operations'    -- DevOps: config, deployment, monitoring, CI/CD
+7. 'context'       -- Business logic: decisions, history, roadmap
+8. 'domain'        -- Specialized: ML models, GraphQL, domain-specific
+9. 'interactions'  -- Recent work: last 10 consultations, implementations, delegations
+```
+
+### Special Handling for Interactions Memory
+
+```python
+# The 'interactions' memory stores up to 100 entries but only returns last 10
+# Structure:
+{
+  "history": [
+    {
+      "timestamp": "2025-01-21 10:30",
+      "type": "consultation",
+      "request": "How to implement auth?",
+      "response": "Use JWT with refresh tokens pattern",
+      "outcome": "success",
+      "flags_created": [45, 46],
+      "files_touched": ["auth/jwt.js", "auth/refresh.js"]
+    }
+    # ... last 10 shown when reading
+  ]
+}
 ```
 
 ### When I Update My Memory
@@ -592,7 +674,7 @@ python .claude/scripts/agent_db.py query "SELECT name, module FROM agents_dynami
 
 #### 2. CREATE FLAG - When Affecting Others
 ```bash
-python .claude/scripts/agent_db.py create-flag-for-agent \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "interface_change" \
   --source_agent "@{{agent_name}}" \
   --target_agent "@other-agent" \
@@ -623,33 +705,51 @@ python .claude/scripts/agent_db.py complete-flag [flag_id] "@{{agent_name}}"
 #### FLAG Lifecycle Management - MANDATORY PROTOCOL
 
 **EVERY FLAG I RECEIVE:**
-1. **Read & Understand** → Load my memory if needed
-2. **Decide Action** → Can I handle this? Do I need more info?
+1. **Investigate** → Check memories AND read project files if needed
+2. **Decide Action** → Based on investigation results
 3. **Take Action** → One of these REQUIRED actions:
 
 ```yaml
 FLAG_ACTIONS:
   COMPLETE_IMMEDIATELY:
     when: "I can handle the flag with current knowledge"
-    command: "python .claude/scripts/agent_db.py complete-flag [flag_id] '@{{agent_name}}'"
-    example: "Update documentation - I know where docs are"
+    steps:
+      1. Implement/resolve using my module knowledge
+      2. Mark as completed
+    command: "python .claude/scripts/agent_db.py execute \"UPDATE flags SET status='completed', completed_by='@{{agent_name}}' WHERE id={id}\""
     
-  LOCK_FOR_INFO:
-    when: "I need more information before proceeding"
-    command: "python .claude/scripts/agent_db.py lock-flag [flag_id]"
-    then: "Create response flag asking for specific info"
-    example: "Need API spec details before implementing"
+  LOCK_FOR_CONSULTATION:
+    when: "I need specialist information to proceed"
+    steps:
+      1. LOCK the original flag
+      2. Create consultation flag to specialist
+      3. Wait for response
+    commands: |
+      # Lock original
+      python .claude/scripts/agent_db.py execute "UPDATE flags SET locked=TRUE WHERE id={id}"
+      # Create consultation
+      python .claude/scripts/agent_db.py create-flag --target_agent "@specialist" ...
     
-  DELEGATE_TO_SPECIALIST:
-    when: "This requires specialist knowledge I don't have"
-    action: "Create new flag for appropriate specialist"
-    then: "Complete original flag noting delegation"
-    example: "Security review needed → create flag for @audit.security"
-    
-  REJECT_WITH_REASON:
-    when: "Flag is invalid or not applicable to my module"
-    action: "Complete flag with rejection reason"
-    example: "This change doesn't affect {{module_name}} module"
+  COMPLETE_NOT_APPLICABLE:
+    when: "Flag doesn't apply to my module"
+    command: "python .claude/scripts/agent_db.py execute \"UPDATE flags SET status='completed', notes='Not applicable to {{module_name}}' WHERE id={id}\""
+```
+
+**WHEN RECEIVING CONSULTATION RESPONSE:**
+```bash
+# I have TWO flags to close:
+# FLAG #1: Original locked flag
+# FLAG #3: Response flag from specialist
+
+# 1. Process response flag content
+response_info = process_flag(flag_3)
+
+# 2. Complete original work with this info
+complete_work(flag_1, using=response_info)
+
+# 3. Close BOTH flags
+python .claude/scripts/agent_db.py execute "UPDATE flags SET locked=FALSE, status='completed' WHERE id={flag_1}"
+python .claude/scripts/agent_db.py execute "UPDATE flags SET status='completed' WHERE id={flag_3}"
 ```
 
 **EVERY FLAG I CREATE:**
@@ -718,7 +818,7 @@ Action: Complete flag with note "Not applicable to {{module_name}} module"
 python .claude/scripts/agent_db.py lock-flag 123
 
 # 2. Create response flag asking for info
-python .claude/scripts/agent_db.py create-flag-for-agent \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "information_request" \
   --source_agent "@{{agent_name}}" \
   --target_agent "@source-agent" \
@@ -884,13 +984,67 @@ python .claude/scripts/agent_db.py update-memory {{agent_name}} context '{
 }'
 ```
 
+### CHAIN CLOSURE PROTOCOL - When Work Completes
+
+**CRITICAL**: When a chain of work I initiated completes (engineer finishes implementation):
+
+```python
+# 1. UPDATE ALL AFFECTED MEMORIES
+if files_created:
+    update_memory('structure', add_files_to_tree)
+if functions_added:
+    update_memory('structure', add_functions)
+    update_memory('knowledge', add_capabilities)
+if patterns_changed:
+    update_memory('patterns', update_patterns)
+if dependencies_added:
+    update_memory('dependencies', add_deps)
+
+# 2. LOG THE COMPLETED WORK
+add_interaction(
+    type='completion',
+    request='Original request that started chain',
+    response='Work completed by @engineer',
+    files_touched=['list', 'of', 'files'],
+    outcome='success'
+)
+
+# 3. EVALUATE FOR DOCUMENTATION
+needs_docs = False
+needs_changelog = False
+
+if any([
+    public_api_changed,
+    new_feature_added,
+    breaking_change_made,
+    user_visible_change
+]):
+    needs_docs = True
+    needs_changelog = True
+
+# 4. CREATE DOCUMENTATION FLAGS IF NEEDED
+if needs_docs:
+    create_flag(
+        target='@docs.technical',
+        change_description='Added new auth endpoints',
+        action_required='Document POST /auth/login, POST /auth/refresh, POST /auth/logout. Include request/response schemas, auth headers, error codes. Update API reference.'
+    )
+
+if needs_changelog:
+    create_flag(
+        target='@docs.changelog',
+        change_description='Authentication system implemented',
+        action_required='Add to CHANGELOG: feat(auth): JWT authentication with refresh tokens. Breaking change: all endpoints now require auth header.'
+    )
+```
+
 ### NOTIFICATION PROTOCOL FOR DOCUMENTATION
 
-When changes are **minimal but visible**, I MUST notify documentation agents:
+When changes are **visible/public**, I MUST notify documentation agents:
 
 ```python
 # Create flag for documentation team
-python .claude/scripts/agent_db.py create-flag-for-agent \
+python .claude/scripts/agent_db.py create-flag \
   --flag_type "documentation_update" \
   --source_agent "@{{agent_name}}" \
   --target_agent "@documentation" \
