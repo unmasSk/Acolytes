@@ -278,8 +278,3 @@ Every dynamic agent maintains 8 memory types:
 ---
 
 **The FLAG system transforms ClaudeSquad from a collection of agents into a coordinated, intelligent development team that operates with minimal human intervention while maintaining complete transparency and control.**
-
-
- > Lo tienes todo claro para crearlo? sabes darle contexto? no solo para este proyecto por supuesto. No    │
-│   te inventes el agente, Escribe en el lo que ya sabemos ordenador a como una IA lo interpreta mejor. si  │
-│   e   

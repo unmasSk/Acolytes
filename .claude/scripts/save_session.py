@@ -206,8 +206,96 @@ def save_session_to_database(session_data, claude_analysis, technical_metrics, d
     except Exception as e:
         raise Exception(f"Failed to save to database: {e}")
 
+def clean_emojis(text):
+    """Remove problematic emojis from text to avoid encoding issues"""
+    import re
+    # Remove emoji and problematic unicode characters
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map
+                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                               u"\U00002702-\U000027B0"  # dingbats
+                               u"\U000024C2-\U0001F251"
+                               u"\U0001F900-\U0001F9FF"  # supplemental symbols
+                               u"\U00002600-\U000026FF"  # misc symbols
+                               u"\U00002700-\U000027BF"  # dingbats
+                               "]+", flags=re.UNICODE)
+    return emoji_pattern.sub('', text)
+
+def parse_analysis_from_stdin():
+    """Parse Claude's analysis from stdin"""
+    try:
+        import sys
+        analysis_data = sys.stdin.read()
+        if analysis_data.strip():
+            return json.loads(analysis_data)
+    except Exception:
+        pass
+    return None
+
+def get_claude_analysis():
+    """Get Claude's manual analysis from stdin or use fallback with ENGLISH data"""
+    
+    # Try to get Claude's analysis from stdin first
+    claude_analysis = parse_analysis_from_stdin()
+    
+    if not claude_analysis:
+        # NO FALLBACK - Claude MUST provide analysis
+        print(json.dumps({
+            "error": "No analysis provided via stdin. Claude must analyze conversation manually and provide JSON data.",
+            "required_format": {
+                "accomplishments": ["list of actual accomplishments"],
+                "decisions": ["list of key decisions made"],
+                "bugs_fixed": ["list of bugs actually fixed"],
+                "errors": ["list of errors encountered"],
+                "breakthrough_moment": "key insight that unlocked progress",
+                "next_session_priority": "what should be done next",
+                "conversation_flow": "brief conversation summary"
+            }
+        }))
+        return None
+    else:
+        # Clean emojis from provided analysis
+        for key in ['accomplishments', 'decisions', 'bugs_fixed', 'errors']:
+            if key in claude_analysis:
+                claude_analysis[key] = [clean_emojis(item) for item in claude_analysis[key]]
+        
+        for key in ['breakthrough_moment', 'next_session_priority', 'conversation_flow']:
+            if key in claude_analysis:
+                claude_analysis[key] = clean_emojis(claude_analysis[key])
+    
+    return claude_analysis
+
+def create_new_session_for_next_time(job_id):
+    """Create new session for next conversation after closing current one"""
+    try:
+        import secrets
+        
+        # Generate new session ID
+        new_session_id = f"session_{secrets.token_hex(6)}"
+        
+        DB_PATH = Path(".claude/memory/project.db")
+        conn = sqlite3.connect(str(DB_PATH))
+        cursor = conn.cursor()
+        
+        # Create new session with same job_id
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+        cursor.execute("""
+            INSERT INTO sessions (id, job_id, created_at)
+            VALUES (?, ?, ?)
+        """, (new_session_id, job_id, timestamp))
+        
+        conn.commit()
+        conn.close()
+        
+        return new_session_id
+        
+    except Exception:
+        return None
+
 def main():
-    """Main session save function - expects Claude's analysis as input"""
+    """Main session save function - closes current session and creates new one"""
     
     try:
         # Backup database first
@@ -220,37 +308,22 @@ def main():
         technical_metrics = get_technical_metrics(session_data['session_id'])
         duration_minutes = calculate_session_duration(session_data)
         
-        # Placeholder analysis - Claude will provide real data
-        # TODO: This should be replaced with actual conversation analysis from Claude
-        claude_analysis = {
-            'accomplishments': [
-                "Updated save.md format removing --- separators",
-                "Extended ===== borders to be double length", 
-                "Modified script to receive conversation_flow from Claude"
-            ],
-            'decisions': [
-                "Remove --- separators for cleaner format",
-                "Make border lines longer for better visual separation",
-                "Claude manually creates conversation_flow summaries"
-            ],
-            'bugs_fixed': [
-                "Fixed output format with proper border lengths",
-                "Removed automatic conversation_flow generation"
-            ],
-            'errors': [],
-            'breakthrough_moment': "Script cannot generate conversation summaries - Claude must provide them",
-            'next_session_priority': "Test new format and conversation_flow system",
-            'conversation_flow': "claude: updated save.md format removing separators\nuser: wants longer borders and real conversation summaries\nclaude: modified script to receive conversation_flow from user\nuser: tests new system format",
-            'total_exchanges': technical_metrics['total_tools'] * 2  # Estimate
-        }
+        # Get Claude's manual analysis
+        claude_analysis = get_claude_analysis()
+        if not claude_analysis:
+            return 1  # Exit with error if no analysis provided
+        claude_analysis['total_exchanges'] = technical_metrics['total_tools'] * 2  # Estimate
         
-        # Save to database
+        # Save to database (this closes the session by setting ended_at)
         quality_score, message_id, timestamp = save_session_to_database(
             session_data, claude_analysis, technical_metrics, duration_minutes
         )
         
+        # Create new session for next conversation
+        new_session_id = create_new_session_for_next_time(session_data['job_id'])
+        
         # Output results for Claude to format
-        print(json.dumps({
+        result = {
             'session_id': session_data['session_id'],
             'job_id': session_data['job_id'],
             'quality_score': quality_score,
@@ -265,7 +338,15 @@ def main():
             'message_id': message_id,
             'timestamp': timestamp,
             'technical_metrics': technical_metrics
-        }))
+        }
+        
+        if new_session_id:
+            result['new_session_id'] = new_session_id
+            result['next_session_ready'] = True
+        else:
+            result['next_session_ready'] = False
+        
+        print(json.dumps(result))
         
         return 0
         

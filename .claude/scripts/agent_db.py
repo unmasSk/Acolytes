@@ -17,7 +17,6 @@ Commands:
 import sqlite3
 import json
 import sys
-import re
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -858,7 +857,7 @@ if __name__ == "__main__":
             ))
         
         elif command == "get-pending-flags":
-            target_agent = sys.argv[2] if len(sys.argv) > 2 else None
+            target_agent: Optional[str] = sys.argv[2] if len(sys.argv) > 2 else None
             print(get_pending_flags(target_agent))
         
         elif command == "update-health":
@@ -910,7 +909,11 @@ if __name__ == "__main__":
             if len(sys.argv) < 4:
                 print("Usage: python agent_db.py update-todo-status [todo_id] [status]")
                 sys.exit(1)
-            todo_id = int(sys.argv[2])
+            try:
+                todo_id = int(sys.argv[2])
+            except ValueError:
+                print(json.dumps({"error": "todo_id must be an integer"}))
+                sys.exit(1)
             status = sys.argv[3]
             print(update_todo_status(todo_id, status))
         
@@ -922,7 +925,11 @@ if __name__ == "__main__":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py create-todo-from-flag [flag_id]")
                 sys.exit(1)
-            flag_id = int(sys.argv[2])
+            try:
+                flag_id = int(sys.argv[2])
+            except ValueError:
+                print(json.dumps({"error": "flag_id must be an integer"}))
+                sys.exit(1)
             print(create_todo_from_flag(flag_id))
         
         elif command == "timestamp":
@@ -981,29 +988,41 @@ if __name__ == "__main__":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py get-agent-flags [@agent-name]")
                 sys.exit(1)
-            agent_name = sys.argv[2]
-            print(get_agent_flags(agent_name))
+            target_agent_name = sys.argv[2]
+            print(get_agent_flags(target_agent_name))
         
         elif command == "complete-flag":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py complete-flag [flag_id] [optional: agent_name]")
                 sys.exit(1)
-            flag_id = int(sys.argv[2])
-            agent_name = sys.argv[3] if len(sys.argv) > 3 else None
-            print(complete_flag(flag_id, agent_name))
+            try:
+                flag_id = int(sys.argv[2])
+            except ValueError:
+                print(json.dumps({"error": "flag_id must be an integer"}))
+                sys.exit(1)
+            completing_agent = sys.argv[3] if len(sys.argv) > 3 else None
+            print(complete_flag(flag_id, completing_agent))
         
         elif command == "lock-flag":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py lock-flag [flag_id]")
                 sys.exit(1)
-            flag_id = int(sys.argv[2])
+            try:
+                flag_id = int(sys.argv[2])
+            except ValueError:
+                print(json.dumps({"error": "flag_id must be an integer"}))
+                sys.exit(1)
             print(lock_flag(flag_id))
         
         elif command == "unlock-flag":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py unlock-flag [flag_id]")
                 sys.exit(1)
-            flag_id = int(sys.argv[2])
+            try:
+                flag_id = int(sys.argv[2])
+            except ValueError:
+                print(json.dumps({"error": "flag_id must be an integer"}))
+                sys.exit(1)
             print(unlock_flag(flag_id))
         
         elif command == "list-agents":

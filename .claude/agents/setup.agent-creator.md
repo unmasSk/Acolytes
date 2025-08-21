@@ -147,58 +147,35 @@ I load and use the template from `.claude/resources/templates/dynamic-agent-init
 2. Replace all {{variables}} with actual values from my analysis
 3. Save the generated agent to .claude/agents/[agent-name].md
 
-Variables I replace:
+Variables I ACTUALLY replace:
+# Basic identification
 - {{agent_name}} → "auth-agent" OR "api-auth-agent" (if specialized)
 - {{agent_title}} → "Authentication" OR "API Authentication" (title case)
 - {{module_name}} → "auth" (base module name)
-- {{module_name_title}} → "Authentication" (title case)
 - {{module_path}} → "/src/auth"
 - {{specialization}} → "full_module" OR "authentication_endpoints" (if specialized)
+
+# Module metrics (from basic scan)
 - {{technology_stack}} → "Node.js, Express, JWT"
 - {{file_count}} → 23
 - {{line_count}} → 5847
-- {{test_coverage}} → 87
-- {{complexity_score}} → 6
+- {{test_coverage}} → 87 (if available from existing reports)
+- {{complexity_score}} → 6 (basic estimate)
 - {{primary_purpose}} → "User authentication and authorization"
+
+# Metadata
 - {{version}} → "1.0.0"
 - {{created_date}} → "2025-01-16"
 - {{last_updated}} → "2025-01-16"
 
-Tree and file structures:
-- {{tree_structure}} → Complete directory tree
-- {{key_files}} → Array of important files with purposes
-- {{components}} → Array of main components
-- {{internal_dependencies}} → Modules this depends on
-- {{external_dependencies}} → NPM packages used
-- {{patterns}} → Design patterns detected
-- {{conventions}} → Coding standards found
-- {{antipatterns}} → Bad practices to avoid
-
-API and interfaces:
-- {{input_interfaces}} → How data comes in
-- {{output_interfaces}} → How data goes out
-- {{events}} → Events emitted
-- {{test_location}} → Where tests are
-- {{test_framework}} → Jest, Mocha, etc.
-- {{test_command}} → npm test or similar
-- {{critical_tests}} → Most important test cases
-
-Performance and operations:
-- {{avg_response_time}} → Performance metrics
-- {{memory_usage}} → RAM consumption
-- {{cpu_intensity}} → Processing load
-- {{bottlenecks}} → Known slow points
-- {{optimization_opportunities}} → Where to improve
-
-Business context:
-- {{common_operations}} → Frequent tasks
-- {{issues}} → Known problems and tech debt
-- {{initial_metrics}} → Starting state
-- {{current_metrics}} → Current state
-- {{growth_rate}} → How fast it's growing
-- {{refactoring_count}} → Times refactored
-
-And many more template variables...
+Variables I DO NOT fill (agent will discover these):
+- Bottlenecks, optimization opportunities (require runtime analysis)
+- Performance metrics (require profiling)
+- Common operations (require usage analysis)
+- Issues and technical debt (require deep analysis)
+- Tree structures (require detailed file scanning)
+- API interfaces (require code analysis)
+- Events and test details (require implementation review)
 ```
 
 The generated agent will have 10,000+ lines if necessary - completeness matters more than size.
@@ -255,7 +232,7 @@ specialization: "payment_processing"
 module_path: "/src/api/payment"
 ```
 
-The agent will be responsible for filling its own 8 memory types when invoked in Phase 8:
+The agent will be responsible for filling its own 9 memory types when invoked in Phase 8:
 - **knowledge**: Core understanding, purpose, features, architecture, TODOs
 - **structure**: Code organization, files, classes, functions, APIs, endpoints  
 - **patterns**: Best practices, conventions, anti-patterns, design patterns
@@ -264,6 +241,25 @@ The agent will be responsible for filling its own 8 memory types when invoked in
 - **operations**: DevOps config, deployment, monitoring, migrations, CI/CD
 - **context**: Business logic, decisions, history, roadmap, stakeholders
 - **domain**: Specialized knowledge (ML models, GraphQL, i18n, etc.)
+- **interactions**: Recent work history (last 10 interactions)
+
+### 3.5. Initial Analysis Instruction
+
+Each generated agent includes an initialization instruction:
+
+```markdown
+## INITIAL SETUP
+On first invocation, if memories are empty, perform complete module analysis:
+1. Scan all files in {{module_path}}
+2. Identify patterns, dependencies, and architecture
+3. Fill all 9 memory types with discovered information
+4. Log completion of initial analysis
+```
+
+## Division of Labor
+- **Agent-creator**: Analyzes module, creates .md file with template and basic placeholders
+- **Dynamic agents**: Fill their own SQLite memories during Phase 8 analysis
+- **Claude**: Invokes agents during setup and coordinates workflow
 
 **IMPORTANT**: I do NOT insert data into SQLite. The database structure is already created in Phase 5, and the agent itself will fill its memories in Phase 8.
 
@@ -289,51 +285,37 @@ When I analyze `/src/dream`, I create `dream-agent.md`:
 ```markdown
 ---
 name: dream-agent
-description: Expert specialist in dream module with complete understanding of dream processing and analysis
-model: sonnet
-color: purple
+description: Expert knowledge agent for /src/dream module specializing in full_module
+module_path: /src/dream
+specialization: full_module
+version: 1.0.0
+created: 2025-01-21
+last_updated: 2025-01-21
 ---
 
-# Dream Module Agent
+# Dream Agent - Full Module Expert
 
-## MY COMPLETE KNOWLEDGE
+[Complete security layer and priority hierarchy from template]
 
-### Structure (COMPLETE)
-src/dream/
-├── controllers/
-│   ├── DreamController.php (287 lines)
-│   │   Functions: index(), create(), process(), delete()
-│   │   Purpose: Main REST API endpoints
-│   └── WebhookController.php (145 lines)
-├── services/
-│   ├── DreamService.php (456 lines)
-│   │   Functions: processData(), validateInput(), transform()
-│   │   Dependencies: CacheService, QueueService
-│   └── DreamAnalyzer.php (234 lines)
-├── repositories/
-│   └── DreamRepository.php (189 lines)
-│       Pattern: Repository
-│       Tables: dreams, dream_metadata
-├── models/
-│   └── Dream.php (98 lines)
-└── [... EVERYTHING ELSE ...]
+## Module Intelligence Snapshot:
+- Agent: dream-agent (full_module)
+- Module: /src/dream
+- Tech Stack: PHP, Laravel, Redis
+- Scale: 23 files, 5847 lines
+- Quality: 89% test coverage, 6/10 complexity
+- Purpose: Dream data processing and analysis
 
-### Key Files Content
-[Relevant code snippets from EACH file]
+## INITIAL SETUP
+On first invocation, if memories are empty, perform complete module analysis:
+1. Scan all files in /src/dream
+2. Identify patterns, dependencies, and architecture
+3. Fill all 9 memory types with discovered information
+4. Log completion of initial analysis
 
-### Dependencies
-- Internal: AuthModule, PaymentModule, NotificationModule
-- External: laravel/framework, predis/predis, aws/aws-sdk
-- Services: Redis, PostgreSQL, S3
-
-### Communication
-- Exposes: POST /api/dreams, GET /api/dreams/{id}
-- Consumes: PaymentService::charge(), AuthService::validate()
-- Events: DreamCreated, DreamProcessed, DreamFailed
-- Tables: dreams, dream_metadata, dream_logs
-
-[... CONTINUES FOR THOUSANDS OF LINES WITH COMPLETE CONTEXT ...]
+[Complete workflow protocols and memory management from template...]
 ```
+
+**Note**: The agent discovers specific functions, dependencies, and architectural details during its Phase 8 analysis, not from agent-creator pre-analysis.
 
 ## Why I'm Better Than Scripts
 
@@ -345,150 +327,13 @@ src/dream/
 
 ## What the Generated Agent Will Do
 
-When `dream-agent` is invoked in Phase 8, it will analyze its module and fill its memories:
+When the agent is invoked for the first time (Phase 8), it will:
+1. Detect its memories are empty
+2. Perform deep analysis of its module
+3. Fill its own 9 memories based on what it discovers
+4. Become the true expert of its domain
 
-```python
-# The agent will execute these commands itself during Phase 8:
-
-# 1. Deep analysis of /src/dream module
-# 2. Update its KNOWLEDGE memory with findings
-python .claude/scripts/agent_db.py update-memory dream-agent knowledge '{
-  "module_name": "dream",
-  "purpose": "Handles dream data processing and analysis",
-  "core_responsibility": "Process, validate, and transform dream data",
-  "key_features": [
-    "REST API endpoints for dream management",
-    "Webhook processing for external events",
-    "Data transformation pipeline",
-    "Redis caching integration"
-  ],
-  "architecture": "MVC with service layer",
-  "business_context": "Critical module for user dream tracking feature",
-  "todos": [
-    "Add caching to expensive queries",
-    "Implement async processing for large datasets",
-    "Add comprehensive logging"
-  ],
-  "total_files": 23,
-  "lines_of_code": 5847
-}'
-
-# 2. STRUCTURE memory
-python .claude/scripts/agent_db.py update-memory dream-agent structure '{
-  "file_tree": {
-    "controllers/DreamController.php": {
-      "purpose": "REST API endpoints",
-      "functions": ["index", "create", "process", "delete"],
-      "lines": 287,
-      "complexity": "medium"
-    },
-    "services/DreamService.php": {
-      "purpose": "Business logic",
-      "functions": ["processData", "validateInput", "transform"],
-      "lines": 456,
-      "complexity": "high"
-    }
-  },
-  "api_endpoints": [
-    "POST /api/dreams",
-    "GET /api/dreams/{id}",
-    "PUT /api/dreams/{id}",
-    "DELETE /api/dreams/{id}"
-  ],
-  "classes": ["DreamController", "DreamService", "DreamRepository", "Dream"],
-  "total_files": 23,
-  "file_types": {"controllers": 3, "services": 5, "models": 4, "tests": 11}
-}'
-
-# 3. PATTERNS memory
-python .claude/scripts/agent_db.py update-memory dream-agent patterns '{
-  "design_patterns": ["Repository", "Service Layer", "Factory"],
-  "architectural_patterns": ["Clean Architecture", "CQRS"],
-  "conventions": {
-    "naming": "PascalCase for classes, camelCase for methods",
-    "file_size": "max 300 lines",
-    "method_size": "max 30 lines",
-    "test_pattern": "Feature tests for controllers, Unit tests for services"
-  },
-  "anti_patterns_found": ["God object in DreamService needs refactoring"],
-  "best_practices": ["Input validation", "SQL injection protection"]
-}'
-
-# 4. DEPENDENCIES memory
-python .claude/scripts/agent_db.py update-memory dream-agent dependencies '{
-  "internal": [
-    "AuthModule::validate()",
-    "PaymentModule::charge()",
-    "NotificationModule::send()"
-  ],
-  "external": [
-    "laravel/framework ^11.0",
-    "predis/predis ^2.0",
-    "aws/aws-sdk-php ^3.0"
-  ],
-  "services": ["Redis", "PostgreSQL", "S3"],
-  "integrations": ["Stripe API", "SendGrid", "AWS S3"],
-  "database_tables": ["dreams", "dream_metadata", "dream_logs"]
-}'
-
-# 5. QUALITY memory
-python .claude/scripts/agent_db.py update-memory dream-agent quality '{
-  "test_coverage": "89%",
-  "test_suites": ["Unit", "Feature", "Integration"],
-  "performance_metrics": {
-    "avg_response_time": "45ms",
-    "max_concurrent_users": 1000,
-    "memory_usage": "128MB average"
-  },
-  "security_analysis": {
-    "vulnerabilities": [],
-    "last_audit": "2024-12-01",
-    "security_patterns": ["Input sanitization", "Rate limiting"]
-  },
-  "code_quality": {
-    "complexity": "medium",
-    "duplication": "3%",
-    "tech_debt_hours": 24
-  }
-}'
-
-# 6. OPERATIONS memory (if applicable)
-python .claude/scripts/agent_db.py update-memory dream-agent operations '{
-  "environment_vars": ["DREAM_API_KEY", "REDIS_URL", "DB_CONNECTION"],
-  "deployment": "Docker + Kubernetes",
-  "monitoring": ["Datadog", "Sentry"],
-  "ci_cd": "GitHub Actions",
-  "migrations": ["2024_01_create_dreams_table", "2024_02_add_metadata"]
-}'
-
-# 7. CONTEXT memory
-python .claude/scripts/agent_db.py update-memory dream-agent context '{
-  "business_importance": "High - core feature for user engagement",
-  "created_date": "2024-01-15",
-  "created_by": "TeamLead John",
-  "stakeholders": ["Product", "Marketing", "Support"],
-  "decisions": [
-    "Use Redis for caching instead of Memcached",
-    "Implement CQRS for read/write separation"
-  ],
-  "technical_debt": [
-    "DreamService.php is getting too large (456 lines)",
-    "Missing error handling in webhook processing"
-  ],
-  "roadmap": ["Q1: Add ML predictions", "Q2: Real-time sync"]
-}'
-
-# 8. DOMAIN memory (only if specialized)
-python .claude/scripts/agent_db.py update-memory dream-agent domain '{
-  "ml_models": ["dream-classifier-v2", "sentiment-analyzer"],
-  "domain_entities": ["Dream", "DreamCategory", "DreamAnalysis"],
-  "business_rules": [
-    "Dreams older than 30 days are archived",
-    "Maximum 100 dreams per user per day"
-  ],
-  "specialized_algorithms": ["DreamPatternMatcher", "SleepCycleAnalyzer"]
-}'
-```
+The agent decides what to put in its memories based on its analysis, not predetermined values.
 
 ## Important Notes
 
@@ -502,7 +347,7 @@ python .claude/scripts/agent_db.py update-memory dream-agent domain '{
 - **Each agent knows HOW to update its memory** using agent_db.py
 - **Each agent becomes the TRUE EXPERT** of its module
 - **SQLite allows concurrent reads** so multiple agents work in parallel
-- **Only 8 memory types** keeps the system simple and maintainable
+- **Only 9 memory types** keeps the system simple and maintainable
 
 ## New Flow Summary
 

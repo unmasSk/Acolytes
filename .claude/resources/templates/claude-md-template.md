@@ -46,10 +46,62 @@
 ```
 # MULTIPLE AGENTS IN PARALLEL (limit: 10 simultaneous)
 "Query these agents IN PARALLEL:
-[Task 1] {{agent_1}} → {{task_1}}
-[Task 2] {{agent_2}} → {{task_2}}  
-[Task 3] {{agent_3}} → {{task_3}}"
+[Task 1] {{first_agent}} → analyze module structure
+[Task 2] {{second_agent}} → review dependencies  
+[Task 3] {{third_agent}} → validate patterns"
 ```
+
+## Agent Selection Protocol
+
+**MANDATORY**: Before invoking any agent, follow this 3-step process:
+
+### Step 1: Task Classification
+Analyze the user prompt for these keywords:
+- **STRATEGIC**: "choose", "select", "compare", "decide", "architecture", "strategy", "design"
+  → Use Coordinator agents first (coordinator.*)
+- **TACTICAL**: "implement", "configure", "optimize", "debug", "deploy", "code"  
+  → Use Specialist agents directly (backend.*, database.*, etc.)
+- **COMBINED**: Contains both strategic + tactical keywords
+  → Use sequential: Coordinator → Specialist
+
+### Step 2: Domain Identification
+Identify the technical domain:
+- Backend/API → coordinator.backend or backend.*
+- Database/Data → coordinator.database or database.*
+- Frontend/UI → coordinator.frontend or frontend.*
+- DevOps/Ops → coordinator.devops or ops.*
+- Services → service.*
+- Business → business.*
+
+### Step 3: Apply Routing Rules
+Consult the global agent routing rules:
+- Use the IF/THEN conditions to select exact agent
+- For overlaps, apply Anti-Ambiguity Rules
+- For multi-agent workflows, follow predefined sequences
+
+### Examples:
+- "Optimize PostgreSQL" → TACTICAL → database.postgres (direct)
+- "Choose database for app" → STRATEGIC → coordinator.database → database.*
+- "Implement RAG with Postgres" → database.pgvector (Anti-Ambiguity Rule)
+- "Create user roles system" → coordinator.security → service.auth → database.* (sequential)
+
+**Global Agent Catalog**: Refer to ~/.claude/resources/rules/agent-routing.md for complete routing rules.
+
+## 🚩 FLAGS System - Coordination
+
+### What FLAGS are
+Cross-agent coordination messages in SQLite database.
+
+### FLAGS Workflow
+
+When user requests `/flags`:
+- Invoke @flags-agent 
+- @flags-agent analyzes all pending FLAGS
+- Follow its orchestration instructions
+
+You DON'T check FLAGS - agents handle their own FLAGS when invoked.
+
+Claude is router. Agents manage FLAGS. @flags-agent orchestrates when requested.
 
 ## 📋 Dynamic Agent Invocation Protocol
 
@@ -62,24 +114,24 @@
 ```
 1. DIRECT QUERY to specialized agent:
    
-   "@{{module_agent}}, I need to implement [function X]. 
+   "@{{agent_example}}, I need to implement [function X]. 
    
    CONTEXT:
-   - Location: {{module_path}}
-   - Files: {{key_files}}
-   - Patterns: {{patterns}}
-   - Constraints: {{constraints}}
+   - Location: [specific module path]
+   - Files: [relevant files]
+   - Patterns: [detected patterns]
+   - Constraints: [specific constraints]
    
    How should I proceed?"
    
 2. IMPLEMENTATION with engineer:
    
-   "@engineer-{{framework}}, implement according to {{module_agent}} specifications:
+   "@engineer-[framework], implement according to agent specifications:
    [INCLUDE complete response from specialized agent]"
    
 3. FINAL REVIEW:
    
-   "@{{module_agent}}, review this implementation: [details]"
+   "@{{agent_example}}, review this implementation: [details]"
 ```
 
 ## 🔄 Multi-Agent Orchestration
@@ -87,8 +139,8 @@
 ### **REAL PARALLEL - Multiple queries:**
 ```bash
 "Query these agents IN PARALLEL:
-[Task 1] {{agent_1}} → {{module_1}} module analysis
-[Task 2] {{agent_2}} → {{domain_2}} patterns  
+[Task 1] {{first_agent}} → module analysis
+[Task 2] {{second_agent}} → domain patterns  
 [Task 3] security-coordinator → security requirements"
 ```
 
@@ -115,26 +167,43 @@
 
 {{/each}}
 
-## 🛠️ Useful Commands
+## 🛠️ System Access & Commands
+
+### MCP Server Access
+**You have DIRECT access to these MCP servers:**
+
+#### SQLite Database MCP
+- **Database**: `.claude/memory/project.db`
+- **Direct SQL queries**: Use `mcp__MCP_SQLite_Server__query` tool
+- **Tables**: sessions, jobs, agents_dynamic, agent_memory, flags, messages, tool_logs, todos, agent_health
+- **Example**: `mcp__MCP_SQLite_Server__query("SELECT * FROM sessions WHERE job_id = 'job_123'")`
+
+#### Context7 MCP  
+- **Purpose**: Library documentation and version history
+- **Access**: Use `mcp__context7__resolve-library-id` and `mcp__context7__get-library-docs`
+- **Usage**: When you need up-to-date docs for frameworks/libraries
+
+#### Other Available MCPs
+- **Git MCP**: Git operations (use Bash tool instead for safety)
+- **Fetch MCP**: Web content retrieval  
+- **Trello MCP**: Project management integration
+- **Voice Mode MCP**: Voice conversation capabilities
+- **Playwright MCP**: Browser automation
+- **IDE MCP**: Development environment integration
+
+**Note**: Check available MCP tools with `/mcp` command
+
+### Essential Commands
 
 ```bash
-# View available agents
-ls .claude/agents/
+# List all available agents
+uv run python .claude/scripts/agent_db.py list-agents
 
-# View agent memory
-cat .claude/memory/agents/{{agent_example}}/knowledge.json
+# Orchestrate FLAGS when user requests
+/flags
 
-# View pending flags
-cat .claude/memory/flags/pending.json
-
-# View processed flags
-cat .claude/memory/flags/processed.json
-
-# View project structure
-tree .claude/
-
-# View activity logs
-tail -20 .claude/memory/context/activity.log
+# Monthly agent update
+/setup --update
 ```
 
 ## 🚨 Troubleshooting
@@ -147,49 +216,33 @@ If an agent doesn't respond correctly:
 
 ## 🏗️ PROJECT: {{project_name}}
 
-### 📊 PROJECT IDENTITY
+<!-- INSERT: PROJECT_CONTEXT -->
+<!-- Dynamic content from 4 setup agents will be inserted here:
+     - Project Identity (setup-context)
+     - Architecture Analysis (setup-infrastructure)
+     - Technology Stack Details (setup-codebase)
+     - Critical Issues (all agents)
+     - Unique Features (setup-context)
+     - Next Priorities (setup-infrastructure)
+-->
 
-- **Name**: {{project_name}}
-- **Type**: {{project_type}}
-- **Phase**: {{project_phase}}
-- **Stack**: {{tech_stack}}
+## 🔄 Agent Memory Maintenance
 
-### 🎯 SPECIFIC CONTEXT
+### Monthly Update Schedule
+Agents should be updated monthly to maintain accuracy:
 
-{{project_description}}
-
-### 📁 ARCHITECTURAL STRUCTURE
-
-{{architecture_description}}
-
-### 🛠️ TECHNOLOGY STACK
-
-```yaml
-stack:
-  {{#each tech_stack_details}}
-  {{category}}: "{{technology}}"
-  {{/each}}
+```bash
+/setup --update
 ```
 
-### 🏆 UNIQUE FEATURES
+- Re-analyzes all modules
+- Updates agent memories with current code
+- Maintains system accuracy
 
-{{#each unique_features}}
-- **{{name}}**: {{description}}
-{{/each}}
-
-### 🚨 CRITICAL ISSUES IDENTIFIED
-
-{{#each critical_issues}}
-- **{{category}}**: {{description}}
-  - **Impact**: {{impact}}
-  - **Solution**: {{solution}}
-{{/each}}
-
-### 🔧 NEXT PRIORITIES
-
-{{#each priorities}}
-{{id}}. {{description}}
-{{/each}}
+### Additional Resources
+- **Context7 (MCP)**: Available for version history if needed
+- **Agents**: Primary source of module expertise
+- **FLAGS**: Automatic coordination between agents
 
 ---
 

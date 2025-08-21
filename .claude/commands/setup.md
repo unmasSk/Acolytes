@@ -137,63 +137,41 @@ STEPS:
 ### 5️⃣ **PHASE 5: CLAUDE.MD CREATION**
 
 ```yaml
-CLAUDE:
+CLAUDE - HYBRID APPROACH:
   - Receives information from the 4 agents
-  - Creates CLAUDE.md with all intelligence and language preferences
-  - Maps detected modules to specialized agents
-  - Prepares agent list for agent-creator
-  - INCLUDES Agent Selection Protocol instructions
+  - Loads template: .claude/resources/templates/claude-md-template.md
+  - Replaces all {{placeholders}} with actual data:
+    - {{project_name}} → from setup-context agent
+    - {{agents}} → list of planned modules from analysis (for {{#each}} loops)
+    - {{agent_example}} → first agent from planned list
+    - {{first_agent}}, {{second_agent}}, {{third_agent}} → first 3 agents for examples
+  - Generates dynamic content from 4 agents:
+    - Project Identity & Description (setup-context)
+    - Architecture Analysis (setup-infrastructure) 
+    - Technology Stack Details (setup-codebase)
+    - Critical Issues & Solutions (all agents)
+    - Unique Features (setup-context)
+    - Next Priorities (setup-infrastructure)
+  - Inserts dynamic content at: <!-- INSERT: PROJECT_CONTEXT -->
+  - Includes language preferences from Phase 3
+  - Saves to target: PROJECT_ROOT/.claude/CLAUDE.md
 ```
 
 `CLAUDE.md` includes:
 
-- Complete tech stack mapping
-- Module dependency structure
-- Detected patterns and conventions
-- Recommended agent creation plan
-- **Agent Selection Protocol** (mandatory routing instructions)
+**FIXED SECTIONS (from template):**
+- FLAGS System protocols
+- Agent Selection Protocol (mandatory routing)
+- Multi-Agent Orchestration instructions
+- Standard commands and troubleshooting
 
-#### Agent Selection Protocol Content for CLAUDE.md
+**DYNAMIC SECTIONS (from 4 agents analysis):**
+- Project-specific architecture
+- Detected critical issues and solutions
+- Technology stack with rationale
+- Unique project features and priorities
 
-When creating CLAUDE.md, include this exact section:
-
-```markdown
-## Agent Selection Protocol
-
-**MANDATORY**: Before invoking any agent, follow this 3-step process:
-
-### Step 1: Task Classification
-Analyze the user prompt for these keywords:
-- **STRATEGIC**: "choose", "select", "compare", "decide", "architecture", "strategy", "design"
-  → Use Coordinator agents first (coordinator.*)
-- **TACTICAL**: "implement", "configure", "optimize", "debug", "deploy", "code"  
-  → Use Specialist agents directly (backend.*, database.*, etc.)
-- **COMBINED**: Contains both strategic + tactical keywords
-  → Use sequential: Coordinator → Specialist
-
-### Step 2: Domain Identification
-Identify the technical domain:
-- Backend/API → coordinator.backend or backend.*
-- Database/Data → coordinator.database or database.*
-- Frontend/UI → coordinator.frontend or frontend.*
-- DevOps/Ops → coordinator.devops or ops.*
-- Services → service.*
-- Business → business.*
-
-### Step 3: Apply Routing Rules
-Consult the global agent routing rules:
-- Use the IF/THEN conditions to select exact agent
-- For overlaps, apply Anti-Ambiguity Rules
-- For multi-agent workflows, follow predefined sequences
-
-### Examples:
-- "Optimize PostgreSQL" → TACTICAL → database.postgres (direct)
-- "Choose database for app" → STRATEGIC → coordinator.database → database.*
-- "Implement RAG with Postgres" → database.pgvector (Anti-Ambiguity Rule)
-- "Create user roles system" → coordinator.security → service.auth → database.* (sequential)
-
-**Global Agent Catalog**: Refer to ~/.claude/resources/rules/agent-routing.md for complete routing rules.
-```
+**NOTE**: Agent Selection Protocol is now included in the template and will be automatically added to all generated CLAUDE.md files.
 
 ---
 

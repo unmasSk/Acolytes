@@ -11,16 +11,16 @@ SESSION START HOOK - SQLite Context Loader
 
 This hook runs when Claude Code starts a new session and:
 
-1. CREATES new session with hexadecimal ID
-2. READS the previous session from SQLite (sessions table)
-3. IF that session belongs to a job, LOADS ALL sessions from that job
+1. FINDS existing ACTIVE session (ended_at IS NULL) and CONTINUES it
+2. LOADS context from that active session and its job
+3. IF no active session exists, shows warning with available jobs
 4. BUILDS context from session summaries (accomplishments, decisions, pending tasks)
 5. LOADS CLAUDE.md project rules
 
 Flow:
-- Session starts → Hook creates new session ID → Loads previous context
+- Session starts → Hook finds active session → Loads context from it
 - Shows recent accomplishments and pending tasks from job
-- Claude gets complete context to continue work seamlessly
+- Claude continues existing work seamlessly (no new sessions created)
 """
 
 import json
@@ -101,40 +101,43 @@ def get_latest_claude_session_id():
         return None
 
 
-def create_new_session():
-    """Create new session at start and return session_id for hooks"""
+def find_active_session():
+    """Find existing active session (ended_at IS NULL) and return session info"""
     try:
         # Backup database first
         backup_database()
         
         DB_PATH = Path(".claude/memory/project.db")
         if not DB_PATH.exists():
-            return None
+            return None, "Database not found"
             
-        # Generate new session ID
-        session_id = f"session_{secrets.token_hex(6)}"
-        
         conn = sqlite3.connect(str(DB_PATH))
         cursor = conn.cursor()
         
-        # Get the active job (guaranteed to be exactly 1 by DB constraint)
-        cursor.execute("SELECT id FROM jobs WHERE status = 'active'")
-        active_job = cursor.fetchone()
+        # Find active session (ended_at IS NULL)
+        cursor.execute("""
+            SELECT id, job_id, created_at, claude_session_id 
+            FROM sessions 
+            WHERE ended_at IS NULL 
+            ORDER BY created_at DESC 
+            LIMIT 1
+        """)
         
-        if not active_job:
-            # No active job found - inform user about available options
+        active_session = cursor.fetchone()
+        
+        if not active_session:
+            # No active session found - show available jobs
             cursor.execute("SELECT id, title, status FROM jobs WHERE status = 'paused' ORDER BY created_at DESC LIMIT 3")
             paused_jobs = cursor.fetchall()
             
             conn.close()
             
-            # Create session without job_id and show informative message
             context_parts = [
-                "WARNING: NO ACTIVE JOB FOUND",
-                "=" * 40,
+                "WARNING: NO ACTIVE SESSION FOUND",
+                "=" * 50,
                 "",
-                "No active job found at this time.",
-                "To continue, you need to activate an existing job:",
+                "No active session to continue. Run /save first to create new session.",
+                "OR activate an existing job to create session manually:",
                 ""
             ]
             
@@ -144,47 +147,28 @@ def create_new_session():
                     title = job[1] or "No title"
                     context_parts.append(f"   - {job[0]} - {title} ({job[2]})")
                 context_parts.append("")
-                context_parts.append("To activate a job: UPDATE jobs SET status='active' WHERE id='job-id'")
-                context_parts.append("To see all jobs: /jobs --list")
+                context_parts.append("To activate: UPDATE jobs SET status='active' WHERE id='job-id'")
             else:
                 context_parts.append("No jobs available.")
-                context_parts.append("Consider creating a new job manually in the database.")
             
             context_parts.append("")
-            context_parts.append("Session will be created without job assignment.")
-            context_parts.append("=" * 40)
+            context_parts.append("Session flow: /save creates new session automatically")
+            context_parts.append("=" * 50)
             
-            # Output the informative message
-            output = {
-                "hookSpecificOutput": {
-                    "hookEventName": "SessionStart", 
-                    "additionalContext": "\n".join(context_parts)
-                }
-            }
-            import json
-            import sys
-            print(json.dumps(output))
-            sys.exit(0)
-            
-        job_id = active_job[0]
+            return None, "\n".join(context_parts)
         
-        # Get the latest Claude session UUID
-        claude_session_id = get_latest_claude_session_id()
+        session_info = {
+            'session_id': active_session[0],
+            'job_id': active_session[1],
+            'created_at': active_session[2],
+            'claude_session_id': active_session[3]
+        }
         
-        # Create initial session record with the active job and Claude UUID
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
-        cursor.execute("""
-            INSERT INTO sessions (id, job_id, claude_session_id, created_at)
-            VALUES (?, ?, ?, ?)
-        """, (session_id, job_id, claude_session_id, timestamp))
-        
-        conn.commit()
         conn.close()
+        return session_info, None
         
-        return session_id
-        
-    except Exception:
-        return None
+    except Exception as e:
+        return None, f"Error finding session: {str(e)}"
 
 
 def get_git_status():
@@ -217,15 +201,15 @@ def get_git_status():
         return None, None
 
 
-def load_job_context_from_db():
-    """Load context from database following this strategy:
+def load_job_context_from_db(session_info):
+    """Load context from active session and its job
     
-    1. FIRST: Read the PREVIOUS SESSION from SQLite (sessions table)  
-    2. IF that session belongs to a job, THEN load ALL sessions from that job
+    1. Use the ACTIVE SESSION info provided
+    2. Load ALL sessions from the same job for complete context
     3. Build context from session summaries (accomplishments, decisions, pending)
-    4. If Claude needs more detail, can query MESSAGES table for full conversation
+    4. Show current session info and job progress
     
-    This ensures Claude always knows what was done before and can continue work seamlessly.
+    This ensures Claude knows exactly where we are and what was done before.
     """
     try:
         DB_PATH = Path(".claude/memory/project.db")
@@ -238,48 +222,20 @@ def load_job_context_from_db():
         
         context_parts = []
         
-        # FIRST: Always load the PREVIOUS session to see what was done
-        cursor.execute("""
-            SELECT s.*, j.id as job_id, j.status as job_status
-            FROM sessions s
-            LEFT JOIN jobs j ON s.job_id = j.id
-            WHERE s.ended_at IS NOT NULL
-            ORDER BY s.created_at DESC
-            LIMIT 1
-        """)
-        
-        last_session = cursor.fetchone()
-        
-        if not last_session:
-            # No previous sessions found
+        # Get job info from active session
+        if not session_info or not session_info.get('job_id'):
             conn.close()
-            return None
+            return "No job associated with current session"
         
-        # Check if last session belongs to a job
-        if last_session['job_id'] and last_session['job_status'] == 'active':
-            job_id = last_session['job_id']
-            # Now load ALL sessions from this job
-        else:
-            # Just show last session info without job context
-            context_parts.append("=" * 60)
-            context_parts.append("CONTINUING FROM LAST SESSION")
-            context_parts.append("=" * 60)
-            
-            if last_session['next_session_priority']:
-                context_parts.append("\nPRIORITY:")
-                context_parts.append(f"   {last_session['next_session_priority']}")
-            
-            context_parts.append("=" * 60)
-            conn.close()
-            return "\n".join(context_parts) if context_parts else None
+        job_id = session_info['job_id']
+        session_id = session_info['session_id']
         
-        # Add nice header
+        # Add header with current session info
         context_parts.append("=" * 60)
         context_parts.append(f"WORKING ON JOB: {job_id}")
         context_parts.append("=" * 60)
         
-        
-        # Get last session info from this job
+        # Get last completed session from this job for priority
         cursor.execute("""
             SELECT id, next_session_priority, breakthrough_moment, 
                    accomplishments, ended_at
@@ -325,29 +281,64 @@ def load_job_context_from_db():
             context_parts.append(f"   Sessions: {stats['count']}")
             context_parts.append(f"   Started: {stats['started']}")
         
-        # Get recent accomplishments across all sessions
+        # Get ALL accomplishments across ALL sessions in this job
         cursor.execute("""
-            SELECT accomplishments 
+            SELECT accomplishments, decisions, bugs_fixed, created_at, ended_at 
             FROM sessions 
             WHERE job_id = ? AND accomplishments IS NOT NULL
-            ORDER BY created_at DESC 
-            LIMIT 3
+            ORDER BY created_at ASC
         """, (job_id,))
         
         all_accomplishments = []
+        all_decisions = []
+        all_bugs_fixed = []
+        sessions_completed = 0
+        
         for row in cursor.fetchall():
+            if row['ended_at']:  # Only count completed sessions
+                sessions_completed += 1
+                
             if row['accomplishments']:
                 try:
                     accs = json.loads(row['accomplishments'])
                     if isinstance(accs, list):
                         all_accomplishments.extend(accs)
                 except (json.JSONDecodeError, TypeError):
-                    continue  # Skip malformed JSON
+                    continue
+            
+            if row['decisions']:
+                try:
+                    decs = json.loads(row['decisions'])
+                    if isinstance(decs, list):
+                        all_decisions.extend(decs)
+                except (json.JSONDecodeError, TypeError):
+                    continue
+                    
+            if row['bugs_fixed']:
+                try:
+                    bugs = json.loads(row['bugs_fixed'])
+                    if isinstance(bugs, list):
+                        all_bugs_fixed.extend(bugs)
+                except (json.JSONDecodeError, TypeError):
+                    continue
         
+        # Show comprehensive job progress
         if all_accomplishments:
-            context_parts.append("\nRECENT ACCOMPLISHMENTS:")
-            for acc in all_accomplishments[:5]:  # Show max 5
+            context_parts.append(f"\nRECENT ACCOMPLISHMENTS ({len(all_accomplishments)} total):")
+            for acc in all_accomplishments[-8:]:  # Show last 8
                 context_parts.append(f"   • {acc}")
+                
+        if all_decisions:
+            context_parts.append(f"\nKEY DECISIONS ({len(all_decisions)} total):")
+            for dec in all_decisions[-3:]:  # Show last 3
+                context_parts.append(f"   • {dec}")
+                
+        if all_bugs_fixed:
+            context_parts.append(f"\nBUGS FIXED ({len(all_bugs_fixed)} total):")
+            for bug in all_bugs_fixed[-3:]:  # Show last 3
+                context_parts.append(f"   • {bug}")
+                
+        context_parts.append(f"\nSESSIONS PROGRESS: {sessions_completed} completed, 1 active")
         
         # Check if we need more detail from MESSAGES table
         cursor.execute("""
@@ -423,19 +414,20 @@ def main():
         # Build context parts
         context_parts = []
         
-        # FIRST: Create NEW SESSION only if not resuming
-        if source != 'resume':
-            session_id = create_new_session()
-            if session_id:
-                context_parts.append(f"New session created: {session_id}")
-        else:
-            context_parts.append("Resuming existing session")
+        # FIRST: Find ACTIVE SESSION (don't create new)
+        session_info, error_msg = find_active_session()
         
-        # THEN: Load PREVIOUS SESSION context  
-        # If that session belongs to a job, then load all job sessions
-        db_context = load_job_context_from_db()
-        if db_context:
-            context_parts.append(db_context)
+        if error_msg:
+            # No active session found or error
+            context_parts.append(error_msg)
+        else:
+            # Found active session - load its context
+            context_parts.append(f"Continuing session: {session_info['session_id']}")
+            
+            # Load context from active session and its job
+            db_context = load_job_context_from_db(session_info)
+            if db_context:
+                context_parts.append(db_context)
         
         # Add simplified reference to CLAUDE.md rules
         if Path("CLAUDE.md").exists():
