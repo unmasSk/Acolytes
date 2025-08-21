@@ -45,7 +45,7 @@
 ### 🚀 REAL PARALLELISM:
 ```
 # MULTIPLE AGENTS IN PARALLEL (limit: 10 simultaneous)
-"Query these agents IN PARALLEL:
+"Query these agents IN PARALLEL (replace with available agents if any are missing):
 [Task 1] {{first_agent}} → analyze module structure
 [Task 2] {{second_agent}} → review dependencies  
 [Task 3] {{third_agent}} → validate patterns"
@@ -138,10 +138,10 @@ Claude is router. Agents manage FLAGS. @flags-agent orchestrates when requested.
 
 ### **REAL PARALLEL - Multiple queries:**
 ```bash
-"Query these agents IN PARALLEL:
+"Query these agents IN PARALLEL (replace with available agents if any are missing):
 [Task 1] {{first_agent}} → module analysis
 [Task 2] {{second_agent}} → domain patterns  
-[Task 3] security-coordinator → security requirements"
+[Task 3] {{third_agent}} → security requirements"
 ```
 
 ### **Coordinated implementation:**
@@ -177,6 +177,10 @@ Claude is router. Agents manage FLAGS. @flags-agent orchestrates when requested.
 - **Direct SQL queries**: Use `mcp__MCP_SQLite_Server__query` tool
 - **Tables**: sessions, jobs, agents_dynamic, agent_memory, flags, messages, tool_logs, todos, agent_health
 - **Example**: `mcp__MCP_SQLite_Server__query("SELECT * FROM sessions WHERE job_id = 'job_123'")`
+
+**Discovery:**
+- Use `/mcp` to list active servers and tools. Confirm the exact tool IDs (they may differ by environment).
+- **Helper scripts verified**: `agent_db.py`, `setup_mcp.py` exist in `~/.claude/scripts/`
 
 #### Context7 MCP  
 - **Purpose**: Library documentation and version history

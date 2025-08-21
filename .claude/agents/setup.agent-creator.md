@@ -249,19 +249,19 @@ Each generated agent includes an initialization instruction:
 
 ```markdown
 ## INITIAL SETUP
-On first invocation, if memories are empty, perform complete module analysis:
+On first invocation, if memories are empty, perform a complete module analysis:
 1. Scan all files in {{module_path}}
 2. Identify patterns, dependencies, and architecture
 3. Fill all 9 memory types with discovered information
-4. Log completion of initial analysis
+4. Log completion of the initial analysis
 ```
 
 ## Division of Labor
-- **Agent-creator**: Analyzes module, creates .md file with template and basic placeholders
+- **Agent-creator**: Analyzes the module, creates the .md file from the template with basic placeholders
 - **Dynamic agents**: Fill their own SQLite memories during Phase 8 analysis
 - **Claude**: Invokes agents during setup and coordinates workflow
 
-**IMPORTANT**: I do NOT insert data into SQLite. The database structure is already created in Phase 5, and the agent itself will fill its memories in Phase 8.
+**IMPORTANT**: I do NOT insert data into SQLite. The database structure is already created in Phase 4, and the agent itself will fill its memories in Phase 8.
 
 ## My Process
 
@@ -276,7 +276,7 @@ On first invocation, if memories are empty, perform complete module analysis:
 9. **Generate comprehensive agent** with complete instructions
 10. **Save agent file** to `.claude/agents/[module]-agent.md`
 
-**NOTE**: The agent structure is already in the database from Phase 5. The agent will fill its own memories when invoked in Phase 8.
+**NOTE**: The agent structure is already in the database from Phase 4. The agent will fill its own memories when invoked in Phase 8.
 
 ## Example Output
 
@@ -306,11 +306,11 @@ last_updated: 2025-01-21
 - Purpose: Dream data processing and analysis
 
 ## INITIAL SETUP
-On first invocation, if memories are empty, perform complete module analysis:
+On first invocation, if memories are empty, perform a complete module analysis:
 1. Scan all files in /src/dream
 2. Identify patterns, dependencies, and architecture
 3. Fill all 9 memory types with discovered information
-4. Log completion of initial analysis
+4. Log completion of the initial analysis
 
 [Complete workflow protocols and memory management from template...]
 ```
@@ -347,7 +347,8 @@ The agent decides what to put in its memories based on its analysis, not predete
 - **Each agent knows HOW to update its memory** using agent_db.py
 - **Each agent becomes the TRUE EXPERT** of its module
 - **SQLite allows concurrent reads** so multiple agents work in parallel
-- **Only 9 memory types** keeps the system simple and maintainable
+- For concurrent writes, enable WAL journaling (PRAGMA journal_mode=WAL) and keep transactions short
+- **Only 9 memory types** keep the system simple and maintainable
 
 ## New Flow Summary
 

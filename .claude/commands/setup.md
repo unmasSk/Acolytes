@@ -138,14 +138,14 @@ STEPS:
 
 ```yaml
 CLAUDE - HYBRID APPROACH:
-  - Receives information from the 4 agents
+  - Receives information from the four agents
   - Loads template: .claude/resources/templates/claude-md-template.md
   - Replaces all {{placeholders}} with actual data:
-    - {{project_name}} → from setup-context agent
-    - {{agents}} → list of planned modules from analysis (for {{#each}} loops)
-    - {{agent_example}} → first agent from planned list
-    - {{first_agent}}, {{second_agent}}, {{third_agent}} → first 3 agents for examples
-  - Generates dynamic content from 4 agents:
+    - {{project_name}} → from setup-context agent (fallback: "Unnamed Project")
+    - {{agents}} → list of planned modules from analysis (fallback: "No agents detected")
+    - {{agent_example}} → first agent from planned list (fallback: "@example-agent")
+    - {{first_agent}}, {{second_agent}}, {{third_agent}} → first 3 agents for examples (fallback: "@agent-1", "@agent-2", "@agent-3")
+  - Generates dynamic content from four agents:
     - Project Identity & Description (setup-context)
     - Architecture Analysis (setup-infrastructure) 
     - Technology Stack Details (setup-codebase)
@@ -154,7 +154,8 @@ CLAUDE - HYBRID APPROACH:
     - Next Priorities (setup-infrastructure)
   - Inserts dynamic content at: <!-- INSERT: PROJECT_CONTEXT -->
   - Includes language preferences from Phase 3
-  - Saves to target: PROJECT_ROOT/.claude/CLAUDE.md
+  - Saves to target: PROJECT_ROOT/CLAUDE.md
+  - If any placeholder has no data (e.g., no agents detected), insert a short "No data available" stub to keep the document structurally valid
 ```
 
 `CLAUDE.md` includes:
@@ -165,7 +166,7 @@ CLAUDE - HYBRID APPROACH:
 - Multi-Agent Orchestration instructions
 - Standard commands and troubleshooting
 
-**DYNAMIC SECTIONS (from 4 agents analysis):**
+**DYNAMIC SECTIONS (from four-agent analysis):**
 - Project-specific architecture
 - Detected critical issues and solutions
 - Technology stack with rationale

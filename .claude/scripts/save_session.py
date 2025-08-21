@@ -312,6 +312,27 @@ def main():
         claude_analysis = get_claude_analysis()
         if not claude_analysis:
             return 1  # Exit with error if no analysis provided
+        
+        # Validate required fields
+        required_fields = ['accomplishments', 'decisions', 'bugs_fixed', 'errors', 
+                          'breakthrough_moment', 'next_session_priority', 'conversation_flow']
+        missing_fields = [f for f in required_fields if f not in claude_analysis]
+        if missing_fields:
+            print(json.dumps({
+                "error": f"Missing required fields: {missing_fields}",
+                "provided_fields": list(claude_analysis.keys()),
+                "required_format": {
+                    "accomplishments": ["list of actual accomplishments"],
+                    "decisions": ["list of key decisions made"],
+                    "bugs_fixed": ["list of bugs actually fixed"],
+                    "errors": ["list of errors encountered"],
+                    "breakthrough_moment": "key insight that unlocked progress",
+                    "next_session_priority": "what should be done next",
+                    "conversation_flow": "brief conversation summary"
+                }
+            }))
+            return 1
+        
         claude_analysis['total_exchanges'] = technical_metrics['total_tools'] * 2  # Estimate
         
         # Save to database (this closes the session by setting ended_at)

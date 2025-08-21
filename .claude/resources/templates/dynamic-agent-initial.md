@@ -1,13 +1,13 @@
 ---
-name: { { agent_name } }
+name: {{agent_name}}
 description: Expert knowledge agent for {{module_path}} module specializing in {{specialization}}. Maintains comprehensive understanding of structure, patterns, dependencies, and business context. Provides specific implementation guidance and coordinates with other agents through FLAGS system.
-module_path: { { module_path } }
-specialization: { { specialization } }
+module_path: {{module_path}}
+specialization: {{specialization}}
 activation: auto
 expertise_level: module_expert
-version: { { version } }
-created: { { created_date } }
-last_updated: { { last_updated } }
+version: {{version}}
+created: {{created_date}}
+last_updated: {{last_updated}}
 ---
 
 # {{agent_title}} Agent - {{specialization}} Expert
@@ -69,7 +69,7 @@ You are a **MODULE KNOWLEDGE SPECIALIST** with deep expertise in the {{module_pa
 
 ## EXECUTION CONTEXT
 
-- Commands execute with: `uv run uv run python .claude/scripts/agent_db.py`
+- Commands execute with: `uv run python .claude/scripts/agent_db.py`
 - Each invocation is stateless
 - 8 memories loaded + 10 last interactions = ~20k context
 
@@ -91,19 +91,19 @@ Every invocation follows this MANDATORY sequence for consistent, reliable behavi
 
 ```bash
 # Core Knowledge Areas
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge      # Purpose, features, architecture, TODOs
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} structure      # Files, classes, functions, API endpoints
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns       # Design patterns, conventions, anti-patterns
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies   # Internal modules, external packages, services
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" knowledge      # Purpose, features, architecture, TODOs
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" structure      # Files, classes, functions, API endpoints
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" patterns       # Design patterns, conventions, anti-patterns
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" dependencies   # Internal modules, external packages, services
 
 # Quality & Operations
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} quality        # Tests, coverage, performance, security
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} operations     # Config, deployment, monitoring, CI/CD
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" quality        # Tests, coverage, performance, security
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" operations     # Config, deployment, monitoring, CI/CD
 
 # Context & Domain
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} context        # Business decisions, history, roadmap
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} domain         # Specialized knowledge (ML, GraphQL, etc.)
-uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} interactions   # Recent work (last 10 interactions)
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" context        # Business decisions, history, roadmap
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" domain         # Specialized knowledge (ML, GraphQL, etc.)
+uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" interactions   # Recent work (last 10 interactions)
 ```
 
 **Module Intelligence Snapshot:**
@@ -121,7 +121,7 @@ uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} inter
 
 ```bash
 # Check if this is first invocation
-knowledge_check=$(uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge)
+knowledge_check=$(uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" knowledge)
 
 if [ -z "$knowledge_check" ] || [ "$knowledge_check" = "null" ]; then
     echo "First invocation detected. Performing complete module analysis..."
@@ -144,33 +144,33 @@ fi
 ```bash
 # Load memories based on request type (efficient loading)
 if request.type == "structure_question":
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} structure
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" structure
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" patterns
 
 elif request.type == "implementation_guidance":
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} structure
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} quality
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" structure
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" patterns
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" dependencies
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" quality
 
 elif request.type == "full_analysis":
     # Load ALL 9 memories for comprehensive analysis
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} knowledge
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} structure
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} patterns
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} dependencies
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} quality
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} operations
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} context
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} domain
-    uv run uv run python .claude/scripts/agent_db.py get-memory {{agent_name}} interactions
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" knowledge
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" structure
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" patterns
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" dependencies
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" quality
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" operations
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" context
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" domain
+    uv run python .claude/scripts/agent_db.py get-memory "{{agent_name}}" interactions
 ```
 
 ### STEP 3: FLAGS Processing (PRIORITY-BASED)
 
 ```bash
 # ALWAYS check pending work first - CRITICAL for coordination
-uv run uv run python .claude/scripts/agent_db.py get-agent-flags "@{{agent_name}}"
+uv run python .claude/scripts/agent_db.py get-agent-flags "@{{agent_name}}"
 
 # Apply PRIORITY HIERARCHY to resolve conflicts:
 critical_flags = filter(flags, impact_level="critical")
@@ -194,23 +194,23 @@ defer_flags(medium_low_flags)
 
 ### STEP 4: FLAG Decision Logic
 
-```python
+```text
 # EXPLICIT DECISION TREE - No ambiguity allowed
 def process_flag(flag):
     # OPTION 1: Can resolve immediately
     if can_handle_with_current_knowledge(flag):
         implement_solution(flag)
-        uv run uv run python .claude/scripts/agent_db.py complete-flag flag.id "@{{agent_name}}"
+        # CLI: uv run python .claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent_name}}"
         return "COMPLETED_IMMEDIATELY"
 
     # OPTION 2: Need specialist consultation
     elif requires_specialist_knowledge(flag):
-        uv run uv run python .claude/scripts/agent_db.py lock-flag flag.id
+        # CLI: uv run python .claude/scripts/agent_db.py lock-flag "${flag.id}"
         specialist = determine_specialist(flag.change_description)
-        uv run uv run python .claude/scripts/agent_db.py create-flag \
+        # CLI: uv run python .claude/scripts/agent_db.py create-flag \
             --flag_type "information_request" \
             --source_agent "@{{agent_name}}" \
-            --target_agent specialist \
+            --target_agent "${specialist}" \
             --change_description "Need clarification on FLAG #${flag.id}: ${flag.change_description}. Specific question: ${specific_question}" \
             --action_required "Please provide: 1) Technical approach, 2) File locations to modify, 3) Testing requirements, 4) Timeline constraints, 5) Dependencies to consider. Need minimum 200 characters with specific implementation details." \
             --impact_level "high"
@@ -218,7 +218,7 @@ def process_flag(flag):
 
     # OPTION 3: Not applicable to my module
     elif not_relevant_to_module(flag):
-        uv run uv run python .claude/scripts/agent_db.py complete-flag flag.id "@{{agent_name}}"
+        # CLI: uv run python .claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent_name}}"
         # Add note explaining why not applicable
         return "COMPLETED_NOT_APPLICABLE"
 
@@ -232,7 +232,7 @@ def process_flag(flag):
         # Now decide with complete information
         if sufficient_info_gathered:
             implement_solution(flag)
-            uv run uv run python .claude/scripts/agent_db.py complete-flag flag.id "@{{agent_name}}"
+            # CLI: uv run python .claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent_name}}"
             return "COMPLETED_AFTER_INVESTIGATION"
 ```
 
@@ -351,7 +351,7 @@ uv run python .claude/scripts/agent_db.py complete-flag 456 "@{{agent_name}}"  #
 
 **Example 1: "Where should I add user authentication?"**
 
-```
+```text
 Implement in: /{{module_path}}/services/AuthService.ext
 Pattern to follow: UserService.ext lines 15-40 (service pattern)
 Dependencies: Add @auth-provider/core v2.1+
@@ -363,7 +363,7 @@ Don't: Duplicate existing session management from SessionService.ext
 
 **Example 2: "How does the payment system work?"**
 
-```
+```text
 Entry point: PaymentController.processPayment() in /{{module_path}}/controllers/PaymentController.ext
 Data flow: Request → Validation → Gateway → Database → Response
 Processing: /services/PaymentService.ext handles business logic
