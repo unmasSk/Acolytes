@@ -206,6 +206,34 @@ def save_session_to_database(session_data, claude_analysis, technical_metrics, d
     except Exception as e:
         raise Exception(f"Failed to save to database: {e}")
 
+def validate_analysis_schema(claude_analysis: dict) -> str | None:
+    """Validate types and content of Claude analysis fields"""
+    schema = {
+        "accomplishments": list,
+        "decisions": list,
+        "bugs_fixed": list,
+        "errors": list,
+        "breakthrough_moment": str,
+        "next_session_priority": str,
+        "conversation_flow": str,
+    }
+    for field, typ in schema.items():
+        if field not in claude_analysis:
+            return f"Missing field: {field}"
+        val = claude_analysis[field]
+        if typ is list:
+            if not isinstance(val, list):
+                return f"Field '{field}' must be a list (got {type(val).__name__})"
+            if any(not isinstance(item, str) or not item.strip() for item in val):
+                return f"Field '{field}' must be a list of non-empty strings"
+        else:
+            if not isinstance(val, str) or not val.strip():
+                return f"Field '{field}' must be a non-empty string"
+    # Guard against oversized fields that can bloat DB rows
+    if len(claude_analysis["conversation_flow"]) > 5000:
+        return "Field 'conversation_flow' too long (>5000 chars)"
+    return None
+
 def clean_emojis(text):
     """Remove problematic emojis from text to avoid encoding issues"""
     import re
@@ -329,6 +357,24 @@ def main():
                     "breakthrough_moment": "key insight that unlocked progress",
                     "next_session_priority": "what should be done next",
                     "conversation_flow": "brief conversation summary"
+                }
+            }))
+            return 1
+        
+        # Enforce types and non-empty content
+        validation_error = validate_analysis_schema(claude_analysis)
+        if validation_error:
+            print(json.dumps({
+                "error": "Invalid analysis schema",
+                "details": validation_error,
+                "required_types": {
+                    "accomplishments": "list[str] (non-empty strings)",
+                    "decisions": "list[str] (non-empty strings)",
+                    "bugs_fixed": "list[str] (non-empty strings)",
+                    "errors": "list[str] (non-empty strings)",
+                    "breakthrough_moment": "str (non-empty)",
+                    "next_session_priority": "str (non-empty)",
+                    "conversation_flow": "str (non-empty, reasonable length)"
                 }
             }))
             return 1

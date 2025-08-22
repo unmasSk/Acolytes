@@ -247,24 +247,8 @@ ORDER BY
     END,
     created_at ASC;
 
--- PRE-POPULATE AGENTS CATALOG with professional agents
+-- PRE-POPULATE AGENTS CATALOG with professional agents (only implementation agents for FLAGS routing)
 INSERT OR IGNORE INTO agents_catalog (name, type, module, description, capabilities, routing_keywords) VALUES
--- Setup Agents
-('@setup.agent-creator', 'setup', 'setup', 'Module research specialist that reads all module files, understands code purpose and creates the perfect dynamic agent for the assigned module', '["module analysis", "agent creation", "code understanding", "pattern detection"]', '["module research", "agent creation", "dynamic agents"]'),
-('@setup.codebase', 'setup', 'setup', 'Analyzes code structure, modules, quality, tests and technical patterns', '["code analysis", "structure analysis", "quality metrics", "test patterns"]', '["code structure", "modules", "quality", "tests", "technical patterns"]'),
-('@setup.context', 'setup', 'setup', 'Analyzes project architecture and tech stack during initial configuration', '["project analysis", "architecture", "tech stack", "configuration"]', '["project architecture", "tech stack", "initial configuration"]'),
-('@setup.environment', 'setup', 'setup', 'Detects development environment configuration and tools', '["environment detection", "tool configuration", "development setup"]', '["development environment", "configuration", "tools"]'),
-('@setup.infrastructure', 'setup', 'setup', 'Analyzes deployment infrastructure and DevOps configuration', '["infrastructure analysis", "deployment", "DevOps", "configuration"]', '["deployment infrastructure", "DevOps configuration"]'),
-
--- Coordinators
-('@coordinator.backend', 'coordinator', 'backend', 'Strategic backend architecture orchestrator', '["Microservices", "API design", "service mesh", "distributed systems", "load balancing"]', '["designing backend architecture", "choosing between multiple backend technologies", "scaling strategy"]'),
-('@coordinator.database', 'coordinator', 'database', 'Strategic data architecture orchestrator', '["SQL/NoSQL/Vector databases", "data modeling", "replication", "sharding", "analytics"]', '["choosing database technology", "designing data architecture", "planning data flow across systems"]'),
-('@coordinator.devops', 'coordinator', 'devops', 'Strategic DevOps and automation orchestrator', '["CI/CD strategy", "GitOps", "release management patterns", "automation workflows"]', '["DevOps strategy", "pipeline architecture", "deployment patterns", "release planning"]'),
-('@coordinator.frontend', 'coordinator', 'frontend', 'Strategic frontend architecture orchestrator', '["React", "Vue", "Angular", "state management", "micro-frontends", "design systems"]', '["Frontend architecture decisions", "UI framework selection", "component strategy"]'),
-('@coordinator.infrastructure', 'coordinator', 'infrastructure', 'Strategic infrastructure architect', '["Multi-cloud (AWS, Azure, GCP)", "load balancers", "CDN", "auto scaling", "capacity planning"]', '["Multi-cloud architecture", "infrastructure strategy", "workload placement", "disaster recovery planning"]'),
-('@coordinator.migration', 'coordinator', 'migration', 'Strategic migration and transformation orchestrator', '["Legacy modernization", "cloud migration", "data migration", "re-architecture patterns"]', '["Migration strategy planning", "legacy transformation", "technology stack migrations"]'),
-('@coordinator.security', 'coordinator', 'security', 'Strategic security architecture orchestrator', '["IAM/RBAC", "compliance frameworks (SOC2, PCI, HIPAA)", "security scanning", "incident response"]', '["Security architecture design", "compliance strategy", "security policy orchestration"]'),
-('@coordinator.testing', 'coordinator', 'testing', 'Strategic testing and quality orchestrator', '["Test automation frameworks", "quality gates", "performance testing", "test data management"]', '["Testing strategy design", "quality assurance architecture", "test automation planning"]'),
 
 -- Database Agents
 ('@database.mariadb', 'database', 'mariadb', 'MariaDB specialist and MySQL evolution expert', '["MariaDB 11+", "Galera clustering", "MaxScale load balancing", "ColumnStore analytics", "Spider sharding"]', '["MySQL modernization", "high-availability clustering", "zero-downtime migrations", "analytical workloads"]'),
@@ -303,7 +287,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, module, description, capabilit
 ('@business.payment', 'business', 'payment', 'Payment processing and financial transactions expert', '["Stripe", "PayPal", "Square", "PCI compliance", "tokenization", "fraud prevention", "3D Secure", "webhooks"]', '["E-commerce payments", "transaction processing", "financial integrations", "payment security", "fraud detection"]'),
 
 -- Documentation Agents  
-('@docs.changelog', 'docs', 'changelog', 'Professional changelog and semantic versioning expert', '["semantic versioning", "changelog generation", "release notes", "version management"]', '["changelog creation", "version management", "release documentation"]'),
+('@docs-specialist', 'docs', 'specialist', 'Professional documentation specialist managing all project documentation', '["semantic versioning", "changelog generation", "technical writing", "API documentation", "markdown mastery", "GitHub repository files", "README.md optimization", "CONTRIBUTING.md", "LICENSE files", "CODE_OF_CONDUCT", "community health files", "issue templates", "PR templates", "version management", "OpenAPI/Swagger", "Mermaid diagrams", "shields.io badges", "accessibility compliance", "documentation automation", ".github templates"]', '["changelog creation", "version management", "release documentation", "API documentation", "technical guides", "README optimization", "GitHub repository setup", "community health files", "CONTRIBUTING guidelines", "LICENSE management", "issue/PR templates", "documentation quality metrics", "cross-reference management", "repository documentation"]'),
 
 -- Mobile Agents
 ('@frontend.mobile', 'frontend', 'mobile', 'Cross-platform mobile development expert', '["React Native", "Flutter", "Expo", "Capacitor", "native modules", "app store deployment", "mobile CI/CD"]', '["Mobile app development", "cross-platform solutions", "native feature integration", "app store publishing"]'),
@@ -314,8 +298,6 @@ INSERT OR IGNORE INTO agents_catalog (name, type, module, description, capabilit
 -- Business Service Agents
 ('@business.subscription', 'business', 'subscription', 'SaaS subscription and recurring revenue expert', '["Subscription models", "usage-based billing", "metered pricing", "customer lifecycle", "churn prevention"]', '["SaaS platforms", "recurring revenue models", "subscription analytics", "customer retention strategies"]'),
 
--- Documentation Agents
-('@docs.technical', 'docs', 'technical', 'Technical documentation and competitive GitHub README expert', '["Markdown mastery", "Mermaid diagrams", "GitHub badges", "shields.io", "OpenAPI/Swagger", "GitBook", "competitive README analysis"]', '["GitHub README optimization", "API documentation", "technical guides", "visual diagrams", "competitive documentation analysis"]'),
 
 -- Analysis and Strategy Agents
 ('@analyst.strategic', 'analyst', 'strategic', 'Business and technical strategy analysis expert', '["Requirements analysis", "roadmap planning", "stakeholder analysis", "competitive analysis", "market research tools"]', '["Strategic planning", "business requirements", "technology selection", "project roadmaps", "feasibility studies"]'),
