@@ -17,6 +17,8 @@ Once all agents/prompts are created and individually audited, run a final sweep 
 - mirar las dos ultimas lineas filosofia y lo otro
 - revisar tb en los documentos que no exista cosas de MCPS no pueden acceder a el ni de memoria solo flags si procede
 - revisar que cada angente pueda hacer cosas, pero no anticiparse, como VUE que tiene -precommit, para que quiere precommit si el no va a commitear. cosas asi.
+- si hay timers, es decir como roadmpas o chronograma quitarlos.
+- revisar que todos tienes las flags correctas, no la version resumida.
 
 -instalar pupeeteer
 

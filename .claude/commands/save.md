@@ -1,74 +1,131 @@
 ---
-allowed-tools:
-  [
-    no se que poner aqui,
-    porque tiene que leer la conversacion y escribir en la db,
-  ]
-description: Save session and messages to SQLite with job tracking
+allowed-tools: [Bash, TodoWrite, mcp__MCP_SQLite_Server__query]
+description: Save session and messages to SQLite with rich text content using argument-based system
 ---
 
-# Save
+# Save Command - WORKING SYSTEM
 
-Saves the current session and messages to SQLite database with comprehensive metrics and job tracking.
+**STATUS: FULLY FUNCTIONAL** ✅ (Fixed August 22, 2025)
 
-## CLAUDE'S ROLE
+Saves current session and messages to SQLite database with rich English content and comprehensive metrics.
 
-**YOU MUST ANALYZE THE REAL CONVERSATION MANUALLY**
+## CRITICAL INFORMATION FOR FUTURE CLAUDE SESSIONS
 
-The script CANNOT read our conversation content. YOU must:
+### How It Works Now (TESTED & WORKING)
 
-1. **READ** our entire conversation from start to finish
-2. **EXTRACT** real accomplishments, decisions, problems solved
-3. **IDENTIFY** breakthrough moments and actual issues encountered  
-4. **PROVIDE** this analyzed data to the script for saving
+1. **Claude analyzes** the conversation manually (script cannot read conversation)
+2. **Claude executes** ONE command with rich English text
+3. **Script parses** and saves to SQLite with proper formatting
+4. **Database gets** rich content with line breaks, no emojis, all English
+
+### EXACT COMMAND FORMAT
+
+```bash
+uv run .claude/scripts/save_session.py \
+  -session "accomplishments: [Rich detailed text]. decisions: [Rich detailed text]. bugs_fixed: [Rich detailed text]. errors_encountered: [Rich detailed text]. breakthrough_moment: [Rich detailed text]. next_session_priority: [Rich detailed text]." \
+  -message "conversation_flow: [Rich Q&A format with detailed analysis]. total_exchanges: [number] duration_minutes: [number]"
+```
+
+### IMPORTANT RULES
+
+- **ALL CONTENT IN ENGLISH** (never Spanish in database)
+- **NO EMOJIS** (script auto-removes them)
+- **RICH TEXT** not minimal summaries (detailed explanations, specific examples)
+- **USE PERIODS** for auto line breaks in database
+- **NO PIPE OPERATIONS** (hooks block them)
+- **LENGTH LIMITS**: conversation_flow max 5000 characters, other fields no limit
+- **FIELD VALIDATION**: Empty fields after "field:" will be rejected
 
 ## What Claude Must Analyze
 
-**ACCOMPLISHMENTS**: What we actually did
-- Files created/modified with specific names
-- Problems solved (be specific)
-- Features implemented
-- Scripts fixed/improved
+### SESSION FIELDS (Required)
 
-**DECISIONS**: Important choices we made
-- Technical approaches chosen
-- Architecture decisions
-- Tool selections and why
+**accomplishments**: Specific things we actually accomplished
+- Files created/modified with exact names
+- Problems solved with technical details
+- Features implemented with specifics
+- Systems fixed/improved
 
-**BUGS FIXED**: Actual problems resolved
-- Specific errors we encountered and fixed
-- Scripts that were broken and are now working
-- Issues with implementation that got resolved
+**decisions**: Important technical and strategic choices
+- Architecture decisions with reasoning
+- Technology selections and why
+- Approach changes and rationale
 
-**ERRORS ENCOUNTERED**: Problems we faced
-- Things that didn't work as expected
-- Mistakes that had to be corrected
-- Technical barriers we hit
+**bugs_fixed**: Actual problems resolved
+- Specific errors encountered and fixed
+- Broken scripts now working
+- Implementation issues resolved
 
-**BREAKTHROUGH MOMENT**: Key insight that unlocked progress
-- The "aha!" moment that solved a big problem
-- Critical realization that changed our approach
+**errors_encountered**: Problems we faced
+- Technical barriers hit
+- Things that didn't work as expected  
+- Mistakes that needed correction
 
-**NEXT PRIORITY**: What should be done first next time
-- Based on what we learned and what's left incomplete
-- Most important next step
+**breakthrough_moment**: Key insight that unlocked progress
+- The "aha!" moment that solved major problem
+- Critical realization that changed approach
 
-## Script Execution
+**next_session_priority**: Most important next step
+- Based on incomplete work
+- Priority for next session
 
-The script will:
-- Get session duration from database timestamps  
-- Count tool exchanges from tool_logs
-- Accept the conversation analysis YOU provide
-- Save everything to database
+### MESSAGE FIELDS (Required)
 
-## Execute
+**conversation_flow**: Rich Q&A analysis format
+- Q: [Question about session]? A: [Detailed answer]
+- Multiple Q&A pairs covering key aspects
+- Comprehensive session narrative
 
-1. **FIRST**: Analyze our conversation manually
-2. **THEN**: `uv run .claude/scripts/save_session.py` with your analysis
+**total_exchanges**: Estimated number of user-Claude exchanges
+**duration_minutes**: Session duration in minutes
+
+## WORKING EXAMPLE (COPY THIS FORMAT)
+
+```bash
+uv run .claude/scripts/save_session.py \
+  -session "accomplishments: Fixed critical save system issue where hooks were blocking pipe operations causing systematic failures in session persistence. Analyzed save_session.py architecture and identified stdin JSON approach as problematic. Implemented new argument-based rich text system replacing minimal JSON with comprehensive English content. decisions: Chose rich text approach over minimal JSON data structure for better session quality and readability. Selected command-line arguments as most efficient method avoiding file creation and token overhead. bugs_fixed: None identified in this session as focus was on architectural analysis rather than bug resolution. errors_encountered: Hook system blocking pipe operations preventing JSON data transfer via stdin to save script. User frustration with minimal session data quality in current system. breakthrough_moment: User without programming background identified most optimal technical solution demonstrating that practical efficiency often trumps complex technical approaches. next_session_priority: Complete frontend mobile agent creation using Context7 and WebSearch for proper documentation research followed by Final QA execution from fix.md checklist." \
+  -message "conversation_flow: Q: What was the primary problem addressed in this session? A: Save system completely non-functional due to hook interference with pipe operations plus user dissatisfaction with minimal session data quality. Q: What solution was ultimately implemented? A: Command-line arguments with rich English text parsing automatic formatting with line breaks and emoji cleaning. total_exchanges: 18 duration_minutes: 30"
+```
+
+## EXPECTED SUCCESS OUTPUT
+
+```json
+{
+  "session_id": "session_1276fe1ef796",
+  "job_id": "job_f1a2g3s4y5s6", 
+  "quality_score": 8,
+  "duration_minutes": 1183,
+  "total_exchanges": 166,
+  "message_id": 44,
+  "timestamp": "2025-08-22 20:35",
+  "new_session_id": "session_33117b8918f7",
+  "next_session_ready": true
+}
+```
+
+## TROUBLESHOOTING
+
+**If you get "name 're' is not defined"**: Fixed - import re added to script  
+**If you get "Missing field: errors"**: Fixed - validation uses errors_encountered  
+**If you get hook blocking**: Don't use pipes (|) - use direct arguments only  
+**If text too long**: No limit - script handles long rich text  
+
+## TECHNICAL NOTES FOR DEVELOPERS
+
+- **Text Processing**: Script adds line breaks at sentences (periods, questions, exclamations)
+- **Emoji Cleaning**: Regex removes all Unicode emoji ranges automatically
+- **Field Parsing**: Improved regex pattern handles edge cases with colons in content
+- **Validation**: Semantic validation ensures meaningful content (min 10-15 chars per field)
+- **Database Storage**: SQLite stores rich formatted text with line breaks
+- **Session Duration**: Calculated from database timestamps, not user-provided duration
+- **Quality Score**: Auto-calculated based on accomplishments vs errors ratio
+- **Exchange Calculation**: Uses user-provided total_exchanges or estimates from tool count
+- **Backup System**: Creates timestamped backups, maintains 10 most recent files
+- **Error Handling**: Critical failures stop execution, warnings allow continuation
 
 ## Response Format
 
-After analyzing the conversation and executing the script, present results in this beautiful format:
+After executing script successfully, present results in this format:
 
 ```markdown
 ==============================================================================

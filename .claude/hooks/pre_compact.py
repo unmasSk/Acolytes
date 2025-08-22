@@ -8,8 +8,6 @@
 
 import json
 import sys
-import subprocess
-from pathlib import Path
 
 try:
     from dotenv import load_dotenv
@@ -18,74 +16,50 @@ except ImportError:
     pass  # dotenv is optional
 
 
-def execute_save_command():
-    """Execute save_session.py to close session before compaction"""
-    try:
-        # Path to save session script
-        save_script = Path(".claude/scripts/save_session.py")
-        
-        if not save_script.exists():
-            print("[WARNING] save_session.py not found - session will not be saved before compaction")
-            return False
-        
-        # Execute save command
-        result = subprocess.run(
-            ['uv', 'run', str(save_script)],
-            capture_output=True,
-            text=True,
-            timeout=30
-        )
-        
-        if result.returncode == 0:
-            print("Session closed successfully before compaction")
-            # Print save output if available
-            if result.stdout.strip():
-                print("Save output:")
-                print(result.stdout)
-            return True
-        else:
-            print(f"ERROR: Failed to close session before compaction: {result.stderr}")
-            return False
-            
-    except subprocess.TimeoutExpired:
-        print("TIMEOUT: Session close timed out - proceeding with compaction")
-        return False
-    except Exception as e:
-        print(f"ERROR: Error executing session close: {e}")
-        return False
+# Save session functionality removed - sessions are saved manually via /save command
 
 
 def main():
     try:
         # Read JSON input from stdin  
-        input_data = json.loads(sys.stdin.read())
+        stdin_input = sys.stdin.read().strip()
         
-        # Extract trigger and custom instructions
-        trigger = input_data.get('trigger', 'unknown')  # "manual" or "auto"
-        custom_instructions = input_data.get('custom_instructions', '')
+        if stdin_input:
+            input_data = json.loads(stdin_input)
+            trigger = input_data.get('trigger', 'unknown')
+            custom_instructions = input_data.get('custom_instructions', '')
+        else:
+            # No input provided, assume manual
+            trigger = 'manual'
+            custom_instructions = ''
         
-        # FIRST: Execute save session before compaction
-        execute_save_command()
-        
-        # THEN: Provide feedback based on trigger type
+        # Provide feedback based on trigger type
         if trigger == "manual":
-            message = "Preparing for manual compaction"
+            message = "MANUAL COMPACTION DETECTED - User executed /compact command"
             if custom_instructions:
                 message += f"\nCustom instructions: {custom_instructions[:100]}..."
+            print(message)
+            print("REMINDER: Claude must execute '/save' command before compaction proceeds!")
+            print("Compaction will proceed after session save.")
         else:  # auto
-            message = "Auto-compaction triggered due to full context window"
-        
-        print(message)
-        print("Session closed before compaction.")
+            message = "AUTO COMPACTION DETECTED - Context window full, automatic compaction triggered"
+            print(message)
+            print("Compaction ready to proceed.")
         
         # Success - compaction will proceed
         sys.exit(0)
         
     except json.JSONDecodeError:
-        # Handle JSON decode errors gracefully
+        # Fallback to manual if JSON parse fails
+        print("MANUAL COMPACTION DETECTED - User executed /compact command")
+        print("REMINDER: Claude must execute '/save' command before compaction proceeds!")
+        print("Compaction will proceed after session save.")
         sys.exit(0)
     except Exception:
         # Handle any other errors gracefully
+        print("MANUAL COMPACTION DETECTED - User executed /compact command")
+        print("REMINDER: Claude must execute '/save' command before compaction proceeds!")
+        print("Compaction will proceed after session save.")
         sys.exit(0)
 
 

@@ -1,4 +1,4 @@
-## 🚩 FLAG System — Inter‑Agent Communication
+## FLAG System — Inter‑Agent Communication
 
 ### What are FLAGS?
 
@@ -9,12 +9,14 @@ FLAGS are asynchronous coordination messages between agents stored in an SQLite 
 - FLAGS ensure system-wide consistency across all agents
 
 **Note on agent handles:**
+
 - Preferred: `@{domain}.{module}` (e.g., `@backend.api`, `@database.postgres`, `@frontend.react`)
 - Cross-cutting roles: `@{team}.{specialty}` (e.g., `@security.audit`, `@ops.monitoring`)
 - Dynamic modules: `@{module}-agent` (e.g., `@auth-agent`, `@payment-agent`)
 - Avoid free-form handles; consistency enables reliable routing via agents_catalog
 
 **Common routing patterns:**
+
 - Database schema changes → `@database.{type}` (postgres, mongodb, redis)
 - API modifications → `@backend.{framework}` (nodejs, laravel, python)
 - Frontend updates → `@frontend.{framework}` (react, vue, angular)

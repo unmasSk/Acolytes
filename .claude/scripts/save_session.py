@@ -8,417 +8,235 @@
 
 import sqlite3
 import json
+import re
 import shutil
-from pathlib import Path
 from datetime import datetime
-
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-except ImportError:
-    pass
+from pathlib import Path
 
 def backup_database():
     """Create database backup with timestamp and maintain max 10 files"""
     try:
-        DB_PATH = Path(".claude/memory/project.db")
-        if not DB_PATH.exists():
-            return
+        db_path = Path(".claude/memory/project.db")
+        if not db_path.exists():
+            print("WARNING: Database does not exist, skipping backup")
+            return False
         
         # Create backup directory
         backup_dir = Path(".claude/memory/backup")
         backup_dir.mkdir(exist_ok=True)
         
-        # Create backup filename with timestamp (no seconds)
+        # Create backup filename with timestamp
         timestamp = datetime.now().strftime('%Y%m%d_%H%M')
         backup_filename = f"project_{timestamp}.db"
         backup_path = backup_dir / backup_filename
         
         # Copy database to backup
-        shutil.copy2(DB_PATH, backup_path)
+        shutil.copy2(db_path, backup_path)
         
         # Clean old backups - keep only 10 most recent
         backup_files = sorted(backup_dir.glob("project_*.db"), key=lambda f: f.stat().st_mtime)
         if len(backup_files) > 10:
-            files_to_delete = backup_files[:-10]  # Remove all but last 10
+            files_to_delete = backup_files[:-10]
             for old_file in files_to_delete:
                 old_file.unlink()
-                
+        
+        return True
     except Exception as e:
-        print(f"WARNING: Backup failed: {e}")
+        print(f"ERROR: Critical backup failure: {e}")
+        return False
 
-def get_current_session_data():
-    """Get current active session and validate it exists"""
+def parse_arguments():
+    """Parse command line arguments manually"""
+    import sys
+    
+    args = sys.argv[1:]
+    if len(args) < 4 or '-session' not in args or '-message' not in args:
+        print(json.dumps({
+            "error": "Usage: script.py -session 'session_data' -message 'message_data'",
+            "example": "script.py -session 'accomplishments: Fixed bug. decisions: Chose X.' -message 'conversation_flow: Q: What? A: Fixed bug. total_exchanges: 10 duration_minutes: 30'"
+        }))
+        return None, None
+    
     try:
-        DB_PATH = Path(".claude/memory/project.db")
-        if not DB_PATH.exists():
-            raise Exception("Database not found")
-            
-        conn = sqlite3.connect(str(DB_PATH))
+        session_idx = args.index('-session') + 1
+        message_idx = args.index('-message') + 1
+        return args[session_idx], args[message_idx]
+    except (IndexError, ValueError):
+        print(json.dumps({"error": "Invalid arguments format"}))
+        return None, None
+
+def parse_field(text, field_name):
+    """Extract field content from text"""
+    # Clean emojis with simple regex
+    text = re.sub(r'[^\x00-\x7F]+', '', text)
+    
+    # Extract field content
+    pattern = rf"{field_name}:\s*(.*?)(?=\s+(?:accomplishments|decisions|bugs_fixed|errors_encountered|breakthrough_moment|next_session_priority|conversation_flow|total_exchanges|duration_minutes):|$)"
+    match = re.search(pattern, text, re.IGNORECASE | re.DOTALL)
+    
+    if match:
+        content = match.group(1).strip()
+        if content and content.lower() not in ['none', 'n/a', 'nothing', 'empty']:
+            # Add line breaks for readability
+            content = content.replace('. ', '.\n').replace('? ', '?\n').replace('! ', '!\n')
+            content = re.sub(r'\n\s*\n', '\n', content)
+            return content.strip()
+    return ""
+
+def get_current_session():
+    """Get current active session"""
+    try:
+        conn = sqlite3.connect(".claude/memory/project.db")
         cursor = conn.cursor()
-        
-        # Find session without ended_at (still active)
-        cursor.execute("""
-            SELECT id, job_id, created_at, claude_session_id FROM sessions 
-            WHERE ended_at IS NULL 
-            ORDER BY created_at DESC 
-            LIMIT 1
-        """)
-        
+        cursor.execute("SELECT id, job_id, created_at FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
         result = cursor.fetchone()
         conn.close()
         
         if not result:
             raise Exception("No active session found")
-            
-        return {
-            'session_id': result[0],
-            'job_id': result[1], 
-            'created_at': result[2],
-            'claude_session_id': result[3]
-        }
-        
+        return {'session_id': result[0], 'job_id': result[1], 'created_at': result[2]}
     except Exception as e:
-        raise Exception(f"Failed to get session data: {e}")
+        raise Exception(f"Failed to get session: {e}")
 
-def get_technical_metrics(session_id):
-    """Get technical metrics only - tool count, duration, exchanges"""
+def save_to_database(session_data, session_text, message_text):
+    """Save session data to database"""
     try:
-        DB_PATH = Path(".claude/memory/project.db")
-        conn = sqlite3.connect(str(DB_PATH))
-        cursor = conn.cursor()
+        # Parse session fields
+        accomplishments_text = parse_field(session_text, 'accomplishments')
+        decisions_text = parse_field(session_text, 'decisions') 
+        bugs_text = parse_field(session_text, 'bugs_fixed')
+        errors_text = parse_field(session_text, 'errors_encountered')
+        breakthrough = parse_field(session_text, 'breakthrough_moment')
+        next_priority = parse_field(session_text, 'next_session_priority')
         
-        # Get tool count and success rate
-        cursor.execute("""
-            SELECT COUNT(*) as total, 
-                   SUM(CASE WHEN success = 1 THEN 1 ELSE 0 END) as successful
-            FROM tool_logs 
-            WHERE session_id = ?
-        """, (session_id,))
+        # Convert to arrays for database
+        accomplishments = [s.strip() for s in accomplishments_text.split('\n') if s.strip()] if accomplishments_text else []
+        decisions = [s.strip() for s in decisions_text.split('\n') if s.strip()] if decisions_text else []
+        bugs_fixed = [s.strip() for s in bugs_text.split('\n') if s.strip()] if bugs_text else []
+        errors = [s.strip() for s in errors_text.split('\n') if s.strip()] if errors_text else []
         
-        tool_stats = cursor.fetchone()
-        total_tools = tool_stats[0] if tool_stats else 0
-        successful_tools = tool_stats[1] if tool_stats else 0
-        failed_tools = total_tools - successful_tools
+        # Parse message fields
+        conversation_flow = parse_field(message_text, 'conversation_flow')
         
-        conn.close()
+        # Extract numbers
+        exchanges_match = re.search(r'total_exchanges:\s*(\d+)', message_text, re.IGNORECASE)
+        total_exchanges = int(exchanges_match.group(1)) if exchanges_match else len(accomplishments) + len(errors)
         
-        return {
-            'total_tools': total_tools,
-            'successful_tools': successful_tools,
-            'failed_tools': failed_tools
-        }
+        # duration_minutes is parsed but actual duration calculated from database timestamps
         
-    except Exception as e:
-        print(f"WARNING: Technical metrics failed: {e}")
-        return {
-            'total_tools': 0,
-            'successful_tools': 0,
-            'failed_tools': 0
-        }
-
-def calculate_session_duration(session_data):
-    """Calculate real session duration"""
-    try:
+        # Calculate actual duration from database
         start_time = datetime.strptime(session_data['created_at'], '%Y-%m-%d %H:%M')
-        end_time = datetime.now()
-        duration_minutes = int((end_time - start_time).total_seconds() / 60)
-        return duration_minutes
+        actual_duration = int((datetime.now() - start_time).total_seconds() / 60)
         
-    except Exception as e:
-        print(f"WARNING: Duration calculation failed: {e}")
-        return 0
-
-def calculate_quality_score(accomplishments, errors, breakthrough_moment):
-    """Calculate dynamic quality score based on session productivity"""
-    score = 7  # Base score
-    
-    # +1 for each accomplishment (max +3)
-    score += min(3, len(accomplishments))
-    
-    # -1 for each error (max -3)  
-    score -= min(3, len(errors))
-    
-    # +1 if there was a breakthrough
-    if breakthrough_moment and breakthrough_moment.strip():
-        score += 1
-    
-    # Keep in range 1-10
-    return max(1, min(10, score))
-
-def save_session_to_database(session_data, claude_analysis, technical_metrics, duration_minutes):
-    """Update session and insert messages in database"""
-    try:
-        DB_PATH = Path(".claude/memory/project.db")
-        conn = sqlite3.connect(str(DB_PATH))
+        # Basic validation
+        if not accomplishments and not decisions and not bugs_fixed:
+            raise Exception("Session must have some accomplishments, decisions, or bugs fixed")
+        
+        if conversation_flow and len(conversation_flow) > 20:
+            if "Q:" not in conversation_flow or "A:" not in conversation_flow:
+                raise Exception("conversation_flow must contain Q&A format")
+        
+        if len(conversation_flow) > 5000:
+            raise Exception("conversation_flow too long (>5000 chars)")
+        
+        # Calculate quality score (simplified)
+        score = 5  # neutral base
+        score += min(3, len(accomplishments))  # +1-3 for accomplishments
+        score -= min(2, len(errors))  # -1-2 for errors  
+        if breakthrough and len(breakthrough) > 30:
+            score += 1  # breakthrough bonus
+        if sum(len(str(x)) for x in accomplishments) + len(breakthrough) > 500:
+            score += 1  # rich content
+        quality_score = max(1, min(10, score))
+        
+        # Save to database
+        conn = sqlite3.connect(".claude/memory/project.db")
         cursor = conn.cursor()
         
-        # Calculate quality score
-        quality_score = calculate_quality_score(
-            claude_analysis['accomplishments'],
-            claude_analysis['errors'], 
-            claude_analysis['breakthrough_moment']
-        )
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         
-        # Update session with Claude's analysis
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')  # No seconds as requested
-        
+        # Update session
         cursor.execute("""
             UPDATE sessions SET
-                accomplishments = ?, decisions = ?,
-                bugs_fixed = ?, errors_encountered = ?, breakthrough_moment = ?,
-                next_session_priority = ?, quality_score = ?, ended_at = ?
+                accomplishments = ?, decisions = ?, bugs_fixed = ?, errors_encountered = ?,
+                breakthrough_moment = ?, next_session_priority = ?, quality_score = ?, ended_at = ?
             WHERE id = ?
         """, (
-            json.dumps(claude_analysis['accomplishments']),
-            json.dumps(claude_analysis['decisions']),
-            json.dumps(claude_analysis['bugs_fixed']),
-            json.dumps(claude_analysis['errors']),
-            claude_analysis['breakthrough_moment'],
-            claude_analysis['next_session_priority'],
-            quality_score,
-            timestamp,
+            json.dumps(accomplishments), json.dumps(decisions), 
+            json.dumps(bugs_fixed), json.dumps(errors),
+            breakthrough, next_priority, quality_score, timestamp,
             session_data['session_id']
         ))
         
-        # Insert conversation summary into MESSAGES
+        # Insert message
         cursor.execute("""
-            INSERT INTO messages (
-                session_id, conversation_flow, total_exchanges,
-                duration_minutes, created_at
-            ) VALUES (?, ?, ?, ?, ?)
-        """, (
-            session_data['session_id'],
-            claude_analysis['conversation_flow'],
-            claude_analysis['total_exchanges'],
-            duration_minutes,
-            timestamp
-        ))
+            INSERT INTO messages (session_id, conversation_flow, total_exchanges, duration_minutes, created_at)
+            VALUES (?, ?, ?, ?, ?)
+        """, (session_data['session_id'], conversation_flow, total_exchanges, actual_duration, timestamp))
         
-        # Get the message ID that was just inserted
         message_id = cursor.lastrowid
         
-        conn.commit()
-        conn.close()
-        
-        return quality_score, message_id, timestamp
-        
-    except Exception as e:
-        raise Exception(f"Failed to save to database: {e}")
-
-def validate_analysis_schema(claude_analysis: dict) -> str | None:
-    """Validate types and content of Claude analysis fields"""
-    schema = {
-        "accomplishments": list,
-        "decisions": list,
-        "bugs_fixed": list,
-        "errors": list,
-        "breakthrough_moment": str,
-        "next_session_priority": str,
-        "conversation_flow": str,
-    }
-    for field, typ in schema.items():
-        if field not in claude_analysis:
-            return f"Missing field: {field}"
-        val = claude_analysis[field]
-        if typ is list:
-            if not isinstance(val, list):
-                return f"Field '{field}' must be a list (got {type(val).__name__})"
-            if any(not isinstance(item, str) or not item.strip() for item in val):
-                return f"Field '{field}' must be a list of non-empty strings"
-        else:
-            if not isinstance(val, str) or not val.strip():
-                return f"Field '{field}' must be a non-empty string"
-    # Guard against oversized fields that can bloat DB rows
-    if len(claude_analysis["conversation_flow"]) > 5000:
-        return "Field 'conversation_flow' too long (>5000 chars)"
-    return None
-
-def clean_emojis(text):
-    """Remove problematic emojis from text to avoid encoding issues"""
-    import re
-    # Remove emoji and problematic unicode characters
-    emoji_pattern = re.compile("["
-                               u"\U0001F600-\U0001F64F"  # emoticons
-                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-                               u"\U0001F680-\U0001F6FF"  # transport & map
-                               u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-                               u"\U00002702-\U000027B0"  # dingbats
-                               u"\U000024C2-\U0001F251"
-                               u"\U0001F900-\U0001F9FF"  # supplemental symbols
-                               u"\U00002600-\U000026FF"  # misc symbols
-                               u"\U00002700-\U000027BF"  # dingbats
-                               "]+", flags=re.UNICODE)
-    return emoji_pattern.sub('', text)
-
-def parse_analysis_from_stdin():
-    """Parse Claude's analysis from stdin"""
-    try:
-        import sys
-        analysis_data = sys.stdin.read()
-        if analysis_data.strip():
-            return json.loads(analysis_data)
-    except Exception:
-        pass
-    return None
-
-def get_claude_analysis():
-    """Get Claude's manual analysis from stdin or use fallback with ENGLISH data"""
-    
-    # Try to get Claude's analysis from stdin first
-    claude_analysis = parse_analysis_from_stdin()
-    
-    if not claude_analysis:
-        # NO FALLBACK - Claude MUST provide analysis
-        print(json.dumps({
-            "error": "No analysis provided via stdin. Claude must analyze conversation manually and provide JSON data.",
-            "required_format": {
-                "accomplishments": ["list of actual accomplishments"],
-                "decisions": ["list of key decisions made"],
-                "bugs_fixed": ["list of bugs actually fixed"],
-                "errors": ["list of errors encountered"],
-                "breakthrough_moment": "key insight that unlocked progress",
-                "next_session_priority": "what should be done next",
-                "conversation_flow": "brief conversation summary"
-            }
-        }))
-        return None
-    else:
-        # Clean emojis from provided analysis
-        for key in ['accomplishments', 'decisions', 'bugs_fixed', 'errors']:
-            if key in claude_analysis:
-                claude_analysis[key] = [clean_emojis(item) for item in claude_analysis[key]]
-        
-        for key in ['breakthrough_moment', 'next_session_priority', 'conversation_flow']:
-            if key in claude_analysis:
-                claude_analysis[key] = clean_emojis(claude_analysis[key])
-    
-    return claude_analysis
-
-def create_new_session_for_next_time(job_id):
-    """Create new session for next conversation after closing current one"""
-    try:
+        # Create next session
         import secrets
-        
-        # Generate new session ID
         new_session_id = f"session_{secrets.token_hex(6)}"
-        
-        DB_PATH = Path(".claude/memory/project.db")
-        conn = sqlite3.connect(str(DB_PATH))
-        cursor = conn.cursor()
-        
-        # Create new session with same job_id
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         cursor.execute("""
             INSERT INTO sessions (id, job_id, created_at)
             VALUES (?, ?, ?)
-        """, (new_session_id, job_id, timestamp))
+        """, (new_session_id, session_data['job_id'], timestamp))
         
         conn.commit()
         conn.close()
         
-        return new_session_id
-        
-    except Exception:
-        return None
-
-def main():
-    """Main session save function - closes current session and creates new one"""
-    
-    try:
-        # Backup database first
-        backup_database()
-        
-        # Get current active session
-        session_data = get_current_session_data()
-        
-        # Get technical metrics
-        technical_metrics = get_technical_metrics(session_data['session_id'])
-        duration_minutes = calculate_session_duration(session_data)
-        
-        # Get Claude's manual analysis
-        claude_analysis = get_claude_analysis()
-        if not claude_analysis:
-            return 1  # Exit with error if no analysis provided
-        
-        # Validate required fields
-        required_fields = ['accomplishments', 'decisions', 'bugs_fixed', 'errors', 
-                          'breakthrough_moment', 'next_session_priority', 'conversation_flow']
-        missing_fields = [f for f in required_fields if f not in claude_analysis]
-        if missing_fields:
-            print(json.dumps({
-                "error": f"Missing required fields: {missing_fields}",
-                "provided_fields": list(claude_analysis.keys()),
-                "required_format": {
-                    "accomplishments": ["list of actual accomplishments"],
-                    "decisions": ["list of key decisions made"],
-                    "bugs_fixed": ["list of bugs actually fixed"],
-                    "errors": ["list of errors encountered"],
-                    "breakthrough_moment": "key insight that unlocked progress",
-                    "next_session_priority": "what should be done next",
-                    "conversation_flow": "brief conversation summary"
-                }
-            }))
-            return 1
-        
-        # Enforce types and non-empty content
-        validation_error = validate_analysis_schema(claude_analysis)
-        if validation_error:
-            print(json.dumps({
-                "error": "Invalid analysis schema",
-                "details": validation_error,
-                "required_types": {
-                    "accomplishments": "list[str] (non-empty strings)",
-                    "decisions": "list[str] (non-empty strings)",
-                    "bugs_fixed": "list[str] (non-empty strings)",
-                    "errors": "list[str] (non-empty strings)",
-                    "breakthrough_moment": "str (non-empty)",
-                    "next_session_priority": "str (non-empty)",
-                    "conversation_flow": "str (non-empty, reasonable length)"
-                }
-            }))
-            return 1
-        
-        claude_analysis['total_exchanges'] = technical_metrics['total_tools'] * 2  # Estimate
-        
-        # Save to database (this closes the session by setting ended_at)
-        quality_score, message_id, timestamp = save_session_to_database(
-            session_data, claude_analysis, technical_metrics, duration_minutes
-        )
-        
-        # Create new session for next conversation
-        new_session_id = create_new_session_for_next_time(session_data['job_id'])
-        
-        # Output results for Claude to format
-        result = {
+        return {
             'session_id': session_data['session_id'],
             'job_id': session_data['job_id'],
             'quality_score': quality_score,
-            'duration_minutes': duration_minutes,
-            'total_exchanges': claude_analysis['total_exchanges'],
-            'accomplishments': claude_analysis['accomplishments'],
-            'decisions': claude_analysis['decisions'],
-            'bugs_fixed': claude_analysis['bugs_fixed'],
-            'errors': claude_analysis['errors'],
-            'breakthrough_moment': claude_analysis['breakthrough_moment'],
-            'next_session_priority': claude_analysis['next_session_priority'],
+            'duration_minutes': actual_duration,
+            'total_exchanges': total_exchanges,
+            'accomplishments': accomplishments,
+            'decisions': decisions,
+            'bugs_fixed': bugs_fixed,
+            'errors': errors,
+            'breakthrough_moment': breakthrough,
+            'next_session_priority': next_priority,
             'message_id': message_id,
             'timestamp': timestamp,
-            'technical_metrics': technical_metrics
+            'new_session_id': new_session_id,
+            'next_session_ready': True
         }
         
-        if new_session_id:
-            result['new_session_id'] = new_session_id
-            result['next_session_ready'] = True
-        else:
-            result['next_session_ready'] = False
+    except Exception as e:
+        raise Exception(f"Database save failed: {e}")
+
+def main():
+    """Main function - simple and direct"""
+    try:
+        # Backup database first - critical step
+        backup_success = backup_database()
+        if not backup_success:
+            print(json.dumps({
+                "error": "Failed to create database backup",
+                "recommendation": "Check database file permissions and disk space"
+            }))
+            return 1
         
+        # Parse arguments
+        session_text, message_text = parse_arguments()
+        if not session_text or not message_text:
+            return 1
+        
+        # Get current session
+        session_data = get_current_session()
+        
+        # Save everything
+        result = save_to_database(session_data, session_text, message_text)
+        
+        # Output result
         print(json.dumps(result))
-        
         return 0
         
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(json.dumps({"error": str(e)}))
         return 1
 
 if __name__ == "__main__":

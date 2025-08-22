@@ -3,8 +3,8 @@
 ## Agent Statistics
 
 **Total Agents:** 57  
-**Completed Agents:** 35 (61.4%)  
-**Pending Agents:** 22 (38.6%)
+**Completed Agents:** 36 (63.2%)  
+**Pending Agents:** 21 (36.8%)
 
 ---
 
@@ -90,10 +90,10 @@
  **Tech:** SQLite 3.44+, WAL mode, FTS5, JSON operations, Core ML optimization, Litestream replication  
  **When:** Embedded applications, edge computing, mobile apps, serverless databases, local-first architectures
 
-✅ **database.weaviate** (3846 lines)  
- **Role:** Vector database and semantic search expert  
- **Tech:** Weaviate v4+, HNSW indexing, REST API, vectorization modules, hybrid search, multi-tenancy  
- **When:** RAG applications, semantic search, question-answering systems, multi-modal AI search, knowledge graphs
+✅✅ **database.vectorial** (3846 lines)  
+ **Role:** Strategic vector database consultant across multiple platforms  
+ **Tech:** Weaviate v4+, Pinecone Serverless, Qdrant v1.15+, Chroma v1.0+, Milvus v2.6+, Supabase pgvector, MongoDB Atlas Vector Search  
+ **When:** Vector database selection, RAG applications, semantic search, AI-powered search, embedding storage, hybrid architectures
 
 ✅✅ **database.postgis** (0 lines)  
  **Role:** PostGIS geospatial database and GIS expert  
@@ -119,10 +119,10 @@
  **Tech:** Vue 3+, Nuxt.js, TypeScript, Composition API, Vuetify, Pinia, Vue Router, Vite  
  **When:** Progressive web apps, rapid prototyping, developer-friendly projects, gradual adoption
 
-🔳 **frontend.mobile** (0 lines)  
+✅✅ **frontend.mobile** (1900+ lines)  
  **Role:** Cross-platform mobile development expert  
- **Tech:** React Native, Flutter, Expo, Capacitor, native modules, app store deployment, mobile CI/CD  
- **When:** Mobile app development, cross-platform solutions, native feature integration, app store publishing
+ **Tech:** React Native 0.72+, Flutter 3.16+, Expo SDK 49+, Capacitor 5+, native modules, iOS/Android integration, app store deployment, mobile CI/CD, Fastlane automation  
+ **When:** Mobile app development, cross-platform solutions, native feature integration, app store publishing, React Native/Flutter development, mobile performance optimization
 
 ### Backend
 
@@ -250,7 +250,7 @@
 
 ### ⚙️ Operations and DevOps
 
-✅ **ops.git** (1160 lines)  
+✅✅ **ops.git** (1317 lines)  
  **Role:** Git workflow and version control expert  
  **Tech:** Git, GitHub Actions, branching strategies, conventional commits, git hooks, submodules, LFS  
  **When:** Repository management, branching strategies, commit conventions, code review workflows, version control optimization
@@ -351,18 +351,18 @@
 
 ### 💾 Database and Data Routing
 
-| Domain                          | IF                                                                                      | THEN                                  | Priority                         |
-| ------------------------------- | --------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------- |
-| Postgres (OLTP/TS/Geo)          | GiST/GIN/BRIN indices; Timescale; Citus; OLTP; geospatial                               | database.postgres                     | Solo                             |
-| pgvector (AI Search)            | RAG with PostgreSQL; embeddings in Postgres; similarity search with SQL                 | database.pgvector                     | Solo                             |
-| Postgres + Vector               | OLTP + semantic search in same database                                                 | database.postgres ∥ database.pgvector | Parallel (or Sequential by task) |
-| MongoDB                         | Documents; aggregations; sharding; change streams                                       | database.mongodb                      | Solo                             |
-| MariaDB                         | Galera/MaxScale; MySQL migration; ColumnStore analytics                                 | database.mariadb                      | Solo                             |
-| Redis                           | Cache/JSON/Streams; rate-limiting; session store; pub/sub                               | database.redis                        | Solo                             |
-| SQLite (edge)                   | Local-first; serverless; FTS5; WAL; Litestream                                          | database.sqlite                       | Solo                             |
-| Weaviate (Standalone Vector DB) | Standalone vector database; REST API; vectorization modules; multi-tenant vector search | database.weaviate                     | Solo                             |
-| PostGIS                         | GIS queries; routing; spatial analysis                                                  | database.postgis                      | Solo                             |
-| Data Architecture               | DB selection; models; flows; analytical vs transactional                                | coordinator.database → {db.\*}        | Sequential (coordinator first)   |
+| Domain                      | IF                                                                                             | THEN                                  | Priority                         |
+| --------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------- | -------------------------------- |
+| Postgres (OLTP/TS/Geo)      | GiST/GIN/BRIN indices; Timescale; Citus; OLTP; geospatial                                      | database.postgres                     | Solo                             |
+| pgvector (AI Search)        | RAG with PostgreSQL; embeddings in Postgres; similarity search with SQL                        | database.pgvector                     | Solo                             |
+| Postgres + Vector           | OLTP + semantic search in same database                                                        | database.postgres ∥ database.pgvector | Parallel (or Sequential by task) |
+| MongoDB                     | Documents; aggregations; sharding; change streams                                              | database.mongodb                      | Solo                             |
+| MariaDB                     | Galera/MaxScale; MySQL migration; ColumnStore analytics                                        | database.mariadb                      | Solo                             |
+| Redis                       | Cache/JSON/Streams; rate-limiting; session store; pub/sub                                      | database.redis                        | Solo                             |
+| SQLite (edge)               | Local-first; serverless; FTS5; WAL; Litestream                                                 | database.sqlite                       | Solo                             |
+| Vector Databases (Multiple) | Vector database platforms: Weaviate, Pinecone, Qdrant, Chroma, Milvus, pgvector, MongoDB Atlas | database.vectorial                    | Solo                             |
+| PostGIS                     | GIS queries; routing; spatial analysis                                                         | database.postgis                      | Solo                             |
+| Data Architecture           | DB selection; models; flows; analytical vs transactional                                       | coordinator.database → {db.\*}        | Sequential (coordinator first)   |
 
 ### 🧩 Services Routing
 
@@ -405,7 +405,7 @@
    - IF task contains **both strategy + implementation** → _Coordinator → Specialist_ (sequential)
 2. **RAG/Vector Search:**
    - IF RAG with PostgreSQL/existing OLTP → **database.pgvector**
-   - IF standalone vector database → **database.weaviate**
+   - IF vector database (any platform) → **database.vectorial**
    - IF AI model integration/deployment → **service.ai**
    - IF RAG system design → **coordinator.database** → specific DB agent
 3. **Hybrid DB:** OLTP/Postgres + semantic search → _Postgres_ ∥ _pgvector_ in **parallel** (or sequential by dependency).

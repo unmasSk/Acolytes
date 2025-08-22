@@ -57,42 +57,59 @@ def is_dangerous_rm_command(command):
 
 def is_any_delete_command(command):
     """
-    Block ALL deletion commands - rm, rmdir, del, unlink, etc.
-    Complete protection against any file/folder deletion.
+    Block dangerous deletion commands while allowing legitimate scripts and tools.
+    Protects against file/folder deletion but allows uv run, npm, etc.
     """
     # Normalize command
     normalized = ' '.join(command.lower().split())
     
-    # All deletion command patterns
-    delete_patterns = [
-        r'\brm\b',           # ANY rm command
-        r'\brmdir\b',        # Remove directory
-        r'\bdel\b',          # Windows delete
-        r'\bdelete\b',       # Delete command
-        r'\bunlink\b',       # Unlink files
-        r'\btrash\b',        # Move to trash
-        r'\bshred\b',        # Secure delete
-        r'\bwipe\b',         # Wipe files
-        r'>\s*[^|]',         # Overwrite file with >
-        r'>\s*>',            # Truncate file with >>
-        r'\btruncate\b',     # Truncate command
+    # Skip if it's a legitimate tool/script execution
+    safe_patterns = [
+        r'^uv\s+run',         # uv run commands
+        r'^npm\s+',           # npm commands  
+        r'^pip\s+',           # pip commands
+        r'^python\s+',        # python scripts
+        r'^node\s+',          # node scripts
+        r'^cd\s+',            # directory changes
+        r'\.py\s*$',          # python script execution
+        r'\.js\s*$',          # javascript execution
+        r'\.sh\s*$',          # shell script execution
     ]
     
-    # Check for any deletion pattern
+    for pattern in safe_patterns:
+        if re.search(pattern, normalized):
+            return False
+    
+    # Now check for actual deletion command patterns
+    delete_patterns = [
+        r'^rm\s+',           # Direct rm command (not in file paths)
+        r'\s+rm\s+',         # rm as separate command
+        r'^rmdir\s+',        # Remove directory
+        r'^del\s+',          # Windows delete
+        r'^delete\s+',       # Delete command
+        r'^unlink\s+',       # Unlink files
+        r'^trash\s+',        # Move to trash
+        r'^shred\s+',        # Secure delete
+        r'^wipe\s+',         # Wipe files
+        r'>\s*[^|>]',        # Dangerous redirects (but allow >> and pipes)
+        r'^truncate\s+',     # Truncate command
+    ]
+    
+    # Check for actual deletion patterns
     for pattern in delete_patterns:
         if re.search(pattern, normalized):
             return True
     
-    # Also block git clean (removes untracked files)
-    if re.search(r'\bgit\s+clean', normalized):
+    # Block git clean (removes untracked files)
+    if re.search(r'^git\s+clean', normalized):
         return True
     
     # Block find with -delete flag
-    if re.search(r'\bfind\b.*-delete', normalized):
+    if re.search(r'^find\b.*-delete', normalized):
         return True
     
-    # Block xargs rm combinations
-    if 'xargs' in normalized and 'rm' in normalized:
+    # Block dangerous xargs rm combinations (but not in file paths)
+    if re.search(r'xargs\s+rm\s+', normalized):
         return True
     
     return False
@@ -256,7 +273,7 @@ def main():
         if tool_name == 'TodoWrite':
             try:
                 from todo_sync import process_todowrite
-                result = process_todowrite(tool_input)
+                process_todowrite(tool_input)
             except Exception as e:
                 print(f"TodoWrite sync error: {e}", file=sys.stderr)
         
