@@ -3,10 +3,15 @@
 ## Agent Statistics
 
 **Total Agents:** 57  
-**Completed Agents:** 36 (63.2%)  
-**Pending Agents:** 21 (36.8%)
+**0 tick (🔳):** 14 (24.6%)  
+**1 tick (✅):** 11 (19.3%)  
+**2 tick (✅✅):** 32 (56.1%)  
+**3 tick (✅✅✅):** 0 (0%)
 
----
+**Progress Tracking:**
+- ✅ **Created** - Agent exists with basic content
+- ✅✅ **Audited perfect** - FLAGS, order and info correct (setup/coordinator don't need FLAGS)
+- ✅✅✅ **fix.md errors corrected** - All issues from fix.md checklist resolved
 
 ## 🚀 Setup and Configuration
 
@@ -90,12 +95,12 @@
  **Tech:** SQLite 3.44+, WAL mode, FTS5, JSON operations, Core ML optimization, Litestream replication  
  **When:** Embedded applications, edge computing, mobile apps, serverless databases, local-first architectures
 
-✅✅ **database.vectorial** (3846 lines)  
+✅✅ **database.vectorial** (6498 lines)  
  **Role:** Strategic vector database consultant across multiple platforms  
  **Tech:** Weaviate v4+, Pinecone Serverless, Qdrant v1.15+, Chroma v1.0+, Milvus v2.6+, Supabase pgvector, MongoDB Atlas Vector Search  
  **When:** Vector database selection, RAG applications, semantic search, AI-powered search, embedding storage, hybrid architectures
 
-✅✅ **database.postgis** (0 lines)  
+✅✅ **database.postgis** (1362 lines)  
  **Role:** PostGIS geospatial database and GIS expert  
  **Tech:** PostGIS, spatial indexing, geographic queries, coordinate systems, spatial analysis  
  **When:** Location-based applications, mapping systems, geographic data analysis, spatial queries
@@ -119,9 +124,9 @@
  **Tech:** Vue 3+, Nuxt.js, TypeScript, Composition API, Vuetify, Pinia, Vue Router, Vite  
  **When:** Progressive web apps, rapid prototyping, developer-friendly projects, gradual adoption
 
-✅✅ **frontend.mobile** (1900+ lines)  
+✅✅ **frontend.mobile** (693 lines)  
  **Role:** Cross-platform mobile development expert  
- **Tech:** React Native 0.72+, Flutter 3.16+, Expo SDK 49+, Capacitor 5+, native modules, iOS/Android integration, app store deployment, mobile CI/CD, Fastlane automation  
+ **Tech:** React Native (New Architecture), Flutter 3.24+, Expo SDK 52+, Capacitor 7+, native modules, iOS/Android integration, app store deployment, mobile CI/CD, EAS workflows, Fastlane automation  
  **When:** Mobile app development, cross-platform solutions, native feature integration, app store publishing, React Native/Flutter development, mobile performance optimization
 
 ### Backend
@@ -151,22 +156,22 @@
  **Tech:** Java 17+, Spring Boot, Spring Cloud, Hibernate, Maven, Gradle, enterprise patterns  
  **When:** Enterprise applications, large-scale systems, legacy modernization, corporate environments
 
-✅✅ **backend.rust** (0 lines)  
+✅ **backend.rust** (1754 lines)  
  **Role:** Rust systems programming and performance expert  
  **Tech:** Rust, Actix-web, Rocket, Axum, Tokio, WebAssembly, async programming, memory safety  
  **When:** System-level programming, performance-critical applications, WebAssembly, safe concurrency
 
-✅✅ **backend.api** (0 lines)  
+✅ **backend.api** (1188 lines)  
  **Role:** API design and integration architecture expert  
  **Tech:** REST, GraphQL, WebSocket, gRPC, OpenAPI/Swagger, API gateways, rate limiting, versioning  
  **When:** API-first development, GraphQL schemas, API governance, documentation standards
 
-✅✅ **backend.serverless** (0 lines)  
+✅ **backend.serverless** (1173 lines)  
  **Role:** Serverless functions and edge computing expert  
  **Tech:** AWS Lambda, Vercel Functions, Netlify Functions, CloudFlare Workers, edge runtime, FaaS patterns  
  **When:** Serverless architectures, edge computing, event-driven functions, cost-optimized backends
 
-### Services
+## 🧩 Services
 
 ✅ **service.ai** (5597 lines)  
  **Role:** AI/ML integration and model management expert  
@@ -178,22 +183,22 @@
  **Tech:** OAuth2, JWT, SSO (SAML, OIDC), Auth0, Firebase Auth, Passport.js, multi-factor authentication, RBAC  
  **When:** IF implementing user authentication OR OAuth flows OR SSO integration OR JWT token management
 
-✅ **service.communication** (2043 lines)  
+✅ **service.communication** (2042 lines)  
  **Role:** Multi-channel communication and messaging expert  
  **Tech:** Twilio Messaging Services with A2P compliance, SendGrid v3 API with dynamic templates, Firebase Cloud Messaging (FCM) v1 API, WebSocket architecture with Socket.IO, webhook validation, circuit breaker patterns, message queuing with retry mechanisms, PII detection, GDPR compliance, real-time monitoring  
  **When:** Transactional emails, SMS notifications, push notifications, real-time messaging, webhook processing
 
-✅ **service.data** (1829 lines)  
+✅ **service.data** (1828 lines)  
  **Role:** Data processing and infrastructure services expert  
  **Tech:** Elasticsearch/OpenSearch 8+ with advanced indexing and cluster management, Apache Kafka 3.8+ with Kafka Streams and event-driven architectures, Apache Airflow 2.10+ with TaskFlow API and enterprise deployment, RabbitMQ 4+ with advanced clustering and HA, modern ETL/ELT pipelines, enterprise data mesh architecture, real-time streaming, comprehensive monitoring & observability  
  **When:** Search functionality, data streaming, message queuing, data pipelines, real-time data processing
 
-✅ **service.integrations** (2344 lines)  
+✅ **service.integrations** (2343 lines)  
  **Role:** Third-party API integration and external services expert  
  **Tech:** REST APIs, SDK integrations, rate limiting, web scraping (Playwright, Selenium), data synchronization  
  **When:** External API consumption, third-party SDKs, service orchestration, automation workflows
 
-✅ **service.mapbox** (848 lines)  
+✅ **service.mapbox** (847 lines)  
  **Role:** Mapbox and geospatial services expert  
  **Tech:** Mapbox GL JS, Navigation API, geocoding, routing, spatial analysis, custom map styles, location services  
  **When:** Interactive maps, location-based features, route optimization, geofencing, spatial data visualization
@@ -205,7 +210,7 @@
  **Tech:** Stripe Billing, invoice generation, tax calculation, revenue recognition, dunning management  
  **When:** SaaS billing, subscription management, complex pricing models, tax compliance, revenue reporting
 
-✅ **business.payment** (2539 lines)  
+✅ **business.payment** (2538 lines)  
  **Role:** Payment processing and financial transactions expert  
  **Tech:** Stripe, PayPal, Square, PCI compliance, tokenization, fraud prevention, 3D Secure, webhooks  
  **When:** E-commerce payments, transaction processing, financial integrations, payment security, fraud detection
@@ -222,7 +227,7 @@
 **Tech:** Semantic versioning, changelog generation, technical writing, API documentation, markdown mastery, GitHub repository files (README.md, CONTRIBUTING.md, LICENSE, CODE_OF_CONDUCT.md), OpenAPI/Swagger, Mermaid diagrams, .github templates, community health files, shields.io badges, accessibility compliance, documentation automation, quality metrics, multi-platform publishing  
 **When:** Documentation creation/updates, changelog management, version management, API documentation, README optimization, GitHub repository setup, community health files, issue/PR templates, CONTRIBUTING guidelines, LICENSE files, technical guides, documentation quality audits, release notes, migration guides
 
-### 📊 Analysis and Strategy
+## 📊 Analysis and Strategy
 
 🔳 **analyst.strategic** (0 lines)  
  **Role:** Business and technical strategy analysis expert  
@@ -234,7 +239,7 @@
  **Tech:** Python (pandas, numpy), R, Jupyter, Tableau, Power BI, statistical analysis, machine learning, predictive modeling  
  **When:** Data analysis, KPIs definition, user research, predictive analytics, business intelligence, risk assessment
 
-### 🔍 Audit and Compliance
+## 🔍 Audit and Compliance
 
 🔳 **audit.compliance** (0 lines)  
  **Role:** Regulatory compliance and accessibility expert  
@@ -246,9 +251,7 @@
  **Tech:** OWASP tools, penetration testing, vulnerability scanners, security frameworks, threat modeling  
  **When:** Security audits, vulnerability assessments, penetration testing, security compliance, threat analysis
 
----
-
-### ⚙️ Operations and DevOps
+## ⚙️ Operations and DevOps
 
 ✅✅ **ops.git** (1317 lines)  
  **Role:** Git workflow and version control expert  
@@ -290,21 +293,19 @@
  **Tech:** Performance profiling, load testing (JMeter, k6), caching strategies, database tuning, code optimization  
  **When:** Performance bottlenecks, scalability issues, optimization strategies, load testing, capacity planning
 
-### 🧪 Testing and Quality
+## 🧪 Testing and Quality
 
 🔳 **test.quality** (0 lines)  
  **Role:** Comprehensive testing and quality assurance expert  
  **Tech:** Jest, Cypress, Playwright, JUnit, pytest, test automation frameworks, coverage tools (Istanbul, c8)  
  **When:** Test strategy implementation, automated testing pipelines, quality gates, coverage analysis, testing best practices
 
-### 📅 Planning
+## 📅 Planning
 
 🔳 **plan.strategy** (0 lines)  
  **Role:** Project management and strategic planning expert  
  **Tech:** Project management tools (Jira, Asana), agile methodologies, resource planning, timeline management, Gantt charts  
  **When:** Project planning, resource allocation, sprint planning, roadmap creation, timeline management
-
----
 
 ## 🎯 Agent Routing Rules
 
@@ -332,7 +333,7 @@
 | Angular         | Angular 17+, NgRx, Angular Material/PrimeNG, complex forms              | frontend.angular                           | Solo                           |
 | React           | React 18+/Next.js, UI libs (MUI/Chakra/shadcn), React Query/Zustand     | frontend.react                             | Solo                           |
 | Vue             | Vue 3/Nuxt, Composition API, Pinia, Vuetify                             | frontend.vue                               | Solo                           |
-| Mobile          | React Native/Flutter/Expo/Capacitor; app store publishing; mobile CI/CD | frontend.mobile                            | Solo                           |
+| Mobile          | React Native (New Architecture)/Flutter 3.24+/Expo SDK 52+/Capacitor 7+; app store publishing; EAS workflows | frontend.mobile                            | Solo                           |
 | FE Architecture | Deciding framework/micro-frontends/design system/global state           | coordinator.frontend → {angular/react/vue} | Sequential (coordinator first) |
 
 ### 🖥️ Backend Routing
@@ -379,11 +380,13 @@
 ### 💼 Business Routing
 
 | Domain                    | IF                                                             | THEN                                                        | Priority                                    |
-| ------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------- | ---------------------------------- |
+| ------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------- |
 | Payments (transaction)    | Stripe/PayPal/Square; 3DS; PCI; tokenization; fraud prevention | business.payment                                            | Solo                                        |
 | Billing (invoices/taxes)  | Invoices; taxes; dunning; revenue recognition                  | business.billing                                            | Solo                                        |
 | Subscriptions             | Plans/usage-based; metering; churn; SaaS KPIs                  | business.subscription                                       | Solo                                        |
-| **Complete Subscription** | "Stripe subscription with invoicing and billing"               | business.payment ∥ business.billing ∥ business.subscription | Parallel/Sequential (coordinated by Claude) | ### ⚙️ Operations & DevOps Routing |
+| **Complete Subscription** | "Stripe subscription with invoicing and billing"               | business.payment ∥ business.billing ∥ business.subscription | Parallel/Sequential (coordinated by Claude) |
+
+### ⚙️ Operations & DevOps Routing
 
 | Domain                   | IF                                                      | THEN                          | Priority                       |
 | ------------------------ | ------------------------------------------------------- | ----------------------------- | ------------------------------ |
@@ -416,11 +419,56 @@
    - IF **"design security model"** → **coordinator.security** → **service.auth** (sequential)
 5. **Auth vs Integrations:** OAuth/SSO/JWT/MFA → **service.auth**; SDK/API consumption → **service.integrations**; if both, **Auth → Integrations** (sequential).
 6. **Payments Suite:** Payment **business.payment**; invoices/taxes **business.billing**; recurrence **business.subscription**; if complete SaaS, invoke all three coordinated.
-7. **Auth vs Integrations:** OAuth/SSO/JWT/MFA → **service.auth**; SDK/API consumption → **service.integrations**; if both, **Auth → Integrations** (sequential).
-8. **Payments Suite:** Payment **business.payment**; invoices/taxes **business.billing**; recurrence **business.subscription**; if complete SaaS, invoke all three coordinated.
-9. **Container Orchestration:** Docker/K8s → **ops.containers** ONLY; backend agents handle language-specific code, not infrastructure.
-10. **Multi-Agent Workflows:**
+7. **Container Orchestration:** Docker/K8s → **ops.containers** ONLY; backend agents handle language-specific code, not infrastructure.
+8. **Frontend vs Backend Confusion:**
+   - IF **"React component", "Vue component", "UI element", "styling", "responsive design"** → **frontend.{framework}**
+   - IF **"API endpoint", "database query", "business logic", "authentication middleware"** → **backend.{stack}**
+   - IF **"full-stack feature"** → **backend.{stack}** → **frontend.{framework}** (sequential, backend first)
+
+9. **Database Schema vs Query Optimization:**
+   - IF **"design database", "create tables", "relationships", "migration"** → **database.{type}**
+   - IF **"slow queries", "performance tuning", "indexes", "query optimization"** → **database.{type}** (same agent, different task)
+   - IF **"choose database technology"** → **coordinator.database** → **database.{selected}**
+
+10. **DevOps Strategy vs Tactical Implementation:**
+    - IF **"CI/CD strategy", "deployment patterns", "release management"** → **coordinator.devops**
+    - IF **"GitHub Actions workflow", "Docker compose", "Kubernetes manifest"** → **ops.{tool}**
+    - IF **"implement monitoring"** → **ops.monitoring** directly
+
+11. **API Design vs Integration:**
+    - IF **"design REST API", "GraphQL schema", "API architecture"** → **backend.api**
+    - IF **"consume external API", "third-party SDK", "webhook handling"** → **service.integrations**
+    - IF **"API gateway configuration"** → **ops.webserver** or **coordinator.infrastructure**
+
+12. **Testing Strategy vs Implementation:**
+    - IF **"testing strategy", "quality gates", "test automation architecture"** → **coordinator.testing**
+    - IF **"write unit tests", "configure Jest", "Cypress setup"** → **{specialist-agent}** (not test agent)
+    - IF **"testing framework selection"** → **coordinator.testing** → **{specialist}**
+
+13. **Security Architecture vs Implementation:**
+    - IF **"security model", "compliance framework", "threat modeling"** → **coordinator.security**
+    - IF **"implement 2FA", "OAuth setup", "JWT validation"** → **service.auth**
+    - IF **"penetration testing", "vulnerability scan"** → **audit.security**
+
+14. **Data Processing vs Storage:**
+    - IF **"ETL pipeline", "data streaming", "message queues"** → **service.data**
+    - IF **"database design", "data modeling", "storage optimization"** → **database.{type}**
+    - IF **"analytics dashboard", "data visualization"** → **frontend.{framework}** + **service.data**
+
+15. **Mobile vs Web Development:**
+    - IF **"React Native", "Flutter", "iOS/Android", "app store"** → **frontend.mobile**
+    - IF **"responsive web", "PWA", "browser compatibility"** → **frontend.{web-framework}**
+    - IF **"mobile API", "push notifications"** → **backend.{stack}** + **service.communication**
+
+16. **Infrastructure vs Application:**
+    - IF **"server provisioning", "cloud architecture", "load balancing"** → **coordinator.infrastructure**
+    - IF **"application deployment", "container orchestration"** → **ops.containers**
+    - IF **"code optimization", "application performance"** → **{language-specialist}**
+
+17. **Multi-Agent Workflows:**
     - **"Create user roles system"** → **coordinator.security** → **service.auth** → **database.{selected}** (sequential)
     - **"Deploy web app in container"** → **ops.containers** ∥ **ops.webserver** (parallel)
     - **"GraphQL schema design"** → **backend.api** ONLY (no database involvement)
     - **"Optimize PostgreSQL performance"** → **database.postgres** ONLY (tactical optimization)
+    - **"Build e-commerce checkout"** → **business.payment** ∥ **business.billing** ∥ **frontend.{framework}** (parallel)
+    - **"Implement search feature"** → **database.vectorial** → **backend.{stack}** → **frontend.{framework}** (sequential)

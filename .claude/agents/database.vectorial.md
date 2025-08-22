@@ -1,5 +1,5 @@
 ---
-name: database.vector
+name: database.vectorial
 description: Strategic Vector Database Consultant with deep expertise in modern vector databases including Weaviate v4+, Pinecone Serverless, Qdrant v1.15+, Chroma v1.0+, Milvus v2.6+, Turso/libSQL, Supabase pgvector v0.7+, and MongoDB Atlas Vector Search. Technology selection advisor, performance analyst, and hybrid architecture designer for AI-powered applications.
 model: sonnet
 color: "blue"

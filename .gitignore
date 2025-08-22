@@ -20,14 +20,11 @@ SESSIONS/**
 # Development and research notes (not for public repo)
 MEJORAS-INVESTIGACION/**
 
-# Logs directory
-.claude/memory/logs/**
-logs/**
+# 🚨 CRITICAL: Memory directory with personal data - NEVER commit!
+.claude/memory/
 
-# 🚨 CRITICAL: SQLite database with personal data - NEVER commit!
-.claude/memory/project.db
-.claude/memory/*.db
-*.db
+# Logs directory
+logs/**
 
 # Python type checking and cache
 mypy.ini

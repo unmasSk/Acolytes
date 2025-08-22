@@ -63,13 +63,31 @@ Based on the analysis, I'll create a conventional commit message:
 - **Scope**: component or area affected (optional)
 - **Subject**: clear description in present tense
 - **Body**: why the change was made (if needed)
+- **Session ID**: automatically included from current session context
 
 ```bash
-# I'll create the commit with the analyzed message
-# Example: git commit -m "fix(auth): resolve login timeout issue"
+# First I'll get the current session ID from the system
+SESSION_ID=$(cd .claude && python -c "
+import sqlite3
+import os
+db_path = os.path.join('memory', 'project.db')
+try:
+    conn = sqlite3.connect(db_path)
+    cursor = conn.execute('SELECT session_id FROM sessions ORDER BY created_at DESC LIMIT 1')
+    result = cursor.fetchone()
+    print(result[0] if result else 'unknown')
+    conn.close()
+except Exception as e:
+    print('unknown')
+")
+
+# I'll create the commit with session ID in footer
+# Example: git commit -m "fix(auth): resolve login timeout issue
+
+# session_abc123def456"
 ```
 
-The commit message will be concise, meaningful, and follow your project's conventions if I can detect them from recent commits.
+The commit message will be concise, meaningful, follow your project's conventions, and include session traceability for better project tracking.
 
 **Important**: I will NEVER:
 

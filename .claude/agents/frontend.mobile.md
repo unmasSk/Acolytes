@@ -38,6 +38,7 @@ FLAGS are asynchronous coordination messages between agents stored in an SQLite 
 
 ```bash
 # MANDATORY: Check pending flags before ANY work
+# Prereqs: uv installed and ~/.claude/scripts/agent_db.py available.
 uv run python ~/.claude/scripts/agent_db.py get-agent-flags "@frontend.mobile"
 # Returns only status='pending' flags automatically
 # Replace @frontend.mobile with your actual agent name
@@ -54,21 +55,21 @@ if flags.empty:
 else:
     # Process by priority: critical → high → medium → low
     for flag in flags:
-        if flag.locked == True:
+        if flag.locked is True:
             # Another agent handling or awaiting response
             skip_flag()
 
-        elif flag.change_description.contains("API endpoint"):
+        elif "api endpoint" in flag.change_description.lower():
             # Backend API changes affecting mobile app
             update_mobile_api_integration()
             complete_flag(flag.id)
 
-        elif flag.change_description.contains("authentication"):
+        elif "authentication" in flag.change_description.lower():
             # Auth system modified
             update_mobile_auth_flows()
             complete_flag(flag.id)
 
-        elif flag.change_description.contains("design system"):
+        elif "design system" in flag.change_description.lower():
             # UI/UX changes from frontend
             update_mobile_component_library()
             complete_flag(flag.id)
@@ -156,9 +157,12 @@ uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@frontend.m
 
 ```bash
 # BEFORE creating FLAG - find the right specialist
+DOMAIN="mobile" # example
 uv run python ~/.claude/scripts/agent_db.py query \
-  "SELECT name, module, description, capabilities \
-   FROM agents_catalog WHERE status='active' AND module LIKE '%[domain]%'"
+  --sql "SELECT name, module, description, capabilities
+         FROM agents_catalog
+         WHERE status = ? AND module LIKE '%' || ? || '%'" \
+  --params '["active","'"$DOMAIN"'"]'
 
 # Examples with expected agent handles:
 # Database changes → @database.postgres, @database.redis, @database.mongodb
@@ -545,36 +549,42 @@ export const OptimizedUserList = memo<OptimizedUserListProps>(({ users, onUserPr
 
 **EAS Workflow (GitHub Actions):**
 ```yaml
+# NOTE: Mixed pseudocode/real GitHub Actions syntax for clarity
+# Real GitHub Actions sections marked with "✅", pseudocode marked with "🔄"
+
 name: Mobile CI/CD
 on:
   push: { branches: [main, develop] }
+
 jobs:
-  test_and_build:
+  test_and_build:  # ✅ Real GitHub Actions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
       - run: npm ci && npm test && npm run lint
       
-  build_mobile:
+  build_mobile:  # 🔄 Pseudocode - use expo/expo-github-action for real implementation
     needs: test_and_build
     strategy:
       matrix: { platform: [android, ios] }
-    type: build
-    params:
-      platform: ${{ matrix.platform }}
-      profile: production
+    # Real implementation would use:
+    # steps:
+    #   - uses: expo/expo-github-action@v8
+    #   - run: eas build --platform ${{ matrix.platform }} --profile production
       
-  e2e_test:
+  e2e_test:  # 🔄 Pseudocode - use custom Maestro runner or Docker action
     needs: build_mobile
-    type: maestro
-    params:
-      flow_path: ['.maestro/critical-flow.yml']
+    # Real implementation would run Maestro tests on built apps
+    # steps:
+    #   - run: maestro test .maestro/critical-flow.yml
       
-  deploy_stores:
+  deploy_stores:  # 🔄 Pseudocode - use eas submit or fastlane actions
     needs: e2e_test
     if: github.ref == 'refs/heads/main'
-    type: submit
+    # Real implementation would use:
+    # steps:
+    #   - run: eas submit --platform all --profile production
 ```
 
 **Essential Pipeline Components:**

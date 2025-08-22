@@ -6,140 +6,211 @@
 
 import argparse
 import json
+import os
 import sys
+import random
 import subprocess
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
-def play_notification_sound():
-    """Play work complete sound at 50% volume when session stops"""
-    try:
-        # Path to work complete sound
-        sound_file = Path('.claude/resources/sfx/work-complete.wav')
-        
-        if sound_file.exists():
-            # Play the custom sound file at 50% volume using PowerShell
-            powershell_cmd = f'''
-            Add-Type -AssemblyName presentationCore
-            $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
-            $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
-            $mediaPlayer.Volume = 0.2
-            $mediaPlayer.Play()
-            Start-Sleep -Milliseconds 2000
-            $mediaPlayer.Stop()
-            $mediaPlayer.Close()
-            '''
-            
-            subprocess.run(
-                ['powershell', '-Command', powershell_cmd],
-                capture_output=True,
-                timeout=5
-            )
-        else:
-            # Fallback to system sound if file not found
-            subprocess.run(
-                ['powershell', '-Command', '[System.Media.SystemSounds]::Asterisk.Play()'],
-                capture_output=True,
-                timeout=1
-            )
-            
-    except subprocess.TimeoutExpired:
-        pass  # Fail silently if timeout
-    except Exception:
-        pass  # Fail silently if sound doesn't work
 
-def print_completion_line():
-    """Print a visual completion line to the terminal."""
+def generate_markdown_transcript(conversation_file, session_id):
+    """Generate a beautiful Markdown transcript from the JSON conversation."""
     try:
-        # Get terminal width, default to 80 if not available
-        try:
-            import shutil
-            terminal_width = shutil.get_terminal_size().columns
-        except:
-            terminal_width = 80
+        if not conversation_file.exists():
+            return
         
-        # Ensure minimum width and cap maximum
-        terminal_width = max(40, min(terminal_width, 120))
+        # Read the conversation
+        with open(conversation_file, "r", encoding="utf-8") as f:
+            conversation = json.load(f)
         
-        # Create a fancy completion line
-        line_char = "═"
-        edge_char = "╬"
-        middle_text = " CLAUDE COMPLETADO "
+        if not conversation:
+            return
         
-        # Calculate padding
-        text_length = len(middle_text)
-        if text_length >= terminal_width - 4:
-            # If text is too long, use simpler format
-            print("\n" + "═" * terminal_width)
-            print("CLAUDE COMPLETADO".center(terminal_width))
-            print("═" * terminal_width + "\n")
+        # Generate markdown content
+        md_content = []
+        md_content.append(f"# 💬 Conversación {session_id}")
+        md_content.append("")
+        
+        # Add session metadata
+        first_msg = conversation[0]
+        timestamp = first_msg.get("timestamp", "")
+        if timestamp:
+            date_part = timestamp.split("T")[0] if "T" in timestamp else timestamp
+            md_content.append(f"**📅 Fecha:** {date_part}")
+        md_content.append(f"**🆔 Sesión:** `{session_id}`")
+        md_content.append(f"**💭 Total mensajes:** {len(conversation)}")
+        md_content.append("")
+        md_content.append("---")
+        md_content.append("")
+        
+        # Add conversation
+        for i, message in enumerate(conversation, 1):
+            msg_type = message.get("type", "unknown")
+            content = message.get("content", "")
+            timestamp = message.get("timestamp", "")
+            
+            # Format timestamp
+            time_part = ""
+            if timestamp:
+                if "T" in timestamp:
+                    time_part = timestamp.split("T")[1].split(".")[0] if "T" in timestamp else ""
+                    time_part = f" {time_part}" if time_part else ""
+            
+            if msg_type == "user":
+                username = os.getenv("USERNAME", "Usuario")  # Get Windows username
+                md_content.append(f"<div style=\"text-align: right;\">")
+                md_content.append("")
+                md_content.append(f"### <span style=\"color: #007bff;\">♾️ {username}</span>{time_part}")
+                md_content.append("")
+                md_content.append(content)
+                md_content.append("")
+                md_content.append("</div>")
+                md_content.append("")
+                md_content.append("---")
+                md_content.append("")
+                
+            elif msg_type == "assistant":
+                md_content.append(f"### <span style=\"color: #d2691e;\">🤖 Claude</span>{time_part}")
+                md_content.append("")
+                md_content.append(content)
+                md_content.append("")
+                md_content.append("---")
+                md_content.append("")
+        
+        # Write markdown file
+        md_file = conversation_file.parent / f"{session_id}.md"
+        with open(md_file, "w", encoding="utf-8") as f:
+            f.write("\n".join(md_content))
+            
+    except Exception as e:
+        print(f"Markdown generation error: {e}", file=sys.stderr)
+
+def ensure_session_log_dir(project_root=None):
+    """Ensure chat directory exists and return path."""
+    if project_root:
+        base_dir = Path(project_root)
+    else:
+        # Always use project root, not current directory
+        current_dir = Path.cwd()
+        if current_dir.name == 'hooks':
+            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
         else:
-            # Calculate side lengths for proper centering
-            remaining = terminal_width - text_length - 2  # -2 for edge chars
-            left_side = remaining // 2
-            right_side = remaining - left_side
-            
-            # Create completion line
-            completion_line = (
-                edge_char + 
-                line_char * left_side + 
-                middle_text + 
-                line_char * right_side + 
-                edge_char
-            )
-            
-            print("\n" + completion_line + "\n")
-        
-        # Force flush output
-        sys.stdout.flush()
-        
-    except Exception:
-        # Fallback to simple line if anything fails
-        try:
-            print("\n" + "="*60)
-            print("CLAUDE COMPLETADO".center(60))
-            print("="*60 + "\n")
-            sys.stdout.flush()
-        except:
-            pass  # Ultimate fallback - do nothing
+            base_dir = current_dir
+    chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+    chat_dir.mkdir(parents=True, exist_ok=True)
+    return chat_dir
 
 def main():
-    # Parse command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--chat', action='store_true', help='Enable chat mode with formatted output')
-    args = parser.parse_args()
-    
     try:
-        # Read JSON input from stdin (validate format)
-        input_data = sys.stdin.read()
-        
-        # Validate JSON
-        json.loads(input_data)
-        
-        # Simple transcript output only
-        print("CLAUDE COMPLETADO")
-        sys.stdout.flush()
-        
-        # Start sound in background
-        import threading
-        sound_thread = threading.Thread(target=play_notification_sound)
-        sound_thread.daemon = True
-        sound_thread.start()
-        
-        # Give a moment for sound to start
-        import time
-        time.sleep(0.1)
-        
-    except json.JSONDecodeError:
-        print("-" * 60, file=sys.stderr)
-        print("Session completed (invalid JSON)", file=sys.stderr)
-        sys.stderr.flush()
-        
-    except Exception as e:
-        print(f"Stop hook error: {e}", file=sys.stderr)
-        print("-" * 60, file=sys.stderr)
-        print("Session completed (with errors)", file=sys.stderr)
-        sys.stderr.flush()
+        # Parse command line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--chat", action="store_true", help="Copy transcript to chat.json"
+        )
+        args = parser.parse_args()
 
-if __name__ == '__main__':
+        # Read JSON input from stdin
+        stdin_content = sys.stdin.read().strip()
+        input_data = json.loads(stdin_content)
+
+        # Extract required fields
+        claude_session_id = input_data.get("session_id", "")
+        stop_hook_active = input_data.get("stop_hook_active", False)
+        project_cwd = input_data.get("cwd", "")
+
+        # Get OUR session ID from SQLite
+        import sqlite3
+        if project_cwd:
+            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+        else:
+            db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        our_session_id = "unknown"
+        
+        if db_path.exists():
+            try:
+                conn = sqlite3.connect(str(db_path))
+                cursor = conn.cursor()
+                # Get current active session (the one that's still running)
+                cursor.execute("SELECT id FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
+                result = cursor.fetchone()
+                if result:
+                    our_session_id = result[0]
+                conn.close()
+            except (sqlite3.Error, OSError, IOError):
+                pass
+
+        # Ensure chat directory exists
+        log_dir = ensure_session_log_dir(project_cwd if project_cwd else None)
+
+        # Process transcript to extract Claude's latest response
+        if "transcript_path" in input_data:
+            transcript_path = input_data["transcript_path"]
+            if os.path.exists(transcript_path):
+                try:
+                    # Read transcript and find Claude's last response
+                    with open(transcript_path, "r", encoding="utf-8") as f:
+                        lines = f.readlines()
+                    
+                    # Find the last assistant message
+                    last_claude_response = None
+                    for line in reversed(lines):
+                        line = line.strip()
+                        if line:
+                            try:
+                                data = json.loads(line)
+                                if data.get("type") == "assistant" and "message" in data:
+                                    message = data.get("message", {})
+                                    content = message.get("content", [])
+                                    if content and len(content) > 0:
+                                        text_content = content[0].get("text", "") if content[0].get("type") == "text" else ""
+                                        if text_content:
+                                            last_claude_response = {
+                                                "session_id": our_session_id,
+                                                "timestamp": data.get("timestamp"),
+                                                "content": text_content,
+                                                "type": "assistant",
+                                                "uuid": data.get("uuid")
+                                            }
+                                    break
+                            except json.JSONDecodeError:
+                                continue
+                    
+                    # Save Claude's response if found
+                    if last_claude_response:
+                        response_file = log_dir / f"{our_session_id}.json"
+                        
+                        # Read existing responses or create new list
+                        responses = []
+                        if response_file.exists():
+                            try:
+                                with open(response_file, "r", encoding="utf-8") as f:
+                                    responses = json.load(f)
+                            except (json.JSONDecodeError, OSError, IOError):
+                                responses = []
+                        
+                        # Add new response
+                        responses.append(last_claude_response)
+                        
+                        # Write back
+                        with open(response_file, "w", encoding="utf-8") as f:
+                            json.dump(responses, f, indent=2, ensure_ascii=False)
+                        
+                        # Generate markdown transcript
+                        generate_markdown_transcript(response_file, our_session_id)
+                            
+                except Exception as e:
+                    print(f"Response extraction error: {e}", file=sys.stderr)
+
+        sys.exit(0)
+
+    except json.JSONDecodeError:
+        # Handle JSON decode errors gracefully
+        sys.exit(0)
+    except Exception:
+        # Handle any other errors gracefully
+        sys.exit(0)
+
+
+if __name__ == "__main__":
     main()

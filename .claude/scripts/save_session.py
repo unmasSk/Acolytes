@@ -140,6 +140,13 @@ def save_to_database(session_data, session_text, message_text):
             raise Exception("conversation_flow too long (>5000 chars)")
         
         # Calculate quality score (simplified)
+        # Scoring System Documentation:
+        # Base score: 5 (neutral starting point)
+        # Accomplishments: +1 to +3 points (capped at 3 accomplishments max)
+        # Errors: -1 to -2 points (capped at 2 errors max)
+        # Breakthrough: +1 point if substantial content (>30 chars)
+        # Rich content: +1 point if total session content >500 chars
+        # Final range: 1-10 (clamped to prevent overflow)
         score = 5  # neutral base
         score += min(3, len(accomplishments))  # +1-3 for accomplishments
         score -= min(2, len(errors))  # -1-2 for errors  

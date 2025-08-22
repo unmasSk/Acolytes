@@ -101,7 +101,7 @@ commit_types:
   perf: # Performance improvements
   test: # Adding or updating tests
   
-  # Optional maintenance type
+  # Maintenance type (standard but use sparingly)
   chore: # Maintenance tasks (build changes, dependency updates, configs)
 ```
 

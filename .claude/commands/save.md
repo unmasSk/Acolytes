@@ -87,6 +87,38 @@ uv run .claude/scripts/save_session.py \
   -message "conversation_flow: Q: What was the primary problem addressed in this session? A: Save system completely non-functional due to hook interference with pipe operations plus user dissatisfaction with minimal session data quality. Q: What solution was ultimately implemented? A: Command-line arguments with rich English text parsing automatic formatting with line breaks and emoji cleaning. total_exchanges: 18 duration_minutes: 30"
 ```
 
+### ❌ INVALID FORMATS (Will Be Rejected)
+
+**Common mistakes that cause script failures:**
+
+```bash
+# Missing colons in field definitions
+❌ uv run .claude/scripts/save_session.py -session "accomplishments Fixed save system"
+
+# Empty or minimal field content 
+❌ uv run .claude/scripts/save_session.py -session "accomplishments: . decisions: ."
+
+# Using pipe operations (blocked by hooks)
+❌ echo "data" | uv run .claude/scripts/save_session.py -session "..."
+
+# JSON format instead of text
+❌ uv run .claude/scripts/save_session.py -session '{"accomplishments": ["item1"]}'
+
+# Missing required session argument
+❌ uv run .claude/scripts/save_session.py -message "conversation_flow: Q: Test? A: Yes"
+
+# Swapped argument order or missing -message
+❌ uv run .claude/scripts/save_session.py "session data" "message data"
+
+# Special characters without proper quoting
+❌ uv run .claude/scripts/save_session.py -session accomplishments: Fixed & improved system
+
+# Mixing old JSON format with new text format
+❌ uv run .claude/scripts/save_session.py -session "{accomplishments: [Fixed system]}"
+```
+
+**Remember**: Always use the exact format from the working example above.
+
 ## EXPECTED SUCCESS OUTPUT
 
 ```json
@@ -108,7 +140,38 @@ uv run .claude/scripts/save_session.py \
 **If you get "name 're' is not defined"**: Fixed - import re added to script  
 **If you get "Missing field: errors"**: Fixed - validation uses errors_encountered  
 **If you get hook blocking**: Don't use pipes (|) - use direct arguments only  
-**If text too long**: No limit - script handles long rich text  
+**If text too long**: No limit - script handles long rich text
+
+## 🚨 CRITICAL FAILURE RECOVERY
+
+**If save fails completely**:
+1. **Check database integrity**: 
+   ```bash
+   sqlite3 .claude/memory/project.db "PRAGMA integrity_check"
+   ```
+
+2. **Restore from backup** (if integrity check fails):
+   ```bash
+   cp .claude/memory/backup/latest.db .claude/memory/project.db
+   ```
+
+3. **Retry save with minimal data first**:
+   ```bash
+   uv run .claude/scripts/save_session.py \
+     -session "accomplishments: Basic session save test. decisions: Test recovery." \
+     -message "conversation_flow: Q: Test? A: Recovery test. total_exchanges: 1 duration_minutes: 1"
+   ```
+
+**If script crashes**:
+1. **Check Python syntax**: Look for unescaped quotes in your text
+2. **Verify file permissions**: Ensure `.claude/memory/` is writable
+3. **Clear corrupted session**: Delete current session and start fresh
+4. **Manual backup**: Copy important session notes to a text file first
+
+**Emergency fallback**:
+- Use regular text editor to save session notes
+- Create GitHub issue with session details
+- Continue work and save later when system is stable  
 
 ## TECHNICAL NOTES FOR DEVELOPERS
 

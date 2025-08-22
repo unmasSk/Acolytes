@@ -71,9 +71,15 @@ def backup_database():
             for old_file in files_to_delete:
                 old_file.unlink()
                 
-    except (OSError, PermissionError, IOError):
+    except (OSError, PermissionError, IOError) as e:
         # Backup failed but continue - don't break session start
-        pass
+        # Consider logging to a file for monitoring
+        try:
+            with open(".claude/memory/backup_errors.log", "a") as f:
+                f.write(f"{datetime.now()}: Backup failed - {e}\n")
+        except (OSError, PermissionError):
+            # If we can't log, continue silently to avoid breaking session start
+            pass
 
 
 
