@@ -221,14 +221,27 @@ If an agent doesn't respond correctly:
 ## 🏗️ PROJECT: {{project_name}}
 
 <!-- INSERT: PROJECT_CONTEXT -->
-<!-- Dynamic content from 4 setup agents will be inserted here:
-     - Project Identity (setup-context)
-     - Architecture Analysis (setup-infrastructure)
-     - Technology Stack Details (setup-codebase)
-     - Critical Issues (all agents)
-     - Unique Features (setup-context)
-     - Next Priorities (setup-infrastructure)
+<!-- Dynamic content from setup agents/plan.strategy will be inserted here:
+     - Project Identity and Vision
+     - Architecture Analysis and Technical Decisions
+     - Technology Stack Details and Rationale
+     - Critical Issues and Opportunities
+     - Development Roadmap and Phases
+     - Team Preferences and Standards
 -->
+
+## 📁 PROJECT DOCUMENTATION
+
+**IMPORTANT**: Complete project documentation is available in `.claude/project/`:
+
+- **`vision.md`** - Project purpose, goals, and business context
+- **`architecture.md`** - Technical decisions, stack, and system design
+- **`roadmap.md`** - Development phases, timeline, and milestones
+- **`technical-decisions.md`** - Rationale for all technical choices
+- **`team-preferences.md`** - Coding standards and development practices
+- **`project-context.md`** - Project history, team structure, and specific context
+
+These files are created and maintained by ClaudeSquad setup agents and provide comprehensive project knowledge for all development decisions.
 
 ## 🔄 Agent Memory Maintenance
 

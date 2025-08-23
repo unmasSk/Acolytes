@@ -35,23 +35,24 @@ This system provides intelligent project setup with ClaudeSquad's 57 specialized
 
 ```yaml
 ENVIRONMENT_CHECK:
-  - python --version (3.8+ required)
-  - git --version (2.0+ required)
-  - node --version (18+ required, check nvm)
-  - uv --version (package manager)
-  
+  - Execute: uv run python ~/.claude/scripts/environment_check.py
+  - Validates: Python 3.8+, Git 2.0+, Node 18+, uv package manager
+  - Creates environment report in .claude/project/environment-status.md
+  - Auto-fixes common issues where possible
+
 DATABASE_AND_MCP:
   1. Configure MCP SQLite:
-    - Run: python .claude/scripts/setup_mcp.py
+    - Run: python ~/.claude/scripts/setup_mcp.py
     - Create project.db if not exists
     - Configure MCP to point to project.db
     - User may need to restart Claude Code
-    
+
   2. Initialize database schema:
-    - Run: sqlite3 .claude/memory/project.db < .claude/scripts/init_db.sql
-    - Create initial job record with status='active'
-    - Create setup_sessions and project_setup tables
-    
+    - Execute: python ~/.claude/scripts/init_db.py (if exists) OR directly create DB with schema
+    - Database will auto-create: agents_catalog (51 agents), jobs table with initial job, sessions, messages, etc.
+    - Initial job 'Project Setup' automatically created with high priority
+    - All tables, indexes, triggers, and constraints ready
+
   3. Install missing MCP servers as needed
 ```
 
@@ -69,10 +70,10 @@ PARALLEL_ANALYSIS:
   agents:
     - setup.codebase
     - setup.context
-    - setup.infrastructure  
+    - setup.infrastructure
     - setup.environment
   execution: MULTIPLE TASK CALLS IN ONE MESSAGE
-  
+
 DOCUMENTATION_CREATION:
   location: .claude/project/
   files:
@@ -90,7 +91,7 @@ DOCUMENTATION_CREATION:
 ```yaml
 REQUIREMENTS_INTERVIEW:
   rounds: 14 areas of questions
-  persistence: SQLite project_setup table
+  persistence: .claude/project/requirements-interview.md
   areas:
     1. Business & Domain (4 questions)
     2. Technical Architecture (4 questions)
@@ -108,12 +109,16 @@ REQUIREMENTS_INTERVIEW:
     14. User Experience Level (4 questions)
 
 SPECIALIST_CONSULTATION:
-  process: Claude analyzes all answers from SQLite
+  process: Claude analyzes all answers from requirements-interview.md
   action: Consult relevant specialists based on responses
+  execution: 
+    - Use Task tool for PARALLEL consultation when specialists are independent
+    - Use sequential if one specialist's response is needed for another's question
+    - Apply logic to determine dependencies between consultations
   examples:
-    - "React + PostgreSQL + Auth0" → @frontend.react, @database.postgres, @service.auth
-    - "Vue + MongoDB + Stripe" → @frontend.vue, @database.mongodb, @business.payment
-  storage: Save specialist recommendations in project_setup table
+    - "React + PostgreSQL + Auth0" → @frontend.react, @database.postgres, @service.auth (parallel)
+    - "Vue + MongoDB + Stripe" → @frontend.vue, @database.mongodb, @business.payment (parallel)
+  storage: Append specialist recommendations to requirements-interview.md
 
 PLAN_STRATEGY_ORGANIZATION:
   agent: @plan.strategy
@@ -170,7 +175,7 @@ PLAN_EXECUTION:
   - @plan.strategy already created jobs in SQLite
   - Create dynamic agents based on planned architecture
   - Agent creation guided by plan.strategy recommendations
-  
+
 INITIAL_SCAFFOLDING:
   - Generate project folder structure
   - Create initial configuration files
@@ -187,7 +192,7 @@ DYNAMIC_AGENT_ACTIVATION:
     - All dynamic agents perform deep module analysis
     - Fill their 8 memory records with comprehensive knowledge
     - Update agent_memory table in SQLite
-    
+
   new_projects:
     - Dynamic agents create their initial memory structures
     - Set up monitoring for their planned modules
@@ -205,7 +210,7 @@ COMPLETION_SUMMARY:
   - Present system summary to user
   - List available agents with their expertise areas
   - Show next steps for development
-  
+
 NEXT_STEPS:
   existing_projects: "Ready for development with full ClaudeSquad support"
   new_projects: "Ready to begin development following the generated roadmap"
@@ -221,7 +226,7 @@ NEXT_STEPS:
 │   ├── project/                    # PROJECT DOCUMENTATION (NEW!)
 │   │   ├── vision.md               # Project purpose and goals
 │   │   ├── architecture.md         # Technical decisions
-│   │   ├── roadmap.md              # Development phases  
+│   │   ├── roadmap.md              # Development phases
 │   │   ├── technical-decisions.md  # Rationale for choices
 │   │   ├── team-preferences.md     # Standards and practices
 │   │   └── project-context.md      # Specific project details
@@ -248,6 +253,7 @@ python .claude/scripts/agent_db.py get-workable-flags
 ```
 
 **Agent Workflow**:
+
 1. **Check**: `python .claude/scripts/agent_db.py get-agent-flags "@agent-name"`
 2. **Work**: Process flags with full context
 3. **Create**: `python .claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`
@@ -257,14 +263,14 @@ python .claude/scripts/agent_db.py get-workable-flags
 
 ## 📊 **NEW VS EXISTING PROJECT COMPARISON**
 
-| Phase | Existing Project | New Project |
-|-------|------------------|-------------|
-| 1 | Environment + Database setup | Environment + Database setup |
-| 2 | 4 setup agents analyze code | 14 interview rounds + specialists |
-| 3 | CLAUDE.md creation | CLAUDE.md creation |
-| 4 | Dynamic agent creation | Jobs + agent creation via plan.strategy |
-| 5 | Deep module analysis | Agent initialization |
-| 6 | Finalization summary | Finalization summary |
+| Phase | Existing Project             | New Project                             |
+| ----- | ---------------------------- | --------------------------------------- |
+| 1     | Environment + Database setup | Environment + Database setup            |
+| 2     | 4 setup agents analyze code  | 14 interview rounds + specialists       |
+| 3     | CLAUDE.md creation           | CLAUDE.md creation                      |
+| 4     | Dynamic agent creation       | Jobs + agent creation via plan.strategy |
+| 5     | Deep module analysis         | Agent initialization                    |
+| 6     | Finalization summary         | Finalization summary                    |
 
 **Key Difference**: Existing projects analyze what exists; new projects plan what will be built.
 
@@ -287,10 +293,10 @@ User: /setup
 
 Claude:
 1. [Phase 1] Environment + Database setup ✅
-2. [Phase 2] 
+2. [Phase 2]
    - IF existing project: "Analyze this project using 4 setup agents IN PARALLEL"
    - IF new project: "Starting requirements interview - Business & Domain questions"
-3. [Phase 3] Generate CLAUDE.md with project context ✅  
+3. [Phase 3] Generate CLAUDE.md with project context ✅
 4. [Phase 4] Create dynamic agents + jobs (if new project) ✅
 5. [Phase 5] Initialize agent memories ✅
 6. [Phase 6] "✅ Setup complete: ClaudeSquad ready with full documentation"
