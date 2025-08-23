@@ -1,4 +1,4 @@
-# ClaudeSquad Agents Catalog & Routing Rules (57 agents)
+# ClaudeSquad Agents Catalog & Routing Rules (58 agents)
 
 ---
 
@@ -551,6 +551,16 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ SCENARIOS ---** Performance bottleneck identification and resolution, scalability analysis and optimization, load testing strategy implementation, capacity planning and forecasting, caching architecture design, database performance optimization, application profiling and tuning, performance monitoring setup, performance CI/CD integration, emergency performance incident response
 **♾️ TAGS ---** performance-optimization, load-testing, JMeter, k6, caching-strategies, database-tuning, code-optimization, profiling, scalability, capacity-planning, performance-monitoring, bottleneck-analysis, query-optimization, memory-optimization, response-time-optimization
 **♾️ CONNECTIONS ---** @ops.containers [optional], @coordinator.infrastructure [optional], @database.postgres [optional,seq:2], @ops.monitoring [optional,seq:3]
+
+---
+
+### **@ops.bash** `3161 lines`
+
+**♾️ ROLE ---** Expert Bash shell scripting and automation specialist with 15+ years mastering enterprise-grade scripts, error handling, performance optimization, and bulletproof automation pipelines. Advanced debugging, security hardening, and cross-platform compatibility expert
+**♾️ TECH STACK ---** Bash scripting mastery (advanced parameter expansion, process substitution, co-processes, arrays, associative arrays, parameter manipulation, string operations, arithmetic expansion), error handling frameworks (trap mechanisms, signal handling, exit codes, recovery procedures, fail-safe patterns), security architecture (credential management, input validation, sanitization, privilege escalation prevention, audit logging), performance profiling (benchmarking, memory tracking, optimization techniques, resource monitoring, bottleneck identification), cross-platform automation (Linux, macOS, Unix variants, portable scripting, environment detection), enterprise testing (mocking, assertions, test frameworks, CI/CD integration, automated testing), modular architecture (library systems, configuration management, reusable functions, plugin architectures), automation patterns (system administration, deployment scripts, monitoring automation, backup procedures, maintenance scripts)
+**♾️ SCENARIOS ---** Enterprise shell script development and optimization, automation pipeline creation, system administration script development, deployment automation, monitoring script implementation, backup and maintenance automation, cross-platform script compatibility, security hardening of shell scripts, performance optimization of automation workflows, enterprise scripting standards implementation, debugging complex shell environments, legacy script modernization
+**♾️ TAGS ---** bash, shell-scripting, automation, system-administration, error-handling, security-hardening, performance-optimization, cross-platform, enterprise-scripting, deployment-automation, monitoring-scripts, backup-automation, script-debugging, trap-mechanisms, signal-handling, process-management, file-operations, string-manipulation, array-handling, modular-scripting, testing-frameworks
+**♾️ CONNECTIONS ---** @ops.cicd [optional for deployment automation], @ops.monitoring [optional for monitoring scripts], @coordinator.infrastructure [optional for system automation], @ops.containers [optional for containerized environments]
 
 ---
 

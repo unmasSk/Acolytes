@@ -623,6 +623,13 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["performance-optimization", "load-testing", "JMeter", "k6", "caching-strategies", "database-tuning", "code-optimization", "profiling", "scalability", "capacity-planning", "performance-monitoring", "bottleneck-analysis", "query-optimization", "memory-optimization", "response-time-optimization"]',
  '["@ops.containers [optional]", "@coordinator.infrastructure [optional]", "@database.postgres [optional,seq:2]", "@ops.monitoring [optional,seq:3]"]'
 ),
+('@ops.bash', 'operations', 
+ '["Expert Bash shell scripting and automation specialist with 15+ years mastering enterprise-grade scripts, error handling, performance optimization, and bulletproof automation pipelines. Advanced debugging, security hardening, and cross-platform compatibility expert"]',
+ '["Bash scripting mastery (advanced parameter expansion, process substitution, co-processes, arrays, associative arrays, parameter manipulation, string operations, arithmetic expansion)", "error handling frameworks (trap mechanisms, signal handling, exit codes, recovery procedures, fail-safe patterns)", "security architecture (credential management, input validation, sanitization, privilege escalation prevention, audit logging)", "performance profiling (benchmarking, memory tracking, optimization techniques, resource monitoring, bottleneck identification)", "cross-platform automation (Linux, macOS, Unix variants, portable scripting, environment detection)", "enterprise testing (mocking, assertions, test frameworks, CI/CD integration, automated testing)", "modular architecture (library systems, configuration management, reusable functions, plugin architectures)", "automation patterns (system administration, deployment scripts, monitoring automation, backup procedures, maintenance scripts)"]',
+ '["Enterprise shell script development and optimization", "automation pipeline creation", "system administration script development", "deployment automation", "monitoring script implementation", "backup and maintenance automation", "cross-platform script compatibility", "security hardening of shell scripts", "performance optimization of automation workflows", "enterprise scripting standards implementation", "debugging complex shell environments", "legacy script modernization"]',
+ '["bash", "shell-scripting", "automation", "system-administration", "error-handling", "security-hardening", "performance-optimization", "cross-platform", "enterprise-scripting", "deployment-automation", "monitoring-scripts", "backup-automation", "script-debugging", "trap-mechanisms", "signal-handling", "process-management", "file-operations", "string-manipulation", "array-handling", "modular-scripting", "testing-frameworks"]',
+ '["@ops.cicd [optional for deployment automation]", "@ops.monitoring [optional for monitoring scripts]", "@coordinator.infrastructure [optional for system automation]", "@ops.containers [optional for containerized environments]"]'
+),
 ('@test.quality', 'testing', 
  '["Comprehensive testing and quality assurance expert specializing in test automation frameworks, quality gates, performance testing, and end-to-end testing strategies. Master of Jest, Cypress, Playwright, code coverage analysis, and enterprise testing methodologies"]',
  '["Test automation frameworks (Jest unit testing, Cypress integration testing, Playwright end-to-end testing, JUnit Java testing, pytest Python testing)", "code coverage analysis (Istanbul JavaScript coverage, c8 V8 coverage, JaCoCo Java coverage, pytest-cov Python coverage)", "quality gates implementation (SonarQube integration, quality thresholds, automated quality checks)", "performance testing (JMeter load testing, k6 performance testing, Lighthouse web vitals)", "testing strategies (test pyramid implementation, TDD methodologies, BDD frameworks, mutation testing)"]',
@@ -633,7 +640,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
 -- Removed @plan.strategy agent as requested
 );
 
--- Generated 51 INSERT statements for 51 agents (removed 5 setup agents + 1 plan agent)
+-- Generated 52 INSERT statements for 52 agents
 
 -- DEFAULT INITIAL JOB
 INSERT OR IGNORE INTO jobs (id, title, description, status, created_at) VALUES (
