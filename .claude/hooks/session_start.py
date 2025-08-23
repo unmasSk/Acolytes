@@ -35,8 +35,11 @@ import sys
 import sqlite3
 import subprocess
 import shutil
-from pathlib import Path
+import os
 from datetime import datetime
+
+# Import Path and create alias
+from pathlib import Path as PathLib
 
 try:
     from dotenv import load_dotenv
@@ -48,12 +51,13 @@ except ImportError:
 def backup_database():
     """Create database backup with timestamp and maintain max 10 files"""
     try:
-        DB_PATH = Path(".claude/memory/project.db")
-        if not DB_PATH.exists():
+        # Use explicit path construction to avoid any scope issues
+        db_path = PathLib(".claude/memory/project.db")
+        if not db_path.exists():
             return
         
         # Create backup directory
-        backup_dir = Path(".claude/memory/backup")
+        backup_dir = PathLib(".claude/memory/backup")
         backup_dir.mkdir(exist_ok=True)
         
         # Create backup filename with timestamp (no seconds)
@@ -62,7 +66,7 @@ def backup_database():
         backup_path = backup_dir / backup_filename
         
         # Copy database to backup
-        shutil.copy2(DB_PATH, backup_path)
+        shutil.copy2(str(db_path), str(backup_path))
         
         # Clean old backups - keep only 10 most recent
         backup_files = sorted(backup_dir.glob("project_*.db"), key=lambda f: f.stat().st_mtime)
@@ -73,14 +77,13 @@ def backup_database():
                 
     except (OSError, PermissionError, IOError) as e:
         # Backup failed but continue - don't break session start
-        # Consider logging to a file for monitoring
         try:
-            with open(".claude/memory/backup_errors.log", "a") as f:
+            os.makedirs(".claude/memory", exist_ok=True)
+            with open(".claude/memory/backup_errors.log", "a", encoding="utf-8") as f:
                 f.write(f"{datetime.now()}: Backup failed - {e}\n")
         except (OSError, PermissionError):
             # If we can't log, continue silently to avoid breaking session start
             pass
-
 
 
 def find_active_session():
@@ -89,11 +92,11 @@ def find_active_session():
         # Backup database first
         backup_database()
         
-        DB_PATH = Path(".claude/memory/project.db")
-        if not DB_PATH.exists():
+        db_path = PathLib(".claude/memory/project.db")
+        if not db_path.exists():
             return None, "Database not found"
             
-        conn = sqlite3.connect(str(DB_PATH))
+        conn = sqlite3.connect(str(db_path))
         cursor = conn.cursor()
         
         # Find active session (ended_at IS NULL)
@@ -204,11 +207,11 @@ def load_job_context_from_db(session_info):
     This ensures Claude knows EXACTLY what was done and which files were modified.
     """
     try:
-        DB_PATH = Path(".claude/memory/project.db")
-        if not DB_PATH.exists():
+        db_path = PathLib(".claude/memory/project.db")
+        if not db_path.exists():
             return None
             
-        conn = sqlite3.connect(str(DB_PATH))
+        conn = sqlite3.connect(str(db_path))
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
         
@@ -350,7 +353,8 @@ def load_job_context_from_db(session_info):
                     if log['file_affected'] and log['success']:
                         file_path = log['file_affected']
                         files_modified.add(file_path)
-                        file_name = Path(file_path).name
+                        # Use os.path.basename instead of PathLib to avoid scope issues
+                        file_name = os.path.basename(file_path)
                         context_parts.append(f"   • {log['tool_name']}: {file_name}")
                         
                         # Track .md files for documentation changes
@@ -365,7 +369,7 @@ def load_job_context_from_db(session_info):
                     if log['success']:
                         operation = f"{log['tool_name']}"
                         if log['file_affected']:
-                            operation += f" on {Path(log['file_affected']).name}"
+                            operation += f" on {os.path.basename(log['file_affected'])}"
                         context_parts.append(f"   • {operation}")
                 
                 # Show documentation changes
@@ -452,7 +456,8 @@ def main():
                 context_parts.append(db_context)
         
         # Add project context AFTER session info
-        if Path("CLAUDE.md").exists():
+        claude_md_path = PathLib("CLAUDE.md")
+        if claude_md_path.exists():
             context_parts.append("--- CLAUDE.md Project Rules Active ---")
         
         # Add git status

@@ -490,12 +490,19 @@ safety_considerations:
   sensitive_data: "Never commit .env files, secrets, or personal data"
   git_directory: "Exclude .git/ directory from commits"
   large_files: "Avoid committing large binary files without LFS"
+  lockfiles: "COMMIT lockfiles for reproducible builds (see gitignore_best_practices)"
 
 protection_layers:
   pre_commit_hooks: "pre_tool_use.py prevents dangerous operations"
   gitignore_patterns: "Comprehensive .gitignore for common exclusions"
   bash_preference: "Bash tool provides full command visibility"
   review_workflow: "Always review git status before commits"
+
+gitignore_best_practices:
+  lockfiles_recommended: "Commit package-lock.json, yarn.lock, Pipfile.lock for reproducibility"
+  lockfiles_avoid: "Only ignore *.lock for generic lock files, not package managers"
+  ci_benefits: "Committed lockfiles improve CI cacheability and deterministic builds"
+  team_alignment: "Ensure entire team uses same dependency versions"
 
 mcp_tool_usage:
   status: "Available with safety restrictions"
@@ -1000,31 +1007,55 @@ echo "✅ Commit message format is valid"
 ### History Cleanup
 
 ```bash
-# ⚠️ DESTRUCTIVE: Remove sensitive data from history
+## ⚠️ DESTRUCTIVE: Use git-filter-repo (NOT filter-branch)
+# filter-branch is deprecated - use git-filter-repo for safety and performance
+
+# Install git-filter-repo first:
+# pipx install git-filter-repo
+# OR: brew install git-filter-repo  
+# OR: apt install git-filter-repo
+
+# Remove sensitive data from history
 # WARNING: This rewrites entire repository history
 # BACKUP: Create repository backup before running
 # COORDINATE: Notify all team members before execution
-git filter-branch --force --index-filter \
-  'git rm --cached --ignore-unmatch secrets.env' \
-  --prune-empty --tag-name-filter cat -- --all
+git filter-repo --path secrets.env --invert-paths
 
-# Clean up unreachable objects
-git reflog expire --expire=now --all
-git gc --prune=now --aggressive
+# Remove specific files from all commits
+git filter-repo --path config/database.yml --invert-paths
 
-# ⚠️ DESTRUCTIVE: Rewrite author information
+# Remove directory from history
+git filter-repo --path sensitive-dir/ --invert-paths
+
+# Multiple files/paths
+git filter-repo \
+  --path secrets.env \
+  --path config/production.yml \
+  --path logs/ \
+  --invert-paths
+
+# Clean up unreachable objects (automatic with filter-repo)
+# No manual cleanup needed - filter-repo handles it
+
+# ⚠️ DESTRUCTIVE: Rewrite author information  
 # WARNING: Changes all commit hashes in repository
 # BACKUP: Create repository backup before running
-git filter-branch --env-filter '
-if [ "$GIT_COMMITTER_EMAIL" = "old@email.com" ]; then
-    export GIT_COMMITTER_NAME="New Name"
-    export GIT_COMMITTER_EMAIL="new@email.com"
-fi
-if [ "$GIT_AUTHOR_EMAIL" = "old@email.com" ]; then
-    export GIT_AUTHOR_NAME="New Name"
-    export GIT_AUTHOR_EMAIL="new@email.com"
-fi
-' --tag-name-filter cat -- --branches --tags
+
+# Method 1: Using .mailmap file (recommended)
+echo "New Name <new@email.com> Old Name <old@email.com>" > .mailmap
+git filter-repo --mailmap .mailmap
+
+# Method 2: Direct email replacement
+git filter-repo --email-callback '
+return email.replace(b"old@email.com", b"new@email.com")
+'
+
+# Method 3: Name and email replacement
+git filter-repo --name-callback '
+return name.replace(b"Old Name", b"New Name")
+' --email-callback '
+return email.replace(b"old@email.com", b"new@email.com")
+'
 ```
 
 

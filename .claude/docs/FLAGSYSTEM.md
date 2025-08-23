@@ -1,8 +1,8 @@
-# 🚩 ClaudeSquad FLAG System - Complete Documentation
+# ClaudeSquad FLAG System - Complete Documentation
 
 The FLAG system is the core inter-agent communication protocol that enables ClaudeSquad's 58+ agents to coordinate work without contaminating Claude's context window. It operates as an intelligent message queue with automatic prioritization, conflict detection, and chain tracking.
 
-## 🏗️ System Architecture
+## System Architecture
 
 ### Core Principle
 **Claude is NOT involved in day-to-day FLAG processing** - The system is designed to operate with minimal Claude intervention to preserve context efficiency. Claude only invokes the `@flags-agent` orchestrator, which manages the entire workflow autonomously.
@@ -20,8 +20,9 @@ The FLAG system is the core inter-agent communication protocol that enables Clau
 - Backend, frontend, database, service specialists
 - Invoked by Claude when @flags-agent determines work assignment
 - Stateless - don't maintain project memory
+- **Discoverable via semantic search** using keywords, capabilities, and descriptions
 
-## 📊 Complete System Flow
+## Complete System Flow
 
 ### 1. User Request Processing
 ```
@@ -42,7 +43,56 @@ Dynamic agent reads response → updates memory → closes FLAG
 If significant change → creates FLAG to @changelog-agent
 ```
 
-## 🔄 Complete Flow Examples
+## Semantic Agent Discovery
+
+The FLAG system includes intelligent agent discovery to eliminate routing errors:
+
+### How Semantic Search Works
+
+```bash
+# Command usage
+uv run python .claude/scripts/agent_db.py search-agents "query" [limit]
+
+# Example: Find authentication specialist
+uv run python .claude/scripts/agent_db.py search-agents "JWT authentication implementation" 3
+```
+
+**Scoring Algorithm:**
+- **Exact keyword match** (50 pts): Direct match in agent's routing_keywords
+- **Keyword word match** (40 pts): Partial word matches in keywords
+- **Capability match** (30 pts): Match in agent's technical capabilities  
+- **Description match** (20 pts): Match in agent's description text
+- **Module match** (15 pts): Match in agent's primary/sub module
+- **Multi-criteria bonus** (25 pts): When agent matches multiple categories
+
+### Integration with FLAG Creation
+
+**Before (Error-prone):**
+```bash
+# Agents had to guess the right target
+create-flag --target_agent "@backend.nodejs" --action_required "..."
+# Often wrong target → wasted cycles, delays
+```
+
+**After (Precision routing):**
+```bash
+# 1. Search for the right specialist
+search-agents "JWT authentication Node.js implementation" 3
+# Returns: @service.auth (score: 195), @backend.nodejs (score: 140)
+
+# 2. Create FLAG to the TOP-RANKED specialist  
+create-flag --target_agent "@service.auth" --action_required "..."
+# Always correct target → efficient workflow
+```
+
+### Benefits
+
+- **Zero routing ambiguity**: Agents always find the RIGHT specialist
+- **Expertise matching**: Tasks go to the most qualified agent
+- **Reduced FLAG cycles**: No more "wrong agent" bouncing
+- **Knowledge discovery**: Agents discover specialists they didn't know existed
+
+## Complete Flow Examples
 
 ### Example 1: Simple Feature Addition
 **User**: "Add JWT authentication to API"
@@ -169,7 +219,7 @@ If significant change → creates FLAG to @changelog-agent
 4. **@flags-agent** prioritizes all rollback FLAGs as critical
 5. Parallel execution of rollback procedures
 
-## 🧠 Algorithm & Prioritization
+## Algorithm & Prioritization
 
 ### [TO BE COMPLETED]
 
@@ -195,7 +245,7 @@ If significant change → creates FLAG to @changelog-agent
 - **Phase 2**: Investigation/Execution  
 - **Phase 3**: Documentation/Changelog
 
-## 👥 Agent Prompts & Templates
+## Agent Prompts & Templates
 
 ### Dynamic Agents System Prompt
 **[TO BE COMPLETED]**
@@ -216,7 +266,7 @@ Key requirements:
 - Create response FLAGs when work completed
 - No persistent memory - stateless operation
 
-## 🔧 Technical Information
+## Technical Information
 
 ### Database Schema
 ```sql
@@ -248,7 +298,7 @@ Every dynamic agent maintains 8 memory types:
 - `context`: Business logic, decisions, roadmap
 - `domain`: Specialized knowledge specific to the module
 
-## 📈 System Benefits
+## System Benefits
 
 ### Context Efficiency
 - **Claude context preserved**: No FLAG details in Claude's window
@@ -267,7 +317,7 @@ Every dynamic agent maintains 8 memory types:
 
 ---
 
-## 🎯 Next Steps
+## Next Steps
 
 1. Complete algorithm implementation in `@flags-agent`
 2. Finalize dynamic agent prompt templates

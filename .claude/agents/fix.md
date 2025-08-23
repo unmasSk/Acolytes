@@ -8,6 +8,7 @@ Once all agents/prompts are created and individually audited, run a final sweep 
 - [ ] Remove all emojis from agent documents
 - [ ] Ensure consistent markdown formatting
 - [ ] Fix any encoding issues
+- revisar si las comillas acaban bien en todos los documentos, veo muchos errores de triples comillas
 
 ### 2. Technical Validation
 - [ ] Verify all variables are properly defined
@@ -19,6 +20,7 @@ Once all agents/prompts are created and individually audited, run a final sweep 
 - revisar que cada angente pueda hacer cosas, pero no anticiparse, como VUE que tiene -precommit, para que quiere precommit si el no va a commitear. cosas asi.
 - si hay timers, es decir como roadmpas o chronograma quitarlos.
 - revisar que todos tienes las flags correctas, no la version resumida.
+- OJO cambiar en todos FLAGS NUEVAS
 
 -instalar pupeeteer
 

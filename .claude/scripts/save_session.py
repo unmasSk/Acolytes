@@ -13,6 +13,59 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
+
+def compute_quality_score(accomplishments, errors, breakthrough=None, decisions=None, bugs_fixed=None):
+    """
+    Compute session quality score based on content and outcomes.
+    
+    Args:
+        accomplishments (list): List of accomplishment strings
+        errors (list): List of error strings  
+        breakthrough (str, optional): Breakthrough moment text
+        decisions (list, optional): List of decision strings
+        bugs_fixed (list, optional): List of bug fix strings
+        
+    Returns:
+        int: Quality score from 1-10
+        
+    Scoring System:
+        - Base score: 5 (neutral starting point)
+        - Accomplishments: +1 to +3 points (capped at 3 max)
+        - Errors: -1 to -2 points (capped at 2 max)
+        - Breakthrough: +1 point if substantial content (>30 chars)
+        - Rich content: +1 point if total session content >500 chars
+        - Final range: 1-10 (clamped to prevent overflow)
+    """
+    score = 5  # neutral base
+    
+    # Accomplishments contribution (max +3)
+    score += min(3, len(accomplishments))
+    
+    # Errors penalty (max -2)
+    score -= min(2, len(errors))
+    
+    # Breakthrough bonus (+1 if substantial)
+    if breakthrough and len(breakthrough) > 30:
+        score += 1
+    
+    # Rich content bonus - include all content types
+    total_content_length = 0
+    total_content_length += sum(len(str(x)) for x in accomplishments)
+    total_content_length += len(breakthrough or "")
+    
+    if decisions:
+        total_content_length += sum(len(str(x)) for x in decisions)
+    
+    if bugs_fixed:
+        total_content_length += sum(len(str(x)) for x in bugs_fixed)
+    
+    if total_content_length > 500:
+        score += 1  # rich content bonus
+    
+    # Clamp to valid range [1, 10]
+    return max(1, min(10, score))
+
+
 def backup_database():
     """Create database backup with timestamp and maintain max 10 files"""
     try:
@@ -139,22 +192,14 @@ def save_to_database(session_data, session_text, message_text):
         if len(conversation_flow) > 5000:
             raise Exception("conversation_flow too long (>5000 chars)")
         
-        # Calculate quality score (simplified)
-        # Scoring System Documentation:
-        # Base score: 5 (neutral starting point)
-        # Accomplishments: +1 to +3 points (capped at 3 accomplishments max)
-        # Errors: -1 to -2 points (capped at 2 errors max)
-        # Breakthrough: +1 point if substantial content (>30 chars)
-        # Rich content: +1 point if total session content >500 chars
-        # Final range: 1-10 (clamped to prevent overflow)
-        score = 5  # neutral base
-        score += min(3, len(accomplishments))  # +1-3 for accomplishments
-        score -= min(2, len(errors))  # -1-2 for errors  
-        if breakthrough and len(breakthrough) > 30:
-            score += 1  # breakthrough bonus
-        if sum(len(str(x)) for x in accomplishments) + len(breakthrough) > 500:
-            score += 1  # rich content
-        quality_score = max(1, min(10, score))
+        # Calculate quality score using extracted pure function
+        quality_score = compute_quality_score(
+            accomplishments=accomplishments,
+            errors=errors, 
+            breakthrough=breakthrough,
+            decisions=decisions,
+            bugs_fixed=bugs_fixed
+        )
         
         # Save to database
         conn = sqlite3.connect(".claude/memory/project.db")
@@ -162,18 +207,72 @@ def save_to_database(session_data, session_text, message_text):
         
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
         
-        # Update session
-        cursor.execute("""
-            UPDATE sessions SET
-                accomplishments = ?, decisions = ?, bugs_fixed = ?, errors_encountered = ?,
-                breakthrough_moment = ?, next_session_priority = ?, quality_score = ?, ended_at = ?
-            WHERE id = ?
-        """, (
-            json.dumps(accomplishments), json.dumps(decisions), 
-            json.dumps(bugs_fixed), json.dumps(errors),
-            breakthrough, next_priority, quality_score, timestamp,
-            session_data['session_id']
-        ))
+        # Check if quality_score column exists and add if missing
+        def ensure_quality_score_column():
+            try:
+                # Check table schema
+                cursor.execute("PRAGMA table_info(sessions)")
+                columns = [col[1] for col in cursor.fetchall()]
+                
+                if 'quality_score' not in columns:
+                    # Add column if missing
+                    cursor.execute("ALTER TABLE sessions ADD COLUMN quality_score INTEGER DEFAULT NULL")
+                    conn.commit()
+                    print("Added quality_score column to sessions table")
+                    
+            except sqlite3.OperationalError as e:
+                print(f"Warning: Could not add quality_score column: {e}")
+                return False
+            return True
+        
+        # Ensure column exists
+        has_quality_score = ensure_quality_score_column()
+        
+        # Update session with defensive column handling
+        try:
+            if has_quality_score:
+                # Full update with quality_score
+                cursor.execute("""
+                    UPDATE sessions SET
+                        accomplishments = ?, decisions = ?, bugs_fixed = ?, errors_encountered = ?,
+                        breakthrough_moment = ?, next_session_priority = ?, quality_score = ?, ended_at = ?
+                    WHERE id = ?
+                """, (
+                    json.dumps(accomplishments), json.dumps(decisions), 
+                    json.dumps(bugs_fixed), json.dumps(errors),
+                    breakthrough, next_priority, quality_score, timestamp,
+                    session_data['session_id']
+                ))
+            else:
+                # Fallback update without quality_score
+                cursor.execute("""
+                    UPDATE sessions SET
+                        accomplishments = ?, decisions = ?, bugs_fixed = ?, errors_encountered = ?,
+                        breakthrough_moment = ?, next_session_priority = ?, ended_at = ?
+                    WHERE id = ?
+                """, (
+                    json.dumps(accomplishments), json.dumps(decisions), 
+                    json.dumps(bugs_fixed), json.dumps(errors),
+                    breakthrough, next_priority, timestamp,
+                    session_data['session_id']
+                ))
+                
+        except sqlite3.OperationalError as e:
+            # Final fallback - retry without quality_score if UPDATE fails
+            print(f"Warning: Full update failed, retrying without quality_score: {e}")
+            cursor.execute("""
+                UPDATE sessions SET
+                    accomplishments = ?, decisions = ?, bugs_fixed = ?, errors_encountered = ?,
+                    breakthrough_moment = ?, next_session_priority = ?, ended_at = ?
+                WHERE id = ?
+            """, (
+                json.dumps(accomplishments), json.dumps(decisions), 
+                json.dumps(bugs_fixed), json.dumps(errors),
+                breakthrough, next_priority, timestamp,
+                session_data['session_id']
+            ))
+            # Set quality_score to None for return value consistency
+            quality_score = None
         
         # Insert message
         cursor.execute("""

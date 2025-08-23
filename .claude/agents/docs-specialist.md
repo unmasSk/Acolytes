@@ -49,26 +49,26 @@ uv run python ~/.claude/scripts/agent_db.py get-agent-flags "@docs-specialist"
 # EXPLICIT DECISION LOGIC - No ambiguity
 flags = get_agent_flags("@docs-specialist")
 
-if flags.empty:
+if not flags or len(flags) == 0:
     proceed_with_primary_request()
 else:
     # Process by priority: critical → high → medium → low
     for flag in flags:
-        if flag.locked == True:
+        if flag.locked is True:
             # Another agent handling or awaiting response
             skip_flag()
 
-        elif flag.change_description.contains("API documentation"):
+        elif "api documentation" in flag.change_description.lower():
             # API endpoints changed, docs need updates
             update_api_documentation()
             complete_flag(flag.id)
 
-        elif flag.change_description.contains("new feature"):
+        elif "new feature" in flag.change_description.lower():
             # New features need documentation
             update_feature_documentation()
             complete_flag(flag.id)
 
-        elif flag.change_description.contains("breaking change"):
+        elif "breaking change" in flag.change_description.lower():
             # Breaking changes need changelog and migration guides
             update_changelog_and_migration_guides()
             complete_flag(flag.id)

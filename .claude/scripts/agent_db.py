@@ -13,6 +13,7 @@ Commands:
   execute [sql]            - Run write operation
   create-flag              - Create flag targeting specific agent (action_required >= 100 chars, change_description >= 50 chars)
   get_flags [target_agent] - Get pending flags for specific agent
+  search-agents [query]    - Search agents semantically by keywords/capabilities (e.g., "JWT authentication")
 """
 import sqlite3
 import json
@@ -683,6 +684,133 @@ def unlock_flag(flag_id):
     finally:
         conn.close()
 
+def search_agents_semantic(search_query, limit=5):
+    """Search agents using semantic matching with keywords, capabilities and description
+    
+    Args:
+        search_query: Text to search for (e.g., "JWT authentication implementation")
+        limit: Maximum number of results to return (default: 5)
+    
+    Returns:
+        JSON with ranked list of matching agents with scores and reasons
+    """
+    if not search_query or not search_query.strip():
+        return json.dumps({"error": "search_query is required and cannot be empty"})
+    
+    query_lower = search_query.lower().strip()
+    query_words = set(query_lower.split())
+    
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    
+    # Get all active agents with their searchable content
+    cursor = conn.execute("""
+        SELECT name, type, module, sub_module, description, 
+               capabilities, routing_keywords
+        FROM agents_catalog 
+        WHERE status = 'active'
+    """)
+    
+    agents = cursor.fetchall()
+    conn.close()
+    
+    if not agents:
+        return json.dumps({"error": "No active agents found in catalog"})
+    
+    results = []
+    
+    for agent in agents:
+        score = 0
+        reasons = []
+        
+        # Parse JSON fields safely
+        try:
+            keywords = json.loads(agent['routing_keywords'] or '[]')
+            capabilities = json.loads(agent['capabilities'] or '[]')
+        except (json.JSONDecodeError, TypeError):
+            keywords = []
+            capabilities = []
+        
+        # Convert to strings for matching
+        keywords_text = ' '.join(keywords).lower() if keywords else ''
+        capabilities_text = ' '.join(capabilities).lower() if capabilities else ''
+        description_text = agent['description'].lower() if agent['description'] else ''
+        module_text = f"{agent['module']} {agent['sub_module'] or ''}".lower()
+        
+        # Score calculation with different weights
+        
+        # 1. Exact keyword matches (highest weight: 50 points each)
+        for keyword in keywords:
+            if isinstance(keyword, str) and keyword.lower() in query_lower:
+                score += 50
+                reasons.append(f"exact keyword: '{keyword}'")
+        
+        # 2. Partial keyword word matches (40 points each)
+        keyword_words = set(keywords_text.split())
+        matching_keyword_words = query_words.intersection(keyword_words)
+        for word in matching_keyword_words:
+            score += 40
+            reasons.append(f"keyword match: '{word}'")
+        
+        # 3. Capability matches (30 points each)
+        capability_words = set(capabilities_text.split())
+        matching_capability_words = query_words.intersection(capability_words)
+        for word in matching_capability_words:
+            score += 30
+            reasons.append(f"capability: '{word}'")
+        
+        # 4. Description word matches (20 points each)
+        description_words = set(description_text.split())
+        matching_description_words = query_words.intersection(description_words)
+        for word in matching_description_words:
+            score += 20
+            reasons.append(f"description: '{word}'")
+        
+        # 5. Module/sub_module matches (15 points each)
+        module_words = set(module_text.split())
+        matching_module_words = query_words.intersection(module_words)
+        for word in matching_module_words:
+            if word:  # Skip empty strings
+                score += 15
+                reasons.append(f"module: '{word}'")
+        
+        # 6. Bonus for multiple criteria matches
+        criteria_matched = sum([
+            bool(matching_keyword_words),
+            bool(matching_capability_words), 
+            bool(matching_description_words),
+            bool(matching_module_words)
+        ])
+        if criteria_matched >= 2:
+            score += 25  # Bonus for multi-criteria match
+            reasons.append("multi-criteria match bonus")
+        
+        # Only include agents with non-zero scores
+        if score > 0:
+            results.append({
+                "name": agent['name'],
+                "type": agent['type'],
+                "module": agent['module'],
+                "sub_module": agent['sub_module'],
+                "description": agent['description'],
+                "score": score,
+                "reasons": reasons[:3]  # Limit to top 3 reasons for readability
+            })
+    
+    # Sort by score (descending) and limit results
+    results.sort(key=lambda x: x['score'], reverse=True)
+    results = results[:limit]
+    
+    # Add ranking information
+    for i, result in enumerate(results, 1):
+        result['rank'] = i
+    
+    return json.dumps({
+        "query": search_query,
+        "total_matches": len(results),
+        "results": results
+    }, indent=2)
+
 def cleanup_orphaned_jobs():
     """Clean up jobs that should be completed but are still marked as active"""
     conn = sqlite3.connect(DB_PATH)
@@ -776,7 +904,7 @@ if __name__ == "__main__":
         print("Usage: python agent_db.py [command] [args...]")
         print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
         print("TODO Commands: create-todo, update-todo-status, get-todos, create-todo-from-flag")
-        print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag")
+        print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
         print("INTERACTIONS: add-interaction")
         print("MAINTENANCE Commands: cleanup-jobs")
         sys.exit(1)
@@ -1025,6 +1153,21 @@ if __name__ == "__main__":
                 sys.exit(1)
             print(unlock_flag(flag_id))
         
+        elif command == "search-agents":
+            if len(sys.argv) < 3:
+                print("Usage: python agent_db.py search-agents [search_query] [limit]")
+                print("Example: python agent_db.py search-agents 'JWT authentication implementation' 5")
+                sys.exit(1)
+            search_query = sys.argv[2]
+            limit = 5  # default
+            if len(sys.argv) > 3:
+                try:
+                    limit = int(sys.argv[3])
+                except ValueError:
+                    print(json.dumps({"error": "limit must be an integer"}))
+                    sys.exit(1)
+            print(search_agents_semantic(search_query, limit))
+        
         elif command == "list-agents":
             print(list_available_agents())
         
@@ -1063,7 +1206,7 @@ if __name__ == "__main__":
             print(f"Unknown command: {command}")
             print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
             print("TODO Commands: create-todo, update-todo-status, get-todos, create-todo-from-flag")
-            print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag")
+            print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
             sys.exit(1)
             
     except Exception as e:

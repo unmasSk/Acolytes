@@ -23,6 +23,52 @@ FLAGS are asynchronous coordination messages between agents stored in an SQLite 
 - Authentication → `@service.auth` or `@auth-agent`
 - Security concerns → `@security.{type}` (audit, compliance, review)
 
+### Semantic Agent Search - Find the RIGHT Specialist
+
+**BEFORE creating any FLAG**, use semantic search to find the perfect specialist:
+
+```bash
+# Find the right agent for your task
+uv run python ~/.claude/scripts/agent_db.py search-agents "JWT authentication implementation" 3
+
+# Example output:
+# {
+#   "results": [
+#     {"name": "@service.auth", "score": 185, "rank": 1, "reasons": ["exact keyword: JWT", "keyword match: authentication"]},
+#     {"name": "@backend.nodejs", "score": 120, "rank": 2, "reasons": ["capability: JWT", "description: implementation"]}
+#   ]
+# }
+```
+
+**How it works:**
+
+- **Keywords match** (50 pts): Exact matches from agent routing_keywords
+- **Capabilities match** (30 pts): Technical capabilities the agent has
+- **Description match** (20 pts): Words from agent description
+- **Multi-criteria bonus** (25 pts): When agent matches multiple categories
+
+**Usage examples:**
+
+```bash
+# Authentication tasks
+uv run python ~/.claude/scripts/agent_db.py search-agents "OAuth JWT token implementation"
+→ Result: @service.auth (score: 195)
+
+# Database optimization
+uv run python ~/.claude/scripts/agent_db.py search-agents "PostgreSQL query performance tuning"
+→ Result: @database.postgres (score: 165)
+
+# Frontend component work
+uv run python ~/.claude/scripts/agent_db.py search-agents "React TypeScript components state management"
+→ Result: @frontend.react (score: 180)
+
+# DevOps and deployment
+uv run python ~/.claude/scripts/agent_db.py search-agents "Docker Kubernetes deployment pipeline"
+→ Result: @ops.containers (score: 170)
+```
+
+**CRITICAL:** Always search first, then create FLAG to the top-ranked specialist. This eliminates routing errors and ensures work goes to the RIGHT expert.
+
 ### On Invocation - ALWAYS Check FLAGS First
 
 ```bash
@@ -144,16 +190,23 @@ uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT
 ### Find Correct Target Agent
 
 ```bash
-# BEFORE creating FLAG - find the right specialist
+# RECOMMENDED: Use semantic search
+uv run python ~/.claude/scripts/agent_db.py search-agents "your task description" 3
+
+# Examples:
+# Database changes → search-agents "PostgreSQL schema migration"
+# API changes → search-agents "REST API endpoints Node.js"
+# Auth changes → search-agents "JWT authentication implementation"
+# Frontend changes → search-agents "React components TypeScript"
+```
+
+**Alternative method:**
+
+```bash
+# Manual SQL query (less precise)
 uv run python ~/.claude/scripts/agent_db.py query \
   "SELECT name, module, description, capabilities \
    FROM agents_catalog WHERE status='active' AND module LIKE '%[domain]%'"
-
-# Examples with expected agent handles:
-# Database changes → @database.postgres, @database.redis, @database.mongodb
-# API changes → @backend.api, @backend.nodejs, @backend.laravel
-# Auth changes → @service.auth, @auth-agent (dynamic)
-# Frontend changes → @frontend.react, @frontend.vue, @frontend.angular
 ```
 
 ### Create FLAG When Your Changes Affect Others
@@ -240,10 +293,13 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 
 ### CRITICAL RULES
 
-1. FLAGS are the ONLY way agents communicate
-2. No direct agent-to-agent calls
-3. Always process FLAGS before new work
-4. Complete or lock every FLAG (never leave hanging)
-5. Create FLAGS for ANY change affecting other modules
-6. Use related_files for better coordination
-7. Use chain_origin_id to track cascading changes
+1. **Use semantic search first:** Always `search-agents` before creating FLAGS
+2. FLAGS are the ONLY way agents communicate
+3. No direct agent-to-agent calls
+4. Always process FLAGS before new work
+5. Complete or lock every FLAG (never leave hanging)
+6. Create FLAGS for ANY change affecting other modules
+7. Use related_files for better coordination
+8. Use chain_origin_id to track cascading changes
+
+**Rule #1 eliminates routing errors:** Instead of guessing which agent to target, let the system find the perfect specialist with semantic matching.

@@ -19,7 +19,7 @@ def spawn_claude(context_type, prompt, agent_name=None):
     """
     
     # Project directory
-    project_dir = Path(__file__).parent.parent.parent
+    project_dir = Path(__file__).parent
     
     # Context templates for different specializations
     contexts = {
@@ -91,20 +91,29 @@ Ready to execute your specialized task!
 """
 
     try:
-        # Command to spawn new PowerShell with Claude
-        cmd = [
-            "powershell", 
-            "-NoExit", 
-            "-Command", 
-            f"cd '{project_dir}'; claude \"{full_prompt.replace('\"', '`\"')}\""
-        ]
+        # Work DIRECTLY in project directory (no isolation)
+        # Create the batch file with --print mode for testing
+        batch_content = f'''@echo off
+cd /d "{project_dir}"
+echo === ARTHUR AGENT TEST ===
+echo Working in: %CD%
+echo.
+claude --print "Your name is ARTHUR. You are a specialized agent. Your tasks: 1) Fix all typos in mixed-test-file.md following @typo-fixer rules from .claude/agents/typo-fixer.md, 2) If you detect Python code with issues, create a FLAG for @backend.python agent using MCP SQLite tools, 3) Answer who you are and save your response to arthur-response.md in the root. Do all 3 tasks and report results." --dangerously-skip-permissions --output-format json
+echo.
+echo === ARTHUR COMPLETE ===
+pause
+'''
         
-        # Spawn the process
+        # Write batch file in project directory
+        batch_file = project_dir / f"direct_claude_{context_type}.bat"
+        with open(batch_file, 'w') as f:
+            f.write(batch_content)
+        
+        # Execute batch file in new window (INTERACTIVE MODE)
         process = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
+            f'start "INTERACTIVE Claude {context_type}" "{batch_file.absolute()}"',
+            shell=True,
+            cwd=str(project_dir)
         )
         
         print(f"[OK] Spawned {context['role']} (PID: {process.pid})")

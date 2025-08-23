@@ -4,14 +4,10 @@
 # dependencies = []
 # ///
 
-import argparse
 import json
 import os
 import sys
-import random
-import subprocess
 from pathlib import Path
-from datetime import datetime
 
 
 def generate_markdown_transcript(conversation_file, session_id):
@@ -59,7 +55,7 @@ def generate_markdown_transcript(conversation_file, session_id):
             
             if msg_type == "user":
                 username = os.getenv("USERNAME", "Usuario")  # Get Windows username
-                md_content.append(f"<div style=\"text-align: right;\">")
+                md_content.append("<div style=\"text-align: right;\">")
                 md_content.append("")
                 md_content.append(f"### <span style=\"color: #007bff; text-transform: uppercase;\">♾️ {username}</span>{time_part}")
                 md_content.append("")
@@ -103,20 +99,11 @@ def ensure_session_log_dir(project_root=None):
 
 def main():
     try:
-        # Parse command line arguments
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--chat", action="store_true", help="Copy transcript to chat.json"
-        )
-        args = parser.parse_args()
-
         # Read JSON input from stdin
         stdin_content = sys.stdin.read().strip()
         input_data = json.loads(stdin_content)
 
         # Extract required fields
-        claude_session_id = input_data.get("session_id", "")
-        stop_hook_active = input_data.get("stop_hook_active", False)
         project_cwd = input_data.get("cwd", "")
 
         # Get OUR session ID from SQLite
