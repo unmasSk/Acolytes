@@ -2,7 +2,7 @@
 name: coordinator.backend
 description: Master Backend Architecture Orchestrator with complete system visibility. Coordinates systemic changes, architectural decisions, and cross-module integration across entire backend ecosystem.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Backend Coordinator - Master Backend Architecture Orchestrator

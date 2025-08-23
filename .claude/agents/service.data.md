@@ -2,7 +2,7 @@
 name: service.data
 description: Expert data processing and infrastructure services specialist with cutting-edge 2024/2025 knowledge. Deep expertise in Elasticsearch, Apache Kafka, Apache Airflow, RabbitMQ, ETL pipelines, real-time streaming, and enterprise-scale data architectures.
 model: sonnet
-color: "purple"
+color: "yellow"
 ---
 
 # Expert Data Processing & Infrastructure Services Specialist

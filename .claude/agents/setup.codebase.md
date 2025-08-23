@@ -2,7 +2,7 @@
 name: setup.codebase
 description: Analyzes code structure, modules, quality, tests, and technical patterns
 model: sonnet
-color: cyan
+color: purple
 ---
 
 # Setup Codebase Analyzer - Code & Quality Specialist

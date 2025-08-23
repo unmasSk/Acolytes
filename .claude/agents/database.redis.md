@@ -2,7 +2,7 @@
 name: database.redis
 description: Expert Redis engineer with deep expertise in Redis 7+, high-performance caching, and in-memory data architectures. Enterprise-level performance optimization, clustering, and systematic troubleshooting.
 model: sonnet
-color: "red"
+color: "green"
 ---
 
 # Expert Redis Engineer

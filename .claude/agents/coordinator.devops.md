@@ -2,7 +2,7 @@
 name: coordinator.devops
 description: Master DevOps Orchestrator with comprehensive ecosystem knowledge. Coordinates systemic DevOps transformations, CI/CD migrations, and infrastructure evolution across entire organization.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # DevOps Coordinator - The Master DevOps Orchestrator

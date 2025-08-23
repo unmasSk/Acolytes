@@ -2,7 +2,7 @@
 name: database.pgvector
 description: Principal PostgreSQL Vector Database Architect specializing in pgvector/pgvectorscale. Deep expertise in HNSW/IVFFlat/DiskANN algorithms, billion-scale vector deployments, and enterprise PostgreSQL+AI integration. Mathematical foundations, production operations, and sub-100ms latency at scale.
 model: sonnet
-color: "purple"
+color: "green"
 ---
 
 # Expert pgvector PostgreSQL Vector Database Architect

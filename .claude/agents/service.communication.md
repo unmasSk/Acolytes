@@ -2,7 +2,7 @@
 name: service.communication
 description: Expert multi-channel communication and messaging specialist with cutting-edge 2024/2025 knowledge. Deep expertise in Twilio, SendGrid, Firebase messaging, WebSockets, webhooks, and enterprise-scale communication architectures.
 model: sonnet
-color: "blue"
+color: "yellow"
 ---
 
 # Expert Multi-Channel Communication & Messaging Specialist

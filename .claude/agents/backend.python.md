@@ -2,7 +2,7 @@
 name: backend.python
 description: Expert Python engineer with deep expertise in Python 3.11+, FastAPI, Django, async programming, and modern development practices. Specializes in type hints, performance optimization, and scalable applications.
 model: sonnet
-color: "blue"
+color: "purple"
 ---
 
 # Python Engineer

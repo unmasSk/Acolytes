@@ -5,12 +5,12 @@ description: 🚀 Setup project with ClaudeSquad agents. Params: --update
 
 ## ⚡ MANDATORY COMMAND FLOW
 
-This hybrid version merges the **technical depth and safeguards** of the original specification with the **clarity and structure** of the newer documentation, while retaining all _immutable rules_ and best practices from Claude Code.
+This system provides intelligent project setup with ClaudeSquad's 57 specialized agents, supporting both existing projects and new project creation from expert consultation.
 
 ## Usage
 
 ```
-/setup         # Initial complete setup for new projects
+/setup          # Initial complete setup for new projects OR existing projects
 /setup --update # Update existing setup (new modules, refresh agents)
 ```
 
@@ -18,262 +18,197 @@ This hybrid version merges the **technical depth and safeguards** of the origina
 
 ### ⚠️ **IMMUTABLE RULES – NO EXCEPTIONS**
 
-1. **NEVER** analyze without creating agents
-2. **ALWAYS** invoke 4 setup agents in REAL PARALLEL (multiple Task calls)
-3. **ALWAYS** create ALL required files and memory
-4. **NEVER** ask whether to create — just create (exception: explicit language preference prompts in Phase 3)
-5. **ALWAYS** use multiple Task calls for agent creation
+1. **NEVER** analyze without creating documentation
+2. **ALWAYS** create Database & MCP first (Phase 1)
+3. **ALWAYS** create ALL required files and documentation
+4. **NEVER** ask whether to create — just create
+5. **ALL** documentation, code, comments, SQLite in English
+6. **ALWAYS** use multiple Task calls for parallel execution
 
 ---
 
-## 📋 FOR EXISTING PROJECTS
+## 🎯 UNIFIED FLOW FOR BOTH PROJECT TYPES
 
-The following 8 phases apply to existing projects with code already in place:
+### 1️⃣ **PHASE 1: ENVIRONMENT & DATABASE SETUP**
 
-### 1️⃣ **PHASE 1: ENVIRONMENT VERIFICATION**
-
-Before any project analysis begins, the system validates your development environment.
+**Universal setup regardless of project type:**
 
 ```yaml
-Checking prerequisites:
-  - Git version and configuration
-  - Node.js/npm/yarn versions
-  - PHP/Composer (if applicable)
-  - Python/pip (if applicable)
-  - Docker/Docker Compose
-  - IDE/Editor configuration
-  - Operating system details
-  - File permissions
-  - Network connectivity
-
-If missing:
-  - List missing tools
-  - Provide installation commands
-  - Suggest alternative solutions
-```
-
----
-
-### 2️⃣ **PHASE 2: PARALLEL ANALYSIS**
-
-Execute **REAL PARALLEL** analysis using **4 specialized agents**:
-
-```yaml
-INVOCATION:
-  mode: REAL PARALLEL
-  agents:
-    - setup-context
-    - setup-codebase
-    - setup-infrastructure
-    - setup-environment
-  execution: MULTIPLE TASK CALLS IN ONE MESSAGE
-  instruction: "Analyze this project IN PARALLEL using 4 specialized agents"
-```
-
-**Agents and Purpose:**
-
-| Agent                | Purpose                                         |
-| -------------------- | ----------------------------------------------- |
-| setup-context        | Project purpose, architecture, decisions        |
-| setup-codebase       | Code structure, modules, patterns, quality      |
-| setup-infrastructure | Deployment, databases, CI/CD, external services |
-| setup-environment    | Tools, versions, system capabilities            |
-
-✅ **Always** run these in parallel — never sequentially.  
-⚠️ Limit: 10 simultaneous Task calls.
-
----
-
-### 3️⃣ **PHASE 3: LANGUAGE CONFIGURATION**
-
-**ALWAYS ASK USER BEFORE CREATING CLAUDE.MD:**
-
-- User interaction language
-- Private documentation language
-- Public documentation language
-- Comments and docstrings language
-
-### 4️⃣ **PHASE 4: DATABASE & MCP SETUP**
-
-```yaml
+ENVIRONMENT_CHECK:
+  - python --version (3.8+ required)
+  - git --version (2.0+ required)
+  - node --version (18+ required, check nvm)
+  - uv --version (package manager)
+  
 DATABASE_AND_MCP:
-  executor: Claude (main)
-  purpose: Configure MCP and create SQLite database
-
-STEPS:
-  1. Configure MCP SQLite FIRST:
+  1. Configure MCP SQLite:
     - Run: python .claude/scripts/setup_mcp.py
-    - This will create project.db if not exists
+    - Create project.db if not exists
     - Configure MCP to point to project.db
     - User may need to restart Claude Code
-
+    
   2. Initialize database schema:
     - Run: sqlite3 .claude/memory/project.db < .claude/scripts/init_db.sql
     - Create initial job record with status='active'
-
-  3. Pre-create agent entries and memories:
-    For each module detected in Phase 2:
-      - Insert agent record in 'agents' table
-      - Insert 8 empty memory records (one per type)
-      - Use python .claude/scripts/agent_db.py for insertions
-
-  Example:
-    Modules detected: auth, payments, notifications
-    Actions:
-      - Create project.db with all tables
-      - Configure MCP to use project.db
-      - Create 3 agents in DB
-      - Create 24 memory records (3 agents × 8 memories)
-```
-
-**Why this phase:**
-
-- Database AND MCP ready before agents need them
-- No configuration issues later
-- Everything prepared for parallel agent work
-
----
-
-### 5️⃣ **PHASE 5: CLAUDE.MD CREATION**
-
-```yaml
-CLAUDE - HYBRID APPROACH:
-  - Receives information from the four agents
-  - Loads template: .claude/resources/templates/claude-md-template.md
-  - Replaces all {{placeholders}} with actual data:
-    - {{project_name}} → from setup-context agent (fallback: "Unnamed Project")
-    - {{agents}} → list of planned modules from analysis (fallback: "No agents detected")
-    - {{agent_example}} → first agent from planned list (fallback: "@example-agent")
-    - {{first_agent}}, {{second_agent}}, {{third_agent}} → first 3 agents for examples (fallback: "@agent-1", "@agent-2", "@agent-3")
-  - Generates dynamic content from four agents:
-    - Project Identity & Description (setup-context)
-    - Architecture Analysis (setup-infrastructure) 
-    - Technology Stack Details (setup-codebase)
-    - Critical Issues & Solutions (all agents)
-    - Unique Features (setup-context)
-    - Next Priorities (setup-infrastructure)
-  - Inserts dynamic content at: <!-- INSERT: PROJECT_CONTEXT -->
-  - Includes language preferences from Phase 3
-  - Saves to target: PROJECT_ROOT/CLAUDE.md
-  - If any placeholder has no data (e.g., no agents detected), insert a short "No data available" stub to keep the document structurally valid
-```
-
-`CLAUDE.md` includes:
-
-**FIXED SECTIONS (from template):**
-- FLAGS System protocols
-- Agent Selection Protocol (mandatory routing)
-- Multi-Agent Orchestration instructions
-- Standard commands and troubleshooting
-
-**DYNAMIC SECTIONS (from four-agent analysis):**
-- Project-specific architecture
-- Detected critical issues and solutions
-- Technology stack with rationale
-- Unique project features and priorities
-
-**NOTE**: Agent Selection Protocol is now included in the template and will be automatically added to all generated CLAUDE.md files.
-
----
-
-### 6️⃣ **PHASE 6: AGENT CREATION**
-
-```yaml
-INVOCATION:
-  agent: agent-creator
-  mode: REAL PARALLEL – MULTIPLE TASK CALLS
-  purpose: Create agent .md files ONLY (no data insertion)
-  complexity_analysis: MANDATORY before creation
-  tasks:
-    - [Task 1] agent-creator → module-X-agent
-    - [Task 2] agent-creator → module-Y-agent
-    - [Task 3] agent-creator → module-Z-agent
-```
-
-#### Module Complexity Analysis
-**MANDATORY**: Before creating agents, analyze module size and complexity:
-
-- **Simple Module** (≤30 files): Create single agent
-- **Complex Module** (>30 files): Create main agent + specialized sub-agents  
-- **Multi-domain Module**: Create agent per clear sub-domain + main module agent
-
-#### Complex Module Agent Structure
-```bash
-# Example: Large RAG module (>30 files)
-[Task 1] agent-creator → rag-agent               # Main module agent (knows full context)
-[Task 2] agent-creator → rag-embeddings-agent   # Vector processing specialist  
-[Task 3] agent-creator → rag-retrieval-agent    # Search & ranking specialist
-[Task 4] agent-creator → rag-generation-agent   # Response generation specialist
-[Task 5] agent-creator → rag-evaluation-agent   # Quality metrics specialist
-```
-
-**Important Change:**
-
-- agent-creator ONLY creates the .md file
-- Does NOT insert data into database
-- Database structure already exists from Phase 4
-
-Example:
-
-```bash
-"Create these agents in parallel:
-[Task 1] agent-creator → api-agent (create .claude/agents/api-agent.md)
-[Task 2] agent-creator → database-agent (create .claude/agents/database-agent.md)
-[Task 3] agent-creator → frontend-agent (create .claude/agents/frontend-agent.md)
-[Task 4] agent-creator → auth-agent (create .claude/agents/auth-agent.md)"
+    - Create setup_sessions and project_setup tables
+    
+  3. Install missing MCP servers as needed
 ```
 
 ---
 
-### 7️⃣ **PHASE 7: DEEP MODULE ANALYSIS**
+### 2️⃣ **PHASE 2: ANALYSIS & DOCUMENTATION**
+
+**Different approaches based on project type:**
+
+#### **FOR EXISTING PROJECTS**
 
 ```yaml
-DEEP_ANALYSIS:
-  executor: All dynamic agents IN PARALLEL
-  purpose: Each agent analyzes its module and fills its memories
+PARALLEL_ANALYSIS:
+  mode: REAL PARALLEL
+  agents:
+    - setup.codebase
+    - setup.context
+    - setup.infrastructure  
+    - setup.environment
+  execution: MULTIPLE TASK CALLS IN ONE MESSAGE
+  
+DOCUMENTATION_CREATION:
+  location: .claude/project/
+  files:
+    - vision.md (project purpose and goals)
+    - architecture.md (technical decisions and structure)
+    - roadmap.md (development phases - initially empty template)
+    - technical-decisions.md (rationale for tech choices)
+    - team-preferences.md (coding standards and practices)
+    - project-context.md (specific project details)
+  format: English markdown with consistent structure
+```
 
-INVOCATION:
-  mode: REAL PARALLEL – MULTIPLE TASK CALLS
-  instruction: "Analyze your module deeply and fill your 8 memories in the database"
+#### **FOR NEW PROJECTS**
 
-  tasks:
-    - [Task 1] api-agent → Deep analyze /src/api, fill 8 memories
-    - [Task 2] database-agent → Deep analyze /src/database, fill 8 memories
-    - [Task 3] frontend-agent → Deep analyze /src/frontend, fill 8 memories
-    - [Task 4] auth-agent → Deep analyze /src/auth, fill 8 memories
-    - [Task 5] payments-agent → Deep analyze /src/payments, fill 8 memories
-    - [Task 6] notifications-agent → Deep analyze /src/notifications, fill 8 memories
+```yaml
+REQUIREMENTS_INTERVIEW:
+  rounds: 14 areas of questions
+  persistence: SQLite project_setup table
+  areas:
+    1. Business & Domain (4 questions)
+    2. Technical Architecture (4 questions)
+    3. Database & Data (4 questions)
+    4. Security & Compliance (4 questions)
+    5. Infrastructure & Deployment (4 questions)
+    6. CI/CD & DevOps (4 questions)
+    7. Monitoring & Observability (4 questions)
+    8. Testing Strategy (4 questions)
+    9. Documentation & Knowledge (4 questions)
+    10. Accessibility & I18N (4 questions)
+    11. Team & Collaboration (4 questions)
+    12. Development Environment (4 questions)
+    13. Language & Communication (4 questions)
+    14. User Experience Level (4 questions)
 
-What each agent does:
-  1. Reads EVERY file in its module
-  2. Detects all patterns, conventions, anti-patterns
-  3. Maps all dependencies and connections
-  4. Analyzes code quality, tests, performance
-  5. Understands business context and decisions
-  6. Updates its 8 memory records with findings:
-     - UPDATE agent_memory SET content = {analysis} WHERE agent_id = X AND memory_type = 'knowledge'
-     - UPDATE agent_memory SET content = {analysis} WHERE agent_id = X AND memory_type = 'structure'
-     - ... (for all 8 types)
+SPECIALIST_CONSULTATION:
+  process: Claude analyzes all answers from SQLite
+  action: Consult relevant specialists based on responses
+  examples:
+    - "React + PostgreSQL + Auth0" → @frontend.react, @database.postgres, @service.auth
+    - "Vue + MongoDB + Stripe" → @frontend.vue, @database.mongodb, @business.payment
+  storage: Save specialist recommendations in project_setup table
 
-Benefits:
-  - TRUE EXPERTS: Each agent becomes the real expert of its module
-  - PARALLEL PROCESSING: All modules analyzed simultaneously
-  - DEEP KNOWLEDGE: Agents do exhaustive analysis, not superficial
-  - PERSISTENT MEMORY: All knowledge stored in SQLite for future use
+PLAN_STRATEGY_ORGANIZATION:
+  agent: @plan.strategy
+  input: All interview answers + specialist recommendations
+  output:
+    - Complete project plan with phases and timeline
+    - Same 6 documentation files in .claude/project/
+    - Jobs created in SQLite database
+    - Roadmap.md fully populated with executable phases
 ```
 
 ---
 
-### 8️⃣ **PHASE 8: FINALIZATION**
+### 3️⃣ **PHASE 3: CLAUDE.MD CREATION**
 
 ```yaml
-CLAUDE:
-  - Confirms all agents created and analyzed
-  - Confirms database populated with deep knowledge
-  - Presents system summary to user
-  - Lists available agents with their expertise
-  - Shows current system state
-  - Reports total memories stored (agents × 8)
+CLAUDE_MD_GENERATION:
+  source: Aggregated information from Phase 2
+  template: .claude/resources/templates/claude-md-template.md
+  placeholders:
+    - {{project_name}} → from analysis/interview
+    - {{project_description}} → from vision.md
+    - {{tech_stack}} → from architecture.md
+    - {{agents}} → planned dynamic agents
+  dynamic_sections:
+    - Project-specific architecture
+    - Detected/planned critical issues
+    - Technology stack with rationale
+    - Reference to .claude/project/ documentation
+```
+
+---
+
+### 4️⃣ **PHASE 4: JOBS & AGENT CREATION**
+
+#### **FOR EXISTING PROJECTS**
+
+```yaml
+DYNAMIC_AGENT_CREATION:
+  - Create project-specific agents based on detected modules
+  - Multiple Task calls in parallel
+  - Example: api-agent, auth-agent, frontend-agent
+  - NO job creation (jobs created when agents start working)
+
+AGENT_STRUCTURE:
+  location: .claude/agents/[module]-agent.md
+  database: Pre-create agent entries and 8 memory records per agent
+```
+
+#### **FOR NEW PROJECTS**
+
+```yaml
+PLAN_EXECUTION:
+  - @plan.strategy already created jobs in SQLite
+  - Create dynamic agents based on planned architecture
+  - Agent creation guided by plan.strategy recommendations
+  
+INITIAL_SCAFFOLDING:
+  - Generate project folder structure
+  - Create initial configuration files
+  - Set up development environment templates
+```
+
+---
+
+### 5️⃣ **PHASE 5: DEEP ANALYSIS & INITIALIZATION**
+
+```yaml
+DYNAMIC_AGENT_ACTIVATION:
+  existing_projects:
+    - All dynamic agents perform deep module analysis
+    - Fill their 8 memory records with comprehensive knowledge
+    - Update agent_memory table in SQLite
+    
+  new_projects:
+    - Dynamic agents create their initial memory structures
+    - Set up monitoring for their planned modules
+    - Prepare for development phase execution
+```
+
+---
+
+### 6️⃣ **PHASE 6: FINALIZATION**
+
+```yaml
+COMPLETION_SUMMARY:
+  - Confirm all documentation created in .claude/project/
+  - Verify SQLite database populated with agents and memories
+  - Present system summary to user
+  - List available agents with their expertise areas
+  - Show next steps for development
+  
+NEXT_STEPS:
+  existing_projects: "Ready for development with full ClaudeSquad support"
+  new_projects: "Ready to begin development following the generated roadmap"
 ```
 
 ---
@@ -282,342 +217,29 @@ CLAUDE:
 
 ```
 [PROJECT_ROOT]/
-├── .claude/                      # IN THE ANALYZED PROJECT
-│   ├── CLAUDE.md                 # Project instructions
-│   ├── agents/                   # Dynamic agents
-│   │   ├── calculator-agent.md
-│   │   ├── emissions-agent.md
+├── .claude/
+│   ├── project/                    # PROJECT DOCUMENTATION (NEW!)
+│   │   ├── vision.md               # Project purpose and goals
+│   │   ├── architecture.md         # Technical decisions
+│   │   ├── roadmap.md              # Development phases  
+│   │   ├── technical-decisions.md  # Rationale for choices
+│   │   ├── team-preferences.md     # Standards and practices
+│   │   └── project-context.md      # Specific project details
+│   ├── agents/                     # DYNAMIC AGENTS
+│   │   ├── [module]-agent.md       # One per detected/planned module
 │   │   └── ...
-│   ├── memory/                   # Persistent memory
-│   │   └── project.db            # SQLite database with all agent memories
-│   └── commands/                 # Custom project commands
+│   ├── memory/                     # PERSISTENT MEMORY
+│   │   └── project.db              # SQLite with agent memories, jobs, setup data
+│   ├── commands/                   # CUSTOM COMMANDS
+│   └── CLAUDE.md                   # PROJECT INSTRUCTIONS
 ```
 
 ---
 
-## ❓ **ARCHITECTURE DECISIONS**
-
-### **OPTION A: Single agent-creator invocation**
-
-```bash
-agent-creator → create all agents in one task
-# ❌ Problem: Large context size in one window
-```
-
-### **OPTION B: Parallel agent creation** ✅ Recommended
-
-```bash
-# Multiple Task calls in one message
-"Create these agents IN PARALLEL:
-[Task 1] agent-creator → calculator-agent
-[Task 2] agent-creator → emissions-agent
-[Task 3] agent-creator → ui-agent"
-```
-
----
-
-## 🆕 FOR NEW/EMPTY PROJECTS
-
-### 1️⃣ **PHASE 1: Requirements Interview**
-
-Interactive Q&A covering **14 comprehensive areas**:
-
-**1. Business & Domain**
-
-- What problem does this solve?
-- Who are the users/stakeholders?
-- Business model and revenue streams
-- Success metrics and KPIs
-
-**2. Technical Architecture**
-
-- Technology stack selection and rationale
-- Monolith vs microservices vs serverless
-- API design (REST/GraphQL/gRPC)
-- Real-time requirements
-
-**3. Database & Data**
-
-- Database choice and rationale
-- Data volume expectations
-- ACID vs eventual consistency
-- Data retention and privacy policies
-
-**4. Security & Compliance**
-
-- Authentication method (JWT/OAuth/SAML)
-- Authorization model (RBAC/ABAC)
-- Compliance requirements (GDPR/HIPAA/SOC2)
-- Encryption and secrets management
-
-**5. Infrastructure & Deployment**
-
-- Cloud provider and services
-- Container orchestration strategy
-- Multi-region requirements
-- Disaster recovery planning
-
-**6. CI/CD & DevOps**
-
-- Version control and branching strategy
-- CI/CD platform and pipeline design
-- Environment management
-- Deployment strategies
-
-**7. Monitoring & Observability**
-
-- APM and error tracking tools
-- Log aggregation strategy
-- Alerting rules and SLA definitions
-- Performance monitoring
-
-**8. Testing Strategy**
-
-- Coverage targets and test types
-- Testing framework selection
-- Performance and security testing
-- Quality gates and automation
-
-**9. Documentation & Knowledge**
-
-- API and code documentation standards
-- Architecture diagram requirements
-- Knowledge sharing and onboarding
-- Public vs internal documentation
-
-**10. Accessibility & I18N**
-
-- WCAG compliance requirements
-- Supported languages and locales
-- RTL language support
-- Accessibility testing strategy
-
-**11. Team & Collaboration**
-
-- Team size, roles, and structure
-- Communication and project management tools
-- Code review and development processes
-- Remote/hybrid work considerations
-
-**12. Development Environment**
-
-- Local development setup requirements
-- Docker development environment
-- Development tools and IDE configurations
-- Onboarding time targets
-
-**13. Language & Communication**
-
-- Primary development languages
-- Documentation languages
-- Code comment standards
-- International communication needs
-
-**14. User Experience Level**
-
-- Programming experience assessment
-- Stack familiarity evaluation
-- Learning preferences and mentorship needs
-- Knowledge gaps identification
-
-### 2️⃣ **PHASE 2: Architecture Generation**
-
-```yaml
-ARCHITECTURE:
-  - Generate project scaffolding
-  - Create templates (env, CI/CD, Docker)
-  - Configure dev environment
-  - Set up initial folder structure
-```
-
-### 3️⃣ **PHASE 3: Language Configuration**
-
-```yaml
-LANGUAGE_PREFERENCES:
-  ALWAYS ASK USER:
-    - User interaction language
-    - Private documentation language
-    - Public documentation language
-    - Comments and docstrings language
-```
-
-### 4️⃣ **PHASE 4: Database & MCP Setup**
-
-```yaml
-DATABASE_AND_MCP:
-  - Configure MCP SQLite
-  - Create project.db
-  - Initialize schema
-  - Pre-create agent structures
-```
-
-### 5️⃣ **PHASE 5: CLAUDE.MD Creation**
-
-```yaml
-CLAUDE_MD:
-  - Create with language preferences
-  - Include architecture decisions
-  - Document project structure
-  - Set development guidelines
-```
-
-### 6️⃣ **PHASE 6: Dynamic Agent Creation**
-
-```yaml
-AGENT_CREATION:
-  - Create project-specific agents
-  - NOT base specialists (they exist in ~/.claude/agents)
-  - Based on planned architecture
-  - Multiple Task calls in parallel
-```
-
-### 7️⃣ **PHASE 7: Initial Code Generation**
-
-```yaml
-CODE_GENERATION:
-  - Generate initial codebase
-  - Create boilerplate files
-  - Set up test structure
-  - Configure development environment
-```
-
-### 8️⃣ **PHASE 8: Finalization**
-
-```yaml
-FINALIZATION:
-  - Confirm all components created
-  - Run initial tests
-  - Present project summary
-  - List next steps for development
-```
-
----
-
-## 📊 /init VS /setup COMPARISON
-
-| Feature             | Claude Code /init      | ClaudeSquad /setup               |
-| ------------------- | ---------------------- | -------------------------------- |
-| Analysis            | Sequential single scan | 4 specialized agents in parallel |
-| Agent Creation      | ❌ None                | ✅ Dynamic per module            |
-| Memory System       | Static CLAUDE.md       | Persistent per agent             |
-| Customization       | Limited                | Full specialist ecosystem        |
-| Parallel Processing | No                     | Yes (10 concurrent)              |
-| Error Prevention    | ❌ None                | ✅ Immutable rules               |
-
----
-
-## 🚀 **REAL PARALLELISM IN CLAUDE CODE**
-
-### **CONFIRMED TECHNICAL CAPABILITIES:**
-
-```yaml
-parallel_tasks:
-  limit: "10 simultaneous subagents"
-  batching: "Claude Code executes in batches"
-  context: "Each Task has its own window"
-  queue: "Automatic queue if > 10 tasks"
-  syntax: "Multiple Task calls in ONE message"
-```
-
-### **CORRECT INVOCATION:**
-
-```bash
-# ✅ CORRECT - Real parallel:
-"Execute these tasks IN PARALLEL:
-[Task 1] agent-creator → docs-agent
-[Task 2] agent-creator → api-agent
-[Task 3] agent-creator → frontend-agent
-[Task 4] agent-creator → database-agent"
-
-# ❌ INCORRECT - Sequential:
-Task → agent-creator → docs-agent
-Task → agent-creator → api-agent
-Task → agent-creator → frontend-agent
-```
-
----
-
-## 🔧 **HOOKS AND COMMANDS LOCATION**
-
-### **DEFINITIVE ANSWER:**
-
-```yaml
-HOOKS:
-  global: ~/.claude/settings.json
-  project_shared: .claude/settings.json (committed to repo)
-  project_local: .claude/settings.local.json (not committed, personal)
-  reason: "Configured in settings files"
-
-COMMANDS:
-  location: .claude/commands/
-  reason: "Customized per project"
-
-MEMORY:
-  created_by: "agent-creator automatically"
-  location: ".claude/memory/agents/[agent-name]/"
- MEMORY:
-   created_by: "agent-creator automatically"
-   location: ".claude/memory/project.db"
-   structure: "8 memory types stored in SQLite: knowledge, structure, patterns, dependencies, quality, operations, context, domain"
-GLOBAL_VS_LOCAL:
-  - .claude/: "In the analyzed project"
-  - NOT in ClaudeSquad: "It's template, not destination"
-```
-
----
-
-## ❌ **COMMON ERRORS**
-
-- ❌ Running setup agents sequentially
-- ❌ Only analyzing without creating anything
-- ❌ Asking user what to create
-- ❌ Not creating agent memory
-- ❌ Creating in ClaudeSquad instead of target project
-
----
-
-## 🎯 **EXAMPLE EXECUTION**
-
-```bash
-User: /setup C:\project\example
-
-Claude:
-1. [Phase 1] Environment verification ✅
-
-2. [Phase 2 - REAL PARALLEL] "Analyze this project IN PARALLEL using 4 specialized agents:
-   [Task 1] setup-context
-   [Task 2] setup-codebase
-   [Task 3] setup-infrastructure
-   [Task 4] setup-environment"
-
-3. [Phase 3] Language Configuration:
-   "What language preferences:
-   - User interaction: English/Spanish?
-   - Private documentation: English/Spanish?
-   - Public documentation: English?
-   - Comments/docstrings: English/Spanish?"
-
-4. [Phase 4] Initialize database: Creates project.db with all tables and MCP configuration
-
-5. [Phase 5] Creates complete CLAUDE.md with language preferences + aggregated analysis
-
-6. [Phase 6 - REAL PARALLEL] "Create these agents IN PARALLEL:
-   [Task 1] agent-creator → api-agent (creates .claude/agents/api-agent.md)
-   [Task 2] agent-creator → database-agent (creates .claude/agents/database-agent.md)
-   [Task 3] agent-creator → frontend-agent (creates .claude/agents/frontend-agent.md)"
-
-7. [Phase 7 - REAL PARALLEL] Deep module analysis by all agents
-
-8. [Phase 8] Confirms: "✅ Setup complete: 3 agents created with memories in SQLite database"
-```
-
----
-
----
-
-## 🚩 **FLAGS Protocol (NEW EXTENDED SYSTEM)**
+## 🚩 **FLAGS Protocol**
 
 **Claude's Role**: Check workable flags and invoke agents, NOT read flag content
+
 ```bash
 # Claude checks summary ONLY (no context overload)
 python .claude/scripts/agent_db.py get-workable-flags
@@ -625,17 +247,54 @@ python .claude/scripts/agent_db.py get-workable-flags
 # Claude invokes: "@auth-agent review your pending flags"
 ```
 
-**Agent Workflow**: 
+**Agent Workflow**:
 1. **Check**: `python .claude/scripts/agent_db.py get-agent-flags "@agent-name"`
 2. **Work**: Process flags with full context
-3. **Create**: `python .claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`  
+3. **Create**: `python .claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`
 4. **Complete**: `python .claude/scripts/agent_db.py complete-flag [id] "@agent-name"`
-5. **Lock/Unlock**: For conversation flows needing more info
 
-**Key Features**: 
-- Multiple targets via separate flag rows
-- Lock/unlock for bidirectional conversations  
-- Claude sees only counts, agents see full context
+---
+
+## 📊 **NEW VS EXISTING PROJECT COMPARISON**
+
+| Phase | Existing Project | New Project |
+|-------|------------------|-------------|
+| 1 | Environment + Database setup | Environment + Database setup |
+| 2 | 4 setup agents analyze code | 14 interview rounds + specialists |
+| 3 | CLAUDE.md creation | CLAUDE.md creation |
+| 4 | Dynamic agent creation | Jobs + agent creation via plan.strategy |
+| 5 | Deep module analysis | Agent initialization |
+| 6 | Finalization summary | Finalization summary |
+
+**Key Difference**: Existing projects analyze what exists; new projects plan what will be built.
+
+---
+
+## ❌ **COMMON ERRORS**
+
+- ❌ Running setup agents sequentially instead of parallel
+- ❌ Not creating .claude/project/ documentation
+- ❌ Asking user about language preferences (always English)
+- ❌ Not creating SQLite database first
+- ❌ Creating documentation in wrong location
+
+---
+
+## 🎯 **EXAMPLE EXECUTION**
+
+```bash
+User: /setup
+
+Claude:
+1. [Phase 1] Environment + Database setup ✅
+2. [Phase 2] 
+   - IF existing project: "Analyze this project using 4 setup agents IN PARALLEL"
+   - IF new project: "Starting requirements interview - Business & Domain questions"
+3. [Phase 3] Generate CLAUDE.md with project context ✅  
+4. [Phase 4] Create dynamic agents + jobs (if new project) ✅
+5. [Phase 5] Initialize agent memories ✅
+6. [Phase 6] "✅ Setup complete: ClaudeSquad ready with full documentation"
+```
 
 ---
 

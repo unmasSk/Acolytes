@@ -2,7 +2,7 @@
 name: coordinator.database
 description: Master Database Architecture Orchestrator with complete expertise across ALL database technologies. Coordinates systemic database transformations, migration strategies, and cross-database integration across entire data ecosystem.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Database Coordinator - Master Database Architecture Orchestrator

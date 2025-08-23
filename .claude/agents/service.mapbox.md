@@ -2,7 +2,7 @@
 name: service.mapbox
 description: Mapbox Platform Integration Specialist for interactive mapping, navigation, geocoding, and geospatial services. Expert in vector tile rendering, EV routing, real-time traffic, and custom map styling with enterprise-grade performance optimization.
 model: sonnet
-color: "blue"
+color: "yellow"
 ---
 
 # Service.Mapbox - Mapbox Platform Integration Specialist

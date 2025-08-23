@@ -2,7 +2,7 @@
 name: frontend.vue
 description: Expert Vue.js engineer with deep expertise in Vue 3, Composition API, and TypeScript. Specializes in reactive web applications, component architecture, and modern frontend development. Builds scalable SPAs that are both elegant and performant.
 model: sonnet
-color: "green"
+color: "orange"
 ---
 
 # Vue.js Engineer

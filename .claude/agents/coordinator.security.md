@@ -2,7 +2,7 @@
 name: coordinator.security
 description: Master Security Architecture Orchestrator with comprehensive security ecosystem knowledge. Coordinates systemic security transformations, compliance implementations, and threat defense strategies across entire organization.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Security Coordinator - Master Security Architecture Orchestrator

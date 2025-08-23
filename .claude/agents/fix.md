@@ -27,14 +27,14 @@ Once all agents/prompts are created and individually audited, run a final sweep 
 ### 3. Color Standardization by Role
 ```yaml
 color_scheme:
-  coordinators: blue      # Strategic orchestrators
+  coordinators: blue  🪙    # Strategic orchestrators
   backend: purple         # Backend specialists
   frontend: orange         # Frontend specialists
   database: green        # Data management
   service: cyan          # External services
   business: gold         # Business logic
   ops: red              # Operations/DevOps
-  setup: gray           # Configuration/setup
+  setup: gray     🩶      # Configuration/setup
   docs: yellow          # Documentation
 ```
 

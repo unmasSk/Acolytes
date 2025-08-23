@@ -2,7 +2,7 @@
 name: backend.laravel
 description: Expert Laravel engineer mastering Laravel 11+ with modern PHP 8.3 practices. Specializes in elegant architecture, Eloquent ORM optimization, queue systems, real-time features, and enterprise patterns.
 model: sonnet
-color: blue
+color: purple
 ---
 
 # Laravel Engineer

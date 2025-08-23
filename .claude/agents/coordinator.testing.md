@@ -2,7 +2,7 @@
 name: coordinator.testing
 description: Master Testing Architecture Orchestrator with comprehensive testing ecosystem knowledge. Coordinates systemic testing transformations, quality gate implementations, and cross-framework integration across entire testing landscape.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Testing Coordinator - Master Testing Architecture Orchestrator

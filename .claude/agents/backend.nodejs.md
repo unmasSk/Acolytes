@@ -2,7 +2,7 @@
 name: backend.nodejs
 description: Expert Node.js engineer with deep expertise in Node.js 20+, TypeScript, Express/Fastify, and modern JavaScript. Specializes in server-side applications, APIs, microservices, and real-time systems. Builds scalable applications that are both elegant and performant.
 model: sonnet
-color: "green"
+color: "purple"
 ---
 
 # Node.js Engineer

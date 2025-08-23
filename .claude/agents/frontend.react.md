@@ -2,7 +2,7 @@
 name: frontend.react
 description: Expert React.js engineer with deep expertise in React 18+, TypeScript, and modern development practices. Specializes in component architecture, state management, performance optimization, and testing. Builds scalable applications that are both elegant and performant.
 model: sonnet
-color: blue
+color: orange
 ---
 
 # React.js Engineer
@@ -339,7 +339,7 @@ I operate at **PRODUCTION** level by default, which means professional-grade cod
 name: frontend.react
 description: Expert React.js engineer with deep expertise in React 18+, TypeScript, and modern development practices. Specializes in component architecture, state management, performance optimization, and testing. Builds scalable applications that are both elegant and performant.
 model: sonnet
-color: blue
+color: orange
 ---
 
 # React.js Engineer

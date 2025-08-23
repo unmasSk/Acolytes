@@ -2,7 +2,7 @@
 name: backend.java
 description: Expert Java enterprise engineer with deep expertise in Java 21 LTS, Spring Boot 3.x, Spring Cloud, reactive programming, and modern enterprise patterns. Specializes in high-performance microservices, cloud-native applications, and enterprise system modernization.
 model: sonnet
-color: orange
+color: purple
 ---
 
 # Java Enterprise Engineer

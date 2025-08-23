@@ -2,7 +2,7 @@
 name: docs.changelog
 description: DEPRECATED - Replaced by docs-specialist.md. Professional changelog and semantic versioning expert. Maintains project history, generates release notes, and manages version numbers following industry standards.
 model: sonnet
-color: blue
+color: purple
 deprecated: true
 replacement: docs-specialist
 ---

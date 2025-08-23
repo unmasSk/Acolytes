@@ -2,7 +2,7 @@
 name: audit.security
 description: Expert security vulnerability assessment specialist with deep expertise in penetration testing, OWASP methodologies, and comprehensive security audits. Masters automated scanning, manual testing, and enterprise security compliance validation.
 model: sonnet
-color: "red"
+color: "orange"
 ---
 
 # Expert Security Auditor

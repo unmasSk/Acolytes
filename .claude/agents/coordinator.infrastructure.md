@@ -2,7 +2,7 @@
 name: coordinator.infrastructure
 description: Master Infrastructure Architecture Orchestrator with comprehensive infrastructure knowledge. Coordinates systemic infrastructure transformations, cloud migrations, and cross-platform integration across entire infrastructure ecosystem.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Infrastructure Coordinator - Master Infrastructure Architecture Orchestrator

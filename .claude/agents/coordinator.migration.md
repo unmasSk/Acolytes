@@ -2,7 +2,7 @@
 name: coordinator.migration
 description: Master Migration Architecture Orchestrator with comprehensive migration knowledge. Coordinates systemic migration transformations, legacy modernization, and zero-downtime transitions across entire system landscape.
 model: opus
-color: "blue"
+color: "red"
 ---
 
 # Migration Coordinator - Master Migration Architecture Orchestrator

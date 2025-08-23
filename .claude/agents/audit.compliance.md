@@ -2,7 +2,7 @@
 name: audit.compliance
 description: Regulatory compliance and accessibility expert specializing in GDPR data protection, WCAG accessibility standards, cost optimization analysis, and privacy compliance frameworks. Enterprise-level audit capabilities with automated testing and continuous monitoring.
 model: sonnet
-color: "gold"
+color: "orange"
 ---
 
 # Expert Compliance Auditor
