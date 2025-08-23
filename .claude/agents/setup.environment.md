@@ -110,6 +110,21 @@ When executing environment analysis:
 7. **Assess resource constraints** that might affect development approach choices
 8. **Provide specific installation guidance** for missing but recommended tools
 
+## File Analysis Instructions
+
+**IGNORE files/directories listed in:**
+- Check .gitignore first - skip all patterns listed there
+- Check .cursorignore if it exists - skip those patterns too
+- Common ignore patterns: node_modules/, .git/, dist/, build/, .env files, logs/, temp/, cache/
+
+**FOCUS on environment-relevant files:**
+- Package manager files (package.json, requirements.txt, Gemfile, go.mod, etc.)
+- Environment configuration templates (.env.example, config templates)
+- Tool configuration files (.nvmrc, .python-version, .ruby-version)
+- IDE configuration files (.vscode/, .idea/ if not ignored)
+- Development tooling configs (not actual environment secrets)
+- Don't analyze dependencies, build outputs, actual secrets, or temporary files
+
 ## Detection Commands
 
 ```bash
@@ -146,77 +161,94 @@ netstat -tln 2>/dev/null | grep LISTEN | head -10 || lsof -i -P -n | grep LISTEN
 
 ## Output Format
 
-```yaml
-ENVIRONMENT_ANALYSIS:
-  # System Information
-  os:
-    type: "windows|macos|linux"
-    version: "specific version"
-    architecture: "x64|arm64"
-    hostname: "machine name"
-    user: "current user"
-    shell: "bash|zsh|powershell|cmd"
+Generate output in this visual structured format:
 
-  # Languages & Runtimes (only if found)
-  languages:
-    node:
-      installed: boolean
-      version: "version"
-      package_managers: ["npm@version", "yarn@version"]
-    python:
-      installed: boolean
-      version: "version"
-      package_manager: "pip@version"
-    php:
-      installed: boolean
-      version: "version"
-      package_manager: "composer@version"
+```
+SYSTEM OVERVIEW
+├── Operating System: [windows|macos|linux] [version]
+├── Architecture: [x64|arm64]
+├── Hostname: [machine name]
+├── User: [current user]
+└── Shell: [bash|zsh|powershell|cmd]
 
-  # Development Tools
-  tools:
-    git:
-      installed: boolean
-      version: "version"
-      global_config:
-        user_name: "configured name"
-        user_email: "configured email"
-    docker:
-      installed: boolean
-      version: "version"
-      compose_version: "version"
-      running: boolean
-    vscode:
-      installed: boolean
-      extensions_found: boolean
+PROGRAMMING LANGUAGES & RUNTIMES
+├── Node.js
+│   ├── Installed: [yes/no]
+│   ├── Version: [version]
+│   └── Package Managers: [npm@version, yarn@version]
+├── Python
+│   ├── Installed: [yes/no]
+│   ├── Version: [version]
+│   └── Package Manager: [pip@version]
+├── PHP
+│   ├── Installed: [yes/no]
+│   ├── Version: [version]
+│   └── Package Manager: [composer@version]
+└── [Other Languages]: [java, go, ruby, etc.]
 
-  # Available Commands
-  available_commands: ["make", "gradle", "mvn", "cargo", "terraform", "ansible"]
+DEVELOPMENT TOOLS
+├── Git
+│   ├── Installed: [yes/no]
+│   ├── Version: [version]
+│   └── Global Config
+│       ├── User Name: [configured name]
+│       └── User Email: [configured email]
+├── Docker
+│   ├── Installed: [yes/no]
+│   ├── Version: [version]
+│   ├── Compose Version: [version]
+│   └── Running: [yes/no]
+├── VS Code
+│   ├── Installed: [yes/no]
+│   └── Extensions Found: [yes/no]
+└── Other Tools: [make, gradle, mvn, cargo, terraform, ansible]
 
-  # System Resources
-  resources:
-    disk_available_gb: number
-    memory_available_gb: number
-    cpu_cores: number
-    ports_in_use: [3000, 8080, 5432]
+SYSTEM RESOURCES
+├── Available Disk Space: [number] GB
+├── Available Memory: [number] GB
+├── CPU Cores: [number]
+└── Ports In Use: [3000, 8080, 5432]
 
-  # Environment Variables (relevant ones)
-  env_vars:
-    NODE_ENV: "development|production"
-    DEBUG: "value if set"
-    CI: "true|false"
+ENVIRONMENT VARIABLES
+├── NODE_ENV: [development|production|not set]
+├── DEBUG: [value if set|not set]
+├── CI: [true|false|not set]
+└── [Other Relevant Variables]
 
-  # Capabilities Assessment
-  capabilities:
-    can_run_docker: boolean
-    can_run_node: boolean
-    can_run_python: boolean
-    can_install_packages: boolean
-    has_internet: boolean
+DEVELOPMENT CAPABILITIES
+├── Can Run Docker: [yes/no]
+├── Can Run Node.js: [yes/no]
+├── Can Run Python: [yes/no]
+├── Can Install Packages: [yes/no]
+├── Has Internet Access: [yes/no]
+└── Admin/Sudo Access: [yes/no]
 
-  # Recommendations
-  missing_critical: ["critical tools not found"]
-  missing_optional: ["nice to have tools"]
-  version_warnings: ["outdated versions detected"]
+NETWORK & CONNECTIVITY
+├── Internet Access: [yes/no]
+├── Proxy Configuration: [configured/not configured]
+├── Firewall Status: [active/inactive]
+└── Available Ports: [list of free common ports]
+
+MISSING TOOLS & RECOMMENDATIONS
+├── Critical Missing Tools
+│   ├── [Tool 1]: [why critical]
+│   └── [Tool 2]: [why critical]
+├── Optional Missing Tools
+│   ├── [Tool 1]: [benefit if installed]
+│   └── [Tool 2]: [benefit if installed]
+└── Version Warnings
+    ├── [Tool 1]: [current version] → [recommended version]
+    └── [Tool 2]: [security/compatibility issue]
+
+KEY INSIGHTS
+- [Capability 1: fully Docker-ready environment]
+- [Capability 2: modern Node.js development setup]
+- [Limitation 1: Python version too old for modern frameworks]
+- [Limitation 2: no admin access for system packages]
+- [Security Concern 1: Git credentials not configured]
+- [Performance Note 1: SSD available for fast builds]
+- [Recommendation 1: upgrade Python to version 3.9+]
+- [Recommendation 2: install Docker Compose for local development]
 ```
 
 ## Intelligence Analysis

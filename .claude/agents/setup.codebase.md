@@ -107,6 +107,20 @@ When executing codebase analysis:
 4. **Examine test directories** to understand testing strategy and coverage patterns
 5. **Look for configuration files** that reveal development practices and tooling
 6. **Identify large or complex modules** that warrant dedicated dynamic agents
+
+## File Analysis Instructions
+
+**IGNORE files/directories listed in:**
+- Check .gitignore first - skip all patterns listed there
+- Check .cursorignore if it exists - skip those patterns too
+- Common ignore patterns: node_modules/, .git/, dist/, build/, .env files, logs/, temp/, cache/
+
+**FOCUS on relevant codebase files:**
+- Source code files in src/, lib/, app/ directories
+- Test files and test directories
+- Configuration files (not in ignore lists)
+- Build and deployment scripts
+- Don't analyze build outputs, dependencies, generated files, or temporary artifacts
 7. **Document module recommendations** with clear justification for agent creation
 8. **Provide actionable insights** for both technical setup and agent specialization decisions
 
@@ -143,103 +157,88 @@ cat package.json 2>/dev/null | grep -A5 '"scripts"'
 
 ## Output Format
 
-```yaml
-CODEBASE_ANALYSIS:
-  # Structure Overview
-  structure:
-    total_files: number
-    total_directories: number
-    project_type: "monorepo|single|workspace"
-    main_language: "javascript|php|python|mixed"
-    
-  # Major Modules (for agent creation)
-  modules:
-    - name: "api"
-      path: "/backend/api"
-      files: 127
-      language: "php"
-      purpose: "REST API endpoints"
-      complexity: "high|medium|low"
-      needs_agent: true
-    - name: "frontend"
-      path: "/src/components"
-      files: 89
-      language: "typescript/react"
-      purpose: "UI components"
-      complexity: "medium"
-      needs_agent: true
-      
-  # Technology Stack
-  stack:
-    languages:
-      javascript: "60%"
-      php: "30%"
-      css: "10%"
-    frameworks:
-      backend: "laravel@10.x"
-      frontend: "react@18.x"
-    major_dependencies: [
-      "axios",
-      "redux",
-      "stripe"
-    ]
-    
-  # Code Quality
-  quality:
-    linting:
-      configured: boolean
-      tool: "eslint|prettier|none"
-      rules: "strict|moderate|loose"
-    tests:
-      framework: "jest|phpunit|pytest"
-      test_files: number
-      test_ratio: "1:3"  # 1 test per 3 source files
-      types: ["unit", "integration", "e2e"]
-    complexity:
-      large_files: ["files over 500 lines"]
-      god_objects: ["classes over 20 methods"]
-      deep_nesting: ["files with nesting > 5"]
-      
-  # Patterns Detected
-  patterns:
-    architecture: "mvc|clean|layered|mixed"
-    design_patterns: [
-      "repository",
-      "factory",
-      "observer"
-    ]
-    api_style: "rest|graphql|rpc"
-    state_management: "redux|context|mobx|none"
-    
-  # Technical Debt Indicators
-  debt:
-    todo_count: number
-    fixme_count: number
-    deprecated_usage: number
-    outdated_patterns: ["jQuery", "class components"]
-    security_issues: ["eval usage", "SQL concatenation"]
-    
-  # Module Recommendations
-  agent_recommendations:
-    high_priority: [
-      "api-agent: 127 files, critical path",
-      "payments-agent: handles money, needs expertise"
-    ]
-    medium_priority: [
-      "frontend-agent: many components",
-      "auth-agent: security critical"
-    ]
-    low_priority: [
-      "admin-agent: rarely changed",
-      "reports-agent: simple CRUD"
-    ]
-    
-  # Health Assessment
-  health:
-    score: "A|B|C|D|F"
-    strengths: ["good test coverage", "consistent patterns"]
-    weaknesses: ["large files", "old dependencies"]
-    critical_issues: ["no tests in payments module"]
+Generate output in this visual structured format:
+
+```
+CODEBASE OVERVIEW
+├── Total Files: [number]
+├── Total Directories: [number]  
+├── Project Type: [monorepo|single|workspace]
+├── Main Language: [javascript|php|python|mixed]
+└── Health Score: [A|B|C|D|F]
+
+TECHNOLOGY STACK
+├── Languages
+│   ├── [Language 1]: [percentage]%
+│   ├── [Language 2]: [percentage]%
+│   └── [Language 3]: [percentage]%
+├── Backend Framework: [laravel@10.x|express@4.x|django@4.x]
+├── Frontend Framework: [react@18.x|vue@3.x|angular@16.x]
+└── Major Dependencies: [axios, redux, stripe, etc.]
+
+MAJOR MODULES (For Agent Creation)
+├── [Module 1]
+│   ├── Path: [/backend/api]
+│   ├── Files: [127]
+│   ├── Language: [php]
+│   ├── Purpose: [REST API endpoints]
+│   ├── Complexity: [high|medium|low]
+│   └── Needs Agent: [yes/no]
+├── [Module 2]
+│   ├── Path: [/src/components]
+│   ├── Files: [89]
+│   ├── Language: [typescript/react]
+│   ├── Purpose: [UI components]
+│   ├── Complexity: [medium]
+│   └── Needs Agent: [yes/no]
+└── [Additional modules...]
+
+CODE QUALITY ASSESSMENT
+├── Linting
+│   ├── Configured: [yes/no]
+│   ├── Tool: [eslint|prettier|none]
+│   └── Rules: [strict|moderate|loose]
+├── Testing
+│   ├── Framework: [jest|phpunit|pytest]
+│   ├── Test Files: [number]
+│   ├── Test Ratio: [1:3 - 1 test per 3 source files]
+│   └── Types: [unit, integration, e2e]
+└── Complexity Issues
+    ├── Large Files: [files over 500 lines]
+    ├── God Objects: [classes over 20 methods]
+    └── Deep Nesting: [files with nesting > 5]
+
+ARCHITECTURE PATTERNS
+├── Architecture Style: [mvc|clean|layered|mixed]
+├── Design Patterns: [repository, factory, observer]
+├── API Style: [rest|graphql|rpc]
+└── State Management: [redux|context|mobx|none]
+
+TECHNICAL DEBT
+├── TODO Count: [number]
+├── FIXME Count: [number]
+├── Deprecated Usage: [number instances]
+├── Outdated Patterns: [jQuery, class components]
+└── Security Issues: [eval usage, SQL concatenation]
+
+AGENT RECOMMENDATIONS
+├── High Priority
+│   ├── [api-agent: 127 files, critical path]
+│   └── [payments-agent: handles money, needs expertise]
+├── Medium Priority
+│   ├── [frontend-agent: many components]
+│   └── [auth-agent: security critical]
+└── Low Priority
+    ├── [admin-agent: rarely changed]
+    └── [reports-agent: simple CRUD]
+
+KEY INSIGHTS
+- [Strength 1: good test coverage across critical modules]
+- [Strength 2: consistent architectural patterns]
+- [Concern 1: large files indicating potential refactoring needs]
+- [Concern 2: old dependencies with security vulnerabilities]
+- [Critical Issue 1: no tests in payments module]
+- [Recommendation 1: prioritize payments module testing]
 ```
 
 ## Intelligence Gathering

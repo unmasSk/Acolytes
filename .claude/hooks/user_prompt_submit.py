@@ -62,7 +62,7 @@ def generate_markdown_transcript(conversation_file, session_id):
                 username = os.getenv("USERNAME", "Usuario")  # Get Windows username
                 md_content.append(f"<div style=\"text-align: right;\">")
                 md_content.append("")
-                md_content.append(f"### <span style=\"color: #007bff;\">♾️ {username}</span>{time_part}")
+                md_content.append(f"### <span style=\"color: #007bff; text-transform: uppercase;\">♾️ {username}</span>{time_part}")
                 md_content.append("")
                 md_content.append(content)
                 md_content.append("")
@@ -72,7 +72,7 @@ def generate_markdown_transcript(conversation_file, session_id):
                 md_content.append("")
                 
             elif msg_type == "assistant":
-                md_content.append(f"### <span style=\"color: #d2691e;\">🤖 Claude</span>{time_part}")
+                md_content.append(f"### <span style=\"color: #d2691e; text-transform: uppercase;\">🤖 Claude</span>{time_part}")
                 md_content.append("")
                 md_content.append(content)
                 md_content.append("")

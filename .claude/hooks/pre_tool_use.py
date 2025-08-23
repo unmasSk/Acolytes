@@ -117,25 +117,28 @@ def is_any_delete_command(command):
 def is_env_file_access(tool_name, tool_input):
     """
     Check if any tool is trying to access .env files containing sensitive data.
+    Allows setup.environment.md and other legitimate files with 'env' in the name.
     """
     if tool_name in ['Read', 'Edit', 'MultiEdit', 'Write', 'Bash']:
         # Check file paths for file-based tools
         if tool_name in ['Read', 'Edit', 'MultiEdit', 'Write']:
             file_path = tool_input.get('file_path', '')
-            if '.env' in file_path and not file_path.endswith('.env.sample'):
+            # Only block exact .env files, not files containing 'env' in name
+            filename = Path(file_path).name.lower()
+            if filename == '.env' or (filename.startswith('.env.') and not filename.endswith('.sample')):
                 return True
         
         # Check bash commands for .env file access
         elif tool_name == 'Bash':
             command = tool_input.get('command', '')
-            # Pattern to detect .env file access (but allow .env.sample)
+            # Pattern to detect actual .env file access (but allow .env.sample and other files)
             env_patterns = [
-                r'\b\.env\b(?!\.sample)',  # .env but not .env.sample
-                r'cat\s+.*\.env\b(?!\.sample)',  # cat .env
-                r'echo\s+.*>\s*\.env\b(?!\.sample)',  # echo > .env
-                r'touch\s+.*\.env\b(?!\.sample)',  # touch .env
-                r'cp\s+.*\.env\b(?!\.sample)',  # cp .env
-                r'mv\s+.*\.env\b(?!\.sample)',  # mv .env
+                r'\b\.env\b(?!\.sample)(?!\w)',  # .env but not .env.sample or .environment
+                r'cat\s+.*\.env\b(?!\.sample)(?!\w)',  # cat .env
+                r'echo\s+.*>\s*\.env\b(?!\.sample)(?!\w)',  # echo > .env
+                r'touch\s+.*\.env\b(?!\.sample)(?!\w)',  # touch .env
+                r'cp\s+.*\.env\b(?!\.sample)(?!\w)',  # cp .env
+                r'mv\s+.*\.env\b(?!\.sample)(?!\w)',  # mv .env
             ]
             
             for pattern in env_patterns:

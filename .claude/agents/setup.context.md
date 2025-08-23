@@ -107,51 +107,67 @@ When executing project context analysis:
 5. **Identify knowledge gaps** that require input from other setup agents
 6. **Document both what IS and what ISN'T** - negative findings are valuable
 7. **Prioritize business-critical context** that affects technical decisions
+
+## File Analysis Instructions
+
+**IGNORE files/directories listed in:**
+- Check .gitignore first - skip all patterns listed there
+- Check .cursorignore if it exists - skip those patterns too
+- Common ignore patterns: node_modules/, .git/, dist/, build/, .env files, logs/
+
+**FOCUS on relevant project files:**
+- Source code files (not in ignore lists)
+- Configuration files (package.json, requirements.txt, etc.)
+- Documentation files (.md, .txt)
+- Project structure and organization
+- Don't waste analysis time on build outputs, dependencies, or temporary files
 8. **Provide clear recommendations** for subsequent setup phases
 
 ## Output Format
 
-```yaml
-PROJECT_CONTEXT:
-  # Business Context
-  project_name: "string"
-  project_type: "e-commerce|saas|api|tool|library|app|other"
-  purpose: "1-2 line description of what problem it solves"
-  target_users: "developers|businesses|consumers|internal"
-  business_model: "subscription|one-time|opensource|internal"
+Generate output in this visual structured format:
 
-  # Project Maturity
-  current_phase: "prototype|mvp|beta|production|legacy"
-  version: "x.y.z"
-  age_months: number
-  last_activity: "date"
-  activity_level: "active|moderate|low|dormant"
+```
+PROJECT OVERVIEW
+├── Name: [Project Name]
+├── Type: [e-commerce|saas|api|tool|library|app|other]
+├── Purpose: [1-2 line description of what problem it solves]
+├── Target Users: [developers|businesses|consumers|internal]
+├── Business Model: [subscription|one-time|opensource|internal]
+├── Current Phase: [prototype|mvp|beta|production|legacy]
+├── Version: [x.y.z]
+├── Age: [X months old]
+├── Activity Level: [active|moderate|low|dormant]
+└── Last Activity: [date]
 
-  # Technical Decisions
-  architecture_style: "monolith|microservices|serverless|modular"
-  key_patterns: ["pattern1", "pattern2"]
-  rejected_options: ["what they didn't choose and why"]
-  technical_debt_noted: ["known issues from docs"]
+TECHNICAL ARCHITECTURE
+├── Architecture Style: [monolith|microservices|serverless|modular]
+├── Key Patterns: [pattern1, pattern2, pattern3]
+├── Rejected Options: [what they didn't choose and why]
+└── Technical Debt: [known issues from documentation]
 
-  # Development Standards
-  code_style:
-    linter: "eslint|prettier|rubocop|etc"
-    formatter: "tool name"
-    commit_convention: "conventional|custom|none"
-  quality_gates:
-    tests_required: boolean
-    coverage_target: percentage
-    review_required: boolean
+DEVELOPMENT STANDARDS
+├── Code Style
+│   ├── Linter: [eslint|prettier|rubocop|etc]
+│   ├── Formatter: [tool name]
+│   └── Commit Convention: [conventional|custom|none]
+└── Quality Gates
+    ├── Tests Required: [yes/no]
+    ├── Coverage Target: [percentage]
+    └── Code Review Required: [yes/no]
 
-  # Roadmap & Direction
-  next_features: ["upcoming feature 1", "feature 2"]
-  known_issues: ["critical issues mentioned"]
-  migration_plans: ["any planned migrations"]
+ROADMAP & DIRECTION
+├── Next Features: [upcoming feature 1, feature 2]
+├── Known Issues: [critical issues mentioned in docs]
+└── Migration Plans: [any planned migrations]
 
-  # Key Findings
-  strengths: ["what's well done"]
-  concerns: ["what needs attention"]
-  recommendations: ["immediate actions needed"]
+KEY INSIGHTS
+- [Strength 1: what's particularly well done]
+- [Strength 2: another positive aspect]
+- [Concern 1: what needs immediate attention]
+- [Concern 2: potential risk area]
+- [Recommendation 1: immediate action needed]
+- [Recommendation 2: strategic improvement]
 ```
 
 ## Search Strategy

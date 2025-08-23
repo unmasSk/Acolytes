@@ -117,6 +117,21 @@ When executing infrastructure analysis:
 7. **Consider cost implications** of current and proposed infrastructure choices
 8. **Identify infrastructure agents** that would be valuable for ongoing management
 
+## File Analysis Instructions
+
+**IGNORE files/directories listed in:**
+- Check .gitignore first - skip all patterns listed there
+- Check .cursorignore if it exists - skip those patterns too
+- Common ignore patterns: node_modules/, .git/, dist/, build/, .env files, logs/, vendor/
+
+**FOCUS on infrastructure-relevant files:**
+- Docker files (Dockerfile, docker-compose.yml)
+- CI/CD configuration (.github/, .gitlab-ci.yml, jenkins/, etc.)
+- Infrastructure as Code (terraform/, kubernetes/, helm/, etc.)
+- Deployment scripts and configurations
+- Environment configuration templates (not actual .env files)
+- Don't analyze dependencies, build outputs, or temporary deployment artifacts
+
 ## Detection Commands
 
 ```bash
@@ -152,115 +167,110 @@ grep -r "sentry\|datadog\|newrelic" --include="*.yml" | head -5
 
 ## Output Format
 
-```yaml
-INFRASTRUCTURE_ANALYSIS:
-  # Containerization
-  containers:
-    docker:
-      used: boolean
-      dockerfiles: ["Dockerfile", "Dockerfile.prod"]
-      compose_files: ["docker-compose.yml"]
-      services: ["app", "db", "redis", "nginx"]
-    kubernetes:
-      used: boolean
-      manifests: number
-      helm_charts: boolean
+Generate output in this visual structured format:
 
-  # Databases & Storage
-  databases:
-    primary:
-      type: "postgresql|mysql|mongodb"
-      version: "version if found"
-      migrations: boolean
-      migration_tool: "laravel|flyway|liquibase"
-    cache:
-      type: "redis|memcached|none"
-      configuration: "single|cluster"
-    storage:
-      type: "local|s3|gcs|azure"
-      buckets: ["bucket names if found"]
+```
+INFRASTRUCTURE OVERVIEW
+├── Hosting Type: [cloud|vps|on-premise|serverless]
+├── Provider: [aws|gcp|azure|vercel|heroku]
+├── Environments: [development, staging, production]
+├── Redundancy Level: [high|medium|low|none]
+└── Infrastructure Health: [excellent|good|fair|poor]
 
-  # CI/CD Pipeline
-  cicd:
-    platform: "github-actions|gitlab-ci|jenkins|none"
-    pipelines:
-      - name: "build"
-        triggers: "push|pr|schedule"
-        steps: ["lint", "test", "build", "deploy"]
-      - name: "deploy"
-        environments: ["staging", "production"]
-    automation_level: "full|partial|manual"
+CONTAINERIZATION & ORCHESTRATION
+├── Docker
+│   ├── Used: [yes/no]
+│   ├── Dockerfiles: [Dockerfile, Dockerfile.prod]
+│   ├── Compose Files: [docker-compose.yml]
+│   └── Services: [app, db, redis, nginx]
+└── Kubernetes
+    ├── Used: [yes/no]
+    ├── Manifests: [number]
+    └── Helm Charts: [yes/no]
 
-  # Deployment Configuration
-  deployment:
-    environments: ["development", "staging", "production"]
-    hosting:
-      type: "cloud|vps|on-premise|serverless"
-      provider: "aws|gcp|azure|vercel|heroku"
-    infrastructure_as_code:
-      tool: "terraform|cloudformation|pulumi|none"
-      resources: ["ec2", "rds", "s3", "lambda"]
-    cdn:
-      used: boolean
-      provider: "cloudflare|cloudfront|fastly"
+DATABASES & STORAGE
+├── Primary Database
+│   ├── Type: [postgresql|mysql|mongodb]
+│   ├── Version: [version if detected]
+│   ├── Migrations: [yes/no]
+│   └── Migration Tool: [laravel|flyway|liquibase]
+├── Cache Layer
+│   ├── Type: [redis|memcached|none]
+│   └── Configuration: [single|cluster]
+└── File Storage
+    ├── Type: [local|s3|gcs|azure]
+    └── Buckets: [bucket names if found]
 
-  # External Services
-  external_services:
-    payments:
-      provider: "stripe|paypal|square|none"
-      integration: "sdk|api|webhook"
-    email:
-      provider: "sendgrid|ses|mailgun|smtp"
-      templates: boolean
-    authentication:
-      provider: "auth0|firebase|cognito|custom"
-      methods: ["jwt", "oauth", "saml"]
-    monitoring:
-      apm: "newrelic|datadog|none"
-      errors: "sentry|rollbar|none"
-      logs: "elk|cloudwatch|stackdriver"
+CI/CD PIPELINE
+├── Platform: [github-actions|gitlab-ci|jenkins|none]
+├── Automation Level: [full|partial|manual]
+├── Build Pipeline
+│   ├── Triggers: [push, pr, schedule]
+│   └── Steps: [lint, test, build, deploy]
+└── Deployment Pipeline
+    └── Environments: [staging, production]
 
-  # Security & Compliance
-  security:
-    secrets_management:
-      method: "env|vault|secrets-manager|plain"
-      encryption: boolean
-    ssl_certificates:
-      managed: "letsencrypt|cloudflare|manual"
-    vulnerability_scanning:
-      configured: boolean
-      tools: ["trivy", "snyk", "dependabot"]
+EXTERNAL SERVICES
+├── Payments
+│   ├── Provider: [stripe|paypal|square|none]
+│   └── Integration: [sdk|api|webhook]
+├── Email Services
+│   ├── Provider: [sendgrid|ses|mailgun|smtp]
+│   └── Templates: [yes/no]
+├── Authentication
+│   ├── Provider: [auth0|firebase|cognito|custom]
+│   └── Methods: [jwt, oauth, saml]
+└── Monitoring & Observability
+    ├── APM: [newrelic|datadog|none]
+    ├── Error Tracking: [sentry|rollbar|none]
+    └── Logs: [elk|cloudwatch|stackdriver]
 
-  # Network Configuration
-  network:
-    load_balancing:
-      configured: boolean
-      type: "alb|nlb|nginx|haproxy"
-    service_discovery:
-      method: "dns|consul|eureka|none"
-    api_gateway:
-      used: boolean
-      type: "kong|aws-api-gateway|none"
+SECURITY & COMPLIANCE
+├── Secrets Management
+│   ├── Method: [env|vault|secrets-manager|plain]
+│   └── Encryption: [yes/no]
+├── SSL Certificates
+│   └── Management: [letsencrypt|cloudflare|manual]
+└── Vulnerability Scanning
+    ├── Configured: [yes/no]
+    └── Tools: [trivy, snyk, dependabot]
 
-  # Cost Indicators
-  cost_factors:
-    high_cost_services: ["rds", "elasticsearch", "ml-services"]
-    scaling_config: "auto|manual|none"
-    multi_region: boolean
-    data_transfer: "high|medium|low"
+NETWORK & PERFORMANCE
+├── Load Balancing
+│   ├── Configured: [yes/no]
+│   └── Type: [alb|nlb|nginx|haproxy]
+├── CDN
+│   ├── Used: [yes/no]
+│   └── Provider: [cloudflare|cloudfront|fastly]
+├── Service Discovery: [dns|consul|eureka|none]
+└── API Gateway
+    ├── Used: [yes/no]
+    └── Type: [kong|aws-api-gateway|none]
 
-  # Infrastructure Health
-  health:
-    redundancy: "high|medium|low|none"
-    backup_strategy: "automated|manual|none"
-    disaster_recovery: boolean
-    monitoring_coverage: "complete|partial|minimal"
+INFRASTRUCTURE AS CODE
+├── Tool: [terraform|cloudformation|pulumi|none]
+└── Resources: [ec2, rds, s3, lambda]
 
-  # Recommendations
-  recommendations:
-    critical: ["no backups configured", "secrets in plain text"]
-    improvements: ["add monitoring", "implement CDN"]
-    cost_optimization: ["oversized instances", "unused resources"]
+COST & SCALING
+├── High Cost Services: [rds, elasticsearch, ml-services]
+├── Scaling Configuration: [auto|manual|none]
+├── Multi-Region: [yes/no]
+└── Data Transfer: [high|medium|low]
+
+BACKUP & DISASTER RECOVERY
+├── Backup Strategy: [automated|manual|none]
+├── Disaster Recovery Plan: [yes/no]
+└── Monitoring Coverage: [complete|partial|minimal]
+
+KEY INSIGHTS
+- [Strength 1: robust CI/CD pipeline with automated deployments]
+- [Strength 2: comprehensive monitoring and alerting setup]
+- [Critical Risk 1: no automated backups configured]
+- [Critical Risk 2: secrets stored in plain text]
+- [Cost Optimization 1: oversized instances in staging]
+- [Improvement 1: implement CDN for better performance]
+- [Security Concern 1: vulnerability scanning not configured]
+- [Recommendation 1: immediate backup setup required]
 ```
 
 ## Intelligence Analysis

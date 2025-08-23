@@ -9,6 +9,7 @@
 **3 tick (✅✅✅):** 0 (0%)
 
 **Progress Tracking:**
+
 - ✅ **Created** - Agent exists with basic content
 - ✅✅ **Audited perfect** - FLAGS, order and info correct (setup/coordinator don't need FLAGS)
 - ✅✅✅ **fix.md errors corrected** - All issues from fix.md checklist resolved
@@ -156,17 +157,17 @@
  **Tech:** Java 17+, Spring Boot, Spring Cloud, Hibernate, Maven, Gradle, enterprise patterns  
  **When:** Enterprise applications, large-scale systems, legacy modernization, corporate environments
 
-✅ **backend.rust** (1754 lines)  
+✅✅ **backend.rust** (1754 lines)  
  **Role:** Rust systems programming and performance expert  
  **Tech:** Rust, Actix-web, Rocket, Axum, Tokio, WebAssembly, async programming, memory safety  
  **When:** System-level programming, performance-critical applications, WebAssembly, safe concurrency
 
-✅ **backend.api** (1188 lines)  
+✅✅ **backend.api** (1188 lines)  
  **Role:** API design and integration architecture expert  
  **Tech:** REST, GraphQL, WebSocket, gRPC, OpenAPI/Swagger, API gateways, rate limiting, versioning  
  **When:** API-first development, GraphQL schemas, API governance, documentation standards
 
-✅ **backend.serverless** (1173 lines)  
+✅✅ **backend.serverless** (1173 lines)  
  **Role:** Serverless functions and edge computing expert  
  **Tech:** AWS Lambda, Vercel Functions, Netlify Functions, CloudFlare Workers, edge runtime, FaaS patterns  
  **When:** Serverless architectures, edge computing, event-driven functions, cost-optimized backends
@@ -183,12 +184,12 @@
  **Tech:** OAuth2, JWT, SSO (SAML, OIDC), Auth0, Firebase Auth, Passport.js, multi-factor authentication, RBAC  
  **When:** IF implementing user authentication OR OAuth flows OR SSO integration OR JWT token management
 
-✅ **service.communication** (2042 lines)  
+✅✅ **service.communication** (2042 lines)  
  **Role:** Multi-channel communication and messaging expert  
  **Tech:** Twilio Messaging Services with A2P compliance, SendGrid v3 API with dynamic templates, Firebase Cloud Messaging (FCM) v1 API, WebSocket architecture with Socket.IO, webhook validation, circuit breaker patterns, message queuing with retry mechanisms, PII detection, GDPR compliance, real-time monitoring  
  **When:** Transactional emails, SMS notifications, push notifications, real-time messaging, webhook processing
 
-✅ **service.data** (1828 lines)  
+✅✅ **service.data** (2169 lines)  
  **Role:** Data processing and infrastructure services expert  
  **Tech:** Elasticsearch/OpenSearch 8+ with advanced indexing and cluster management, Apache Kafka 3.8+ with Kafka Streams and event-driven architectures, Apache Airflow 2.10+ with TaskFlow API and enterprise deployment, RabbitMQ 4+ with advanced clustering and HA, modern ETL/ELT pipelines, enterprise data mesh architecture, real-time streaming, comprehensive monitoring & observability  
  **When:** Search functionality, data streaming, message queuing, data pipelines, real-time data processing
@@ -198,7 +199,7 @@
  **Tech:** REST APIs, SDK integrations, rate limiting, web scraping (Playwright, Selenium), data synchronization  
  **When:** External API consumption, third-party SDKs, service orchestration, automation workflows
 
-✅ **service.mapbox** (847 lines)  
+✅✅ **service.mapbox** (1020 lines)  
  **Role:** Mapbox and geospatial services expert  
  **Tech:** Mapbox GL JS, Navigation API, geocoding, routing, spatial analysis, custom map styles, location services  
  **When:** Interactive maps, location-based features, route optimization, geofencing, spatial data visualization
@@ -328,13 +329,13 @@
 
 ### 💻 Frontend Routing
 
-| Domain          | IF                                                                      | THEN                                       | Priority                       |
-| --------------- | ----------------------------------------------------------------------- | ------------------------------------------ | ------------------------------ |
-| Angular         | Angular 17+, NgRx, Angular Material/PrimeNG, complex forms              | frontend.angular                           | Solo                           |
-| React           | React 18+/Next.js, UI libs (MUI/Chakra/shadcn), React Query/Zustand     | frontend.react                             | Solo                           |
-| Vue             | Vue 3/Nuxt, Composition API, Pinia, Vuetify                             | frontend.vue                               | Solo                           |
+| Domain          | IF                                                                                                           | THEN                                       | Priority                       |
+| --------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------ | ------------------------------ |
+| Angular         | Angular 17+, NgRx, Angular Material/PrimeNG, complex forms                                                   | frontend.angular                           | Solo                           |
+| React           | React 18+/Next.js, UI libs (MUI/Chakra/shadcn), React Query/Zustand                                          | frontend.react                             | Solo                           |
+| Vue             | Vue 3/Nuxt, Composition API, Pinia, Vuetify                                                                  | frontend.vue                               | Solo                           |
 | Mobile          | React Native (New Architecture)/Flutter 3.24+/Expo SDK 52+/Capacitor 7+; app store publishing; EAS workflows | frontend.mobile                            | Solo                           |
-| FE Architecture | Deciding framework/micro-frontends/design system/global state           | coordinator.frontend → {angular/react/vue} | Sequential (coordinator first) |
+| FE Architecture | Deciding framework/micro-frontends/design system/global state                                                | coordinator.frontend → {angular/react/vue} | Sequential (coordinator first) |
 
 ### 🖥️ Backend Routing
 
@@ -421,46 +422,55 @@
 6. **Payments Suite:** Payment **business.payment**; invoices/taxes **business.billing**; recurrence **business.subscription**; if complete SaaS, invoke all three coordinated.
 7. **Container Orchestration:** Docker/K8s → **ops.containers** ONLY; backend agents handle language-specific code, not infrastructure.
 8. **Frontend vs Backend Confusion:**
+
    - IF **"React component", "Vue component", "UI element", "styling", "responsive design"** → **frontend.{framework}**
    - IF **"API endpoint", "database query", "business logic", "authentication middleware"** → **backend.{stack}**
    - IF **"full-stack feature"** → **backend.{stack}** → **frontend.{framework}** (sequential, backend first)
 
 9. **Database Schema vs Query Optimization:**
+
    - IF **"design database", "create tables", "relationships", "migration"** → **database.{type}**
    - IF **"slow queries", "performance tuning", "indexes", "query optimization"** → **database.{type}** (same agent, different task)
    - IF **"choose database technology"** → **coordinator.database** → **database.{selected}**
 
 10. **DevOps Strategy vs Tactical Implementation:**
+
     - IF **"CI/CD strategy", "deployment patterns", "release management"** → **coordinator.devops**
     - IF **"GitHub Actions workflow", "Docker compose", "Kubernetes manifest"** → **ops.{tool}**
     - IF **"implement monitoring"** → **ops.monitoring** directly
 
 11. **API Design vs Integration:**
+
     - IF **"design REST API", "GraphQL schema", "API architecture"** → **backend.api**
     - IF **"consume external API", "third-party SDK", "webhook handling"** → **service.integrations**
     - IF **"API gateway configuration"** → **ops.webserver** or **coordinator.infrastructure**
 
 12. **Testing Strategy vs Implementation:**
+
     - IF **"testing strategy", "quality gates", "test automation architecture"** → **coordinator.testing**
     - IF **"write unit tests", "configure Jest", "Cypress setup"** → **{specialist-agent}** (not test agent)
     - IF **"testing framework selection"** → **coordinator.testing** → **{specialist}**
 
 13. **Security Architecture vs Implementation:**
+
     - IF **"security model", "compliance framework", "threat modeling"** → **coordinator.security**
     - IF **"implement 2FA", "OAuth setup", "JWT validation"** → **service.auth**
     - IF **"penetration testing", "vulnerability scan"** → **audit.security**
 
 14. **Data Processing vs Storage:**
+
     - IF **"ETL pipeline", "data streaming", "message queues"** → **service.data**
     - IF **"database design", "data modeling", "storage optimization"** → **database.{type}**
     - IF **"analytics dashboard", "data visualization"** → **frontend.{framework}** + **service.data**
 
 15. **Mobile vs Web Development:**
+
     - IF **"React Native", "Flutter", "iOS/Android", "app store"** → **frontend.mobile**
     - IF **"responsive web", "PWA", "browser compatibility"** → **frontend.{web-framework}**
     - IF **"mobile API", "push notifications"** → **backend.{stack}** + **service.communication**
 
 16. **Infrastructure vs Application:**
+
     - IF **"server provisioning", "cloud architecture", "load balancing"** → **coordinator.infrastructure**
     - IF **"application deployment", "container orchestration"** → **ops.containers**
     - IF **"code optimization", "application performance"** → **{language-specialist}**
