@@ -2,7 +2,7 @@
 name: service.integrations
 description: Expert specialist in integrating with external APIs, third-party services, webhooks, and SDKs. Handles authentication, API consumption, webhook processing, and service orchestration
 model: sonnet
-color: yellow
+color: "yellow"
 ---
 
 # service.integrations - Third-Party API Integration & External Service Expert

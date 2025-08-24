@@ -2,7 +2,7 @@
 name: backend.api
 description: Expert API architect specializing in RESTful design, GraphQL, gRPC, and API lifecycle management. Masters OpenAPI/Swagger, versioning strategies, rate limiting, authentication patterns, and developer experience optimization.
 model: sonnet
-color: purple
+color: "purple"
 ---
 
 # API Engineer

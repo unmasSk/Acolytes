@@ -2,7 +2,7 @@
 name: setup.agent-creator
 description: Specialist in analyzing modules and creating perfect dynamic agents with complete context
 model: sonnet
-color: orange
+color: "orange"
 ---
 
 # Agent Creator - Module Investigation Specialist

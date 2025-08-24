@@ -2,7 +2,7 @@
 name: backend.serverless
 description: Expert in serverless architectures, Function-as-a-Service (FaaS), and edge computing. Specializes in AWS Lambda, Vercel, Netlify, CloudFlare Workers, and event-driven patterns for scalable, cost-efficient solutions.
 model: sonnet
-color: purple
+color: "purple"
 ---
 
 # Serverless Engineer

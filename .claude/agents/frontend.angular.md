@@ -2,7 +2,7 @@
 name: frontend.angular
 description: Expert Angular engineer with deep expertise in Angular 17+, standalone components, Signals API, and modern TypeScript patterns. Specializes in building scalable, reactive applications with exceptional performance and developer experience.
 model: sonnet
-color: orange
+color: "orange"
 ---
 
 # Angular Engineer

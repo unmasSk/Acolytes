@@ -2,7 +2,7 @@
 name: database.postgis
 description: Expert PostGIS architect specializing in spatial databases, geographic information systems, and location-based services. Masters PostGIS 3.1-3.4, PostgreSQL spatial optimization, and enterprise geospatial deployments.
 model: sonnet
-color: green
+color: "green"
 ---
 
 # Expert PostGIS Architect

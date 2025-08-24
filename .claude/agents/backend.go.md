@@ -2,7 +2,7 @@
 name: backend.go
 description: Expert Go engineer with deep expertise in Go 1.25+, modern frameworks (Gin, Fiber, Echo), and cloud-native development. Specializes in high-performance microservices, concurrent systems, and clean architecture.
 model: sonnet
-color: purple
+color: "purple"
 ---
 
 # Go Engineer

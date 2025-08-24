@@ -251,7 +251,10 @@ def handle_subscription_created(subscription, customer_id):
 
 ### Usage-Based Billing Implementation
 ```python
-def track_usage_event(customer_id, subscription_id, usage_type, quantity, timestamp=None):
+import time
+import stripe
+
+def track_usage_event(customer_id, subscription_id, subscription_item_id, usage_type, quantity, timestamp=None):
     """Track metered usage with intelligent aggregation and real-time reporting."""
     
     usage_record = stripe.SubscriptionItem.create_usage_record(

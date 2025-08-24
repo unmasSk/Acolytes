@@ -2,8 +2,7 @@
 
 > Transform Claude Code into an **intelligent project orchestrator** with 57 specialized global agents + dynamic module agents. Features enterprise-grade **FLAGS coordination system** for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
 
-[![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing.md)
-[![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
+[![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing-catalog.md)[![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-10%20Tables-green)](./.claude/memory)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-8-yellow)](./.claude/hooks)
 [![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/ClaudeSquad)
@@ -61,7 +60,7 @@
 
 ### Installation
 
-```bash
+````bash
 # 1. Clone repository
 git clone https://github.com/unmasSk/ClaudeSquad.git
 cd ClaudeSquad
@@ -76,30 +75,25 @@ cp -r .claude/* ~/.claude/
 cd /path/to/your/project
 
 # 4. Initialize ClaudeSquad (8-Phase Setup)
+# 4. Initialize ClaudeSquad (Unified 6-Phase Setup)
 claude /setup
-```
 
-### What `/setup` Does (8 Phases):
+### What `/setup` Does (6 Phases):
 
-1. **Environment Verification**: Checks Git, Node.js, Python, etc.
-2. **Parallel Analysis**: 4 specialized agents analyze your codebase simultaneously
-3. **Language Configuration**: Configure Spanish/English preferences
-4. **Database & MCP Setup**: Creates SQLite database with 10 tables
-5. **CLAUDE.md Creation**: Project-specific instructions with discovered architecture
-6. **Agent Creation**: Dynamic agents per detected module (auth-agent, api-agent, etc.)
-7. **Deep Module Analysis**: Each agent learns its module deeply (8 memory types)
-8. **Finalization**: Complete system ready with persistent memory
-
-## 🎮 Production Commands
-
+1. Environment & Database Setup
+2. Analysis & Documentation (parallel for existing; interview+specialists for new)
+3. CLAUDE.md Creation
+4. Jobs & Agent Creation
+5. Deep Analysis & Initialization
+6. Finalization
 | Command       | Description                                           | Agent Integration                 |
 | ------------- | ----------------------------------------------------- | --------------------------------- |
 | `/setup`      | 8-phase project initialization with parallel analysis | 4 setup agents + dynamic creation |
 | `/commit`     | Intelligent commits with 110+ emoji patterns          | `ops.git` specialist              |
-| `/todo`       | TODO management with SQLite sync                     | Persistent task tracking          |
-| `/flags`      | Process pending FLAGS from agents                    | Cross-agent coordination          |
-| `/save`       | Save current session to SQLite database              | Session persistence               |
-| `/mcp`        | Verify MCP connections and database status           | System health monitoring         |
+| `/todo`       | TODO management with SQLite sync                      | Persistent task tracking          |
+| `/flags`      | Process pending FLAGS from agents                     | Cross-agent coordination          |
+| `/save`       | Save current session to SQLite database               | Session persistence               |
+| `/mcp`        | Verify MCP connections and database status            | System health monitoring          |
 | `@agent-name` | Direct agent invocation with specialized context      | Any of 57 global agents           |
 
 ### FLAGS System Examples
@@ -118,7 +112,7 @@ Status: pending -> processed (automatic coordination)
 # TODO management with SQLite persistence
 claude "/todo add 'Implement OAuth2 refresh tokens'"
 claude "/todo"  # Shows all TODOs with SQLite sync
-```
+````
 
 ### Agent Invocation & Command Examples
 
@@ -310,15 +304,15 @@ Strategic placeholders for future expansion.
 
 ## 🎯 ClaudeSquad vs Standard Claude Code
 
-| Feature               | Standard Claude Code  | ClaudeSquad                                   |
-| --------------------- | --------------------- | --------------------------------------------- |
-| **Agents**            | Single AI assistant   | **57 global specialists + dynamic agents**    |
-| **Memory**            | Session-only context  | **Persistent SQLite + MCP integration**       |
-| **Coordination**      | Manual task switching | **Autonomous FLAGS system**                   |
+| Feature               | Standard Claude Code  | ClaudeSquad                                     |
+| --------------------- | --------------------- | ----------------------------------------------- |
+| **Agents**            | Single AI assistant   | **57 global specialists + dynamic agents**      |
+| **Memory**            | Session-only context  | **Persistent SQLite + MCP integration**         |
+| **Coordination**      | Manual task switching | **Autonomous FLAGS system**                     |
 | **Parallelism**       | Sequential processing | **FLAGS-based coordination and agent handoffs** |
-| **Project Knowledge** | Generic responses     | **Deep module-specific expertise**            |
-| **Agent Routing**     | Manual selection      | **17-rule anti-ambiguity system**             |
-| **Setup**             | Manual configuration  | **8-phase automated initialization**          |
+| **Project Knowledge** | Generic responses     | **Deep module-specific expertise**              |
+| **Agent Routing**     | Manual selection      | **17-rule anti-ambiguity system**               |
+| **Setup**             | Manual configuration  | **8-phase automated initialization**            |
 
 ## 📈 Project Status & Recent Breakthroughs
 
