@@ -5,7 +5,7 @@ Usage: python agent_db.py [command] [args]
 
 Commands:
   init                      - Initialize database with schema
-  create-agent [name]       - Create agent with empty memories
+  create-agent [name] --module [module] [--sub-module [sub]]  - Create acolyte with catalog entry
   update-memory [agent] [type] [content] - Update specific memory
   get-memory [agent] [type] - Get specific memory content
   list-agents              - List all agents
@@ -13,7 +13,7 @@ Commands:
   execute [sql]            - Run write operation
   create-flag              - Create flag targeting specific agent (action_required >= 100 chars, change_description >= 50 chars)
   get_flags [target_agent] - Get pending flags for specific agent
-  search-agents [query]    - Search agents semantically by keywords/capabilities (e.g., "JWT authentication")
+  search-agents [query]    - Search agents semantically by tags/tech_stack (e.g., "JWT authentication")
 """
 import sqlite3
 import json
@@ -27,8 +27,10 @@ def get_timestamp():
     return datetime.now().strftime('%Y-%m-%d %H:%M')
 
 DB_PATH = Path(__file__).parent.parent / 'memory' / 'project.db'
-MEMORY_TYPES = ['knowledge', 'structure', 'patterns', 'dependencies', 
-                'quality', 'operations', 'context', 'domain', 'interactions']
+MEMORY_TYPES = ['knowledge', 'structure', 'patterns', 'interfaces', 
+                'dependencies', 'schemas', 'quality', 'operations', 
+                'context', 'domain', 'security', 'errors', 
+                'performance', 'history']
 
 def query(sql, params=None):
     """Read-only query"""
@@ -153,32 +155,49 @@ def init_database():
     conn.close()
     return json.dumps({"success": True, "message": f"Database initialized at {DB_PATH}"})
 
-def create_agent(name):
-    """Create agent with 8 empty memory records"""
+def create_agent(name, module=None, sub_module=None):
+    """Create agent with 14 empty memory records and add to agents_catalog"""
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
+    # Ensure name starts with @
+    if not name.startswith('@'):
+        name = '@' + name
+    
+    # Module is required for acolytes
+    if not module:
+        return json.dumps({"error": "Module parameter is required for acolytes"})
+    
     try:
-        # Insert agent
+        # Insert agent in agents_dynamic
         cursor = conn.execute(
-            "INSERT INTO agents_dynamic (name, module, created_at) VALUES (?, 'unknown', ?)",
-            (name, timestamp)
+            "INSERT INTO agents_dynamic (name, module, created_at) VALUES (?, ?, ?)",
+            (name, module, timestamp)
         )
         agent_id = cursor.lastrowid
         
-        # Insert 9 empty memory records
+        # Insert 14 empty memory records
         for memory_type in MEMORY_TYPES:
             conn.execute(
                 "INSERT INTO agent_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                 (agent_id, memory_type, '{}', timestamp, timestamp)
             )
         
+        # Insert into agents_catalog for discovery
+        conn.execute(
+            "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'dynamic', ?, ?)",
+            (name, module, sub_module)
+        )
+        
         conn.commit()
         return json.dumps({
             "success": True, 
             "agent_id": agent_id, 
             "name": name,
-            "memories_created": len(MEMORY_TYPES)
+            "module": module,
+            "sub_module": sub_module,
+            "memories_created": len(MEMORY_TYPES),
+            "catalog_entry": "created"
         })
     except Exception as e:
         conn.rollback()
@@ -421,162 +440,6 @@ def get_agent_health(agent_name=None):
     
     return query(sql, params)
 
-def create_todo(task, priority='medium', category=None, module=None, 
-                assigned_to=None, due_date=None, estimated_hours=None,
-                tags=None, related_files=None, auto_created=False,
-                ai_suggested=False, session_id=None):
-    """Create a new TODO task"""
-    timestamp = get_timestamp()
-    conn = sqlite3.connect(DB_PATH)
-    
-    # Get current session_id if not provided
-    if not session_id:
-        cursor = conn.execute("SELECT id FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
-        row = cursor.fetchone()
-        session_id = row[0] if row else None
-    
-    # Get agent_id if assigned_to is an agent name
-    agent_id = None
-    if assigned_to:
-        cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (assigned_to,))
-        agent = cursor.fetchone()
-        if agent:
-            agent_id = agent[0]
-    
-    cursor = conn.execute("""
-        INSERT INTO todos (
-            task, priority, status, created_at, session_id,
-            agent_id, assigned_to, category, module, due_date,
-            estimated_hours, tags, related_files, auto_created,
-            ai_suggested, created_by
-        ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        task, priority, timestamp, session_id, agent_id,
-        assigned_to, category, module, due_date, estimated_hours,
-        json.dumps(tags) if tags else None,
-        json.dumps(related_files) if related_files else None,
-        auto_created, ai_suggested,
-        'system' if auto_created else 'user'
-    ))
-    
-    conn.commit()
-    todo_id = cursor.lastrowid
-    conn.close()
-    
-    return json.dumps({
-        "success": True,
-        "todo_id": todo_id,
-        "task": task,
-        "priority": priority,
-        "created_at": timestamp
-    })
-
-def update_todo_status(todo_id, status, actual_hours=None, completed_by=None):
-    """Update TODO status"""
-    timestamp = get_timestamp()
-    conn = sqlite3.connect(DB_PATH)
-    
-    # Use a dictionary for updates - safer and cleaner
-    update_fields = {"status": status, "updated_at": timestamp}
-    
-    if status == 'in_progress' and actual_hours is None:
-        update_fields["start_date"] = timestamp
-    
-    if status == 'completed':
-        update_fields["completed_at"] = timestamp
-        if completed_by:
-            update_fields["completed_by"] = completed_by
-    
-    if actual_hours is not None:
-        update_fields["actual_hours"] = actual_hours
-    
-    # Build SQL safely with parameterized placeholders
-    set_clause = ", ".join(f"{k} = ?" for k in update_fields.keys())
-    sql = f"UPDATE todos SET {set_clause} WHERE id = ?"
-    params = list(update_fields.values()) + [todo_id]
-    
-    cursor = conn.execute(sql, params)
-    conn.commit()
-    affected = cursor.rowcount
-    conn.close()
-    
-    return json.dumps({"success": affected > 0, "todo_id": todo_id, "status": status})
-
-def get_todos(status=None, assigned_to=None, module=None, limit=20):
-    """Get TODO tasks with filters"""
-    sql = """
-        SELECT 
-            t.*,
-            a.name as agent_name,
-            s.title as session_title
-        FROM todos t
-        LEFT JOIN agents_dynamic a ON t.agent_id = a.id
-        LEFT JOIN sessions s ON t.session_id = s.id
-        WHERE 1=1
-    """
-    params = []
-    
-    if status:
-        sql += " AND t.status = ?"
-        params.append(status)
-    
-    if assigned_to:
-        sql += " AND (t.assigned_to = ? OR a.name = ?)"
-        params.append(assigned_to)
-        params.append(assigned_to)
-    
-    if module:
-        sql += " AND t.module = ?"
-        params.append(module)
-    
-    sql += " ORDER BY CASE t.priority WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END, t.created_at DESC"
-    
-    if limit:
-        sql += f" LIMIT {limit}"
-    
-    return query(sql, params)
-
-def create_todo_from_flag(flag_id):
-    """Auto-create TODO from a critical FLAG"""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.execute("""
-        SELECT flag_type, source_module, affected_modules, 
-               change_description, action_required, impact_level
-        FROM flags WHERE id = ?
-    """, (flag_id,))
-    
-    flag = cursor.fetchone()
-    if not flag:
-        conn.close()
-        return json.dumps({"error": f"FLAG #{flag_id} not found"})
-    
-    # Parse affected_modules (comma-separated TEXT)
-    affected_modules = [m.strip() for m in flag[2].split(',')] if flag[2] else []
-    first_affected = affected_modules[0] if affected_modules else flag[1]  # fallback to source_module
-    
-    # Create TODO from FLAG
-    task = f"[FLAG #{flag_id}] {flag[4]}"  # action_required
-    priority = 'critical' if flag[5] == 'critical' else 'high' if flag[5] == 'high' else 'medium'
-    
-    result = create_todo(
-        task=task,
-        priority=priority,
-        category='maintenance' if flag[0] == 'breaking_change' else 'refactor',
-        module=flag[1],  # source_module
-        assigned_to=first_affected,  # first affected module
-        auto_created=True,
-        related_files=[f"FLAG_{flag_id}"]
-    )
-    
-    # Mark FLAG as having TODO created
-    cursor = conn.execute(
-        "UPDATE flags SET status = 'todo_created' WHERE id = ?",
-        (flag_id,)
-    )
-    conn.commit()
-    conn.close()
-    
-    return result
 
 # NEW FLAGS SYSTEM FUNCTIONS
 
@@ -685,7 +548,7 @@ def unlock_flag(flag_id):
         conn.close()
 
 def search_agents_semantic(search_query, limit=5):
-    """Search agents using semantic matching with keywords, capabilities and description
+    """Search agents using semantic matching with tags, tech_stack, role and scenarios
     
     Args:
         search_query: Text to search for (e.g., "JWT authentication implementation")
@@ -703,12 +566,11 @@ def search_agents_semantic(search_query, limit=5):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     
-    # Get all active agents with their searchable content
+    # Get all agents with their searchable content
     cursor = conn.execute("""
-        SELECT name, type, module, sub_module, description, 
-               capabilities, routing_keywords
-        FROM agents_catalog 
-        WHERE status = 'active'
+        SELECT name, type, module, sub_module, 
+               role, tech_stack, scenarios, tags, connections
+        FROM agents_catalog
     """)
     
     agents = cursor.fetchall()
@@ -725,46 +587,58 @@ def search_agents_semantic(search_query, limit=5):
         
         # Parse JSON fields safely
         try:
-            keywords = json.loads(agent['routing_keywords'] or '[]')
-            capabilities = json.loads(agent['capabilities'] or '[]')
+            tags = json.loads(agent['tags'] or '[]') if agent['tags'] else []
+            tech_stack = json.loads(agent['tech_stack'] or '[]') if agent['tech_stack'] else []
+            scenarios = json.loads(agent['scenarios'] or '[]') if agent['scenarios'] else []
+            role = json.loads(agent['role'] or '[]') if agent['role'] else []
         except (json.JSONDecodeError, TypeError):
-            keywords = []
-            capabilities = []
+            tags = []
+            tech_stack = []
+            scenarios = []
+            role = []
         
         # Convert to strings for matching
-        keywords_text = ' '.join(keywords).lower() if keywords else ''
-        capabilities_text = ' '.join(capabilities).lower() if capabilities else ''
-        description_text = agent['description'].lower() if agent['description'] else ''
-        module_text = f"{agent['module']} {agent['sub_module'] or ''}".lower()
+        tags_text = ' '.join(tags).lower() if tags else ''
+        tech_stack_text = ' '.join(tech_stack).lower() if tech_stack else ''
+        scenarios_text = ' '.join(scenarios).lower() if scenarios else ''
+        role_text = ' '.join(role).lower() if role else ''
+        module_text = f"{agent['module'] or ''} {agent['sub_module'] or ''}".lower()
         
         # Score calculation with different weights
         
-        # 1. Exact keyword matches (highest weight: 50 points each)
-        for keyword in keywords:
-            if isinstance(keyword, str) and keyword.lower() in query_lower:
+        # 1. Exact tag matches (highest weight: 50 points each)
+        for tag in tags:
+            if isinstance(tag, str) and tag.lower() in query_lower:
                 score += 50
-                reasons.append(f"exact keyword: '{keyword}'")
+                reasons.append(f"exact tag: '{tag}'")
         
-        # 2. Partial keyword word matches (40 points each)
-        keyword_words = set(keywords_text.split())
-        matching_keyword_words = query_words.intersection(keyword_words)
-        for word in matching_keyword_words:
+        # 2. Partial tag word matches (40 points each)
+        tag_words = set(tags_text.split())
+        matching_tag_words = query_words.intersection(tag_words)
+        for word in matching_tag_words:
             score += 40
-            reasons.append(f"keyword match: '{word}'")
+            reasons.append(f"tag match: '{word}'")
         
-        # 3. Capability matches (30 points each)
-        capability_words = set(capabilities_text.split())
-        matching_capability_words = query_words.intersection(capability_words)
-        for word in matching_capability_words:
+        # 3. Tech stack matches (30 points each)
+        tech_stack_words = set(tech_stack_text.split())
+        matching_tech_words = query_words.intersection(tech_stack_words)
+        for word in matching_tech_words:
             score += 30
-            reasons.append(f"capability: '{word}'")
+            reasons.append(f"tech_stack: '{word}'")
         
-        # 4. Description word matches (20 points each)
-        description_words = set(description_text.split())
-        matching_description_words = query_words.intersection(description_words)
-        for word in matching_description_words:
+        # 4. Role/description matches (20 points each)
+        role_words = set(role_text.split())
+        matching_role_words = query_words.intersection(role_words)
+        for word in matching_role_words:
             score += 20
-            reasons.append(f"description: '{word}'")
+            reasons.append(f"role: '{word}'")
+        
+        # 4b. Scenarios matches (20 points each)
+        scenarios_words = set(scenarios_text.split())
+        matching_scenarios_words = query_words.intersection(scenarios_words)
+        for word in matching_scenarios_words:
+            score += 20
+            reasons.append(f"scenario: '{word}'")
         
         # 5. Module/sub_module matches (15 points each)
         module_words = set(module_text.split())
@@ -776,9 +650,10 @@ def search_agents_semantic(search_query, limit=5):
         
         # 6. Bonus for multiple criteria matches
         criteria_matched = sum([
-            bool(matching_keyword_words),
-            bool(matching_capability_words), 
-            bool(matching_description_words),
+            bool(matching_tag_words),
+            bool(matching_tech_words), 
+            bool(matching_role_words),
+            bool(matching_scenarios_words),
             bool(matching_module_words)
         ])
         if criteria_matched >= 2:
@@ -792,7 +667,7 @@ def search_agents_semantic(search_query, limit=5):
                 "type": agent['type'],
                 "module": agent['module'],
                 "sub_module": agent['sub_module'],
-                "description": agent['description'],
+                "role": agent['role'],
                 "score": score,
                 "reasons": reasons[:3]  # Limit to top 3 reasons for readability
             })
@@ -848,26 +723,25 @@ def cleanup_orphaned_jobs():
     return json.dumps({"message": result, "jobs_cleaned": len(orphaned_jobs)})
 
 def list_available_agents():
-    """List all available agents from catalog and dynamic agents"""
+    """List all available agents from catalog and acolytes"""
     conn = sqlite3.connect(DB_PATH)
     
     try:
         # Get global agents from catalog
         cursor = conn.execute("""
-            SELECT name, type, module, description 
+            SELECT name, type, module, sub_module, role 
             FROM agents_catalog 
-            WHERE status = 'active' 
             ORDER BY type, module, name
         """)
         global_agents = cursor.fetchall()
         
-        # Get dynamic agents
+        # Get acolytes
         cursor = conn.execute("""
             SELECT name, module, created_at 
             FROM agents_dynamic 
             ORDER BY name
         """)
-        dynamic_agents = cursor.fetchall()
+        acolytes = cursor.fetchall()
         
         result = {
             "global_agents": [
@@ -875,18 +749,19 @@ def list_available_agents():
                     "name": agent[0],
                     "type": agent[1], 
                     "module": agent[2],
-                    "description": agent[3]
+                    "sub_module": agent[3],
+                    "role": agent[4]
                 } for agent in global_agents
             ],
-            "dynamic_agents": [
+            "acolytes": [
                 {
                     "name": agent[0],
                     "module": agent[1],
                     "created_at": agent[2]
-                } for agent in dynamic_agents
+                } for agent in acolytes
             ],
             "total_global": len(global_agents),
-            "total_dynamic": len(dynamic_agents)
+            "total_dynamic": len(acolytes)
         }
         
         return json.dumps(result, indent=2)
@@ -903,7 +778,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python agent_db.py [command] [args...]")
         print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
-        print("TODO Commands: create-todo, update-todo-status, get-todos, create-todo-from-flag")
         print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
         print("INTERACTIONS: add-interaction")
         print("MAINTENANCE Commands: cleanup-jobs")
@@ -917,10 +791,28 @@ if __name__ == "__main__":
         
         elif command == "create-agent":
             if len(sys.argv) < 3:
-                print("Usage: python agent_db.py create-agent [name]")
+                print("Usage: python agent_db.py create-agent [name] --module [module] [--sub-module [sub-module]]")
+                print("Example: python agent_db.py create-agent @auth-agent --module auth")
+                print("Example: python agent_db.py create-agent @api-auth-agent --module api --sub-module auth")
                 sys.exit(1)
+            
             name = sys.argv[2]
-            print(create_agent(name))
+            module = None
+            sub_module = None
+            
+            # Parse command line arguments
+            i = 3
+            while i < len(sys.argv):
+                if sys.argv[i] == "--module" and i + 1 < len(sys.argv):
+                    module = sys.argv[i + 1]
+                    i += 2
+                elif sys.argv[i] == "--sub-module" and i + 1 < len(sys.argv):
+                    sub_module = sys.argv[i + 1]
+                    i += 2
+                else:
+                    i += 1
+            
+            print(create_agent(name, module, sub_module))
         
         elif command == "update-memory":
             if len(sys.argv) < 5:
@@ -1014,51 +906,6 @@ if __name__ == "__main__":
             health_agent_name: Optional[str] = sys.argv[2] if len(sys.argv) > 2 else None
             print(get_agent_health(health_agent_name))
         
-        elif command == "create-todo":
-            import argparse
-            parser = argparse.ArgumentParser()
-            parser.add_argument('command')
-            parser.add_argument('--task', required=True)
-            parser.add_argument('--priority', default='medium')
-            parser.add_argument('--category', default=None)
-            parser.add_argument('--module', default=None)
-            parser.add_argument('--assigned_to', default=None)
-            parser.add_argument('--due_date', default=None)
-            parser.add_argument('--tags', default=None)
-            
-            args = parser.parse_args(sys.argv[1:])
-            tags = json.loads(args.tags) if args.tags else None
-            print(create_todo(
-                args.task, args.priority, args.category, args.module,
-                args.assigned_to, args.due_date, tags=tags
-            ))
-        
-        elif command == "update-todo-status":
-            if len(sys.argv) < 4:
-                print("Usage: python agent_db.py update-todo-status [todo_id] [status]")
-                sys.exit(1)
-            try:
-                todo_id = int(sys.argv[2])
-            except ValueError:
-                print(json.dumps({"error": "todo_id must be an integer"}))
-                sys.exit(1)
-            status = sys.argv[3]
-            print(update_todo_status(todo_id, status))
-        
-        elif command == "get-todos":
-            todos_status: Optional[str] = sys.argv[2] if len(sys.argv) > 2 else None
-            print(get_todos(status=todos_status))
-        
-        elif command == "create-todo-from-flag":
-            if len(sys.argv) < 3:
-                print("Usage: python agent_db.py create-todo-from-flag [flag_id]")
-                sys.exit(1)
-            try:
-                flag_id = int(sys.argv[2])
-            except ValueError:
-                print(json.dumps({"error": "flag_id must be an integer"}))
-                sys.exit(1)
-            print(create_todo_from_flag(flag_id))
         
         elif command == "timestamp":
             print(get_timestamp())
@@ -1205,7 +1052,6 @@ if __name__ == "__main__":
         else:
             print(f"Unknown command: {command}")
             print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
-            print("TODO Commands: create-todo, update-todo-status, get-todos, create-todo-from-flag")
             print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
             sys.exit(1)
             

@@ -78,7 +78,7 @@ def get_current_session_id():
         session = cursor.fetchone()
         conn.close()
         return session[0] if session else None
-    except:
+    except Exception:
         return None
 
 def process_todowrite(todos_data):

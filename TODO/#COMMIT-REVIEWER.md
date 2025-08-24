@@ -2,6 +2,8 @@
 
 ## **CONCEPTO COMPLETO:**
 
+⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️⚠️ IMPORTANTEEEEEEEEEEEEEE INDICAR QUE REVISE TB AUTOPROMOCION
+
 **Inspiración:** CodeRabbit ha encontrado 15+ mejoras microscópicas pero importantes que nunca habríamos visto manualmente.
 
 ## **FLUJO PROPUESTO:**
@@ -55,17 +57,19 @@
 **✅ ELEGIDO: Report + Smart FLAGS + Dashboard Web** (Control total + UX increíble)
 
 ### **Nivel 1: SAFE AUTO-FIX (Sin riesgo)**
-```python
+
+````python
 SAFE_AUTO_FIXES = [
     'add_missing_language_tags',    # ```bash → ```
-    'fix_obvious_typos',            # "teh" → "the"  
+    'fix_obvious_typos',            # "teh" → "the"
     'standardize_whitespace',       # Espacios/tabs consistentes
     'add_missing_punctuation',      # Puntos finales
     'format_markdown_headers',      # # spacing consistency
 ]
-```
+````
 
 ### **Nivel 2: SMART FLAGS (Control total)**
+
 ```python
 PREPARED_FLAGS = [
     'refactor_hardcoded_values',    # Requiere pensamiento
@@ -79,19 +83,21 @@ PREPARED_FLAGS = [
 ## **🌐 DASHBOARD WEB CRÍTICO**
 
 ### **Interfaz Asíncrona Inteligente:**
+
 ```bash
 # POST-COMMIT: Crea flags + web interface
-$ /commit "Add payment integration"  
+$ /commit "Add payment integration"
 🤖 Created review flags
 🌐 Review dashboard: http://localhost:8432/review
 📋 Or use: /review-dashboard
 ```
 
 ### **Comandos de Interacción:**
+
 ```bash
 /review-flags                      # Lista todas las flags pendientes
 /review-flags security             # Filtra por tipo
-/fix security                      # Aplica todas las de seguridad  
+/fix security                      # Aplica todas las de seguridad
 /fix flag_42                       # Aplica flag específica
 /fix all --safe-only              # Solo las de risk=low
 /ignore-flag 42 "reason"          # Marca como ignorada
@@ -101,6 +107,7 @@ $ /commit "Add payment integration"
 ```
 
 ### **SQLite Schema para FLAGS:**
+
 ```sql
 CREATE TABLE review_flags (
     id INTEGER PRIMARY KEY,
@@ -137,22 +144,22 @@ def post_commit_review():
         changed_files = get_git_changed_files()
         if not changed_files:
             return
-            
+
         # 2. SAFE AUTO-FIXES (Sin interacción, sin riesgo)
         safe_issues = detect_safe_issues(changed_files)
         safe_fixes = apply_safe_fixes(safe_issues)
         if safe_fixes:
             auto_commit_safe_fixes(safe_fixes)
-        
+
         # 3. COMPLEX ISSUES → CREATE FLAGS
         complex_issues = detect_complex_issues(changed_files)
         flags = create_smart_flags(complex_issues)
         store_flags_in_database(flags)
-        
+
         # 4. SUMMARY OUTPUT + DASHBOARD LAUNCH
         print_review_summary(safe_fixes, flags)
         launch_dashboard_if_flags_exist(flags)
-            
+
     except Exception as e:
         log_error("post_commit_review failed", exc=e)
 
@@ -200,7 +207,7 @@ def run_multiple_analyzers(changed_files):
     """Ejecuta múltiples herramientas como los líderes del mercado"""
     tools = [
         'ruff check',          # Python linting
-        'markdownlint',        # Markdown consistency  
+        'markdownlint',        # Markdown consistency
         'shellcheck',          # Shell scripts
         'custom_claude_rules'  # Tu lógica específica ClaudeSquad
     ]
@@ -220,7 +227,7 @@ def generate_contextual_feedback(issue, context):
     """No solo detecta - explica WHY y CÓMO arreglar (como CodeRabbit)"""
     return f"""
     🔍 **Issue**: {issue.description}
-    🚨 **Impact**: {issue.impact}  
+    🚨 **Impact**: {issue.impact}
     🔧 **Auto-fix applied**: {issue.fix_applied}
     📚 **Why this matters**: {issue.educational_context}
     💡 **Best practice**: {issue.recommendation}
@@ -263,7 +270,7 @@ $ /commit "Add payment integration"
 
 🚨 REVIEW FLAGS CREATED (5):
    🔐 Security: 2 flags
-   ⚠️ Logic: 2 flags  
+   ⚠️ Logic: 2 flags
    🏃 Performance: 1 flag
 
 🌐 Review dashboard: http://localhost:8432/review
@@ -273,14 +280,14 @@ $ /review-flags
 📋 PENDING REVIEW FLAGS (5):
 
 🔐 #42 [HIGH] Hardcoded API key
-    📁 payment.py:42 → Use environment variable  
+    📁 payment.py:42 → Use environment variable
     🎯 @security-auditor
 
 ⚠️ #43 [MED] Missing error handling
     📁 api.py:28 → Add try/catch block
     🎯 @backend.python
 
-🏃 #44 [LOW] N+1 query detected  
+🏃 #44 [LOW] N+1 query detected
     📁 models.py:15 → Use select_related()
     🎯 @database.postgres
 
@@ -297,18 +304,21 @@ $ /review-dashboard
 ## **ESCALABILIDAD:**
 
 ### **Specialists por Tipo de Archivo:**
+
 - **@markdown-reviewer**: Grammar, language tags, link validation
 - **@python-reviewer**: AST analysis, PEP8, security patterns
 - **@config-reviewer**: Path consistency, placeholder validation
 - **@claude-reviewer**: Agent conventions, ClaudeSquad-specific patterns
 
 ### **Configuración Inteligente:**
+
 - **Rule-based**: Configurable rules por proyecto (.coderabbit.yml style)
 - **Learning**: Se mejora basado en patterns detectados automáticamente
 - **Custom patterns**: Detección específica de convenciones ClaudeSquad
 - **Integration**: Funciona con cualquier proyecto Claude Code
 
 ### **Ventajas Competitivas vs Líderes del Mercado:**
+
 - **CodeRabbit**: $24/mes → **Nuestro**: Gratuito y nativo
 - **Qodo**: Requiere API keys → **Nuestro**: Sin dependencias externas
 - **Codacy**: Setup complejo → **Nuestro**: Zero configuration
@@ -343,13 +353,15 @@ Basado en lo que CodeRabbit encontró hoy en este proyecto + nuestras mejoras de
 ## **RESEARCH VALIDATION 2025:**
 
 ### **Confirmado por Ejemplos Reales:**
+
 ✅ **Post-commit hooks**: Approach validado por múltiples implementaciones  
 ✅ **AI-powered review**: OpenAI GPT-4o, CodeRabbit, Qodo usan este enfoque  
 ✅ **Multi-tool integration**: Líderes como Codacy combinan múltiples herramientas  
 ✅ **Educational feedback**: CodeRabbit genera $24/mes con este modelo  
-✅ **AST-based detection**: Comprobado como gold standard para pattern matching  
+✅ **AST-based detection**: Comprobado como gold standard para pattern matching
 
 ### **Citas de la Investigación:**
+
 > "AI-powered code review significantly reduces manual effort and catches subtle errors that may be missed during manual review" - Medium Research 2025
 
 > "CodeRabbit goes beyond just pointing out issues; it provides clear solutions with inline code examples" - Developer Review 2025
@@ -368,17 +380,20 @@ Este sistema sería una **revolución del workflow** validada por la investigaci
 ## **🚀 IMPLEMENTACIÓN PRIORIZADA:**
 
 ### **Fase 1: Core System**
+
 1. ✅ **Safe auto-fixes**: Language tags, typos, spacing
 2. ✅ **FLAGS system**: SQLite storage con schema completo
 3. ✅ **Basic commands**: /review-flags, /fix, /ignore-flag
 
-### **Fase 2: Dashboard Crítico** 
+### **Fase 2: Dashboard Crítico**
+
 4. 🌐 **Web server local**: Puerto 8432, auto-launch
 5. 📊 **Visual interface**: Cards, filters, preview diffs
 6. 🎯 **One-click apply**: Apply/ignore individual flags
 7. 📚 **Educational tooltips**: Why each fix matters
 
 ### **Fase 3: Advanced Features**
+
 8. 🤖 **@code-reviewer-agent**: Specialized agent creation
 9. 📈 **Analytics**: Metrics de fixes aplicadas
 10. 🔄 **Learning system**: Mejora basada en user feedback

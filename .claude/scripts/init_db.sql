@@ -42,20 +42,25 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
 );
 
 -- 3. AGENT MEMORY
--- memory_type must be one of these 9 types:
+-- memory_type must be one of these 14 types:
 -- 'knowledge': Core understanding - purpose, features, architecture, TODOs
 -- 'structure': Code organization - files, classes, functions, APIs, endpoints
 -- 'patterns': Best practices - conventions, anti-patterns, design patterns
+-- 'interfaces': What module exposes - public APIs, exports, events, contracts
 -- 'dependencies': Connections - internal deps, external libs, services, integrations
+-- 'schemas': Data models - entities, validation, transformations, data flows
 -- 'quality': Code health - tests, coverage, performance metrics, security analysis
 -- 'operations': DevOps - config, deployment, monitoring, migrations, CI/CD
 -- 'context': Business logic - decisions, history, roadmap, stakeholders
 -- 'domain': Specialized - ML models, GraphQL schemas, i18n, specific to domain
--- 'interactions': Recent interactions - last consultations, implementations, delegations
+-- 'security': Security profile - permissions, compliance, vulnerabilities, encryption
+-- 'errors': Error handling - common errors, failure modes, recovery procedures
+-- 'performance': Optimization - bottlenecks, caching, targets, scaling strategies
+-- 'history': Recent interactions - last consultations, implementations, delegations
 CREATE TABLE IF NOT EXISTS agent_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     agent_id INTEGER NOT NULL,
-    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'dependencies', 'quality', 'operations', 'context', 'domain', 'interactions')) NOT NULL,
+    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
     content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
@@ -116,7 +121,7 @@ CREATE TABLE IF NOT EXISTS flags (
     change_description TEXT NOT NULL,     -- What changed (e.g., "Created global TIME utility")
     action_required TEXT NOT NULL,        -- What other modules need to do
     impact_level TEXT DEFAULT 'medium',   -- low/medium/high/critical (impact, not error severity)
-    status TEXT DEFAULT 'pending',        -- pending/acknowledged/in_progress/completed/skipped
+    status TEXT DEFAULT 'pending',        -- pending/completed
     locked BOOLEAN DEFAULT FALSE,         -- NEW: TRUE if waiting for response, FALSE if actionable
     related_files TEXT,                   -- Files involved (comma-separated)
     code_location TEXT,                   -- file:line_number format if specific location
@@ -390,21 +395,21 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["Angular framework (Angular 17+ with standalone components, Signals API reactive primitives, dependency injection system, Angular CLI tooling, Angular DevKit schematics, Angular Material design system)", "TypeScript mastery (TypeScript 5+ with advanced types, decorators, generic constraints, conditional types, template literal types, utility types)", "reactive programming (RxJS observables, operators, subjects, reactive patterns, async pipes, custom operators, marble testing)", "state management (NgRx store pattern, effects, selectors, entity adapters, component store, Akita state management)", "UI frameworks (Angular Material components, PrimeNG enterprise widgets, ng-bootstrap integration, custom component libraries)", "forms management (reactive forms, template-driven forms, dynamic forms, form validation, custom validators, form arrays)", "testing ecosystem (Jasmine unit testing, Karma test runner, Angular Testing Utilities, component testing, service testing, integration testing)", "performance optimization (OnPush change detection, lazy loading modules, tree shaking, code splitting, bundle analysis, Angular Universal SSR)"]',
  '["Enterprise web application development", "complex business form implementation", "reactive data flow architecture", "large-scale application architecture", "TypeScript-heavy project development", "enterprise UI component library creation", "real-time application development", "progressive web application implementation", "Angular migration strategies", "performance optimization and tuning", "Angular Universal server-side rendering", "micro-frontend architecture with Angular Elements"]',
  '["Angular", "TypeScript", "RxJS", "NgRx", "reactive-programming", "enterprise-applications", "standalone-components", "Signals-API", "dependency-injection", "reactive-forms", "Angular-Material", "PrimeNG", "Angular-CLI", "performance-optimization", "testing", "Jasmine", "Karma", "lazy-loading", "change-detection", "Angular-Universal", "micro-frontends", "progressive-web-apps"]',
- '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs-specialist [optional,seq:3]"]'
+ '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs.specialist [optional,seq:3]"]'
 ),
 ('@frontend.react', 'frontend', 
  '["React ecosystem architect specializing in modern JavaScript applications and component-based architectures"]',
  '["React framework (React 18+ with concurrent features, Suspense, Server Components, hooks system, custom hooks development)", "Next.js full-stack (App Router, Server Actions, middleware, API routes, static generation, incremental static regeneration, edge runtime)", "TypeScript integration (strict typing, component props, generic components, utility types, React TypeScript patterns)", "state management (Zustand lightweight state, Redux Toolkit modern Redux, React Query/TanStack Query server state, Context API patterns, React Hook Form)", "UI libraries (Material-UI/MUI components, Chakra UI modular design, shadcn/ui headless components, Mantine hooks and components, React Spring animations)", "styling solutions (Styled Components CSS-in-JS, Emotion styled system, Tailwind CSS utility-first, CSS Modules scoped styling)", "build optimization (Vite fast bundler, Webpack configuration, SWC compilation, tree shaking, code splitting, bundle analysis)", "testing ecosystem (React Testing Library, Jest unit testing, Storybook component documentation, Playwright e2e testing, MSW API mocking)", "performance optimization (React.memo, useMemo, useCallback, lazy loading, React DevTools profiler)"]',
  '["Single-page application development", "Next.js full-stack web applications", "component library creation and maintenance", "modern web application architecture", "server-side rendering implementation", "progressive web application development", "React migration strategies", "performance optimization and profiling", "responsive design system implementation", "real-time application development", "micro-frontend architecture", "e-commerce platform development"]',
  '["React", "Next.js", "TypeScript", "hooks", "JSX", "components", "state-management", "Zustand", "React-Query", "Material-UI", "Chakra-UI", "shadcn-ui", "SSR", "SPA", "modern-JavaScript", "performance-optimization", "Server-Components", "concurrent-features", "build-tools", "Vite", "Webpack", "testing", "Storybook", "progressive-web-apps"]',
- '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs-specialist [optional,seq:3]"]'
+ '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs.specialist [optional,seq:3]"]'
 ),
 ('@frontend.vue', 'frontend', 
  '["Vue.js ecosystem architect specializing in progressive framework development and reactive web applications"]',
  '["Vue framework (Vue 3+ with Composition API, Options API patterns, reactive system, computed properties, watchers, lifecycle hooks, template syntax, directives)", "Nuxt.js full-stack (Nuxt 3 with auto-imports, server-side rendering, static site generation, middleware, plugins, modules, universal rendering)", "TypeScript integration (Vue 3 TypeScript support, component props typing, composables typing, reactive refs typing)", "state management (Pinia stores with composition API, Vuex legacy support, global state patterns, store modules, state persistence)", "UI frameworks (Vuetify Material Design, Quasar components, PrimeVue enterprise widgets, Naive UI lightweight components, Vue transitions and animations)", "routing system (Vue Router 4, nested routes, route guards, dynamic routing, programmatic navigation, route transitions)", "build tooling (Vite HMR development, Vue CLI project scaffolding, build optimization, bundle analysis, tree shaking)", "testing ecosystem (Vue Test Utils, Vitest unit testing, Cypress component testing, Jest integration, testing composables)", "Single File Components (SFC structure, scoped styling, CSS modules, preprocessors, custom blocks)"]',
  '["Progressive web application development", "rapid prototyping and MVP development", "developer-friendly project implementation", "Vue.js application architecture", "gradual framework adoption", "reactive application development", "component-based architecture design", "modern build tool integration", "Vue 2 to Vue 3 migration", "enterprise Vue application development", "server-side rendering with Nuxt.js", "SPA to universal application conversion"]',
  '["Vue", "Nuxt.js", "Composition-API", "Pinia", "Vuetify", "Vue-Router", "Vite", "reactive", "SFC", "progressive", "TypeScript", "rapid-prototyping", "developer-friendly", "universal-rendering", "server-side-rendering", "component-based", "build-optimization", "Vue-Test-Utils", "Vitest", "modern-JavaScript", "state-management", "routing"]',
- '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs-specialist [optional,seq:3]"]'
+ '["@backend.api [optional]", "@service.auth [optional,seq:2]", "@docs.specialist [optional,seq:3]"]'
 ),
 ('@frontend.mobile', 'frontend', 
  '["Cross-platform mobile development architect specializing in React Native and Flutter applications with enterprise deployment"]',
@@ -460,7 +465,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["API protocols (REST architectural principles, GraphQL schema design and federation, WebSocket real-time communication, gRPC high-performance RPC, OpenAPI/Swagger 3.0 specifications)", "API gateways (Kong API management, AWS API Gateway, Azure API Management, Google Cloud Endpoints, Zuul proxy, Ambassador edge stack)", "authentication systems (OAuth 2.0/2.1, JWT token management, API key authentication, mTLS mutual authentication, SAML integration)", "rate limiting (token bucket algorithms, sliding window, distributed rate limiting, quota management, throttling strategies)", "API versioning (semantic versioning, backward compatibility, deprecation strategies, migration planning, header-based versioning, URI versioning)", "monitoring and analytics (API metrics, latency tracking, error rate monitoring, usage analytics, performance monitoring, distributed tracing)", "security patterns (API security best practices, CORS handling, input validation, output sanitization, SQL injection prevention, XSS protection)", "testing frameworks (API testing automation, contract testing with Pact, load testing with JMeter/K6, integration testing, mock services)"]',
  '["API-first development strategy implementation", "GraphQL schema design and federation", "API governance and standards establishment", "REST API design and documentation", "API security implementation", "versioning strategy development", "integration architecture planning", "API gateway configuration and management", "microservices API orchestration", "third-party API integration", "API testing automation", "API performance optimization"]',
  '["API", "REST", "GraphQL", "WebSocket", "gRPC", "OpenAPI", "Swagger", "API-gateway", "rate-limiting", "versioning", "authentication", "integration", "API-design", "API-security", "OAuth", "JWT", "API-testing", "contract-testing", "API-governance", "microservices-integration", "performance-monitoring", "distributed-tracing"]',
- '["@backend.nodejs [optional]", "@backend.python [optional]", "@backend.go [optional]", "@service.auth [optional,seq:2]", "@docs-specialist [optional,seq:3]"]'
+ '["@backend.nodejs [optional]", "@backend.python [optional]", "@backend.go [optional]", "@service.auth [optional,seq:2]", "@docs.specialist [optional,seq:3]"]'
 ),
 ('@backend.serverless', 'backend', 
  '["Serverless architecture specialist focusing on Function-as-a-Service and edge computing implementations"]',
@@ -532,7 +537,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["subscription", "recurring-revenue", "MRR", "ARR", "churn-prediction", "LTV", "customer-lifecycle", "usage-based-billing", "metered-pricing", "retention", "cohort-analysis", "revenue-recognition", "dunning-management", "Stripe", "Kill-Bill", "billing-orchestration", "customer-success", "onboarding-automation", "predictive-analytics", "revenue-forecasting", "pricing-optimization", "expansion-revenue", "compliance-automation", "ASC-606", "enterprise-billing", "multi-tenant", "subscription-analytics", "health-scoring", "lifecycle-triggers", "intervention-workflows"]',
  '["@business.payment [required]", "@business.billing [required,seq:2]", "@database.postgres [required]", "@service.integrations [optional]", "@frontend.react [optional,seq:3]"]'
 ),
-('@docs-specialist', 'documentation', 
+('@docs.specialist', 'documentation', 
  '["Comprehensive documentation architecture and technical writing expert"]',
  '["Semantic versioning", "changelog generation", "technical writing", "API documentation", "markdown mastery", "GitHub repository files (README.md, CONTRIBUTING.md, LICENSE, CODE_OF_CONDUCT.md)", "OpenAPI/Swagger", "Mermaid diagrams", ".github templates", "community health files", "shields.io badges", "accessibility compliance", "documentation automation", "quality metrics", "multi-platform publishing", "Keep a Changelog format", "GitHub Flavored Markdown (GFM)", "WCAG compliance", "conventional commits"]',
  '["Documentation creation/updates", "changelog management", "version management", "API documentation", "README optimization", "GitHub repository setup", "community health files", "issue/PR templates", "CONTRIBUTING guidelines", "LICENSE files", "technical guides", "documentation quality audits", "release notes", "migration guides", "architecture documentation", "cross-reference management"]',
@@ -572,7 +577,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["Git advanced (branching strategies, conventional commits, semantic versioning, git hooks, submodules, LFS, merge strategies, conflict resolution, rebase workflows, cherry-picking, bisect debugging)", "GitHub Actions (CI/CD workflows, automated testing, release automation, pull request automation)", "repository management (code review workflows, branch protection rules, CODEOWNERS files, issue templates, pull request templates)", "release management (semantic versioning, changelog generation, tag management, GitHub releases, automated versioning)", "workflow optimization (commit message standards, merge vs rebase strategies, feature branch patterns, hotfix workflows)"]',
  '["Repository setup and organization", "branching strategy implementation", "conventional commit workflow establishment", "automated versioning and changelog generation", "code review process optimization", "release management automation", "conflict resolution training", "Git workflow consulting", "repository migration planning", "team collaboration enhancement"]',
  '["Git", "version-control", "branching-strategies", "conventional-commits", "semantic-versioning", "GitHub-Actions", "merge-strategies", "conflict-resolution", "rebase", "cherry-pick", "bisect", "release-management", "code-review", "pull-request", "repository-management", "workflow-automation", "team-collaboration", "changelog-generation", "tag-management", "CI-CD-integration"]',
- '["@docs-specialist [optional]", "@coordinator.devops [optional,seq:2]", "@ops.cicd [optional,seq:3]"]'
+ '["@docs.specialist [optional]", "@coordinator.devops [optional,seq:2]", "@ops.cicd [optional,seq:3]"]'
 ),
 ('@ops.monitoring', 'operations', 
  '["Production-grade monitoring and observability expert specializing in enterprise Prometheus clusters, Grafana dashboard architecture, ELK stack optimization, and APM tool mastery"]',
@@ -636,8 +641,6 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
  '["Test automation strategy development and implementation", "comprehensive quality gate setup with coverage thresholds", "end-to-end testing pipeline creation", "performance and load testing implementation", "code coverage analysis and optimization", "enterprise testing methodology design and deployment"]',
  '["testing-automation", "quality-assurance", "test-frameworks", "code-coverage", "Jest", "Cypress", "Playwright", "JUnit", "pytest", "quality-gates", "performance-testing", "end-to-end-testing", "TDD", "BDD", "test-strategy", "mutation-testing"]',
  '["@coordinator.testing [optional for strategy coordination]", "@ops.cicd [optional for pipeline integration]", "@coordinator.devops [optional for DevOps integration]", "@ops.performance [optional for performance testing]"]'
-),
--- Removed @plan.strategy agent as requested
 );
 
 -- Generated 52 INSERT statements for 52 agents

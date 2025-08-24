@@ -329,7 +329,7 @@ COMMON_ERRORS:
     - Follow project conventions
 
   Agent not available:
-    - Check if module has dynamic agent
+    - Check if module has acolyte
     - Suggest running /setup first
 ```
 

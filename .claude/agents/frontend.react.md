@@ -387,10 +387,13 @@ const ProductItem = memo(
     );
   },
   (prevProps, nextProps) => {
-    // Custom comparison for optimization
+    // Custom comparison for optimization - must include ALL rendered fields
     return (
       prevProps.product.id === nextProps.product.id &&
-      prevProps.product.price === nextProps.product.price
+      prevProps.product.name === nextProps.product.name &&
+      prevProps.product.image === nextProps.product.image &&
+      prevProps.product.price === nextProps.product.price &&
+      prevProps.onSelect === nextProps.onSelect
     );
   }
 );
@@ -625,14 +628,17 @@ import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
 
 // Monitor Core Web Vitals
 const reportWebVitals = (metric: any) => {
-  // Send to analytics
-  gtag("event", metric.name, {
-    value: Math.round(
-      metric.name === "CLS" ? metric.value * 1000 : metric.value
-    ),
-    event_label: metric.id,
-    non_interaction: true,
-  });
+  // Guard against SSR and missing analytics - silently skip when gtag unavailable
+  if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+    // Send to analytics
+    (window as any).gtag("event", metric.name, {
+      value: Math.round(
+        metric.name === "CLS" ? metric.value * 1000 : metric.value
+      ),
+      event_label: metric.id,
+      non_interaction: true,
+    });
+  }
 };
 
 getCLS(reportWebVitals);
@@ -693,6 +699,9 @@ if (process.env.ANALYZE) {
 **Solution**:
 
 ```tsx
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+
 // Compound component pattern for flexible Modal API
 interface ModalContextType {
   isOpen: boolean;
@@ -702,11 +711,17 @@ interface ModalContextType {
 const ModalContext = createContext<ModalContextType | null>(null);
 
 const Modal = ({ children, isOpen, onClose }: ModalProps) => {
+  const [mounted, setMounted] = useState(false);
   const value = useMemo(() => ({ isOpen, onClose }), [isOpen, onClose]);
+
+  // Track client-only mounted state to avoid SSR hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <ModalContext.Provider value={value}>
-      {isOpen &&
+      {isOpen && mounted &&
         createPortal(
           <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -984,7 +999,8 @@ class ErrorBoundary extends Component<
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    logger.error("React Error Boundary caught an error", {
+    // In production, import: import { logger } from "@/lib/logger"
+    console.error("React Error Boundary caught an error", {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
@@ -1184,7 +1200,8 @@ export default async function handler(
       res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
-    logger.error("API error", { error, path: req.url, method: req.method });
+    // In production, import: import { logger } from "@/lib/logger"
+    console.error("API error", { error, path: req.url, method: req.method });
     res.status(500).json({ error: "Internal server error" });
   }
 }

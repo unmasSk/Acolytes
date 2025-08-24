@@ -6,7 +6,7 @@
 
 ### **@setup.agent-creator** `362 lines`
 
-Module research specialist that reads all module files, understands code purpose and creates the perfect dynamic agent for the assigned module.
+Module research specialist that reads all module files, understands code purpose and creates the perfect acolyte for the assigned module.
 
 ---
 
@@ -206,7 +206,7 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ TECH STACK ---** Angular framework (Angular 17+ with standalone components, Signals API reactive primitives, dependency injection system, Angular CLI tooling, Angular DevKit schematics, Angular Material design system), TypeScript mastery (TypeScript 5+ with advanced types, decorators, generic constraints, conditional types, template literal types, utility types), reactive programming (RxJS observables, operators, subjects, reactive patterns, async pipes, custom operators, marble testing), state management (NgRx store pattern, effects, selectors, entity adapters, component store, Akita state management), UI frameworks (Angular Material components, PrimeNG enterprise widgets, ng-bootstrap integration, custom component libraries), forms management (reactive forms, template-driven forms, dynamic forms, form validation, custom validators, form arrays), testing ecosystem (Jasmine unit testing, Karma test runner, Angular Testing Utilities, component testing, service testing, integration testing), performance optimization (OnPush change detection, lazy loading modules, tree shaking, code splitting, bundle analysis, Angular Universal SSR)
 **♾️ SCENARIOS ---** Enterprise web application development, complex business form implementation, reactive data flow architecture, large-scale application architecture, TypeScript-heavy project development, enterprise UI component library creation, real-time application development, progressive web application implementation, Angular migration strategies, performance optimization and tuning, Angular Universal server-side rendering, micro-frontend architecture with Angular Elements
 **♾️ TAGS ---** Angular, TypeScript, RxJS, NgRx, reactive-programming, enterprise-applications, standalone-components, Signals-API, dependency-injection, reactive-forms, Angular-Material, PrimeNG, Angular-CLI, performance-optimization, testing, Jasmine, Karma, lazy-loading, change-detection, Angular-Universal, micro-frontends, progressive-web-apps
-**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs-specialist [optional,seq:3]
+**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs.specialist [optional,seq:3]
 
 ---
 
@@ -216,7 +216,7 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ TECH STACK ---** React framework (React 18+ with concurrent features, Suspense, Server Components, hooks system, custom hooks development), Next.js full-stack (App Router, Server Actions, middleware, API routes, static generation, incremental static regeneration, edge runtime), TypeScript integration (strict typing, component props, generic components, utility types, React TypeScript patterns), state management (Zustand lightweight state, Redux Toolkit modern Redux, React Query/TanStack Query server state, Context API patterns, React Hook Form), UI libraries (Material-UI/MUI components, Chakra UI modular design, shadcn/ui headless components, Mantine hooks and components, React Spring animations), styling solutions (Styled Components CSS-in-JS, Emotion styled system, Tailwind CSS utility-first, CSS Modules scoped styling), build optimization (Vite fast bundler, Webpack configuration, SWC compilation, tree shaking, code splitting, bundle analysis), testing ecosystem (React Testing Library, Jest unit testing, Storybook component documentation, Playwright e2e testing, MSW API mocking), performance optimization (React.memo, useMemo, useCallback, lazy loading, React DevTools profiler)
 **♾️ SCENARIOS ---** Single-page application development, Next.js full-stack web applications, component library creation and maintenance, modern web application architecture, server-side rendering implementation, progressive web application development, React migration strategies, performance optimization and profiling, responsive design system implementation, real-time application development, micro-frontend architecture, e-commerce platform development
 **♾️ TAGS ---** React, Next.js, TypeScript, hooks, JSX, components, state-management, Zustand, React-Query, Material-UI, Chakra-UI, shadcn-ui, SSR, SPA, modern-JavaScript, performance-optimization, Server-Components, concurrent-features, build-tools, Vite, Webpack, testing, Storybook, progressive-web-apps
-**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs-specialist [optional,seq:3]
+**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs.specialist [optional,seq:3]
 
 ---
 
@@ -226,7 +226,7 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ TECH STACK ---** Vue framework (Vue 3+ with Composition API, Options API patterns, reactive system, computed properties, watchers, lifecycle hooks, template syntax, directives), Nuxt.js full-stack (Nuxt 3 with auto-imports, server-side rendering, static site generation, middleware, plugins, modules, universal rendering), TypeScript integration (Vue 3 TypeScript support, component props typing, composables typing, reactive refs typing), state management (Pinia stores with composition API, Vuex legacy support, global state patterns, store modules, state persistence), UI frameworks (Vuetify Material Design, Quasar components, PrimeVue enterprise widgets, Naive UI lightweight components, Vue transitions and animations), routing system (Vue Router 4, nested routes, route guards, dynamic routing, programmatic navigation, route transitions), build tooling (Vite HMR development, Vue CLI project scaffolding, build optimization, bundle analysis, tree shaking), testing ecosystem (Vue Test Utils, Vitest unit testing, Cypress component testing, Jest integration, testing composables), Single File Components (SFC structure, scoped styling, CSS modules, preprocessors, custom blocks)
 **♾️ SCENARIOS ---** Progressive web application development, rapid prototyping and MVP development, developer-friendly project implementation, Vue.js application architecture, gradual framework adoption, reactive application development, component-based architecture design, modern build tool integration, Vue 2 to Vue 3 migration, enterprise Vue application development, server-side rendering with Nuxt.js, SPA to universal application conversion
 **♾️ TAGS ---** Vue, Nuxt.js, Composition-API, Pinia, Vuetify, Vue-Router, Vite, reactive, SFC, progressive, TypeScript, rapid-prototyping, developer-friendly, universal-rendering, server-side-rendering, component-based, build-optimization, Vue-Test-Utils, Vitest, modern-JavaScript, state-management, routing
-**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs-specialist [optional,seq:3]
+**♾️ CONNECTIONS ---** @backend.api [optional], @service.auth [optional,seq:2], @docs.specialist [optional,seq:3]
 
 ---
 
@@ -308,7 +308,7 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ TECH STACK ---** API protocols (REST architectural principles, GraphQL schema design and federation, WebSocket real-time communication, gRPC high-performance RPC, OpenAPI/Swagger 3.0 specifications), API gateways (Kong API management, AWS API Gateway, Azure API Management, Google Cloud Endpoints, Zuul proxy, Ambassador edge stack), authentication systems (OAuth 2.0/2.1, JWT token management, API key authentication, mTLS mutual authentication, SAML integration), rate limiting (token bucket algorithms, sliding window, distributed rate limiting, quota management, throttling strategies), API versioning (semantic versioning, backward compatibility, deprecation strategies, migration planning, header-based versioning, URI versioning), monitoring and analytics (API metrics, latency tracking, error rate monitoring, usage analytics, performance monitoring, distributed tracing), security patterns (API security best practices, CORS handling, input validation, output sanitization, SQL injection prevention, XSS protection), testing frameworks (API testing automation, contract testing with Pact, load testing with JMeter/K6, integration testing, mock services)
 **♾️ SCENARIOS ---** API-first development strategy implementation, GraphQL schema design and federation, API governance and standards establishment, REST API design and documentation, API security implementation, versioning strategy development, integration architecture planning, API gateway configuration and management, microservices API orchestration, third-party API integration, API testing automation, API performance optimization
 **♾️ TAGS ---** API, REST, GraphQL, WebSocket, gRPC, OpenAPI, Swagger, API-gateway, rate-limiting, versioning, authentication, integration, API-design, API-security, OAuth, JWT, API-testing, contract-testing, API-governance, microservices-integration, performance-monitoring, distributed-tracing
-**♾️ CONNECTIONS ---** @backend.nodejs [optional], @backend.python [optional], @backend.go [optional], @service.auth [optional,seq:2], @docs-specialist [optional,seq:3]
+**♾️ CONNECTIONS ---** @backend.nodejs [optional], @backend.python [optional], @backend.go [optional], @service.auth [optional,seq:2], @docs.specialist [optional,seq:3]
 
 ---
 
@@ -418,7 +418,7 @@ Analyzes deployment infrastructure and DevOps configuration
 
 # 📝 Documentation
 
-### **@docs-specialist** `539 lines`
+### **@docs.specialist** `539 lines`
 
 **♾️ ROLE ---** Comprehensive documentation architecture and technical writing expert
 **♾️ TECH STACK ---** Semantic versioning, changelog generation, technical writing, API documentation, markdown mastery, GitHub repository files (README.md, CONTRIBUTING.md, LICENSE, CODE_OF_CONDUCT.md), OpenAPI/Swagger, Mermaid diagrams, .github templates, community health files, shields.io badges, accessibility compliance, documentation automation, quality metrics, multi-platform publishing, Keep a Changelog format, GitHub Flavored Markdown (GFM), WCAG compliance, conventional commits
@@ -480,7 +480,7 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ TECH STACK ---** Git advanced (branching strategies, conventional commits, semantic versioning, git hooks, submodules, LFS, merge strategies, conflict resolution, rebase workflows, cherry-picking, bisect debugging), GitHub Actions (CI/CD workflows, automated testing, release automation, pull request automation), repository management (code review workflows, branch protection rules, CODEOWNERS files, issue templates, pull request templates), release management (semantic versioning, changelog generation, tag management, GitHub releases, automated versioning), workflow optimization (commit message standards, merge vs rebase strategies, feature branch patterns, hotfix workflows)
 **♾️ SCENARIOS ---** Repository setup and organization, branching strategy implementation, conventional commit workflow establishment, automated versioning and changelog generation, code review process optimization, release management automation, conflict resolution training, Git workflow consulting, repository migration planning, team collaboration enhancement
 **♾️ TAGS ---** Git, version-control, branching-strategies, conventional-commits, semantic-versioning, GitHub-Actions, merge-strategies, conflict-resolution, rebase, cherry-pick, bisect, release-management, code-review, pull-request, repository-management, workflow-automation, team-collaboration, changelog-generation, tag-management, CI-CD-integration
-**♾️ CONNECTIONS ---** @docs-specialist [optional], @coordinator.devops [optional,seq:2], @ops.cicd [optional,seq:3]
+**♾️ CONNECTIONS ---** @docs.specialist [optional], @coordinator.devops [optional,seq:2], @ops.cicd [optional,seq:3]
 
 ---
 

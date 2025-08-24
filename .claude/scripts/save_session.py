@@ -291,6 +291,24 @@ def save_to_database(session_data, session_text, message_text):
         """, (new_session_id, session_data['job_id'], timestamp))
         
         conn.commit()
+        
+        # Get FLAGS summary for this session
+        cursor.execute("""
+            SELECT 
+                COUNT(*) as total,
+                COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed,
+                COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending
+            FROM flags 
+            WHERE session_id = ?
+        """, (session_data['session_id'],))
+        
+        flags_data = cursor.fetchone()
+        flags_summary = {
+            'created': flags_data[0] if flags_data else 0,
+            'completed': flags_data[1] if flags_data else 0,
+            'pending': flags_data[2] if flags_data else 0
+        }
+        
         conn.close()
         
         return {
@@ -308,7 +326,8 @@ def save_to_database(session_data, session_text, message_text):
             'message_id': message_id,
             'timestamp': timestamp,
             'new_session_id': new_session_id,
-            'next_session_ready': True
+            'next_session_ready': True,
+            'flags_summary': flags_summary
         }
         
     except Exception as e:

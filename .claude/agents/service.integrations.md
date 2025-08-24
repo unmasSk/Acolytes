@@ -1599,19 +1599,34 @@ class APIGatewayIntegration {
     );
 
     return circuitBreaker.execute(async () => {
-      const response = await fetch(`${instance.baseUrl}${request.path}`, {
-        method: request.method,
-        headers: {
-          ...request.headers,
-          "User-Agent": "APIGateway/1.0",
-          "X-Request-ID": generateRequestId(),
-        },
-        body: request.body,
-        timeout: config.timeout,
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), config.timeout);
+      
+      try {
+        const response = await fetch(`${instance.baseUrl}${request.path}`, {
+          method: request.method,
+          headers: {
+            ...request.headers,
+            "User-Agent": "APIGateway/1.0",
+            "X-Request-ID": generateRequestId(),
+          },
+          body: request.body,
+          signal: controller.signal,
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+      } catch (error) {
+        clearTimeout(timeoutId);
+        
+        if (error.name === 'AbortError') {
+          throw new Error(`Request timeout after ${config.timeout}ms`);
+        }
+        
+        throw error;
       }
 
       return response.json();

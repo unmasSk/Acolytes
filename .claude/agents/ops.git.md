@@ -437,7 +437,7 @@ specialist_git_responsibilities: ✅ Git operations (commit, branch, merge, tag)
   ✅ History cleanup
   ✅ Release tagging
 
-  ❌ Code quality analysis (handled by dynamic agents)
+  ❌ Code quality analysis (handled by acolytes)
   ❌ Security review (handled by security agents)
   ✅ FLAGS creation when git operations affect other agents
   ❌ Module impact analysis (done before git operations)

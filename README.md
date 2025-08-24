@@ -2,7 +2,7 @@
 
 > Transform Claude Code into an **intelligent project orchestrator** with 57 specialized global agents + dynamic module agents. Features enterprise-grade **FLAGS coordination system** for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
 
-[![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing-catalog.md)[![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
+[![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-10%20Tables-green)](./.claude/memory)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-8-yellow)](./.claude/hooks)
 [![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/ClaudeSquad)
@@ -31,7 +31,7 @@
 - **Business Systems**: Payments, Billing, Subscriptions with Stripe/PayPal
 - **AI/ML Integration**: LangGraph, CrewAI, AutoGen, RAG systems
 
-#### **Dynamic Module Agents** (Auto-Created per Project)
+#### **Acolytes** (Auto-Created per Project)
 
 - One expert agent per detected module (auth-agent, api-agent, etc.)
 - Deep module knowledge stored in 8-memory SQLite system
@@ -88,7 +88,7 @@ claude /setup
 6. Finalization
 | Command       | Description                                           | Agent Integration                 |
 | ------------- | ----------------------------------------------------- | --------------------------------- |
-| `/setup`      | 8-phase project initialization with parallel analysis | 4 setup agents + dynamic creation |
+| `/setup`      | 6-phase project initialization with parallel analysis | 4 setup agents + dynamic creation |
 | `/commit`     | Intelligent commits with 110+ emoji patterns          | `ops.git` specialist              |
 | `/todo`       | TODO management with SQLite sync                      | Persistent task tracking          |
 | `/flags`      | Process pending FLAGS from agents                     | Cross-agent coordination          |
@@ -174,7 +174,7 @@ Main Claude Session (Orchestrator)
 - **`jobs`**: Project grouping for active work coordination
 - **`messages`**: Detailed conversation flow tracking
 - **`tool_logs`**: Tool usage analysis and optimization
-- **`agent_health`**: Performance metrics for dynamic agents
+- **`agent_health`**: Performance metrics for acolytes
 - **`agents_dynamic`**: Project-specific agent configurations
 - **`todos`**: Persistent task management across sessions
 
@@ -306,13 +306,13 @@ Strategic placeholders for future expansion.
 
 | Feature               | Standard Claude Code  | ClaudeSquad                                     |
 | --------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**            | Single AI assistant   | **57 global specialists + dynamic agents**      |
+| **Agents**            | Single AI assistant   | **52 global specialists + acolytes**      |
 | **Memory**            | Session-only context  | **Persistent SQLite + MCP integration**         |
 | **Coordination**      | Manual task switching | **Autonomous FLAGS system**                     |
 | **Parallelism**       | Sequential processing | **FLAGS-based coordination and agent handoffs** |
 | **Project Knowledge** | Generic responses     | **Deep module-specific expertise**              |
 | **Agent Routing**     | Manual selection      | **17-rule anti-ambiguity system**               |
-| **Setup**             | Manual configuration  | **8-phase automated initialization**            |
+| **Setup**             | Manual configuration  | **6-phase automated initialization**            |
 
 ## 📈 Project Status & Recent Breakthroughs
 
@@ -382,7 +382,7 @@ Use **`backend.laravel`** (1,634 lines) as the gold standard template for new ag
 
 ### **Core System Documentation**
 
-- **[Agent Routing Rules](./.claude/resources/rules/agent-routing.md)** - Complete catalog with 17-rule system
+- **[Agent Routing Rules](./.claude/resources/rules/agent-routing-catalog.md)** - Complete catalog with 17-rule system
 - **[Setup Documentation](./.claude/commands/setup.md)** - 8-phase initialization process
 - **[FLAGS Coordination System](./.claude/memory)** - Enterprise cross-agent communication
 - **[CLAUDE.md Template](./.claude/resources/templates/claude-md-template.md)** - Project configuration

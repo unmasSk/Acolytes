@@ -7,27 +7,23 @@
 # ///
 
 """
-SESSION START HOOK - MANDATORY Complete Job Context Loader
+SESSION START HOOK - Job Context Loader
 
-This hook runs when Claude Code starts a new session and OBLIGATORILY:
+This hook runs when Claude Code starts a new session and:
 
-1. FINDS existing ACTIVE session (ended_at IS NULL) and CONTINUES it
-2. **MANDATORY**: LOADS COMPLETE context from entire job (all sessions)
-3. **MANDATORY**: Shows detailed tool logs from last session (file modifications)
-4. **MANDATORY**: Forces Claude to understand what was accomplished before
-5. IF no active session exists, shows warning with available jobs
-6. BUILDS context from session summaries (accomplishments, decisions, pending tasks)
-7. LOADS CLAUDE.md project rules
-8. **ENFORCES**: Claude MUST read complete context before starting work
+1. Finds existing ACTIVE session (ended_at IS NULL) and continues it
+2. Loads context from entire job (all sessions)
+3. Shows file activity from last session
+4. Shows accomplishments and progress
+5. If no active session exists, shows available jobs
+6. Builds context from session summaries (accomplishments, decisions, pending tasks)
+7. Loads CLAUDE.md project rules
 
 Flow:
-- Session starts → Hook finds active session → Loads COMPLETE job context
-- Shows ALL accomplishments, decisions, bugs fixed from entire job
-- Shows DETAILED tool logs and file modifications from last session
-- FORCES Claude to query more details if needed before proceeding
-- Claude continues existing work with FULL knowledge of previous sessions
-
-CRITICAL: Claude CANNOT start working without understanding complete job context.
+- Session starts → Hook finds active session → Loads job context
+- Shows accomplishments, decisions, bugs fixed from entire job
+- Shows file modifications from last session
+- Provides context for continuing work
 """
 
 import json
@@ -193,18 +189,17 @@ def get_git_status():
 
 
 def load_job_context_from_db(session_info):
-    """Load COMPLETE context from active session and its job
+    """Load context from active session and its job
     
-    MANDATORY CONTEXT LOADING - Claude MUST understand everything done in the job:
+    Context loading process:
     1. Use the ACTIVE SESSION info provided
-    2. Load ALL sessions from the same job for complete context
+    2. Load sessions from the same job for context
     3. Build context from session summaries (accomplishments, decisions, pending)
-    4. **OBLIGATORIO**: Load detailed tool logs from last session for exact file changes
-    5. **OBLIGATORIO**: Show modified files and code changes from previous sessions
+    4. Load tool logs from last session for file changes
+    5. Show modified files from previous sessions
     6. Show current session info and job progress
     
-    Claude CANNOT start working without knowing the complete job context.
-    This ensures Claude knows EXACTLY what was done and which files were modified.
+    This provides Claude with context about what was done and which files were modified.
     """
     try:
         db_path = PathLib(".claude/memory/project.db")
@@ -224,10 +219,10 @@ def load_job_context_from_db(session_info):
         
         job_id = session_info['job_id']
         
-        # Add header with current session info
-        context_parts.append("=" * 60)
-        context_parts.append(f"WORKING ON JOB: {job_id}")
-        context_parts.append("=" * 60)
+        # Replace underscores in job ID to avoid markdown
+        safe_job_id = job_id.replace('_', '＿')
+        context_parts.append(f"💼 Current Job: {safe_job_id}")
+        context_parts.append("=" * 50)
         
         # Get last completed session from this job for priority
         cursor.execute("""
@@ -241,27 +236,28 @@ def load_job_context_from_db(session_info):
         
         last_session = cursor.fetchone()
         if last_session:
-            context_parts.append("\nPREVIOUS SESSION SUMMARY:")
-            
             # Show accomplishments from last session
             if last_session['accomplishments']:
                 try:
                     accs = json.loads(last_session['accomplishments'])
                     if isinstance(accs, list) and accs:
-                        context_parts.append("   Recent accomplishments:")
+                        context_parts.append("📝 Recent work:")
                         for acc in accs[:3]:  # Show max 3 from last session
-                            context_parts.append(f"   • {acc}")
+                            # Replace underscores to avoid italic markdown
+                            safe_acc = acc.replace('_', '＿')
+                            context_parts.append(f"   • {safe_acc}")
                 except (json.JSONDecodeError, TypeError):
-                    # Skip malformed accomplishments JSON
                     pass
             
             if last_session['next_session_priority']:
-                context_parts.append("\nPRIORITY FOR THIS SESSION:")
-                context_parts.append(f"   {last_session['next_session_priority']}")
+                # Replace underscores in priority text
+                safe_priority = last_session['next_session_priority'].replace('_', '＿')
+                context_parts.append(f"🎯 Priority: {safe_priority}")
             
             if last_session['breakthrough_moment']:
-                context_parts.append("\nLAST BREAKTHROUGH:")
-                context_parts.append(f"   {last_session['breakthrough_moment']}")
+                # Replace underscores in breakthrough text
+                safe_breakthrough = last_session['breakthrough_moment'].replace('_', '＿')
+                context_parts.append(f"💡 Breakthrough: {safe_breakthrough}")
         
         # Get total sessions count for this job
         cursor.execute("""
@@ -272,9 +268,7 @@ def load_job_context_from_db(session_info):
         
         stats = cursor.fetchone()
         if stats and stats['count'] > 0:
-            context_parts.append("\nJOB STATS:")
-            context_parts.append(f"   Sessions: {stats['count']}")
-            context_parts.append(f"   Started: {stats['started']}")
+            context_parts.append(f"📊 Stats: {stats['count']} sessions since {stats['started']}")
         
         # Get ALL session data in single query
         cursor.execute("""
@@ -312,87 +306,85 @@ def load_job_context_from_db(session_info):
         
         # Show comprehensive job progress
         if all_accomplishments:
-            context_parts.append(f"\nRECENT ACCOMPLISHMENTS ({len(all_accomplishments)} total):")
-            for acc in all_accomplishments[-8:]:  # Show last 8
-                context_parts.append(f"   • {acc}")
+            context_parts.append(f"✅ Accomplishments ({len(all_accomplishments)} total):")
+            for acc in all_accomplishments[-5:]:  # Show last 5
+                # Replace underscores to avoid italic markdown
+                safe_acc = acc.replace('_', '＿')
+                context_parts.append(f"   • {safe_acc}")
                 
         if all_decisions:
-            context_parts.append(f"\nKEY DECISIONS ({len(all_decisions)} total):")
-            for dec in all_decisions[-3:]:  # Show last 3
-                context_parts.append(f"   • {dec}")
+            # Replace underscores in decisions to avoid italic markdown
+            safe_decisions = [d.replace('_', '＿') for d in all_decisions[-3:]]
+            context_parts.append(f"🔍 Decisions ({len(all_decisions)} total): {' | '.join(safe_decisions)}")
                 
         if all_bugs_fixed:
-            context_parts.append(f"\nBUGS FIXED ({len(all_bugs_fixed)} total):")
-            for bug in all_bugs_fixed[-3:]:  # Show last 3
-                context_parts.append(f"   • {bug}")
+            # Replace underscores in bugs to avoid italic markdown  
+            safe_bugs = [b.replace('_', '＿') for b in all_bugs_fixed[-3:]]
+            context_parts.append(f"🐛 Bugs fixed ({len(all_bugs_fixed)} total): {' | '.join(safe_bugs)}")
                 
-        context_parts.append(f"\nSESSIONS PROGRESS: {sessions_completed} completed, 1 active")
+        context_parts.append(f"📈 Progress: {sessions_completed} done, 1 active")
         
-        # **OBLIGATORIO**: Load detailed tool logs from last completed session
+        # Load detailed tool logs from last completed session
         if last_session:
-            context_parts.append("\n" + "=" * 50)
-            context_parts.append("MANDATORY: DETAILED LAST SESSION CONTEXT")
             context_parts.append("=" * 50)
+            context_parts.append("📋 Last Session Activity")
             
-            # Get tool logs from last session for file modifications
+            # Get ALL tool logs from last session to build complete picture
             cursor.execute("""
                 SELECT tool_name, file_affected, success, timestamp
                 FROM tool_logs 
-                WHERE session_id = ? AND (tool_name IN ('Write', 'Edit', 'MultiEdit') OR file_affected IS NOT NULL)
+                WHERE session_id = ? AND file_affected IS NOT NULL AND success = 1
                 ORDER BY timestamp DESC
-                LIMIT 15
             """, (last_session['id'],))
             
             tool_logs = cursor.fetchall()
             if tool_logs:
-                context_parts.append("\nFILES MODIFIED IN LAST SESSION:")
-                files_modified = set()
-                md_files = set()
+                # Build file operation summary
+                file_operations = {}  # file -> {read, write, edit counts}
                 
                 for log in tool_logs:
-                    if log['file_affected'] and log['success']:
-                        file_path = log['file_affected']
-                        files_modified.add(file_path)
-                        # Use os.path.basename instead of PathLib to avoid scope issues
-                        file_name = os.path.basename(file_path)
-                        context_parts.append(f"   • {log['tool_name']}: {file_name}")
+                    if log['file_affected']:
+                        # Replace underscores with similar Unicode char to avoid markdown italic
+                        # Using U+FF3F FULLWIDTH LOW LINE which looks like _ but isn't markdown
+                        file_name = os.path.basename(log['file_affected']).replace('_', '＿')
+                        if file_name not in file_operations:
+                            file_operations[file_name] = {'read': 0, 'write': 0, 'edit': 0}
                         
-                        # Track .md files for documentation changes
-                        if file_path.endswith('.md'):
-                            md_files.add(file_name)
+                        tool = log['tool_name'].lower()
+                        if 'read' in tool:
+                            file_operations[file_name]['read'] += 1
+                        elif 'write' in tool:
+                            file_operations[file_name]['write'] += 1
+                        elif 'edit' in tool or 'multiedit' in tool:
+                            file_operations[file_name]['edit'] += 1
                 
-                context_parts.append(f"\nTotal files modified: {len(files_modified)}")
+                # Show concise summary
+                # Group by operation type
+                edited_files = [f for f, ops in file_operations.items() if ops['edit'] > 0]
+                written_files = [f for f, ops in file_operations.items() if ops['write'] > 0]
+                read_files = [f for f, ops in file_operations.items() if ops['read'] > 0 and ops['edit'] == 0 and ops['write'] == 0]
                 
-                # Show key operations
-                context_parts.append("\nKEY OPERATIONS FROM LAST SESSION:")
-                for log in tool_logs[:5]:  # Show top 5 operations
-                    if log['success']:
-                        operation = f"{log['tool_name']}"
-                        if log['file_affected']:
-                            operation += f" on {os.path.basename(log['file_affected'])}"
-                        context_parts.append(f"   • {operation}")
+                if edited_files:
+                    files_list = ', '.join(sorted(edited_files)[:5])
+                    if len(edited_files) > 5:
+                        files_list += f" +{len(edited_files) - 5}"
+                    context_parts.append(f"📝 Edited ({len(edited_files)}): {files_list}")
                 
-                # Show documentation changes
-                if md_files:
-                    context_parts.append("\nMAJOR DOCUMENTATION CHANGES:")
-                    for md_file in sorted(md_files):
-                        context_parts.append(f"   • {md_file} - significant updates")
+                if written_files:
+                    files_list = ', '.join(sorted(written_files)[:5])
+                    if len(written_files) > 5:
+                        files_list += f" +{len(written_files) - 5}"
+                    context_parts.append(f"✍️  Created ({len(written_files)}): {files_list}")
+                
+                if read_files:
+                    files_list = ', '.join(sorted(read_files)[:3])
+                    if len(read_files) > 3:
+                        files_list += f" +{len(read_files) - 3}"
+                    context_parts.append(f"👁️  Read ({len(read_files)}): {files_list}")
+                
+                context_parts.append(f"📁 Total: {len(file_operations)} files")
         
-        # Check conversation history for additional context
-        cursor.execute("""
-            SELECT COUNT(*) as msg_count 
-            FROM messages 
-            WHERE session_id IN (
-                SELECT id FROM sessions WHERE job_id = ?
-            )
-        """, (job_id,))
-        
-        msg_count = cursor.fetchone()
-        if msg_count and msg_count['msg_count'] > 0:
-            context_parts.append(f"\nFull conversation history available: {msg_count['msg_count']} messages")
-            context_parts.append("   (Claude can query MESSAGES table if more detail needed)")
-        
-        context_parts.append("=" * 60)
+        # No need to show message count - Claude can query if needed
         
         conn.close()
         return "\n".join(context_parts)
@@ -407,16 +399,57 @@ def load_job_context_from_db(session_info):
 
 def load_development_context():
     """Load git status and development context."""
-    context_parts = []
-    
-    # Add git information
-    branch, changes = get_git_status()
-    if branch:
-        context_parts.append(f"Git branch: {branch}")
-        if changes and changes > 0:
-            context_parts.append(f"Uncommitted changes: {changes} files")
-    
-    return "\n".join(context_parts) if context_parts else None
+    try:
+        # Check if it's a git repo
+        repo_check = subprocess.run(
+            ['git', 'rev-parse', '--is-inside-work-tree'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        if repo_check.returncode != 0:
+            return "📁 Not a git repository"
+        
+        # Get current branch
+        branch_result = subprocess.run(
+            ['git', 'rev-parse', '--abbrev-ref', 'HEAD'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        branch = branch_result.stdout.strip() if branch_result.returncode == 0 else "unknown"
+        
+        # Get uncommitted changes details
+        status_result = subprocess.run(
+            ['git', 'status', '--porcelain'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+        
+        if status_result.returncode == 0 and status_result.stdout.strip():
+            changes = status_result.stdout.strip().split('\n')
+            modified = sum(1 for c in changes if c.startswith(' M') or c.startswith('M'))
+            added = sum(1 for c in changes if c.startswith('??'))
+            deleted = sum(1 for c in changes if c.startswith(' D') or c.startswith('D'))
+            
+            details = []
+            if modified > 0:
+                details.append(f"{modified} modified")
+            if added > 0:
+                details.append(f"{added} untracked")
+            if deleted > 0:
+                details.append(f"{deleted} deleted")
+                
+            return f"🔀 Git Repository | Branch: {branch} | Changes: {', '.join(details)}"
+        else:
+            return f"🔀 Git Repository | Branch: {branch} | ✅ Clean"
+            
+    except (subprocess.TimeoutExpired, subprocess.CalledProcessError, FileNotFoundError):
+        return "📁 Git not available"
+    except OSError:
+        return "📁 Git error"
 
 
 def main():
@@ -430,15 +463,18 @@ def main():
         # Build context parts
         context_parts = []
         
-        # CRITICAL: Set current date/time for Claude (2025 NOT 2024)
+        # Set current date/time context
         current_time = datetime.now()
-        context_parts.append("🕒 CRITICAL TIME CONTEXT FOR CLAUDE:")
         context_parts.append("=" * 50)
-        context_parts.append(f"📅 TODAY'S DATE: {current_time.strftime('%A, %B %d, %Y')}")
-        context_parts.append(f"⏰ CURRENT TIME: {current_time.strftime('%H:%M')} ({current_time.strftime('%Y-%m-%d %H:%M')})")
-        context_parts.append(f"🗓️  YEAR: {current_time.year} (NOT 2024)")
-        context_parts.append(f"📍 SESSION SOURCE: {source}")
-        context_parts.append("=" * 50)
+        context_parts.append(f"📅 {current_time.strftime('%A, %B %d, %Y - %H:%M')}")
+        # Format source properly
+        source_display = {
+            'clear': '/clear command',
+            'startup': '/startup command', 
+            'resume': '/resume command',
+            'unknown': 'unknown source'
+        }.get(source, f'{source} command')
+        context_parts.append(f"📍 Triggered by: {source_display}")
         
         # FIRST: Find ACTIVE SESSION (don't create new)
         session_info, error_msg = find_active_session()
@@ -447,36 +483,21 @@ def main():
             # No active session found or error
             context_parts.append(error_msg)
         else:
-            # Found active session - load its context
-            context_parts.append(f"Continuing session: {session_info['session_id']}")
+            context_parts.append("=" * 50)
+            # Replace underscores in session ID to avoid markdown issues
+            safe_session_id = session_info['session_id'].replace('_', '＿')
+            context_parts.append(f"💡 Current Session: {safe_session_id}")
             
             # Load context from active session and its job
             db_context = load_job_context_from_db(session_info)
             if db_context:
                 context_parts.append(db_context)
         
-        # Add project context AFTER session info
-        claude_md_path = PathLib("CLAUDE.md")
-        if claude_md_path.exists():
-            context_parts.append("--- CLAUDE.md Project Rules Active ---")
-        
-        # Add git status
+        # Add git status at the END
         dev_context = load_development_context()
         if dev_context:
+            context_parts.append("=" * 50)
             context_parts.append(dev_context)
-        
-        # FINAL: Mandatory instructions for Claude
-        if session_info:
-            context_parts.append("\n" + "!" * 60)
-            context_parts.append("MANDATORY: CLAUDE MUST READ COMPLETE JOB CONTEXT")
-            context_parts.append("!" * 60)
-            context_parts.append("BEFORE starting any work, Claude MUST:")
-            context_parts.append("1. Review the detailed tool logs above")
-            context_parts.append("2. Query tool_logs table for complete session context if needed")
-            context_parts.append("3. Understand exactly what was accomplished in previous sessions")
-            context_parts.append("4. Query MESSAGES table for conversation details if needed")
-            context_parts.append("5. Only then proceed with user's request")
-            context_parts.append("!" * 60)
         
         # If we have any context, output it
         if context_parts:

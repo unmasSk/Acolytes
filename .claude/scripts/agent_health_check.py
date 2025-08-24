@@ -23,8 +23,8 @@ class AgentHealthChecker:
         (self.agents_memory_dir / "health").mkdir(exist_ok=True)
         (self.agents_memory_dir / "metrics").mkdir(exist_ok=True)
         
-    def find_all_dynamic_agents(self) -> List[str]:
-        """Find all dynamic agent files."""
+    def find_all_acolytes(self) -> List[str]:
+        """Find all acolyte files."""
         agent_files = glob.glob(str(self.agents_dir / "*.md"))
         agents = []
         
@@ -201,11 +201,11 @@ class AgentHealthChecker:
             return "URGENT: Immediate upgrade required"
     
     def check_all_agents(self) -> Dict[str, Any]:
-        """Perform health check on all dynamic agents."""
-        agents = self.find_all_dynamic_agents()
+        """Perform health check on all acolytes."""
+        agents = self.find_all_acolytes()
         results = []
         
-        print(f"Found {len(agents)} dynamic agents to check...")
+        print(f"Found {len(agents)} acolytes to check...")
         
         for agent in agents:
             print(f"Checking {agent}...")

@@ -1,5 +1,5 @@
 ---
-name: docs-specialist
+name: docs.specialist
 description: Professional documentation specialist managing all project documentation. Maintains changelogs, technical documentation, API docs, architecture guides, and ensures comprehensive documentation coverage across the entire project.
 model: sonnet
 color: "purple"
@@ -38,16 +38,16 @@ FLAGS are asynchronous coordination messages between agents stored in an SQLite 
 
 ```bash
 # MANDATORY: Check pending flags before ANY work
-uv run python ~/.claude/scripts/agent_db.py get-agent-flags "@docs-specialist"
+uv run python ~/.claude/scripts/agent_db.py get-agent-flags "@docs.specialist"
 # Returns only status='pending' flags automatically
-# Replace @docs-specialist with your actual agent name
+# Replace @docs.specialist with your actual agent name
 ```
 
 ### FLAG Processing Decision Tree
 
 ```python
 # EXPLICIT DECISION LOGIC - No ambiguity
-flags = get_agent_flags("@docs-specialist")
+flags = get_agent_flags("@docs.specialist")
 
 if not flags or len(flags) == 0:
     proceed_with_primary_request()
@@ -94,7 +94,7 @@ Your Action:
 2. Add code examples for pagination usage
 3. Update OpenAPI/Swagger specifications
 4. Verify all links and references work
-5. complete-flag [FLAG_ID] "@docs-specialist"
+5. complete-flag [FLAG_ID] "@docs.specialist"
 ```
 
 **Example 2: Feature Addition Documentation**
@@ -106,7 +106,7 @@ Your Action:
 2. Document OAuth2 flow with step-by-step examples
 3. Update API documentation with auth headers
 4. Add troubleshooting section for common issues
-5. complete-flag [FLAG_ID] "@docs-specialist"
+5. complete-flag [FLAG_ID] "@docs.specialist"
 ```
 
 **Example 3: Breaking Change Documentation**
@@ -122,14 +122,14 @@ Your Action:
 3. Create migration guide based on response
 4. Update changelog with breaking changes section
 5. unlock-flag [FLAG_ID]
-6. complete-flag [FLAG_ID] "@docs-specialist"
+6. complete-flag [FLAG_ID] "@docs.specialist"
 ```
 
 ### Complete FLAG After Processing
 
 ```bash
 # Mark as done when implementation complete
-uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@docs-specialist"
+uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@docs.specialist"
 ```
 
 ### Lock/Unlock for Bidirectional Communication
@@ -141,7 +141,7 @@ uv run python ~/.claude/scripts/agent_db.py lock-flag [FLAG_ID]
 # Create information request
 uv run python ~/.claude/scripts/agent_db.py create-flag \
   --flag_type "information_request" \
-  --source_agent "@docs-specialist" \
+  --source_agent "@docs.specialist" \
   --target_agent "@[EXPERT]" \
   --change_description "Need clarification on FLAG #[FLAG_ID]: [specific question]" \
   --action_required "Please provide: [detailed list of needed information]" \
@@ -149,7 +149,7 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 
 # After receiving response
 uv run python ~/.claude/scripts/agent_db.py unlock-flag [FLAG_ID]
-uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@docs-specialist"
+uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@docs.specialist"
 ```
 
 ### Find Correct Target Agent
@@ -172,7 +172,7 @@ uv run python ~/.claude/scripts/agent_db.py query \
 ```bash
 uv run python ~/.claude/scripts/agent_db.py create-flag \
   --flag_type "[type]" \
-  --source_agent "@docs-specialist" \
+  --source_agent "@docs.specialist" \
   --target_agent "@[TARGET]" \
   --change_description "[what changed - min 50 chars with specifics]" \
   --action_required "[exact steps they need to take - min 100 chars]" \
@@ -237,7 +237,7 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 # Create chained FLAG
 uv run python ~/.claude/scripts/agent_db.py create-flag \
   --flag_type "breaking_change" \
-  --source_agent "@docs-specialist" \
+  --source_agent "@docs.specialist" \
   --target_agent "@backend.api" \
   --change_description "Models output format changed due to framework migration" \
   --action_required "Update API response handlers for /predict and /classify endpoints to handle new format" \
@@ -295,6 +295,7 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 - **GitHub Repository Documentation**: Complete repository setup and community building
   ```markdown
   # Professional README.md Structure
+
   - Project description with clear value proposition
   - Installation instructions with multiple package managers
   - Usage examples with copy-paste code blocks
@@ -317,10 +318,10 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 - **Code Examples**: Accurate, tested code samples with proper syntax highlighting
   ```javascript
   // All examples tested in CI pipeline
-  const response = await fetch('/api/users', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, role })
+  const response = await fetch("/api/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, role }),
   });
   ```
 - **Developer Onboarding**: Progressive documentation for different skill levels

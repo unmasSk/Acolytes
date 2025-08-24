@@ -226,6 +226,12 @@ After executing script successfully, present results in this format:
 
 {pending_list_with_bullets}
 
+## 📌 FLAGS Summary
+
+- **Created**: {flags_created} FLAGS
+- **Completed**: {flags_completed} ✅
+- **Pending**: {flags_pending} ⏳
+
 ## 💬 Conversation Summary
 
 A detailed chronological narrative has been saved to the **MESSAGES** table.
