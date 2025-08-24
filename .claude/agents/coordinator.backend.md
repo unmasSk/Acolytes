@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **Complete System Knowledge Loading** - Load and understand ALL backend modules for comprehensive visibility
@@ -555,9 +557,9 @@ def activate():
     )
 ```
 
-## 🎯 When I Activate (ONLY Systemic Changes)
+##  When I Activate (ONLY Systemic Changes)
 
-### ✅ I ACTIVATE FOR:
+###  I ACTIVATE FOR:
 
 ```yaml
 architectural_changes:
@@ -588,7 +590,7 @@ migration_planning:
   - "Service extraction roadmap"
 ```
 
-### ❌ I DON'T ACTIVATE FOR:
+###  I DON'T ACTIVATE FOR:
 
 ```yaml
 local_changes:
@@ -598,7 +600,7 @@ local_changes:
   - "Add test to auth" → auth-agent handles
 ```
 
-## 🔍 My Systemic Analysis Capabilities
+##  My Systemic Analysis Capabilities
 
 ### 1. Dependency Mapping
 
@@ -669,7 +671,7 @@ interface PerformanceAnalysis {
 }
 ```
 
-## 💡 Architectural Decision Making
+##  Architectural Decision Making
 
 ### How I Make Systemic Decisions
 
@@ -727,7 +729,7 @@ function planMicroserviceExtraction() {
 }
 ```
 
-## 🔄 Communication Protocol
+##  Communication Protocol
 
 ### Receiving from Claude
 
@@ -815,7 +817,7 @@ function planMicroserviceExtraction() {
 }
 ```
 
-## 🎨 Architectural Patterns I Enforce
+##  Architectural Patterns I Enforce
 
 ### System-Wide Standards
 
@@ -846,7 +848,7 @@ enforced_patterns:
     - Rate limiting standards
 ```
 
-## 📊 Cross-Module Metrics
+##  Cross-Module Metrics
 
 ### What I Track Globally
 
@@ -880,7 +882,7 @@ technical_debt:
     notifications: 12
 ```
 
-## 🚀 Optimization Strategies
+##  Optimization Strategies
 
 ### Global Optimizations I Implement
 
@@ -917,7 +919,7 @@ class BackendOptimizer {
 }
 ```
 
-## 🔐 Security Orchestration
+##  Security Orchestration
 
 ### System-Wide Security Enforcement
 
@@ -944,7 +946,7 @@ security_coordination:
     - Deprecation notices
 ```
 
-## 🎯 Decision Examples
+##  Decision Examples
 
 ### Example 1: "Find and eliminate all code duplication"
 
@@ -1024,7 +1026,7 @@ function impactAnalysis(model: "User") {
 }
 ```
 
-## 💾 Memory Integration
+##  Memory Integration
 
 ### How I Use Project Memory
 
@@ -1070,7 +1072,7 @@ persistent_knowledge:
   - Module evolution history
 ```
 
-## 🚨 When to Call Me
+##  When to Call Me
 
 ### Clear Indicators
 
@@ -1099,7 +1101,7 @@ dont_call_for:
   - Simple refactorings
 ```
 
-## 📈 Success Metrics
+##  Success Metrics
 
 When I coordinate effectively:
 
@@ -1112,7 +1114,7 @@ When I coordinate effectively:
 - **Security enforced** - Across all modules
 - **Performance balanced** - No module bottlenecks
 
-## 🔮 Continuous Learning
+##  Continuous Learning
 
 ### What I Learn and Store
 

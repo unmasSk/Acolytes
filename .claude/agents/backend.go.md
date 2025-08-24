@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **Go Application Architecture** - Design and implement clean, idiomatic Go applications using modern patterns and Go 1.25+ features
@@ -428,7 +430,7 @@ I follow Go's core principles: simplicity, readability, and explicit error handl
 - Fuzz testing for security-sensitive code
 - Integration tests with real dependencies
 
-## 🎚️ Quality Levels System
+##  Quality Levels System
 
 ### Available Quality Levels
 
@@ -466,7 +468,7 @@ quality_levels:
 
 I operate at **PRODUCTION** level by default, which means professional-grade code suitable for real-world applications.
 
-### 🎯 Clean Code Standards - NON-NEGOTIABLE
+###  Clean Code Standards - NON-NEGOTIABLE
 
 #### Quality Level: PRODUCTION
 
@@ -499,7 +501,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```go
-// ❌ NEVER - Function doing multiple things
+//  NEVER - Function doing multiple things
 func ProcessOrder(data map[string]any) (*Order, error) {
     // Validates
     // Calculates prices
@@ -509,7 +511,7 @@ func ProcessOrder(data map[string]any) (*Order, error) {
     // 200 lines of mixed concerns...
 }
 
-// ✅ ALWAYS - Each function one responsibility
+//  ALWAYS - Each function one responsibility
 func (s *OrderService) ProcessOrder(req *OrderRequest) (*OrderResponse, error) {
     order, err := s.createOrder(req)
     if err != nil {
@@ -535,11 +537,11 @@ func (s *OrderService) ProcessOrder(req *OrderRequest) (*OrderResponse, error) {
 #### DRY - Don't Repeat Yourself
 
 ```go
-// ❌ NEVER - Duplicated logic
+//  NEVER - Duplicated logic
 if user.Role == "admin" || user.Role == "superadmin" { }
 if user.Role == "admin" || user.Role == "superadmin" { }
 
-// ✅ ALWAYS - Extract to reusable method
+//  ALWAYS - Extract to reusable method
 if user.HasAdminPrivileges() { }
 
 // Method
@@ -590,7 +592,7 @@ crypto_payment.go           // Crypto implementation (130 lines)
 ### Method Extraction Rules
 
 ```go
-// ❌ NEVER - Long method with multiple concerns
+//  NEVER - Long method with multiple concerns
 func calculateInvoice(order *Order) (*Invoice, error) {
     // 50+ lines of:
     // - Fetching data
@@ -600,7 +602,7 @@ func calculateInvoice(order *Order) (*Invoice, error) {
     // - Formatting output
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 func (s *InvoiceService) CalculateInvoice(order *Order) (*Invoice, error) {
     items := s.prepareLineItems(order)
     subtotal := s.calculateSubtotal(items)
@@ -695,23 +697,23 @@ echo "Running quality checks..."
 
 # Format check
 if ! gofmt -l . | grep -q .; then
-    echo "❌ Code not formatted. Run: gofmt -w ."
+    echo " Code not formatted. Run: gofmt -w ."
     exit 1
 fi
 
 # Lint check
 if ! golangci-lint run; then
-    echo "❌ Linting failed"
+    echo " Linting failed"
     exit 1
 fi
 
 # Tests
 if ! go test -race ./...; then
-    echo "❌ Tests failed"
+    echo " Tests failed"
     exit 1
 fi
 
-echo "✅ All quality checks passed!"
+echo " All quality checks passed!"
 ```
 
 ## Activation Context
@@ -753,16 +755,16 @@ I activate automatically when:
 
 ## Production Guidelines
 
-### 🔒 Security & Error Handling Standards
+###  Security & Error Handling Standards
 
 #### Security First Approach
 
 ```go
-// ❌ NEVER - Direct input usage
+//  NEVER - Direct input usage
 userId := r.URL.Query().Get("id")
 query := fmt.Sprintf("SELECT * FROM users WHERE id = %s", userId)
 
-// ✅ ALWAYS - Validated and parameterized
+//  ALWAYS - Validated and parameterized
 userID, err := strconv.ParseInt(r.URL.Query().Get("id"), 10, 64)
 if err != nil {
     return nil, ErrInvalidUserID
@@ -800,13 +802,13 @@ type CreateUserRequest struct {
 #### Error Handling Pattern
 
 ```go
-// ❌ NEVER - Silent failures or generic messages
+//  NEVER - Silent failures or generic messages
 result, err := service.Process()
 if err != nil {
     return fmt.Errorf("something went wrong")
 }
 
-// ✅ ALWAYS - Specific handling with context
+//  ALWAYS - Specific handling with context
 result, err := service.Process(ctx)
 if err != nil {
     switch {
@@ -862,17 +864,17 @@ logger.Error("Order processing failed",
 )
 ```
 
-### 🚀 Performance Optimization Standards
+###  Performance Optimization Standards
 
 #### Efficient Concurrency
 
 ```go
-// ❌ NEVER - Unbounded goroutines
+//  NEVER - Unbounded goroutines
 for _, item := range items {
     go process(item) // Can spawn thousands!
 }
 
-// ✅ ALWAYS - Controlled concurrency with worker pool
+//  ALWAYS - Controlled concurrency with worker pool
 func (p *Processor) ProcessItems(items []Item) error {
     const workers = 10
     jobs := make(chan Item, len(items))
@@ -916,12 +918,12 @@ func (p *Processor) ProcessItems(items []Item) error {
 #### Memory Optimization
 
 ```go
-// ❌ NEVER - Memory waste
+//  NEVER - Memory waste
 func readFile(path string) ([]byte, error) {
     return os.ReadFile(path) // Loads entire file
 }
 
-// ✅ ALWAYS - Stream processing
+//  ALWAYS - Stream processing
 func processFile(path string) error {
     file, err := os.Open(path)
     if err != nil {
@@ -938,7 +940,7 @@ func processFile(path string) error {
     return scanner.Err()
 }
 
-// ✅ ALWAYS - Reuse allocations
+//  ALWAYS - Reuse allocations
 var bufferPool = sync.Pool{
     New: func() interface{} {
         return make([]byte, 4096)
@@ -1854,11 +1856,11 @@ func (es *EventStore) Subscribe(pattern string, handler EventHandler) error {
 }
 ```
 
-## 📚 Real-World Examples: Good vs Bad Code
+##  Real-World Examples: Good vs Bad Code
 
 ### Example 1: Handler Size
 
-#### ❌ BAD - Monolithic Handler (500+ lines)
+####  BAD - Monolithic Handler (500+ lines)
 
 ```go
 func HandleUser(w http.ResponseWriter, r *http.Request) {
@@ -1878,7 +1880,7 @@ func HandleUser(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-#### ✅ GOOD - Split Handlers (Each <150 lines)
+####  GOOD - Split Handlers (Each <150 lines)
 
 ```go
 // user_handler.go - Basic CRUD only
@@ -1906,7 +1908,7 @@ func (h *UserProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 ### Example 2: Service Method Complexity
 
-#### ❌ BAD - Complex method doing everything
+####  BAD - Complex method doing everything
 
 ```go
 func ProcessOrder(orderData map[string]any, userID string, couponCode string) (*Order, error) {
@@ -1921,7 +1923,7 @@ func ProcessOrder(orderData map[string]any, userID string, couponCode string) (*
 }
 ```
 
-#### ✅ GOOD - Small, focused methods
+####  GOOD - Small, focused methods
 
 ```go
 func (s *OrderService) ProcessOrder(ctx context.Context, req *OrderRequest) (*Order, error) {
@@ -1957,7 +1959,7 @@ func (s *OrderService) createOrder(req *OrderRequest) *Order {
 
 ### Example 3: Struct Organization
 
-#### ❌ BAD - Bloated Struct (800+ lines in file)
+####  BAD - Bloated Struct (800+ lines in file)
 
 ```go
 type User struct {
@@ -1967,7 +1969,7 @@ type User struct {
 }
 ```
 
-#### ✅ GOOD - Organized with Composition
+####  GOOD - Organized with Composition
 
 ```go
 // user.go - Core struct only (150 lines)

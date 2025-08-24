@@ -215,24 +215,24 @@ I use `~/.claude/resources/templates/template-architecture.md` to create documen
 After creating `.claude/project/architecture.md`, I MUST provide this concise summary to Claude:
 
 ```
-CODEBASE ANALYSIS COMPLETE ✅
+CODEBASE ANALYSIS COMPLETE 
 
-📋 Documents Updated:
+ Documents Updated:
 - architecture.md (complete document created)
 - technical-decisions.md (Architecture section updated)
 - team-preferences.md (Code Standards section updated)
 
-🎯 Key Findings:
+ Key Findings:
 - [MAIN_LANGUAGE] project with [ARCHITECTURE_PATTERN] pattern
 - [MODULE_COUNT] major modules identified
 - [CODE_QUALITY_SCORE] overall code quality
 - [CRITICAL_MODULES] require specialized agents
 - [TOP_CONCERN] needs immediate attention
 
-📖 For detailed analysis: Please read `.claude/project/architecture.md`
+ For detailed analysis: Please read `.claude/project/architecture.md`
 
-🤖 Agent Recommendations: [HIGH_PRIORITY_AGENTS]
-🔧 Technical Improvements: [IMPROVEMENT_PRIORITIES]
+ Agent Recommendations: [HIGH_PRIORITY_AGENTS]
+ Technical Improvements: [IMPROVEMENT_PRIORITIES]
 ```
 
 ## Intelligence Gathering

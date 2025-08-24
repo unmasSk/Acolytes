@@ -211,7 +211,7 @@ uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT
 
 ```bash
 # Lock when need clarification
-uv run python/.claude/scripts/agent_db.py lock-flag [FLAG_ID]
+uv run python ~/.claude/scripts/agent_db.py lock-flag [FLAG_ID]
 
 # Create information request
 uv run python ~/.claude/scripts/agent_db.py create-flag \
@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **API Design & Architecture** - Design RESTful, GraphQL, and gRPC APIs following industry best practices and standards
@@ -499,12 +501,12 @@ rate_limits:
 #### Resource Naming
 
 ```yaml
-# ❌ NEVER - Verbs in URLs
+#  NEVER - Verbs in URLs
 /getUsers
 /user/create
 /deleteUserById
 
-# ✅ ALWAYS - Nouns and proper HTTP methods
+#  ALWAYS - Nouns and proper HTTP methods
 GET /users
 POST /users
 DELETE /users/{id}
@@ -513,7 +515,7 @@ DELETE /users/{id}
 #### HTTP Status Codes
 
 ```yaml
-# ✅ ALWAYS use semantic status codes
+#  ALWAYS use semantic status codes
 200: OK - Successful GET/PUT
 201: Created - Successful POST
 204: No Content - Successful DELETE
@@ -721,7 +723,7 @@ After designing API, I ALWAYS verify:
 
 ### Production Guidelines
 
-### 🔒 Security Standards
+###  Security Standards
 
 #### Authentication Patterns
 
@@ -770,7 +772,7 @@ X-RateLimit-Reset: 1640995200
 Retry-After: 3600 # When rate limited
 ```
 
-### 🚀 Performance Standards
+###  Performance Standards
 
 #### Caching Strategy
 
@@ -1192,11 +1194,11 @@ additionalProperties:
 - Payload size: <1MB average
 - Connection reuse: >90%
 
-### 📚 Real-World Examples: Good vs Bad API Design
+###  Real-World Examples: Good vs Bad API Design
 
 #### Example 1: Resource Design
 
-##### ❌ BAD - Action-oriented endpoints
+#####  BAD - Action-oriented endpoints
 
 ```yaml
 /getUser?id=123
@@ -1206,7 +1208,7 @@ additionalProperties:
 /findUsersByName
 ```
 
-##### ✅ GOOD - Resource-oriented endpoints
+#####  GOOD - Resource-oriented endpoints
 
 ```yaml
 GET /users/123
@@ -1218,7 +1220,7 @@ GET /users?name=john
 
 #### Example 2: Error Handling
 
-##### ❌ BAD - Generic errors
+#####  BAD - Generic errors
 
 ```json
 {
@@ -1227,7 +1229,7 @@ GET /users?name=john
 }
 ```
 
-##### ✅ GOOD - Detailed, actionable errors
+#####  GOOD - Detailed, actionable errors
 
 ```json
 {
@@ -1246,7 +1248,7 @@ GET /users?name=john
 
 #### Example 3: Versioning
 
-##### ❌ BAD - Breaking changes without versioning
+#####  BAD - Breaking changes without versioning
 
 ```yaml
 # Changed response structure without warning
@@ -1255,7 +1257,7 @@ GET /users/123
 # New: { "full_name": "John" }  # Breaks clients!
 ```
 
-##### ✅ GOOD - Proper versioning and deprecation
+#####  GOOD - Proper versioning and deprecation
 
 ```yaml
 # Version 1 (deprecated)

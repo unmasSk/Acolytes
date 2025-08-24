@@ -174,23 +174,23 @@ When informing Claude, I must generate {{context_lite}} content:
 After creating `.claude/project/vision.md`, I MUST provide this concise summary to Claude:
 
 ```
-CONTEXT ANALYSIS COMPLETE ✅
+CONTEXT ANALYSIS COMPLETE 
 
-📋 Document Created: `.claude/project/vision.md`
+ Document Created: `.claude/project/vision.md`
 
-🎯 Key Findings:
+ Key Findings:
 - [PROJECT_TYPE] project in [PROJECT_PHASE] phase
 - Target users: [PRIMARY_USER_SEGMENTS]
 - Business model: [REVENUE_MODEL]
 - Current focus: [MAIN_OBJECTIVES]
 - Key challenge: [PRIMARY_CONCERN]
 
-📖 For detailed analysis: Please read `.claude/project/vision.md`
+ For detailed analysis: Please read `.claude/project/vision.md`
 
-🚀 Strategic Priorities: [IMMEDIATE_FOCUS_AREAS]
-⚠️  Critical Attention: [RISK_AREAS_REQUIRING_FOCUS]
+ Strategic Priorities: [IMMEDIATE_FOCUS_AREAS]
+  Critical Attention: [RISK_AREAS_REQUIRING_FOCUS]
 
-📝 **For CLAUDE.md Template:**
+ **For CLAUDE.md Template:**
 {{context_lite}} = [GENERATED_CONTEXT_LITE_TEXT_HERE]
 ```
 

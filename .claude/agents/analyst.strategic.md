@@ -244,7 +244,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "your task description
 
 ```bash
 # Manual SQL query (less precise)
-uv run python/.claude/scripts/agent_db.py query \
+uv run python ~/.claude/scripts/agent_db.py query \
   "SELECT name, module, description, capabilities \
    FROM agents_catalog WHERE status='active' AND module LIKE '%[domain]%'"
 ```
@@ -252,7 +252,7 @@ uv run python/.claude/scripts/agent_db.py query \
 ### Create FLAG When Your Changes Affect Others
 
 ```bash
-uv run python/.claude/scripts/agent_db.py create-flag \
+uv run python ~/.claude/scripts/agent_db.py create-flag \
   --flag_type "[type]" \
   --source_agent "@YOUR-AGENT-NAME" \
   --target_agent "@[TARGET]" \
@@ -329,7 +329,7 @@ uv run python/.claude/scripts/agent_db.py create-flag \
 # You need to update models, which affects API
 
 # Create chained FLAG
-uv run python/.claude/scripts/agent_db.py create-flag \
+uv run python ~/.claude/scripts/agent_db.py create-flag \
   --flag_type "breaking_change" \
   --source_agent "@YOUR-AGENT-NAME" \
   --target_agent "@backend.api" \
@@ -368,6 +368,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 3. **Then provide accurate, informed responses**
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
+
+---
 
 ## Core Responsibilities
 
@@ -967,7 +969,7 @@ Technology_Risk_Matrix:
 
 ## Executive Summary
 
-**Overall Health**: 🟢 On Track / 🟡 At Risk / 🔴 Off Track
+**Overall Health**:  On Track /  At Risk /  Off Track
 **Key Achievements This Month**: [3-5 bullet points]
 **Critical Issues Requiring Attention**: [2-3 items with proposed actions]
 **Resource Needs**: [Budget, staffing, technology requirements]
@@ -1027,9 +1029,9 @@ Technology_Risk_Matrix:
 
 | Objective     | Target | Actual | Score | Status |
 | ------------- | ------ | ------ | ----- | ------ |
-| [Objective 1] | 100%   | 87%    | 0.87  | 🟡     |
-| [Objective 2] | 100%   | 112%   | 1.0   | 🟢     |
-| [Objective 3] | 100%   | 64%    | 0.64  | 🔴     |
+| [Objective 1] | 100%   | 87%    | 0.87  |      |
+| [Objective 2] | 100%   | 112%   | 1.0   |      |
+| [Objective 3] | 100%   | 64%    | 0.64  |      |
 
 ### Department-Level Performance
 

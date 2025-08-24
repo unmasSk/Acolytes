@@ -1,6 +1,6 @@
 ---
 name: flags.agent
-description: Use this agent when you need to orchestrate the FLAGS system and coordinate inter-agent communication. The @flags.agent analyzes pending flags, manages prioritization, detects conflicts, and directs Claude on which agents to invoke in parallel or sequentially. Examples: <example>Context: User wants to process pending flags in the system. user: 'Execute /flags to process pending work' assistant: 'I'll use the @flags.agent to analyze all pending flags, prioritize them, detect conflicts, and coordinate agent execution' <commentary>Since the user needs flag processing, use the @flags.agent to handle the complete flag orchestration workflow.</commentary></example> <example>Context: Multiple flags have been created and need intelligent coordination. user: 'There are several flags pending, can you organize the work?' assistant: 'Let me use the @flags.agent to analyze dependencies, detect conflicts, and coordinate the optimal execution sequence' <commentary>The user needs flag coordination, so use the @flags.agent to manage the complete workflow.</commentary></example>
+description: Use this agent when you need to orchestrate the FLAGS system and coordinate inter-agent communication. The @flags.agent analyzes pending flags, manages prioritization, detects conflicts, and directs Claude on which agents to invoke in parallel or sequentially.
 model: sonnet
 color: "yellow"
 ---

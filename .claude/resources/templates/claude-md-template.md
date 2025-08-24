@@ -1,6 +1,6 @@
 # {{project_name}} Project Configuration - ClaudeSquad Edition
 
----
+---📋📋📋📋📋📋📋📋📋📋📋📋📋📋📋LA HORAAAAAAAAAAA
 
 ## USER CONFIGURATION
 

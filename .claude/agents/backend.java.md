@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **Spring Boot Architecture** - Design and implement clean, scalable Spring Boot 3.x applications using modern Java 21 patterns and reactive programming
@@ -468,7 +470,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```java
-// ❌ NEVER - Method doing multiple things
+//  NEVER - Method doing multiple things
 public void processOrder(Map<String, Object> data) {
     // Validates
     // Calculates prices
@@ -478,7 +480,7 @@ public void processOrder(Map<String, Object> data) {
     // 200 lines of mixed concerns...
 }
 
-// ✅ ALWAYS - Each method one responsibility
+//  ALWAYS - Each method one responsibility
 public OrderResponse processOrder(OrderRequest request) {
     var order = orderFactory.createOrder(request);
     paymentService.processPayment(order);
@@ -492,11 +494,11 @@ public OrderResponse processOrder(OrderRequest request) {
 #### DRY - Don't Repeat Yourself
 
 ```java
-// ❌ NEVER - Duplicated logic
+//  NEVER - Duplicated logic
 if (user.getRole().equals("ADMIN") || user.getRole().equals("SUPERADMIN")) { }
 if (user.getRole().equals("ADMIN") || user.getRole().equals("SUPERADMIN")) { }
 
-// ✅ ALWAYS - Extract to reusable method
+//  ALWAYS - Extract to reusable method
 if (user.hasAdminPrivileges()) { }
 
 // User.java
@@ -547,7 +549,7 @@ listener/UserAuditListener.java // Audit logic (50 lines)
 ### Method Extraction Rules
 
 ```java
-// ❌ NEVER - Long method with multiple concerns
+//  NEVER - Long method with multiple concerns
 public Invoice calculateInvoice(Order order) {
     // 50+ lines of:
     // - Fetching data
@@ -557,7 +559,7 @@ public Invoice calculateInvoice(Order order) {
     // - Formatting output
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 public Invoice calculateInvoice(Order order) {
     var lineItems = prepareLineItems(order);
     var subtotal = calculateSubtotal(lineItems);
@@ -646,23 +648,23 @@ echo "Running quality checks..."
 
 # Format check
 ./mvnw spotless:check || {
-    echo "❌ Code style issues found. Run: ./mvnw spotless:apply"
+    echo " Code style issues found. Run: ./mvnw spotless:apply"
     exit 1
 }
 
 # Static analysis
 ./mvnw checkstyle:check pmd:check spotbugs:check || {
-    echo "❌ Static analysis failed"
+    echo " Static analysis failed"
     exit 1
 }
 
 # Tests
 ./mvnw test || {
-    echo "❌ Tests failed"
+    echo " Tests failed"
     exit 1
 }
 
-echo "✅ All quality checks passed!"
+echo " All quality checks passed!"
 ```
 
 ## Activation Context
@@ -683,11 +685,11 @@ I activate automatically when:
 #### Security First Approach
 
 ```java
-// ❌ NEVER - Direct input usage
+//  NEVER - Direct input usage
 User user = userRepository.findById(request.getParameter("id"));
 String query = "SELECT * FROM users WHERE email = '" + email + "'";
 
-// ✅ ALWAYS - Validated and sanitized
+//  ALWAYS - Validated and sanitized
 @PostMapping("/users")
 public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest request) {
     // Validation handled by @Valid annotation
@@ -733,14 +735,14 @@ public record UserRequest(
 #### Error Handling Pattern
 
 ```java
-// ❌ NEVER - Silent failures or generic messages
+//  NEVER - Silent failures or generic messages
 try {
     var result = service.process();
 } catch (Exception e) {
     return ResponseEntity.status(500).body("Something went wrong");
 }
 
-// ✅ ALWAYS - Specific handling with context
+//  ALWAYS - Specific handling with context
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -823,21 +825,21 @@ public class PaymentService {
 #### Query Optimization ALWAYS
 
 ```java
-// ❌ NEVER - N+1 queries
+//  NEVER - N+1 queries
 List<User> users = userRepository.findAll();
 for (User user : users) {
     System.out.println(user.getProfile().getAvatar()); // N+1!
 }
 
-// ✅ ALWAYS - Eager loading with Join Fetch
+//  ALWAYS - Eager loading with Join Fetch
 @Query("SELECT u FROM User u LEFT JOIN FETCH u.profile WHERE u.active = true")
 List<User> findActiveUsersWithProfiles();
 
-// ✅ ALWAYS - Entity Graph
+//  ALWAYS - Entity Graph
 @EntityGraph(attributePaths = {"profile", "posts", "settings"})
 List<User> findByStatus(UserStatus status);
 
-// ✅ ALWAYS - Projection for read-only data
+//  ALWAYS - Projection for read-only data
 public interface UserSummary {
     Long getId();
     String getName();
@@ -1515,7 +1517,7 @@ public class OrderEventProcessor {
 
 ### Example 1: Controller Size
 
-#### ❌ BAD - Monolithic Controller (500+ lines)
+####  BAD - Monolithic Controller (500+ lines)
 
 ```java
 @RestController
@@ -1534,7 +1536,7 @@ public class UserController {
 }
 ```
 
-#### ✅ GOOD - Split Controllers (Each <150 lines)
+####  GOOD - Split Controllers (Each <150 lines)
 
 ```java
 // UserController.java - Basic CRUD only
@@ -1583,7 +1585,7 @@ public class UserProfileController {
 
 ### Example 2: Service Method Complexity
 
-#### ❌ BAD - Complex method doing everything
+####  BAD - Complex method doing everything
 
 ```java
 public Order processOrder(Map<String, Object> orderData, Long userId, String couponCode) {
@@ -1613,7 +1615,7 @@ public Order processOrder(Map<String, Object> orderData, Long userId, String cou
 }
 ```
 
-#### ✅ GOOD - Small, focused methods
+####  GOOD - Small, focused methods
 
 ```java
 @Service
@@ -1660,7 +1662,7 @@ public class PricingService {
 
 ### Example 3: Entity Organization
 
-#### ❌ BAD - Bloated Entity (800+ lines)
+####  BAD - Bloated Entity (800+ lines)
 
 ```java
 @Entity
@@ -1675,7 +1677,7 @@ public class User {
 }
 ```
 
-#### ✅ GOOD - Organized with Embedded Classes
+####  GOOD - Organized with Embedded Classes
 
 ```java
 // User.java - Core entity only (150 lines)

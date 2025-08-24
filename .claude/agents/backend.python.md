@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **API Development**: Design and implement RESTful APIs using FastAPI/Django with OpenAPI documentation
@@ -606,7 +608,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```python
-# ❌ NEVER - Class doing multiple things
+#  NEVER - Class doing multiple things
 class UserManager:
     def create_user(self, data: dict) -> User:
         # Validation logic
@@ -627,7 +629,7 @@ class UserManager:
         
         return user
 
-# ✅ ALWAYS - Each class one responsibility
+#  ALWAYS - Each class one responsibility
 class UserValidator:
     def validate_creation_data(self, data: dict) -> UserCreateData:
         if not data.get('email'):
@@ -664,7 +666,7 @@ class UserAuditService:
 #### DRY - Don't Repeat Yourself
 
 ```python
-# ❌ NEVER - Duplicated validation logic
+#  NEVER - Duplicated validation logic
 def create_user(data: dict) -> User:
     if not data.get('email'):
         raise ValueError("Email required")
@@ -679,7 +681,7 @@ def update_user(user_id: int, data: dict) -> User:
         raise ValueError("Invalid email")
     # ... rest of update
 
-# ✅ ALWAYS - Extract to reusable validator
+#  ALWAYS - Extract to reusable validator
 from pydantic import BaseModel, EmailStr, validator
 
 class UserData(BaseModel):
@@ -816,7 +818,7 @@ class PaymentService:
 ### Method Extraction Rules
 
 ```python
-# ❌ NEVER - Long method with multiple concerns
+#  NEVER - Long method with multiple concerns
 def process_order(order_data: dict) -> Order:
     # Validation - 15 lines
     if not order_data.get('items'):
@@ -852,7 +854,7 @@ def process_order(order_data: dict) -> Order:
     
     return order  # After 60+ lines!
 
-# ✅ ALWAYS - Small, focused methods
+#  ALWAYS - Small, focused methods
 async def process_order(order_data: OrderCreateData) -> Order:
     validated_data = await self._validate_order_data(order_data)
     calculated_order = await self._calculate_order_totals(validated_data)
@@ -1023,41 +1025,41 @@ echo "Running Python quality checks..."
 
 # Format check
 black --check . || {
-    echo "❌ Code style issues found. Run: black ."
+    echo " Code style issues found. Run: black ."
     exit 1
 }
 
 # Import sorting
 isort --check-only . || {
-    echo "❌ Import order issues found. Run: isort ."
+    echo " Import order issues found. Run: isort ."
     exit 1
 }
 
 # Type checking
 mypy . || {
-    echo "❌ Type checking failed"
+    echo " Type checking failed"
     exit 1
 }
 
 # Linting
 flake8 . || {
-    echo "❌ Linting failed"
+    echo " Linting failed"
     exit 1
 }
 
 # Security
 bandit -r . -f json || {
-    echo "❌ Security issues found"
+    echo " Security issues found"
     exit 1
 }
 
 # Tests
 pytest --cov=. --cov-fail-under=85 || {
-    echo "❌ Tests failed or coverage below 85%"
+    echo " Tests failed or coverage below 85%"
     exit 1
 }
 
-echo "✅ All quality checks passed!"
+echo " All quality checks passed!"
 ```
 
 ## Common Patterns & Solutions
@@ -1442,7 +1444,7 @@ class ExternalAPIClient:
 
 #### Example 1: File/Class Size Management
 
-**❌ BAD - Monolithic Service Class (800+ lines)**
+** BAD - Monolithic Service Class (800+ lines)**
 
 ```python
 class UserService:
@@ -1481,7 +1483,7 @@ class UserService:
     # Everything in one massive class!
 ```
 
-**✅ GOOD - Split Services (Each <150 lines)**
+** GOOD - Split Services (Each <150 lines)**
 
 ```python
 # services/user_service.py - Orchestration only
@@ -1564,19 +1566,19 @@ class PasswordService:
 ### Security First Approach
 
 ```python
-# ❌ NEVER - Direct SQL construction
+#  NEVER - Direct SQL construction
 def get_user_by_email(email: str) -> User:
     query = f"SELECT * FROM users WHERE email = '{email}'"
     return db.execute(query).fetchone()
 
-# ❌ NEVER - Unvalidated input
+#  NEVER - Unvalidated input
 @app.post("/users/")
 def create_user(request: Request):
     data = request.json()  # Raw input
     user = User(**data)    # Direct construction
     return user.save()
 
-# ✅ ALWAYS - Parameterized queries and validation
+#  ALWAYS - Parameterized queries and validation
 from pydantic import BaseModel, EmailStr, validator
 from sqlalchemy import text
 
@@ -1671,14 +1673,14 @@ class OrderItemRequest(BaseModel):
 ### Error Handling Pattern
 
 ```python
-# ❌ NEVER - Silent failures or generic messages
+#  NEVER - Silent failures or generic messages
 try:
     user = get_user(user_id)
     process_user(user)
 except Exception as e:
     return {"error": "Something went wrong"}
 
-# ✅ ALWAYS - Specific handling with context
+#  ALWAYS - Specific handling with context
 from enum import Enum
 from dataclasses import dataclass
 from typing import Optional
@@ -1949,19 +1951,19 @@ async def log_performance(func_name: str, duration: float, **context):
 ### Standard Error Handling
 
 ```python
-# ❌ NEVER - Silent failures
+#  NEVER - Silent failures
 async def get_user(user_id: int):
     try:
         return await repository.get_by_id(user_id)
     except:
         return None  # Loses all error context!
 
-# ❌ NEVER - Generic exceptions
+#  NEVER - Generic exceptions
 async def create_user(data):
     if not data:
         raise Exception("Bad data")  # Too generic!
 
-# ✅ ALWAYS - Explicit error handling with context
+#  ALWAYS - Explicit error handling with context
 from enum import Enum
 from dataclasses import dataclass
 
@@ -2027,7 +2029,7 @@ async def get_user(user_id: int) -> User:
 ### Query/Data Access Optimization ALWAYS
 
 ```python
-# ❌ NEVER - N+1 query problem
+#  NEVER - N+1 query problem
 async def get_users_with_posts():
     users = await User.all()
     result = []
@@ -2043,12 +2045,12 @@ async def get_users_with_posts():
     
     return result
 
-# ❌ NEVER - Loading unnecessary data
+#  NEVER - Loading unnecessary data
 async def get_user_emails():
     users = await User.all()  # Loads ALL fields
     return [user.email for user in users]
 
-# ✅ ALWAYS - Optimized queries with joins/prefetch
+#  ALWAYS - Optimized queries with joins/prefetch
 from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy import select, func
 
@@ -2082,7 +2084,7 @@ class UserRepository:
         result = await self.session.execute(query)
         return [email for email, in result]
 
-# ✅ ALWAYS - Batching for external API calls
+#  ALWAYS - Batching for external API calls
 import asyncio
 from typing import List, Dict
 
@@ -2912,7 +2914,7 @@ safety check
 
 ### Example 2: Method Complexity and Type Safety
 
-#### ❌ BAD - Complex untyped method
+####  BAD - Complex untyped method
 
 ```python
 def process_user_data(data, options=None, extra_params=None):
@@ -2940,7 +2942,7 @@ def process_user_data(data, options=None, extra_params=None):
     return results  # After 80+ lines!
 ```
 
-#### ✅ GOOD - Small, typed, focused methods
+####  GOOD - Small, typed, focused methods
 
 ```python
 from typing import List, Optional, Dict, Any

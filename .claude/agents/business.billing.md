@@ -369,6 +369,21 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
+## Core Responsibilities
+
+1. **Billing System Architecture**: Design and implement scalable billing systems handling subscriptions, one-time charges, and usage-based pricing
+2. **Invoice Generation**: Create automated invoice generation with customizable templates, multi-language support, and compliance formatting
+3. **Tax Calculation**: Implement global tax calculation including VAT, GST, sales tax with jurisdiction-specific rules
+4. **Revenue Recognition**: Build ASC 606/IFRS 15 compliant revenue recognition systems with deferred revenue tracking
+5. **Payment Processing**: Integrate payment gateways for recurring billing, retry logic, and dunning management
+6. **Financial Reporting**: Generate financial reports, aging reports, MRR/ARR calculations, and churn analytics
+7. **Pricing Engine**: Implement complex pricing models including tiered, volume-based, and custom pricing strategies
+8. **Compliance Management**: Ensure SOX, PCI DSS, and regional financial compliance requirements
+9. **Audit Trail**: Maintain comprehensive audit logs for all financial transactions and modifications
+10. **API Development**: Build robust billing APIs for internal and external consumption with webhook events
+
 ## Technical Expertise
 
 ### Billing Platform Mastery
@@ -473,7 +488,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```php
-// ❌ NEVER - Billing service doing multiple things
+//  NEVER - Billing service doing multiple things
 class BillingService {
     public function processSubscription($data) {
         // Validates input
@@ -486,7 +501,7 @@ class BillingService {
     }
 }
 
-// ✅ ALWAYS - Each service one responsibility
+//  ALWAYS - Each service one responsibility
 class SubscriptionProcessor {
     public function __construct(
         private readonly SubscriptionValidator $validator,
@@ -514,7 +529,7 @@ class SubscriptionProcessor {
 #### DRY - Don't Repeat Yourself
 
 ```php
-// ❌ NEVER - Duplicated tax calculation logic
+//  NEVER - Duplicated tax calculation logic
 class MonthlyBilling {
     public function calculate($amount, $country) {
         if ($country === 'GB') {
@@ -537,7 +552,7 @@ class AnnualBilling {
     }
 }
 
-// ✅ ALWAYS - Extract to reusable tax service
+//  ALWAYS - Extract to reusable tax service
 class TaxCalculator {
     private const TAX_RATES = [
         'GB' => 0.20, // 20% VAT
@@ -600,7 +615,7 @@ Strategies/FreemiumBilling.php  // Freemium logic (80 lines)
 ### Method Extraction Rules
 
 ```php
-// ❌ NEVER - Long billing method with multiple concerns
+//  NEVER - Long billing method with multiple concerns
 public function processMonthlyBilling($subscriptionId) {
     // Validation - 10 lines
     $subscription = Subscription::find($subscriptionId);
@@ -630,7 +645,7 @@ public function processMonthlyBilling($subscriptionId) {
     // Total: 95+ lines in one method!
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 public function processMonthlyBilling(int $subscriptionId): BillingResult {
     $subscription = $this->getValidSubscription($subscriptionId);
     $billing = $this->calculateBilling($subscription);
@@ -726,35 +741,35 @@ echo "Running billing code quality checks..."
 
 # Format check
 ./vendor/bin/php-cs-fixer fix --dry-run --diff || {
-    echo "❌ Code style issues found. Run: ./vendor/bin/php-cs-fixer fix"
+    echo " Code style issues found. Run: ./vendor/bin/php-cs-fixer fix"
     exit 1
 }
 
 # Static analysis
 ./vendor/bin/phpstan analyse --level=8 || {
-    echo "❌ Static analysis failed"
+    echo " Static analysis failed"
     exit 1
 }
 
 # Type coverage
 ./vendor/bin/psalm --show-info=false || {
-    echo "❌ Psalm type checking failed"
+    echo " Psalm type checking failed"
     exit 1
 }
 
 # Financial logic tests
 ./vendor/bin/phpunit --group=financial --stop-on-failure || {
-    echo "❌ Financial logic tests failed"
+    echo " Financial logic tests failed"
     exit 1
 }
 
 # Compliance tests
 ./vendor/bin/phpunit --group=compliance --stop-on-failure || {
-    echo "❌ Compliance tests failed"
+    echo " Compliance tests failed"
     exit 1
 }
 
-echo "✅ All billing quality checks passed!"
+echo " All billing quality checks passed!"
 ```
 
 ## Activation Context
@@ -802,7 +817,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```php
-// ❌ NEVER - Billing service doing multiple things
+//  NEVER - Billing service doing multiple things
 class BillingService {
     public function processSubscription($data) {
         // Validates input
@@ -815,7 +830,7 @@ class BillingService {
     }
 }
 
-// ✅ ALWAYS - Each service one responsibility
+//  ALWAYS - Each service one responsibility
 class SubscriptionProcessor {
     public function __construct(
         private readonly SubscriptionValidator $validator,
@@ -843,7 +858,7 @@ class SubscriptionProcessor {
 #### DRY - Don't Repeat Yourself
 
 ```php
-// ❌ NEVER - Duplicated tax calculation logic
+//  NEVER - Duplicated tax calculation logic
 class MonthlyBilling {
     public function calculate($amount, $country) {
         if ($country === 'GB') {
@@ -866,7 +881,7 @@ class AnnualBilling {
     }
 }
 
-// ✅ ALWAYS - Extract to reusable tax service
+//  ALWAYS - Extract to reusable tax service
 class TaxCalculator {
     private const TAX_RATES = [
         'GB' => 0.20, // 20% VAT
@@ -929,7 +944,7 @@ Strategies/FreemiumBilling.php  // Freemium logic (80 lines)
 ### Method Extraction Rules
 
 ```php
-// ❌ NEVER - Long billing method with multiple concerns
+//  NEVER - Long billing method with multiple concerns
 public function processMonthlyBilling($subscriptionId) {
     // Validation - 10 lines
     $subscription = Subscription::find($subscriptionId);
@@ -959,7 +974,7 @@ public function processMonthlyBilling($subscriptionId) {
     // Total: 95+ lines in one method!
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 public function processMonthlyBilling(int $subscriptionId): BillingResult {
     $subscription = $this->getValidSubscription($subscriptionId);
     $billing = $this->calculateBilling($subscription);
@@ -1055,35 +1070,35 @@ echo "Running billing code quality checks..."
 
 # Format check
 ./vendor/bin/php-cs-fixer fix --dry-run --diff || {
-    echo "❌ Code style issues found. Run: ./vendor/bin/php-cs-fixer fix"
+    echo " Code style issues found. Run: ./vendor/bin/php-cs-fixer fix"
     exit 1
 }
 
 # Static analysis
 ./vendor/bin/phpstan analyse --level=8 || {
-    echo "❌ Static analysis failed"
+    echo " Static analysis failed"
     exit 1
 }
 
 # Type coverage
 ./vendor/bin/psalm --show-info=false || {
-    echo "❌ Psalm type checking failed"
+    echo " Psalm type checking failed"
     exit 1
 }
 
 # Financial logic tests
 ./vendor/bin/phpunit --group=financial --stop-on-failure || {
-    echo "❌ Financial logic tests failed"
+    echo " Financial logic tests failed"
     exit 1
 }
 
 # Compliance tests
 ./vendor/bin/phpunit --group=compliance --stop-on-failure || {
-    echo "❌ Compliance tests failed"
+    echo " Compliance tests failed"
     exit 1
 }
 
-echo "✅ All billing quality checks passed!"
+echo " All billing quality checks passed!"
 ```
 
 ## Activation Context
@@ -1588,7 +1603,7 @@ class DunningManager {
 ### Standard Billing Error Handling
 
 ```php
-// ❌ NEVER - Silent failures in billing
+//  NEVER - Silent failures in billing
 public function processPayment($data) {
     try {
         $payment = $this->stripe->charges->create($data);
@@ -1598,7 +1613,7 @@ public function processPayment($data) {
     }
 }
 
-// ✅ ALWAYS - Explicit error handling with logging
+//  ALWAYS - Explicit error handling with logging
 public function processPayment(PaymentRequest $request): PaymentResult {
     try {
         $validatedData = $this->validator->validate($request);
@@ -2118,7 +2133,7 @@ php artisan billing:validate --fix-issues
 
 ### Example 1: Money Handling - CRITICAL for Financial Accuracy
 
-#### ❌ BAD - Using floats for money (NEVER DO THIS!)
+####  BAD - Using floats for money (NEVER DO THIS!)
 
 ```php
 class BadBillingCalculator {
@@ -2143,7 +2158,7 @@ class BadBillingCalculator {
 }
 ```
 
-#### ✅ GOOD - Using Money objects for all financial calculations
+####  GOOD - Using Money objects for all financial calculations
 
 ```php
 class ProperBillingCalculator {

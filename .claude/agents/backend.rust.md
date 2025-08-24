@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **Rust Application Architecture** - Design and implement memory-safe, high-performance applications using Rust 1.89+ and modern patterns
@@ -428,7 +430,7 @@ I follow Rust's core principles: zero-cost abstractions, memory safety without g
 - Benchmark-driven optimization with criterion
 - Fuzzing for security-critical code
 
-## 🎚️ Quality Levels System
+##  Quality Levels System
 
 ### Available Quality Levels
 
@@ -499,7 +501,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```rust
-// ❌ NEVER - Function doing multiple things
+//  NEVER - Function doing multiple things
 fn process_order(data: HashMap<String, Value>) -> Result<Order, Error> {
     // Validates
     // Calculates prices
@@ -509,7 +511,7 @@ fn process_order(data: HashMap<String, Value>) -> Result<Order, Error> {
     // 200 lines of mixed concerns...
 }
 
-// ✅ ALWAYS - Each function one responsibility
+//  ALWAYS - Each function one responsibility
 impl OrderService {
     pub async fn process_order(&self, req: OrderRequest) -> Result<OrderResponse> {
         let order = self.create_order(req)?;
@@ -525,11 +527,11 @@ impl OrderService {
 #### DRY - Don't Repeat Yourself
 
 ```rust
-// ❌ NEVER - Duplicated logic
+//  NEVER - Duplicated logic
 if user.role == "admin" || user.role == "superadmin" { }
 if user.role == "admin" || user.role == "superadmin" { }
 
-// ✅ ALWAYS - Extract to reusable method
+//  ALWAYS - Extract to reusable method
 if user.has_admin_privileges() { }
 
 // Implementation
@@ -584,7 +586,7 @@ crypto_payment.rs           // Crypto implementation (130 lines)
 ### Method Extraction Rules
 
 ```rust
-// ❌ NEVER - Long method with multiple concerns
+//  NEVER - Long method with multiple concerns
 fn calculate_invoice(order: &Order) -> Result<Invoice> {
     // 50+ lines of:
     // - Fetching data
@@ -594,7 +596,7 @@ fn calculate_invoice(order: &Order) -> Result<Invoice> {
     // - Formatting output
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 impl InvoiceService {
     pub fn calculate_invoice(&self, order: &Order) -> Result<Invoice> {
         let items = self.prepare_line_items(order);
@@ -702,23 +704,23 @@ echo "Running quality checks..."
 
 # Format check
 if ! cargo fmt --check; then
-    echo "❌ Code not formatted. Run: cargo fmt"
+    echo " Code not formatted. Run: cargo fmt"
     exit 1
 fi
 
 # Clippy check
 if ! cargo clippy -- -D warnings; then
-    echo "❌ Clippy warnings found"
+    echo " Clippy warnings found"
     exit 1
 fi
 
 # Tests
 if ! cargo test; then
-    echo "❌ Tests failed"
+    echo " Tests failed"
     exit 1
 fi
 
-echo "✅ All quality checks passed!"
+echo " All quality checks passed!"
 ```
 
 ## Best Practices
@@ -749,15 +751,15 @@ echo "✅ All quality checks passed!"
 
 ## Production Guidelines
 
-### 🔒 Security & Error Handling Standards
+###  Security & Error Handling Standards
 
 #### Security First Approach
 
 ```rust
-// ❌ NEVER - SQL injection vulnerability
+//  NEVER - SQL injection vulnerability
 let query = format!("SELECT * FROM users WHERE id = {}", user_id);
 
-// ✅ ALWAYS - Parameterized queries
+//  ALWAYS - Parameterized queries
 let user = sqlx::query_as!(
     User,
     "SELECT * FROM users WHERE id = $1",
@@ -794,10 +796,10 @@ pub async fn create_user(
 #### Error Handling Pattern
 
 ```rust
-// ❌ NEVER - Unwrap in production code
+//  NEVER - Unwrap in production code
 let result = service.process().unwrap();
 
-// ✅ ALWAYS - Explicit error handling
+//  ALWAYS - Explicit error handling
 let result = service.process().await
     .map_err(|e| match e {
         ServiceError::Validation(msg) => {
@@ -847,18 +849,18 @@ pub async fn process_payment(
 }
 ```
 
-### 🚀 Performance Optimization Standards
+###  Performance Optimization Standards
 
 #### Zero-Copy Serialization
 
 ```rust
-// ❌ NEVER - Unnecessary allocations
+//  NEVER - Unnecessary allocations
 fn process_data(data: Vec<u8>) -> String {
     let parsed = String::from_utf8(data).unwrap();
     parsed.to_uppercase()
 }
 
-// ✅ ALWAYS - Zero-copy when possible
+//  ALWAYS - Zero-copy when possible
 use bytes::Bytes;
 
 fn process_data(data: Bytes) -> Bytes {
@@ -877,17 +879,17 @@ struct User {
 #### Efficient Async Code
 
 ```rust
-// ❌ NEVER - Blocking in async context
+//  NEVER - Blocking in async context
 async fn bad_handler() {
     std::thread::sleep(Duration::from_secs(1)); // Blocks executor!
 }
 
-// ✅ ALWAYS - Use async equivalents
+//  ALWAYS - Use async equivalents
 async fn good_handler() {
     tokio::time::sleep(Duration::from_secs(1)).await;
 }
 
-// ✅ For CPU-intensive work
+//  For CPU-intensive work
 async fn compute_heavy() -> Result<Data> {
     tokio::task::spawn_blocking(|| {
         // Heavy computation here
@@ -1699,11 +1701,11 @@ impl CommandHandler {
 }
 ```
 
-### 📚 Real-World Examples: Good vs Bad Code
+###  Real-World Examples: Good vs Bad Code
 
 #### Example 1: Error Handling
 
-##### ❌ BAD - Panics and unwraps
+#####  BAD - Panics and unwraps
 
 ```rust
 fn process_user(id: String) -> User {
@@ -1713,7 +1715,7 @@ fn process_user(id: String) -> User {
 }
 ```
 
-##### ✅ GOOD - Proper error handling
+#####  GOOD - Proper error handling
 
 ```rust
 #[derive(Debug, thiserror::Error)]
@@ -1741,7 +1743,7 @@ async fn process_user(id: &str) -> Result<User, UserError> {
 
 #### Example 2: Memory Management
 
-##### ❌ BAD - Unnecessary allocations
+#####  BAD - Unnecessary allocations
 
 ```rust
 fn process_strings(items: Vec<String>) -> Vec<String> {
@@ -1754,7 +1756,7 @@ fn process_strings(items: Vec<String>) -> Vec<String> {
 }
 ```
 
-##### ✅ GOOD - Efficient memory usage
+#####  GOOD - Efficient memory usage
 
 ```rust
 fn process_strings(items: impl Iterator<Item = String>) -> impl Iterator<Item = String> {
@@ -1778,7 +1780,7 @@ fn process_str_refs<'a>(items: &'a [String]) -> Vec<Cow<'a, str>> {
 
 #### Example 3: Async Code Organization
 
-##### ❌ BAD - Blocking and inefficient
+#####  BAD - Blocking and inefficient
 
 ```rust
 async fn fetch_all_users() -> Vec<User> {
@@ -1794,7 +1796,7 @@ async fn fetch_all_users() -> Vec<User> {
 }
 ```
 
-##### ✅ GOOD - Concurrent and efficient
+#####  GOOD - Concurrent and efficient
 
 ```rust
 use futures::future::join_all;

@@ -369,6 +369,8 @@ If you don't have 95% certainty about a technology, library, or implementation d
 
 This ensures you always give current, accurate technical guidance rather than outdated or uncertain information.
 
+---
+
 ## Core Responsibilities
 
 1. **Laravel Application Architecture** - Design and implement clean, scalable Laravel applications using modern PHP 8.3+ patterns and Laravel 11+ features

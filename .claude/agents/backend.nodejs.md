@@ -484,7 +484,7 @@ complexity_limits:
 #### Single Responsibility (SRP)
 
 ```javascript
-// ❌ NEVER - Controller doing multiple things
+//  NEVER - Controller doing multiple things
 class UserController {
   async createUser(req, res) {
     // Validation logic (20 lines)
@@ -505,7 +505,7 @@ class UserController {
   }
 }
 
-// ✅ ALWAYS - Each service one responsibility
+//  ALWAYS - Each service one responsibility
 class UserController {
   constructor(userService, emailService) {
     this.userService = userService;
@@ -534,7 +534,7 @@ class UserService {
 #### DRY - Don't Repeat Yourself
 
 ```javascript
-// ❌ NEVER - Duplicated validation logic
+//  NEVER - Duplicated validation logic
 class UserController {
   async createUser(req, res) {
     if (!req.body.email || !isValidEmail(req.body.email)) {
@@ -557,7 +557,7 @@ class UserController {
   }
 }
 
-// ✅ ALWAYS - Extract to reusable validator
+//  ALWAYS - Extract to reusable validator
 import Joi from "joi";
 
 const userSchema = Joi.object({
@@ -684,7 +684,7 @@ export class StripePaymentStrategy implements PaymentStrategy {
 ### Method Extraction Rules
 
 ```typescript
-// ❌ NEVER - Long method with multiple concerns
+//  NEVER - Long method with multiple concerns
 async function processOrder(orderData: any) {
   // Validation (15 lines)
   if (!orderData.items || orderData.items.length === 0) {
@@ -735,7 +735,7 @@ async function processOrder(orderData: any) {
   return order;
 }
 
-// ✅ ALWAYS - Small, focused methods
+//  ALWAYS - Small, focused methods
 class OrderService {
   async processOrder(orderData: OrderRequest): Promise<Order> {
     await this.validateOrderData(orderData);
@@ -856,29 +856,29 @@ echo "Running quality checks..."
 
 # Format check
 npm run lint:check || {
-    echo "❌ Code style issues found. Run: npm run lint:fix"
+    echo " Code style issues found. Run: npm run lint:fix"
     exit 1
 }
 
 # Type checking
 npm run type-check || {
-    echo "❌ TypeScript errors found"
+    echo " TypeScript errors found"
     exit 1
 }
 
 # Tests
 npm run test:coverage || {
-    echo "❌ Tests failed or coverage below 85%"
+    echo " Tests failed or coverage below 85%"
     exit 1
 }
 
 # Security audit
 npm audit --audit-level=moderate || {
-    echo "❌ Security vulnerabilities found"
+    echo " Security vulnerabilities found"
     exit 1
 }
 
-echo "✅ All quality checks passed!"
+echo " All quality checks passed!"
 ```
 
 ## Activation Context
@@ -1416,7 +1416,7 @@ clinic doctor -- node dist/index.js
 ### Core NestJS Architecture
 
 ```typescript
-// ✅ Module-based architecture
+//  Module-based architecture
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { CacheModule } from "@nestjs/cache-manager";
@@ -1484,7 +1484,7 @@ export class UserModule {}
 ### Dependency Injection & Providers
 
 ```typescript
-// ✅ Custom providers with proper scoping
+//  Custom providers with proper scoping
 import { Injectable, Scope, Inject } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
@@ -1544,7 +1544,7 @@ export class PaymentModule {}
 ### Guards, Interceptors, and Pipes
 
 ```typescript
-// ✅ Authentication guard with metadata
+//  Authentication guard with metadata
 import {
   Injectable,
   CanActivate,
@@ -1589,7 +1589,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 }
 
-// ✅ Response transformation interceptor
+//  Response transformation interceptor
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -1609,7 +1609,7 @@ export class TransformInterceptor<T>
   }
 }
 
-// ✅ Validation pipe with custom error formatting
+//  Validation pipe with custom error formatting
 @Injectable()
 export class ValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
@@ -1650,7 +1650,7 @@ export class ValidationPipe implements PipeTransform {
 ### Controller with Complete Decorators
 
 ```typescript
-// ✅ Full-featured controller
+//  Full-featured controller
 import {
   Controller,
   Get,
@@ -1759,7 +1759,7 @@ export class UserController {
 ### NestJS Microservices
 
 ```typescript
-// ✅ Microservice setup with multiple transports
+//  Microservice setup with multiple transports
 import { NestFactory } from "@nestjs/core";
 import { Transport, MicroserviceOptions } from "@nestjs/microservices";
 
@@ -1876,7 +1876,7 @@ export class OrderService {
 ### NestJS Testing
 
 ```typescript
-// ✅ Comprehensive testing setup
+//  Comprehensive testing setup
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
@@ -1965,7 +1965,7 @@ describe("UserService", () => {
 #### Custom Decorators
 
 ````typescript
-// ✅ Custom decorators for common patterns
+//  Custom decorators for common patterns
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 // Extract user from request
@@ -2012,7 +2012,7 @@ export class UserController {
 ### Core NestJS Architecture
 
 ```typescript
-// ✅ Module-based architecture
+//  Module-based architecture
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -2080,7 +2080,7 @@ export class UserModule {}
 ### Dependency Injection & Providers
 
 ```typescript
-// ✅ Custom providers with proper scoping
+//  Custom providers with proper scoping
 import { Injectable, Scope, Inject } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
@@ -2140,7 +2140,7 @@ export class PaymentModule {}
 ### Guards, Interceptors, and Pipes
 
 ```typescript
-// ✅ Authentication guard with metadata
+//  Authentication guard with metadata
 import {
   Injectable,
   CanActivate,
@@ -2185,7 +2185,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 }
 
-// ✅ Response transformation interceptor
+//  Response transformation interceptor
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -2205,7 +2205,7 @@ export class TransformInterceptor<T>
   }
 }
 
-// ✅ Validation pipe with custom error formatting
+//  Validation pipe with custom error formatting
 @Injectable()
 export class ValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
@@ -2246,7 +2246,7 @@ export class ValidationPipe implements PipeTransform {
 ### Controller with Complete Decorators
 
 ```typescript
-// ✅ Full-featured controller
+//  Full-featured controller
 import {
   Controller,
   Get,
@@ -2355,7 +2355,7 @@ export class UserController {
 ### NestJS Microservices
 
 ```typescript
-// ✅ Microservice setup with multiple transports
+//  Microservice setup with multiple transports
 import { NestFactory } from "@nestjs/core";
 import { Transport, MicroserviceOptions } from "@nestjs/microservices";
 
@@ -2472,7 +2472,7 @@ export class OrderService {
 ### NestJS Testing
 
 ```typescript
-// ✅ Comprehensive testing setup
+//  Comprehensive testing setup
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
@@ -2561,7 +2561,7 @@ describe("UserService", () => {
 #### Custom Decorators
 
 ````typescript
-// ✅ Custom decorators for common patterns
+//  Custom decorators for common patterns
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 // Extract user from request
@@ -2608,7 +2608,7 @@ export class UserController {
 ### Core NestJS Architecture
 
 ```typescript
-// ✅ Module-based architecture
+//  Module-based architecture
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -2676,7 +2676,7 @@ export class UserModule {}
 ### Dependency Injection & Providers
 
 ```typescript
-// ✅ Custom providers with proper scoping
+//  Custom providers with proper scoping
 import { Injectable, Scope, Inject } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
@@ -2736,7 +2736,7 @@ export class PaymentModule {}
 ### Guards, Interceptors, and Pipes
 
 ```typescript
-// ✅ Authentication guard with metadata
+//  Authentication guard with metadata
 import {
   Injectable,
   CanActivate,
@@ -2781,7 +2781,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 }
 
-// ✅ Response transformation interceptor
+//  Response transformation interceptor
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -2801,7 +2801,7 @@ export class TransformInterceptor<T>
   }
 }
 
-// ✅ Validation pipe with custom error formatting
+//  Validation pipe with custom error formatting
 @Injectable()
 export class ValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
@@ -2842,7 +2842,7 @@ export class ValidationPipe implements PipeTransform {
 ### Controller with Complete Decorators
 
 ```typescript
-// ✅ Full-featured controller
+//  Full-featured controller
 import {
   Controller,
   Get,
@@ -2951,7 +2951,7 @@ export class UserController {
 ### NestJS Microservices
 
 ```typescript
-// ✅ Microservice setup with multiple transports
+//  Microservice setup with multiple transports
 import { NestFactory } from "@nestjs/core";
 import { Transport, MicroserviceOptions } from "@nestjs/microservices";
 
@@ -3068,7 +3068,7 @@ export class OrderService {
 ### NestJS Testing
 
 ```typescript
-// ✅ Comprehensive testing setup
+//  Comprehensive testing setup
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
@@ -3157,7 +3157,7 @@ describe("UserService", () => {
 #### Custom Decorators
 
 ````typescript
-// ✅ Custom decorators for common patterns
+//  Custom decorators for common patterns
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 // Extract user from request
@@ -3204,7 +3204,7 @@ export class UserController {
 ### Core NestJS Architecture
 
 ```typescript
-// ✅ Module-based architecture
+//  Module-based architecture
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
@@ -3272,7 +3272,7 @@ export class UserModule {}
 ### Dependency Injection & Providers
 
 ```typescript
-// ✅ Custom providers with proper scoping
+//  Custom providers with proper scoping
 import { Injectable, Scope, Inject } from "@nestjs/common";
 import { REQUEST } from "@nestjs/core";
 import { Request } from "express";
@@ -3332,7 +3332,7 @@ export class PaymentModule {}
 ### Guards, Interceptors, and Pipes
 
 ```typescript
-// ✅ Authentication guard with metadata
+//  Authentication guard with metadata
 import {
   Injectable,
   CanActivate,
@@ -3377,7 +3377,7 @@ export class JwtAuthGuard implements CanActivate {
   }
 }
 
-// ✅ Response transformation interceptor
+//  Response transformation interceptor
 @Injectable()
 export class TransformInterceptor<T>
   implements NestInterceptor<T, Response<T>>
@@ -3397,7 +3397,7 @@ export class TransformInterceptor<T>
   }
 }
 
-// ✅ Validation pipe with custom error formatting
+//  Validation pipe with custom error formatting
 @Injectable()
 export class ValidationPipe implements PipeTransform {
   async transform(value: any, metadata: ArgumentMetadata) {
@@ -3438,7 +3438,7 @@ export class ValidationPipe implements PipeTransform {
 ### Controller with Complete Decorators
 
 ```typescript
-// ✅ Full-featured controller
+//  Full-featured controller
 import {
   Controller,
   Get,
@@ -3547,7 +3547,7 @@ export class UserController {
 ### NestJS Microservices
 
 ```typescript
-// ✅ Microservice setup with multiple transports
+//  Microservice setup with multiple transports
 import { NestFactory } from "@nestjs/core";
 import { Transport, MicroserviceOptions } from "@nestjs/microservices";
 
@@ -3664,7 +3664,7 @@ export class OrderService {
 ### NestJS Testing
 
 ```typescript
-// ✅ Comprehensive testing setup
+//  Comprehensive testing setup
 import { Test, TestingModule } from "@nestjs/testing";
 import { INestApplication } from "@nestjs/common";
 import * as request from "supertest";
@@ -3753,7 +3753,7 @@ describe("UserService", () => {
 #### Custom Decorators
 
 ````typescript
-// ✅ Custom decorators for common patterns
+//  Custom decorators for common patterns
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
 // Extract user from request

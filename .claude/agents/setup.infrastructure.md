@@ -243,21 +243,21 @@ I use `~/.claude/resources/templates/template-infrastructure.md` to create docum
 After creating `.claude/project/infrastructure.md`, I MUST provide this concise summary to Claude:
 
 ```
-INFRASTRUCTURE ANALYSIS COMPLETE ✅
+INFRASTRUCTURE ANALYSIS COMPLETE 
 
-📋 Document Created: `.claude/project/infrastructure.md`
+ Document Created: `.claude/project/infrastructure.md`
 
-🎯 Key Findings:
+ Key Findings:
 - [PRIMARY_INFRASTRUCTURE_TYPE] - [HOSTING_PROVIDER]
 - [CRITICAL_SERVICES_COUNT] external services integrated
 - [INFRASTRUCTURE_HEALTH_SCORE] overall infrastructure health
 - [TOP_RISK] requires immediate attention
 - [TOP_OPPORTUNITY] for optimization
 
-📖 For detailed analysis: Please read `.claude/project/infrastructure.md`
+ For detailed analysis: Please read `.claude/project/infrastructure.md`
 
-🚨 Critical Actions Required: [IMMEDIATE_ACTIONS_LIST]
-💡 Recommended Improvements: [IMPROVEMENT_PRIORITIES]
+ Critical Actions Required: [IMMEDIATE_ACTIONS_LIST]
+ Recommended Improvements: [IMPROVEMENT_PRIORITIES]
 ```
 
 ## Proactive Closure Standards
