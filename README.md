@@ -1,6 +1,15 @@
-# 🚀 Acolytes for Claude Code - Revolutionary Multi-Agent System
-
-> Transform Claude Code into an **intelligent project orchestrator** with 57 specialized global agents + project-specific Acolytes. Features enterprise-grade **FLAGS coordination system** for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
+<div align="center">
+  <img src="logo.png" alt="Acolytes for Claude Code Logo" width="600">
+  
+  <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
+  <h1 style="font-size: 2.5em; margin-top: 0; font-weight: bold;">
+    ♾️ <span style="color: #568ee2;">NEURAL</span> <span style="color: #6B7FDB;">MEMORY</span> <span style="color: #8B5CF6;">NETWORK</span>
+  </h1>
+  
+  <p align="center" style="font-size: 1.1em; max-width: 800px; margin: 20px auto;">
+    Transform Claude Code into an <strong>intelligent project orchestrator</strong> with 52 specialized global agents + project-specific Acolytes. Features enterprise-grade <strong>FLAGS coordination system</strong> for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
+  </p>
+</div>
 
 [![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-10%20Tables-green)](./.claude/memory)
