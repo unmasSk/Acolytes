@@ -36,7 +36,7 @@ Claude's single message contains:
 
 **All three Task calls in the SAME message - never separate messages.**
 
-### ⚠️ **IMMUTABLE RULES – NO EXCEPTIONS**
+### **IMMUTABLE RULES – NO EXCEPTIONS**
 
 1. **NEVER** analyze without creating documentation
 2. **ALWAYS** create Database & MCP first (Phase 1)
@@ -51,7 +51,7 @@ Claude's single message contains:
 
 ### 1️⃣ **PHASE 1: ENVIRONMENT & DATABASE SETUP**
 
-**Universal setup regardless of project type:**
+**WHAT YOU (CLAUDE) MUST DO**: Validate the development environment, create the SQLite database with all required tables, and configure MCP connection. Follow the steps below to establish the complete system foundation.
 
 ```yaml
 ENVIRONMENT_CHECK:
@@ -80,7 +80,7 @@ DATABASE_AND_MCP:
 
 ### 2️⃣ **PHASE 2: ANALYSIS & DOCUMENTATION**
 
-**Different approaches based on project type:**
+**WHAT YOU (CLAUDE) MUST DO**: For existing projects, invoke the four setup agents in PARALLEL to analyze and document the project. For new projects, conduct the SMART REQUIREMENTS INTERVIEW following the conditional system, skip rules, and validation rules EXACTLY as specified - this interview adapts based on user type and project maturity. Study the interview system carefully before starting.
 
 #### **FOR EXISTING PROJECTS**
 
@@ -88,10 +88,10 @@ DATABASE_AND_MCP:
 PARALLEL_ANALYSIS:
   mode: REAL PARALLEL
   agents:
-    - setup.codebase
-    - setup.context
-    - setup.infrastructure
-    - setup.environment
+    - @setup.codebase
+    - @setup.context
+    - @setup.environment
+    - @setup.infrastructure
   execution: MULTIPLE TASK CALLS IN ONE MESSAGE
 
 DOCUMENTATION_CREATION:
@@ -316,6 +316,8 @@ PLAN_STRATEGY_ORGANIZATION:
 
 ### 3️⃣ **PHASE 3: CLAUDE.MD CREATION**
 
+**WHAT YOU (CLAUDE) MUST DO**: Generate a customized CLAUDE.md file using the template and documentation from Phase 2. Fill all template placeholders with project-specific information following the specifications below.
+
 ```yaml
 CLAUDE_MD_GENERATION:
   source: Aggregated information from Phase 2
@@ -375,6 +377,8 @@ CLAUDE_MD_GENERATION:
 
 ### 4️⃣ **PHASE 4: JOBS & AGENT CREATION**
 
+**WHAT YOU (CLAUDE) MUST DO**: Invoke the agent-creator specialist to create acolyte agents for each detected or planned module. The specialist handles template filling, file creation, and database registration. Follow the process below based on project type.
+
 #### **FOR EXISTING PROJECTS**
 
 ```yaml
@@ -412,22 +416,28 @@ MODULE_DIVISION_RULES:
 
 ### 5️⃣ **PHASE 5: DEEP ANALYSIS & INITIALIZATION**
 
+**WHAT YOU (CLAUDE) MUST DO**: Invoke all created acolytes in parallel batches of 10 maximum. For existing projects, acolytes analyze their modules and populate memories with discovered information. For new projects, acolytes populate memories with planned architecture documentation. Each acolyte follows their internal template instructions.
+
 ```yaml
 ACOLYTE_ACTIVATION:
   existing_projects:
-    - All acolytes perform deep module analysis
-    - Fill their 8 memory records with comprehensive knowledge
-    - Update agent_memory table in SQLite
+    - Claude invokes all acolytes in parallel (max 10 per batch)
+    - Each acolyte performs deep analysis of their assigned module
+    - Fill their 14 memory records with comprehensive knowledge
+    - Update agent_memory table in SQLite with discovered information
 
   new_projects:
-    - Acolytes create their initial memory structures
-    - Set up monitoring for their planned modules
-    - Prepare for development phase execution
+    - Claude invokes acolytes to review .claude/project/ documentation
+    - Acolytes populate memories with planned architecture and expectations
+    - Set up knowledge base for future module implementation
+    - Prepare memory structures for development phase
 ```
 
 ---
 
 ### 6️⃣ **PHASE 6: FINALIZATION**
+
+**WHAT YOU (CLAUDE) MUST DO**: Confirm successful setup completion and present a comprehensive system summary. For existing projects, guide the user through roadmap decisions. For new projects, prepare for development phase. Follow the finalization steps below.
 
 ```yaml
 COMPLETION_SUMMARY:
