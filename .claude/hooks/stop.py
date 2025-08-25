@@ -164,13 +164,6 @@ def ensure_session_log_dir(project_root=None):
 
 def main():
     try:
-        # Parse command line arguments
-        parser = argparse.ArgumentParser()
-        parser.add_argument(
-            "--chat", action="store_true", help="Copy transcript to chat.json"
-        )
-        parser.parse_args()  # Parse but don't store - just validates args
-
         # Read JSON input from stdin
         stdin_content = sys.stdin.read().strip()
         input_data = json.loads(stdin_content)

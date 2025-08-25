@@ -313,6 +313,9 @@ def save_to_database(session_data, session_text, message_text):
                     most_recent = max(jsonl_files, key=lambda f: f.stat().st_mtime)
                     # The filename without extension IS the claude_session_id
                     claude_session_id = most_recent.stem
+                    # Validate the session ID format (should be alphanumeric with hyphens/underscores)
+                    if not re.match(r'^[a-zA-Z0-9_-]+$', claude_session_id):
+                        claude_session_id = None
         except Exception:
             # If we can't get the claude_session_id, continue without it
             pass

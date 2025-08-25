@@ -60,7 +60,7 @@ def generate_markdown_transcript(conversation_file, session_id):
             
             if msg_type == "user":
                 username = os.getenv("USERNAME", "Usuario")  # Get Windows username
-                md_content.append(f"<div style=\"text-align: right;\">")
+                md_content.append("<div style=\"text-align: right;\">")
                 md_content.append("")
                 md_content.append(f"### <span style=\"color: #007bff; text-transform: uppercase;\">♾️ {username}</span>{time_part}")
                 md_content.append("")
@@ -99,13 +99,20 @@ def ensure_session_log_dir(project_root=None):
     if project_root:
         base_dir = Path(project_root)
     else:
-        # Always use project root, not current directory
-        current_dir = Path.cwd()
-        if current_dir.name == 'hooks':
-            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
+        # Use global ~/.claude directory
+        global_claude = Path.home() / '.claude' / 'memory' / 'chat'
+        # If global exists, use it
+        if global_claude.parent.exists():
+            chat_dir = global_claude
         else:
-            base_dir = current_dir
-    chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+            # Fallback to project root
+            current_dir = Path.cwd()
+            if current_dir.name == 'hooks':
+                base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
+            else:
+                base_dir = current_dir
+            chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+    
     chat_dir.mkdir(parents=True, exist_ok=True)
     return chat_dir
 

@@ -103,6 +103,22 @@ def handle_edit_tool(tool_data):
         project_root = Path.cwd()
         output_file = project_root / 'update_tool_output.md'
         
+        # File rotation logic - max 10MB
+        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
+        try:
+            if output_file.exists() and output_file.stat().st_size > MAX_FILE_SIZE:
+                # Rotate the file
+                backup_file = project_root / 'update_tool_output.old.md'
+                
+                # Remove old backup if exists
+                if backup_file.exists():
+                    backup_file.unlink()
+                
+                # Rename current to backup
+                output_file.rename(backup_file)
+        except Exception:
+            pass  # Continue even if rotation fails
+        
         # Helper function to make paths relative
         def make_relative_path(file_path):
             if not file_path or file_path == 'N/A':

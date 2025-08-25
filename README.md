@@ -313,9 +313,9 @@ Strategic placeholders for future expansion.
 
 ## 🎯 Acolytes for Claude Code vs Standard Claude Code
 
-| Feature               | Standard Claude Code  | Acolytes for Claude Code                       |
+| Feature               | Standard Claude Code  | Acolytes for Claude Code                        |
 | --------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**            | Single AI assistant   | **57 global specialists + Acolytes**      |
+| **Agents**            | Single AI assistant   | **57 global specialists + Acolytes**            |
 | **Memory**            | Session-only context  | **Persistent SQLite + MCP integration**         |
 | **Coordination**      | Manual task switching | **Autonomous FLAGS system**                     |
 | **Parallelism**       | Sequential processing | **FLAGS-based coordination and agent handoffs** |
@@ -394,7 +394,7 @@ Use **`backend.laravel`** (1,634 lines) as the gold standard template for new ag
 - **[Agent Routing Rules](./.claude/resources/rules/agent-routing-catalog.md)** - Complete catalog with 17-rule system
 - **[Setup Documentation](./.claude/commands/setup.md)** - 8-phase initialization process
 - **[FLAGS Coordination System](./.claude/memory)** - Enterprise cross-agent communication
-- **[CLAUDE.md Template](./.claude/resources/templates/claude-md-template.md)** - Project configuration
+- **[CLAUDE.md Template](./.claude/resources/templates/claude-template.md)** - Project configuration
 
 ### **Research & Evolution Documentation**
 

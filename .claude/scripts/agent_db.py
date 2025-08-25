@@ -686,6 +686,19 @@ def search_agents_semantic(search_query, limit=5):
         "results": results
     }, indent=2)
 
+def check_active_job_exists(cursor):
+    """Check if there is currently an active job in the system
+    
+    Args:
+        cursor: Database cursor to use for the query
+    
+    Returns:
+        bool: True if an active job exists, False otherwise
+    """
+    cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
+    active_count = cursor.fetchone()[0]
+    return active_count > 0
+
 def activate_job(job_id):
     """Activate a specific job, automatically pausing any currently active job
     
@@ -712,17 +725,17 @@ def activate_job(job_id):
         
         if not job:
             conn.rollback()
-            return json.dumps({
+            return {
                 "success": False,
                 "error": f"Job {job_id} not found"
-            })
+            }
         
         if job[2] == 'active':
             conn.rollback()
-            return json.dumps({
+            return {
                 "success": False,
                 "message": f"Job {job_id} is already active"
-            })
+            }
         
         # Find and pause any currently active job
         cursor.execute("SELECT id, title FROM jobs WHERE status = 'active'")
@@ -763,14 +776,14 @@ def activate_job(job_id):
                 "status": "paused"
             }
         
-        return json.dumps(result, indent=2)
+        return result
         
     except Exception as e:
         conn.rollback()
-        return json.dumps({
+        return {
             "success": False,
             "error": str(e)
-        })
+        }
     finally:
         conn.close()
 
@@ -862,10 +875,9 @@ def create_job(title, description, priority="medium", estimated_hours=None,
     }
     
     # Single check for active jobs to determine final status
-    cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
-    active_count = cursor.fetchone()[0]
+    has_active_job = check_active_job_exists(cursor)
     
-    if active_count > 0:
+    if has_active_job:
         # There's already an active job
         if status == "active":
             # Force to paused if trying to create as active
@@ -898,7 +910,7 @@ def create_job(title, description, priority="medium", estimated_hours=None,
         conn.commit()
         conn.close()
         
-        return json.dumps({
+        return {
             "success": True,
             "job_id": job_id,
             "title": title,
@@ -906,16 +918,16 @@ def create_job(title, description, priority="medium", estimated_hours=None,
             "phase": phase,
             "estimated_hours": estimated_hours,
             "message": f"Job '{title}' created successfully with ID: {job_id}"
-        }, indent=2)
+        }
         
     except Exception as e:
         conn.rollback()  # Rollback transaction on error
         conn.close()
-        return json.dumps({
+        return {
             "success": False,
             "error": str(e),
             "message": f"Failed to create job: {str(e)}"
-        }, indent=2)
+        }
 
 def list_available_agents():
     """List all available agents from catalog and acolytes"""
@@ -1295,7 +1307,7 @@ if __name__ == "__main__":
             elif args.activate and isinstance(args.activate, str) and args.activate.startswith('job_'):
                 # This is: --job --activate job_xxx (activate existing job)
                 result = activate_job(args.activate)
-                print(result)
+                print(json.dumps(result, indent=2))
             elif args.title and args.description:
                 # This is creating a new job
                 result = create_job(
@@ -1314,16 +1326,13 @@ if __name__ == "__main__":
             )
             
                 # If --activate flag is set for new job, activate it
-                if args.activate == True:
-                    import json as json_module
-                    job_data = json_module.loads(result)
-                    if job_data.get('success'):
-                        activate_result = activate_job(job_data['job_id'])
+                if args.activate:
+                    if result.get('success'):
+                        activate_result = activate_job(result['job_id'])
                         # Merge both results
-                        job_data['activated'] = True
-                        result = json_module.dumps(job_data, indent=2)
+                        result['activated'] = True
                 
-                print(result)
+                print(json.dumps(result, indent=2))
             else:
                 print(json.dumps({
                     "error": "Must provide either --activate job_id OR --title and --description",
