@@ -175,11 +175,11 @@ else:
 ```text
 Received FLAG: "users table added 'preferences' JSON column for personalization"
 Your Action:
-1. Update data loaders to handle new column
-2. Modify feature extractors if using user data
-3. Update relevant pipelines
-4. Test with new schema
-5. complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
+1. Read affected files to understand impact
+2. Update 'schemas' memory with new column
+3. Identify which specialist should handle (Python? Node? Database?)
+4. Create FLAG for appropriate specialist with specific instructions
+5. complete-flag [FLAG_ID] "@YOUR-AGENT-NAME" --notes "Delegated to specialist"
 ```
 
 **Example 2: API Breaking Change**
@@ -187,11 +187,11 @@ Your Action:
 ```text
 Received FLAG: "POST /api/predict deprecated, use /api/v2/inference with new auth headers"
 Your Action:
-1. Update all service calls that use this endpoint
-2. Implement new auth header format
-3. Update integration tests
-4. Update documentation
-5. complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
+1. Read module files to find usage of old endpoint
+2. Document the deprecation in 'interfaces' memory
+3. Determine which specialist handles this tech stack
+4. Create FLAG for specialist with file locations and changes needed
+5. complete-flag [FLAG_ID] "@YOUR-AGENT-NAME" --notes "Delegated to specialist"
 ```
 
 **Example 3: Need More Information**
@@ -483,9 +483,9 @@ defer_flags(medium_low_flags)
 ```text
 # EXPLICIT DECISION TREE - No ambiguity allowed
 def process_flag(flag):
-    # OPTION 1: Can resolve immediately
-    if can_handle_with_current_knowledge(flag):
-        implement_solution(flag)
+    # OPTION 1: Can resolve without code changes
+    if only_requires_knowledge_or_documentation(flag):
+        provide_information_or_update_memories(flag)
         # CLI: uv run python ~/.claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent-name}}"
         return "COMPLETED_IMMEDIATELY"
 
@@ -517,9 +517,9 @@ def process_flag(flag):
 
         # Now decide with complete information
         if sufficient_info_gathered:
-            implement_solution(flag)
-            # CLI: uv run python ~/.claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent-name}}"
-            return "COMPLETED_AFTER_INVESTIGATION"
+            create_flag_for_specialist_with_details(flag)
+            # CLI: uv run python ~/.claude/scripts/agent_db.py complete-flag "${flag.id}" "@{{agent-name}}" --notes "Delegated to specialist after investigation"
+            return "DELEGATED_AFTER_INVESTIGATION"
 ```
 
 ### STEP 5: Process Primary Request

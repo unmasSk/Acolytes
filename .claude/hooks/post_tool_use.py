@@ -7,6 +7,7 @@ import json
 import sys
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
 def update_tool_log(tool_data):
     """Update tool log with results in SQLite"""
@@ -85,13 +86,114 @@ def update_tool_log(tool_data):
     except Exception:
         pass  # Fail silently to not interrupt tool execution
 
+def handle_edit_tool(tool_data):
+    """Handle Edit tool - save to update_tool_output.md"""
+    try:
+        tool_name = tool_data.get('tool_name', 'unknown')
+        
+        # Only process Edit tool
+        if tool_name != 'Edit':
+            return
+            
+        # Get the correct fields
+        tool_input = tool_data.get('tool_input', {})
+        tool_response = tool_data.get('tool_response', {})
+        
+        # Create output file in project root
+        project_root = Path.cwd()
+        output_file = project_root / 'update_tool_output.md'
+        
+        # Prepare content to save
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        content = f"""# Edit Tool Output
+**Timestamp**: {timestamp}
+**Tool**: {tool_name}
+**File**: {tool_input.get('file_path', 'N/A')}
+
+## Input (What was requested)
+- **Old String**: {tool_input.get('old_string', 'N/A')[:100]}...
+- **New String**: {tool_input.get('new_string', 'N/A')[:100]}...
+
+## Response (What happened)
+- **Success**: {tool_response.get('userModified', False) == False}
+- **Replace All**: {tool_response.get('replaceAll', False)}
+- **File Path**: {tool_response.get('filePath', 'N/A')}
+
+---
+"""
+        
+        # Append to file (create if doesn't exist)
+        with open(output_file, 'a', encoding='utf-8') as f:
+            f.write(content + '\n')
+            
+    except Exception:
+        pass  # Fail silently
+
+def handle_todo_sync(tool_data):
+    """Handle TodoWrite tool - sync with SQLite"""
+    try:
+        tool_name = tool_data.get('tool_name', 'unknown')
+        
+        # Only process TodoWrite tool
+        if tool_name != 'TodoWrite':
+            return
+            
+        # Get the todo items from tool_input
+        tool_input = tool_data.get('tool_input', {})
+        todos = tool_input.get('todos', [])
+        
+        if not todos:
+            return
+            
+        # Connect to database
+        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        if not db_path.exists():
+            return
+            
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Clear existing todos
+        cursor.execute("DELETE FROM todos")
+        
+        # Insert new todos
+        for idx, todo in enumerate(todos):
+            cursor.execute("""
+                INSERT INTO todos (id, content, status, active_form, created_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                idx + 1,
+                todo.get('content', ''),
+                todo.get('status', 'pending'),
+                todo.get('activeForm', ''),
+                datetime.now().isoformat(),
+                datetime.now().isoformat()
+            ))
+        
+        conn.commit()
+        conn.close()
+        
+    except Exception:
+        pass  # Fail silently
+
 def main():
     try:
         # Read JSON input from stdin
-        input_data = json.load(sys.stdin)
+        tool_data = json.load(sys.stdin)
         
-        # Update tool log in SQLite
-        update_tool_log(input_data)
+        # Check command line arguments
+        args = sys.argv[1:]
+        
+        # Execute based on arguments
+        if '--edit' in args:
+            handle_edit_tool(tool_data)
+        
+        if '--todowrite' in args:
+            handle_todo_sync(tool_data)
+        
+        # Always update tool log (default behavior)
+        update_tool_log(tool_data)
         
         sys.exit(0)
         

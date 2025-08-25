@@ -285,10 +285,31 @@ def save_to_database(session_data, session_text, message_text):
         # Create next session
         import secrets
         new_session_id = f"session_{secrets.token_hex(6)}"
+        
+        # Get claude_session_id from most recent transcript file
+        claude_session_id = None
+        try:
+            # Build the Claude projects path for current directory
+            import os
+            current_dir = os.getcwd().replace('\\', '-').replace(':', '-')
+            claude_projects_dir = Path(os.path.expanduser(f"~/.claude/projects/{current_dir}"))
+            
+            if claude_projects_dir.exists():
+                # Find the most recent .jsonl file
+                jsonl_files = list(claude_projects_dir.glob("*.jsonl"))
+                if jsonl_files:
+                    # Sort by modification time and get the most recent
+                    most_recent = max(jsonl_files, key=lambda f: f.stat().st_mtime)
+                    # The filename without extension IS the claude_session_id
+                    claude_session_id = most_recent.stem
+        except Exception:
+            # If we can't get the claude_session_id, continue without it
+            pass
+        
         cursor.execute("""
-            INSERT INTO sessions (id, job_id, created_at)
-            VALUES (?, ?, ?)
-        """, (new_session_id, session_data['job_id'], timestamp))
+            INSERT INTO sessions (id, job_id, created_at, claude_session_id)
+            VALUES (?, ?, ?, ?)
+        """, (new_session_id, session_data['job_id'], timestamp, claude_session_id))
         
         conn.commit()
         

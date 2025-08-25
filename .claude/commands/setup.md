@@ -392,7 +392,7 @@ MODULE_DIVISION_RULES:
 AGENT_STRUCTURE:
   location: .claude/agents/acolyte.[module].md or .claude/agents/acolyte.[module]-[submodule].md
   creation: Claude delegates to @setup.agent-creator with module/submodule information
-  memory_initialization: Agents create their own 9 memory records when first executed
+  memory_initialization: Agents create their own 14 memory records when first executed
 ```
 
 #### **FOR NEW PROJECTS**

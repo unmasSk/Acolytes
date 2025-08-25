@@ -4,11 +4,46 @@
 # dependencies = []
 # ///
 
+import argparse
 import json
 import os
 import sys
+import subprocess
 from pathlib import Path
 
+def play_stop_sound():
+    """Play work complete sound at 20% volume when session stops"""
+    try:
+        # Path to work complete sound
+        sound_file = Path('.claude/resources/sfx/work-complete.wav')
+        
+        if sound_file.exists():
+            # Play the custom sound file at 20% volume using PowerShell
+            powershell_cmd = f'''
+            Add-Type -AssemblyName presentationCore
+            $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
+            $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
+            $mediaPlayer.Volume = 0.2
+            $mediaPlayer.Play()
+            Start-Sleep -Milliseconds 2000
+            $mediaPlayer.Stop()
+            $mediaPlayer.Close()
+            '''
+            
+            # Execute PowerShell command silently
+            subprocess.run(
+                ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', powershell_cmd],
+                capture_output=True,
+                text=True,
+                timeout=3
+            )
+            
+            # Print success message
+            print("\n🎵 WORK COMPLETE")
+            
+    except Exception:
+        # Silently fail if sound cannot play
+        pass
 
 def generate_markdown_transcript(conversation_file, session_id):
     """Generate a beautiful Markdown transcript from the JSON conversation."""
@@ -57,7 +92,7 @@ def generate_markdown_transcript(conversation_file, session_id):
                 username = os.getenv("USERNAME", "Usuario")  # Get Windows username
                 md_content.append("<div style=\"text-align: right;\">")
                 md_content.append("")
-                md_content.append(f"### <span style=\"color: #007bff; text-transform: uppercase;\">♾️ {username}</span>{time_part}")
+                md_content.append(f"### <span style=\"color: #007bff;\">♾️ {username}</span>{time_part}")
                 md_content.append("")
                 md_content.append(content)
                 md_content.append("")
@@ -67,7 +102,7 @@ def generate_markdown_transcript(conversation_file, session_id):
                 md_content.append("")
                 
             elif msg_type == "assistant":
-                md_content.append(f"### <span style=\"color: #d2691e; text-transform: uppercase;\">🤖 Claude</span>{time_part}")
+                md_content.append(f"### <span style=\"color: #d2691e;\">🤖 Claude</span>{time_part}")
                 md_content.append("")
                 md_content.append(content)
                 md_content.append("")
@@ -99,11 +134,18 @@ def ensure_session_log_dir(project_root=None):
 
 def main():
     try:
+        # Parse command line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument(
+            "--chat", action="store_true", help="Copy transcript to chat.json"
+        )
+        parser.parse_args()  # Parse but don't store - just validates args
+
         # Read JSON input from stdin
         stdin_content = sys.stdin.read().strip()
         input_data = json.loads(stdin_content)
 
-        # Extract required fields
+        # Extract required fields (only get what we actually use)
         project_cwd = input_data.get("cwd", "")
 
         # Get OUR session ID from SQLite
@@ -189,6 +231,9 @@ def main():
                 except Exception as e:
                     print(f"Response extraction error: {e}", file=sys.stderr)
 
+        # Play work complete sound before exiting
+        play_stop_sound()
+        
         sys.exit(0)
 
     except json.JSONDecodeError:

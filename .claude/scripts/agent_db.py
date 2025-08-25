@@ -722,6 +722,110 @@ def cleanup_orphaned_jobs():
     conn.close()
     return json.dumps({"message": result, "jobs_cleaned": len(orphaned_jobs)})
 
+def create_job(title, description, priority="medium", estimated_hours=None, 
+               required_skills=None, job_type=None, tech_stack=None, 
+               phase=None, dependencies=None, success_criteria=None,
+               status="paused", pause_reason="Awaiting start"):
+    """Create a new job in the jobs table with detailed configuration
+    
+    Args:
+        title: Job title
+        description: Plain text description of the job
+        priority: Priority level (high/medium/low)
+        estimated_hours: Estimated hours for completion
+        required_skills: Required skills for the job
+        job_type: Type of job (foundation/feature/integration/deployment)
+        tech_stack: Technologies involved
+        phase: Project phase (foundation/core_development/integration/deployment)
+        dependencies: Comma-separated list of job IDs this depends on
+        success_criteria: Measurable success criteria
+        status: Initial status (default: paused)
+        pause_reason: Reason for pause if status is paused
+    
+    Returns:
+        JSON with created job details
+    
+    Note: Following the rule that always 1 job must be active. 
+    If creating as active, will pause other active jobs.
+    """
+    import uuid
+    
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    # Generate unique job ID
+    job_id = f"job_{uuid.uuid4().hex[:12]}"
+    
+    # Build description JSON with all metadata
+    job_description = {
+        "summary": description,
+        "priority": priority,
+        "estimated_hours": estimated_hours,
+        "required_skills": required_skills.split(",") if required_skills else [],
+        "job_type": job_type,
+        "tech_stack": tech_stack,
+        "phase": phase,
+        "dependencies": dependencies.split(",") if dependencies else [],
+        "success_criteria": success_criteria.split(";") if success_criteria else [],
+        "created_by": "plan.strategy"
+    }
+    
+    # If there's already an active job and trying to create as active, force to paused
+    if status == "active":
+        cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
+        active_count = cursor.fetchone()[0]
+        if active_count > 0:
+            # FORCE the new job to be paused, don't touch existing jobs
+            status = "paused"
+            pause_reason = "Created as paused - another job is already active"
+    
+    # Check if no jobs exist or all are paused/completed, make this one active
+    cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
+    active_count = cursor.fetchone()[0]
+    
+    if active_count == 0 and status == "paused":
+        # No active jobs, make this one active
+        status = "active"
+        pause_reason = None
+    
+    # Insert the job
+    timestamp = get_timestamp()
+    
+    try:
+        cursor.execute("""
+            INSERT INTO jobs (id, title, description, status, created_at, paused_at, pause_reason)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (
+            job_id,
+            title,
+            json.dumps(job_description),
+            status,
+            timestamp,
+            timestamp if status == "paused" else None,
+            pause_reason if status == "paused" else None
+        ))
+        
+        conn.commit()
+        conn.close()
+        
+        return json.dumps({
+            "success": True,
+            "job_id": job_id,
+            "title": title,
+            "status": status,
+            "phase": phase,
+            "estimated_hours": estimated_hours,
+            "message": f"Job '{title}' created successfully with ID: {job_id}"
+        }, indent=2)
+        
+    except Exception as e:
+        conn.close()
+        return json.dumps({
+            "success": False,
+            "error": str(e),
+            "message": f"Failed to create job: {str(e)}"
+        }, indent=2)
+
 def list_available_agents():
     """List all available agents from catalog and acolytes"""
     conn = sqlite3.connect(DB_PATH)
@@ -780,7 +884,7 @@ if __name__ == "__main__":
         print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
         print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
         print("INTERACTIONS: add-interaction")
-        print("MAINTENANCE Commands: cleanup-jobs")
+        print("JOBS Commands: create-job, cleanup-jobs")
         sys.exit(1)
     
     command = sys.argv[1]
@@ -1020,6 +1124,40 @@ if __name__ == "__main__":
         
         elif command == "cleanup-jobs":
             print(cleanup_orphaned_jobs())
+        
+        elif command == "create-job":
+            import argparse
+            parser = argparse.ArgumentParser()
+            parser.add_argument('command')
+            parser.add_argument('--title', required=True, help='Job title')
+            parser.add_argument('--description', required=True, help='Job description')
+            parser.add_argument('--priority', default='medium', help='Priority: high/medium/low')
+            parser.add_argument('--estimated_hours', type=int, help='Estimated hours')
+            parser.add_argument('--required_skills', help='Comma-separated skills')
+            parser.add_argument('--job_type', help='foundation/feature/integration/deployment')
+            parser.add_argument('--tech_stack', help='Technologies involved')
+            parser.add_argument('--phase', help='foundation/core_development/integration/deployment')
+            parser.add_argument('--dependencies', help='Comma-separated job IDs')
+            parser.add_argument('--success_criteria', help='Semicolon-separated criteria')
+            parser.add_argument('--status', default='paused', help='Initial status: active/paused')
+            parser.add_argument('--pause_reason', default='Awaiting start', help='Reason if paused')
+            
+            args = parser.parse_args(sys.argv[1:])
+            
+            print(create_job(
+                title=args.title,
+                description=args.description,
+                priority=args.priority,
+                estimated_hours=args.estimated_hours,
+                required_skills=args.required_skills,
+                job_type=args.job_type,
+                tech_stack=args.tech_stack,
+                phase=args.phase,
+                dependencies=args.dependencies,
+                success_criteria=args.success_criteria,
+                status=args.status,
+                pause_reason=args.pause_reason
+            ))
         
         elif command == "create-flag-for-agent":
             import argparse

@@ -681,6 +681,17 @@ BEGIN
   END;
 END;
 
+-- TRIGGER FOR JOB AUTO-STATUS MANAGEMENT
+-- Ensures only 1 job is active at a time
+-- Prevents creating active jobs when one already exists
+CREATE TRIGGER enforce_single_active_job
+BEFORE INSERT ON jobs
+FOR EACH ROW
+WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active')
+BEGIN
+  SELECT RAISE(ABORT, 'Cannot create active job - another job is already active. Create as paused instead.');
+END;
+
 -- TRIGGERS FOR FLAGS QUALITY CONTROL
 CREATE TRIGGER validate_flag_quality
 BEFORE INSERT ON flags

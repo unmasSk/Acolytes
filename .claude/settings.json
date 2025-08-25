@@ -35,11 +35,29 @@
     ],
     "PostToolUse": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/post_tool_use.py"
+          }
+        ]
+      },
+      {
         "matcher": "TodoWrite",
         "hooks": [
           {
             "type": "command",
-            "command": "uv run .claude/hooks/todo_sync.py"
+            "command": "uv run .claude/hooks/post_tool_use.py --todowrite"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run .claude/hooks/post_tool_use.py --edit"
           }
         ]
       }
