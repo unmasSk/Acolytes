@@ -686,6 +686,94 @@ def search_agents_semantic(search_query, limit=5):
         "results": results
     }, indent=2)
 
+def activate_job(job_id):
+    """Activate a specific job, automatically pausing any currently active job
+    
+    Args:
+        job_id: The ID of the job to activate
+    
+    Returns:
+        JSON with activation status and details
+    
+    Ensures exactly one active job at all times by:
+    1. Finding and pausing any currently active job
+    2. Activating the specified job
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    try:
+        # Start transaction for atomic operation
+        cursor.execute("BEGIN TRANSACTION")
+        
+        # Check if the job exists
+        cursor.execute("SELECT id, title, status FROM jobs WHERE id = ?", (job_id,))
+        job = cursor.fetchone()
+        
+        if not job:
+            conn.rollback()
+            return json.dumps({
+                "success": False,
+                "error": f"Job {job_id} not found"
+            })
+        
+        if job[2] == 'active':
+            conn.rollback()
+            return json.dumps({
+                "success": False,
+                "message": f"Job {job_id} is already active"
+            })
+        
+        # Find and pause any currently active job
+        cursor.execute("SELECT id, title FROM jobs WHERE status = 'active'")
+        active_job = cursor.fetchone()
+        
+        if active_job:
+            cursor.execute("""
+                UPDATE jobs 
+                SET status = 'paused', 
+                    paused_at = datetime('now'),
+                    pause_reason = ?
+                WHERE id = ?
+            """, (f"Switched to job {job_id}", active_job[0]))
+        
+        # Activate the specified job
+        cursor.execute("""
+            UPDATE jobs 
+            SET status = 'active', 
+                resumed_at = datetime('now'),
+                pause_reason = NULL
+            WHERE id = ?
+        """, (job_id,))
+        
+        conn.commit()
+        
+        result = {
+            "success": True,
+            "activated_job": {
+                "id": job_id,
+                "title": job[1]
+            }
+        }
+        
+        if active_job:
+            result["previously_active"] = {
+                "id": active_job[0],
+                "title": active_job[1],
+                "status": "paused"
+            }
+        
+        return json.dumps(result, indent=2)
+        
+    except Exception as e:
+        conn.rollback()
+        return json.dumps({
+            "success": False,
+            "error": str(e)
+        })
+    finally:
+        conn.close()
+
 def cleanup_orphaned_jobs():
     """Clean up jobs that should be completed but are still marked as active"""
     conn = sqlite3.connect(DB_PATH)
@@ -882,12 +970,43 @@ def list_available_agents():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python agent_db.py [command] [args...]")
-        print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
-        print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
-        print("INTERACTIONS: add-interaction")
-        print("JOBS Commands: create-job, cleanup-jobs")
+    if len(sys.argv) < 2 or sys.argv[1] == "--help":
+        print("=" * 70)
+        print("ACOLYTES FOR CLAUDE CODE - Database Management System")
+        print("=" * 70)
+        print("\nUsage: python agent_db.py [command] [args...]")
+        print("\n" + "=" * 70)
+        print("JOB MANAGEMENT COMMANDS")
+        print("=" * 70)
+        print("\n--job                     Job management commands")
+        print("  Create new job:")
+        print("    --title TEXT          Job title")
+        print("    --description TEXT    Job summary/description")
+        print("  Optional:")
+        print("    --priority TEXT       Priority level (high/medium/low, default: medium)")
+        print("    --estimated_hours NUM Estimated hours to complete")
+        print("    --required_skills CSV Skills needed (comma-separated)")
+        print("    --job_type TEXT       Type: foundation/feature/integration/deployment")
+        print("    --tech_stack CSV      Technologies involved (comma-separated)")
+        print("    --phase TEXT          Phase: foundation/core_development/integration/deployment")
+        print("    --dependencies CSV    Dependent job IDs (comma-separated)")
+        print("    --success_criteria SC Success criteria (semicolon-separated)")
+        print("    --activate           Immediately activate this job (pauses current active job)")
+        print("\n  Other job operations:")
+        print("    --activate JOB_ID    Switch to a different job (pauses current)")
+        print("    --list               Show last 10 jobs with status")
+        print("\nExamples:")
+        print('  agent_db.py --job --title "Add user auth" --description "Implement OAuth2"')
+        print('  agent_db.py --job --title "Fix bugs" --description "Critical fixes" --activate')
+        print('  agent_db.py --job --activate job_48330ca18339  # Switch to existing job')
+        print('  agent_db.py --job --list  # Show recent jobs')
+        print("\n" + "=" * 70)
+        print("OTHER COMMANDS")
+        print("=" * 70)
+        print("\nCore: init, create-agent, update-memory, get-memory, query, execute")
+        print("FLAGS: create-flag, get-pending-flags, get-workable-flags, get-agent-flags, complete-flag")
+        print("Agents: search-agents, update-health, get-health, add-interaction")
+        print("Jobs: cleanup-jobs")
         sys.exit(1)
     
     command = sys.argv[1]
@@ -1128,12 +1247,12 @@ if __name__ == "__main__":
         elif command == "cleanup-jobs":
             print(cleanup_orphaned_jobs())
         
-        elif command == "create-job":
+        elif command == "--job":
             import argparse
-            parser = argparse.ArgumentParser()
-            parser.add_argument('command')
-            parser.add_argument('--title', required=True, help='Job title')
-            parser.add_argument('--description', required=True, help='Job description')
+            parser = argparse.ArgumentParser(prog='agent_db.py --job')
+            parser.add_argument('command', nargs='?')
+            parser.add_argument('--title', required=False, help='Job title')
+            parser.add_argument('--description', required=False, help='Job description')
             parser.add_argument('--priority', default='medium', help='Priority: high/medium/low')
             parser.add_argument('--estimated_hours', type=int, help='Estimated hours')
             parser.add_argument('--required_skills', help='Comma-separated skills')
@@ -1142,12 +1261,44 @@ if __name__ == "__main__":
             parser.add_argument('--phase', help='foundation/core_development/integration/deployment')
             parser.add_argument('--dependencies', help='Comma-separated job IDs')
             parser.add_argument('--success_criteria', help='Semicolon-separated criteria')
-            parser.add_argument('--status', default='paused', help='Initial status: active/paused')
-            parser.add_argument('--pause_reason', default='Awaiting start', help='Reason if paused')
+            parser.add_argument('--activate', nargs='?', const=True, help='Activate job - can be True for new job or job_id for existing')
+            parser.add_argument('--list', action='store_true', help='List last 10 jobs')
             
-            args = parser.parse_args(sys.argv[1:])
+            # Remove the '--job' command from argv before parsing
+            args = parser.parse_args(sys.argv[2:])
             
-            print(create_job(
+            # Check if this is listing jobs
+            if args.list:
+                # List last 10 jobs
+                conn = sqlite3.connect(DB_PATH)
+                conn.row_factory = sqlite3.Row
+                cursor = conn.execute("""
+                    SELECT id, title, status, created_at, 
+                           CASE 
+                               WHEN status = 'active' THEN resumed_at
+                               WHEN status = 'paused' THEN paused_at
+                               ELSE completed_at
+                           END as last_update
+                    FROM jobs 
+                    ORDER BY created_at DESC 
+                    LIMIT 10
+                """)
+                jobs = [dict(row) for row in cursor.fetchall()]
+                conn.close()
+                
+                result = {
+                    "total_jobs": len(jobs),
+                    "jobs": jobs
+                }
+                print(json.dumps(result, indent=2))
+            # Check if this is just an activation of existing job
+            elif args.activate and isinstance(args.activate, str) and args.activate.startswith('job_'):
+                # This is: --job --activate job_xxx (activate existing job)
+                result = activate_job(args.activate)
+                print(result)
+            elif args.title and args.description:
+                # This is creating a new job
+                result = create_job(
                 title=args.title,
                 description=args.description,
                 priority=args.priority,
@@ -1158,9 +1309,37 @@ if __name__ == "__main__":
                 phase=args.phase,
                 dependencies=args.dependencies,
                 success_criteria=args.success_criteria,
-                status=args.status,
-                pause_reason=args.pause_reason
-            ))
+                status='paused',
+                pause_reason='Awaiting start'
+            )
+            
+                # If --activate flag is set for new job, activate it
+                if args.activate == True:
+                    import json as json_module
+                    job_data = json_module.loads(result)
+                    if job_data.get('success'):
+                        activate_result = activate_job(job_data['job_id'])
+                        # Merge both results
+                        job_data['activated'] = True
+                        result = json_module.dumps(job_data, indent=2)
+                
+                print(result)
+            else:
+                print(json.dumps({
+                    "error": "Must provide either --activate job_id OR --title and --description",
+                    "usage": "agent_db.py --job --activate job_xxx OR agent_db.py --job --title '...' --description '...'"
+                }))
+        
+        elif command == "--activate-deprecated":
+            if len(sys.argv) < 3:
+                print(json.dumps({
+                    "error": "Missing job_id",
+                    "usage": "python agent_db.py --activate JOB_ID"
+                }))
+                sys.exit(1)
+            
+            job_id = sys.argv[2]
+            print(activate_job(job_id))
         
         elif command == "create-flag-for-agent":
             import argparse

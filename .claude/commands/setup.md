@@ -437,7 +437,7 @@ ACOLYTE_ACTIVATION:
 
 ### 6️⃣ **PHASE 6: FINALIZATION**
 
-**WHAT YOU (CLAUDE) MUST DO**: Confirm successful setup completion and present a comprehensive system summary. For existing projects, guide the user through roadmap decisions. For new projects, prepare for development phase. Follow the finalization steps below.
+**WHAT YOU (CLAUDE) MUST DO**: Confirm successful setup completion and present a comprehensive system summary. For existing projects, guide the user through roadmap decisions explaining the job system. For new projects, prepare for development phase. Follow the finalization steps below understanding that the system ALWAYS requires an active job.
 
 ```yaml
 COMPLETION_SUMMARY:
@@ -447,6 +447,13 @@ COMPLETION_SUMMARY:
   - List available agents with their expertise areas
   - Show next steps for development
 
+JOB_SYSTEM_CRITICAL_RULES:
+  - "'Acolyte for Claude Code' CANNOT function without an active job"
+  - "Each job should contain 4-5 sessions maximum for optimal context"
+  - "After 2+ months in one job, context window becomes problematic"
+  - "Jobs group related work sessions for better memory persistence"
+  - "NEVER close a job without opening another"
+
 ROADMAP_DECISION:
   existing_projects:
     prompt: "Setup complete! What's your approach for this project?"
@@ -455,9 +462,15 @@ ROADMAP_DECISION:
       create_roadmap: "I want to plan objectives and create a development roadmap"
 
     no_roadmap_action:
-      - Create roadmap.md with template: "[X] NO STRUCTURED ROADMAP FOR THIS PROJECT, FOR NOW."
-      - Keep setup job active until user decides what to work on next
-      - Ready for ad-hoc development (improvised, as-needed approach)
+      - Create roadmap.md with: "[X] NO STRUCTURED ROADMAP FOR THIS PROJECT, FOR NOW."
+      - Keep setup job active (system REQUIRES active job - fundamental rule)
+      - EXPLAIN to user:
+        * "The system uses jobs to organize work and maintain context between sessions"
+        * "Each job should contain ~3-4 sessions to avoid context overflow"
+        * "You can create new jobs anytime - just tell me what you want to work on"
+        * "Example: 'Create a job for implementing authentication' or 'Create a job for bug fixes'"
+        * "Jobs are flexible - the roadmap is optional guidance, not obligation"
+      - Ready for ad-hoc development with job-based organization
 
     create_roadmap_action:
       - Collect user objectives and ideas
@@ -466,10 +479,26 @@ ROADMAP_DECISION:
       - Create roadmap.md with structured phases
       - Create jobs in SQLite (all paused except first)
       - Mark setup job as complete, activate first roadmap job
+      - Update CLAUDE.md: Replace {{roadmap_summary}} with actual roadmap summary
+      - EXPLAIN: "Each roadmap phase becomes a job, but you can create additional jobs anytime"
+
+JOB_MANAGEMENT_FLEXIBILITY:
+  - User can create jobs anytime regardless of roadmap
+  - When creating new job, Claude asks: "Should I pause the current job and switch to the new one?"
+  - Multiple jobs can exist simultaneously (active/paused/completed)
+  - Roadmap is a guide, not an obligation - adapt as needed
+  - Use @plan.strategy to update/create roadmaps for existing projects
+
+ROADMAP_COMPLETION_HANDLING:
+  - When all roadmap jobs complete, options:
+    * Create new roadmap with @plan.strategy
+    * Create ad-hoc job for next feature/phase
+    * Continue organically with user-defined jobs
+  - CRITICAL: Never leave system without active job
 
 NEXT_STEPS:
-  existing_projects: "Roadmap decision completed - ready for development"
-  new_projects: "Ready to begin development following the generated roadmap"
+  existing_projects: "System ready - job structure explained - development can begin"
+  new_projects: "Ready to begin development following the generated roadmap and job structure"
 ```
 
 ---

@@ -2,6 +2,48 @@
 
 ---📋📋📋📋📋📋📋📋📋📋📋📋📋📋📋LA HORAAAAAAAAAAA
 
+## 🚨 CRITICAL: JOB SYSTEM - MANDATORY FOR OPERATION
+
+**FUNDAMENTAL RULE**: System CANNOT function without an active job. Always exactly 1 active job.
+
+### Core Rules
+- **Jobs group 4-5 sessions** for context management (2+ months = problematic)
+- **Never 0 active jobs** (system breaks) | **Never 2+ active** (DB prevents)
+- **Always use script** for job management (never direct SQL)
+- **Create new jobs**: After 4-5 sessions, context switch, or new feature
+- **Be proactive**: Detect when user starts new work → Ask "Should we create a new job for this?"
+
+### Job Commands
+```bash
+# Create job (always starts paused)
+uv run python .claude/scripts/agent_db.py --job --title "Fix auth bug" --description "OAuth2 issue"
+
+# Create and activate immediately (auto-pauses current)
+uv run python .claude/scripts/agent_db.py --job --title "New feature" --description "Add dashboard" --activate
+
+# Switch active job (only for existing paused jobs)
+uv run python .claude/scripts/agent_db.py --job --activate job_48330ca18339
+
+# List last 10 jobs with status
+uv run python .claude/scripts/agent_db.py --job --list
+```
+
+### Edge Cases - Claude Must Handle
+
+| Situation | Claude's Action |
+|-----------|----------------|
+| **No active job** | Check DB → "No active job, creating one" → Activate or create |
+| **Context switch** | "Different work detected. Create new job?" → Use `--activate` |
+| **User hints new work** | "Now I want to..." "Let's work on..." → "Should we create a new job for this?" |
+| **Job has 6+ sessions** | "Job full, let's create new one" → Help define scope |
+| **Roadmap complete** | Never leave jobless → Create maintenance/phase-2 job |
+| **Broken system (0 or 2+ active)** | Detect → Fix immediately with `--activate` |
+| **Old job active** | Check age/sessions → "Job from [date], creating fresh one" |
+
+**CRITICAL**: Check job status at session start. Fix before proceeding. Roadmap is optional guide.
+
+---
+
 ## USER CONFIGURATION
 
 ### Project Classification
