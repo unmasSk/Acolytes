@@ -19,7 +19,7 @@ Instead of agents trying to coordinate directly (which would contaminate Claude'
 
 ## Types of Agents You Coordinate
 
-**Acolytes**: Project-specific agents created for each module (like api-agent, auth-agent, database-agent). They know their specific module deeply and guard their code. They create flags when they need help or when their changes affect other modules.
+**Acolytes**: Project-specific agents created for each module (like acolyte.api, acolyte.auth, database-agent). They know their specific module deeply and guard their code. They create flags when they need help or when their changes affect other modules.
 
 **Professional Agents**: General specialists (like @backend.nodejs, @database.postgres, @service.auth) who provide expertise but don't maintain project memory. They complete specific tasks and report back.
 
@@ -61,8 +61,8 @@ The flags table contains these key fields:
 **What you see**:
 
 - FLAG #45: `target: @database.postgres, action: "Update user schema", related_files: "db/users.sql"`
-- FLAG #46: `target: @api-agent, action: "Update user endpoints", related_files: "api/users.js"`
-- FLAG #47: `target: @auth-agent, action: "Update auth queries", related_files: "auth/queries.js"`
+- FLAG #46: `target: @acolyte.api, action: "Update user endpoints", related_files: "api/users.js"`
+- FLAG #47: `target: @acolyte.auth, action: "Update auth queries", related_files: "auth/queries.js"`
 
 **Your decision**: All parallel - different files, different modules, no conflicts.
 
@@ -119,7 +119,7 @@ The flags table contains these key fields:
 
 **What you see**:
 
-- FLAG #67: `target: @api-auth-agent, action: "OAuth flow"`
+- FLAG #67: `target: @api-acolyte.auth, action: "OAuth flow"`
 - FLAG #68: `target: @api-endpoints-agent, action: "OAuth endpoints"`
 - FLAG #69: `target: @api-middleware-agent, action: "OAuth middleware"`
 
@@ -157,7 +157,7 @@ Use: `uv run .claude/scripts/agent_db.py query "SELECT * FROM flags WHERE status
 Tell Claude what to do:
 
 - `"Claude, invoke @backend.nodejs"` (single agent)
-- `"Claude, use Task tool to invoke in parallel: @docs.technical, @changelog-agent, @api-agent"` (multiple safe agents)
+- `"Claude, use Task tool to invoke in parallel: @docs.technical, @changelog-agent, @acolyte.api"` (multiple safe agents)
 - `"Claude, invoke sequentially: first @service.auth, then @backend.nodejs"` (dependent sequence)
 
 ## Coordination Rules

@@ -1,4 +1,4 @@
--- ClaudeSquad SQLite Schema v1.0
+-- Acolytes for Claude Code SQLite Schema v1.0
 -- Timestamp format: 'YYYY-MM-DD HH:MM'
 
 -- SCHEMA VERSION MANAGEMENT
@@ -11,10 +11,10 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 );
 
 INSERT OR IGNORE INTO schema_migrations (version, description) VALUES 
-(1, 'Initial ClaudeSquad database schema with SQLite audit improvements');
+(1, 'Initial Acolytes for Claude Code database schema with SQLite audit improvements');
 
--- 1. DYNAMIC AGENTS (Project-specific agents with memories)
-CREATE TABLE IF NOT EXISTS agents_dynamic (
+-- 1. ACOLYTES (Project-specific agents with memories)
+CREATE TABLE IF NOT EXISTS acolytes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
     module TEXT NOT NULL,           -- Main module (e.g., "rag", "auth", "payments")
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
     name TEXT UNIQUE NOT NULL,      -- '@backend.nodejs', '@database.postgres'
     type TEXT NOT NULL CHECK(type IN ('analyst', 'audit', 'backend', 'business', 'coordinator', 'database', 'docs', 'frontend', 'ops', 'service', 'test', 'dynamic')),
     
-    -- Only for DYNAMIC agents
+    -- Only for Acolytes
     module TEXT,                    -- Required if type='dynamic' (auth, api, payments, etc)
     sub_module TEXT,                -- Optional if type='dynamic' 
     
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS agent_memory (
     content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (agent_id) REFERENCES agents_dynamic(id) ON DELETE CASCADE
+    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE CASCADE
 );
 
 -- 3. JOBS
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS agent_health (
     checked_at TEXT NOT NULL,
     last_upgrade_at TEXT,                  -- When agent was last upgraded
     upgraded_by TEXT,                      -- Who upgraded (auto/manual/agent)
-    FOREIGN KEY (agent_id) REFERENCES agents_dynamic(id) ON DELETE CASCADE,
+    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE CASCADE,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
@@ -229,7 +229,7 @@ CREATE TABLE IF NOT EXISTS todos (
     ai_suggested BOOLEAN DEFAULT 0,       -- If suggested by AI
     context JSON,                          -- Additional context
     
-    FOREIGN KEY (agent_id) REFERENCES agents_dynamic(id) ON DELETE SET NULL,
+    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE SET NULL,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
@@ -649,7 +649,7 @@ INSERT OR IGNORE INTO agents_catalog (name, type, role, tech_stack, scenarios, t
 INSERT OR IGNORE INTO jobs (id, title, description, status, created_at) VALUES (
 'job_project_setup',
 'Project Setup',
-'{"summary": "Initial project setup and configuration", "goals": ["Configure ClaudeSquad system", "Initialize database", "Setup agents"], "scope": "Complete system initialization", "priority": "high"}',
+'{"summary": "Initial project setup and configuration", "goals": ["Configure Acolytes for Claude Code System", "Initialize database", "Setup agents"], "scope": "Complete system initialization", "priority": "high"}',
 'active',
 datetime('now')
 );

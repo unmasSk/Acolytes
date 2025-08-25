@@ -264,4 +264,4 @@ Optional:
 
 ---
 
-_Command designed for ClaudeSquad professional workflow_
+_Command designed for Acolytes for Claude Code professional workflow_

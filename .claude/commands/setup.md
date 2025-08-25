@@ -1,11 +1,11 @@
 ---
 command: setup
-description: 🚀 Setup project with ClaudeSquad agents. Params: --update
+description: 🚀 Setup project with Acolytes for Claude Code. Params: --update
 ---
 
 ## ⚡ MANDATORY COMMAND FLOW
 
-This system provides intelligent project setup with ClaudeSquad's 57 specialized agents, supporting both existing projects and new project creation from expert consultation.
+This system provides intelligent project setup with Acolytes for Claude Code's 57 specialized agents, supporting both existing projects and new project creation from expert consultation.
 
 ## Usage
 
@@ -378,19 +378,19 @@ CLAUDE_MD_GENERATION:
 #### **FOR EXISTING PROJECTS**
 
 ```yaml
-DYNAMIC_AGENT_CREATION:
+ACOLYTE_CREATION:
   - Create project-specific agents based on detected modules
   - execution: MULTIPLE TASK CALLS IN ONE MESSAGE with @setup.agent-creator
-  - Example: api-agent, auth-agent, frontend-agent
+  - Example: acolyte.api, acolyte.auth, acolyte.frontend
 
 MODULE_DIVISION_RULES:
   - Single agent: modules with ≤30 files
   - Multiple agents: modules with >30 files split into submodule agents
-  - Submodule agent examples: api-auth-agent, api-endpoints-agent, rag-retrieval-agent, rag-indexing-agent
-  - Naming pattern: [module]-[submodule]-agent
+  - Submodule agent examples: acolyte.api-auth, acolyte.api-endpoints, acolyte.rag-retrieval, acolyte.rag-indexing
+  - Naming pattern: acolyte.[module]-[submodule]
 
 AGENT_STRUCTURE:
-  location: .claude/agents/[module]-agent.md or .claude/agents/[module]-[submodule]-agent.md
+  location: .claude/agents/acolyte.[module].md or .claude/agents/acolyte.[module]-[submodule].md
   creation: Claude delegates to @setup.agent-creator with module/submodule information
   memory_initialization: Agents create their own 9 memory records when first executed
 ```
@@ -405,7 +405,7 @@ PLAN_EXECUTION:
 
 MODULE_DIVISION_RULES:
   - Apply same 30-file rule for planned modules
-  - Submodule agent creation: api-auth-agent, payment-processing-agent, user-profile-agent
+  - Submodule agent creation: acolyte.api-auth, acolyte.payment-processing, acolyte.user-profile
 ```
 
 ---
@@ -413,14 +413,14 @@ MODULE_DIVISION_RULES:
 ### 5️⃣ **PHASE 5: DEEP ANALYSIS & INITIALIZATION**
 
 ```yaml
-DYNAMIC_AGENT_ACTIVATION:
+ACOLYTE_ACTIVATION:
   existing_projects:
     - All acolytes perform deep module analysis
     - Fill their 8 memory records with comprehensive knowledge
     - Update agent_memory table in SQLite
 
   new_projects:
-    - Dynamic agents create their initial memory structures
+    - Acolytes create their initial memory structures
     - Set up monitoring for their planned modules
     - Prepare for development phase execution
 ```
@@ -476,8 +476,8 @@ NEXT_STEPS:
 │   │   ├── technical-decisions.md  # Rationale for choices
 │   │   ├── team-preferences.md     # Standards and practices
 │   │   └── project-context.md      # Specific project details
-│   ├── agents/                     # DYNAMIC AGENTS
-│   │   ├── [module]-agent.md       # One per detected/planned module
+│   ├── agents/                     # ACOLYTES
+│   │   ├── acolyte.[module].md     # One per detected/planned module
 │   │   └── ...
 │   ├── memory/                     # PERSISTENT MEMORY
 │   │   └── project.db              # SQLite with agent memories, jobs, setup data
@@ -494,8 +494,8 @@ NEXT_STEPS:
 ```bash
 # Claude checks summary ONLY (no context overload)
 python .claude/scripts/agent_db.py get-workable-flags
-# Result: @auth-agent: 3 flags, @api-agent: 1 flag
-# Claude invokes: "@auth-agent review your pending flags"
+# Result: @acolyte.auth: 3 flags, @acolyte.api: 1 flag
+# Claude invokes: "@acolyte.auth review your pending flags"
 ```
 
 **Agent Workflow**:
@@ -514,7 +514,7 @@ python .claude/scripts/agent_db.py get-workable-flags
 | 1     | Environment + Database setup | Environment + Database setup            |
 | 2     | 4 setup agents analyze code  | 14 interview rounds + specialists       |
 | 3     | CLAUDE.md creation           | CLAUDE.md creation                      |
-| 4     | Dynamic agent creation       | Jobs + agent creation via plan.strategy |
+| 4     | Acolyte creation             | Jobs + acolyte creation via plan.strat. |
 | 5     | Deep module analysis         | Agent initialization                    |
 | 6     | Finalization summary         | Finalization summary                    |
 
@@ -545,7 +545,7 @@ Claude:
 3. [Phase 3] Generate CLAUDE.md with project context ✅
 4. [Phase 4] Create acolytes + jobs (if new project) ✅
 5. [Phase 5] Initialize agent memories ✅
-6. [Phase 6] "✅ Setup complete: ClaudeSquad ready with full documentation"
+6. [Phase 6] "✅ Setup complete: Acolytes for Claude Code ready with full documentation"
 ```
 
 ---

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Infrastructure Detection Script for ClaudeSquad Setup
+Infrastructure Detection Script for Acolytes for Claude Code Setup
 Analyzes project infrastructure, deployment, databases, CI/CD, and external services
 """
 

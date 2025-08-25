@@ -244,7 +244,7 @@ def smart_analyze():
         
         if module:
             # Check for module-specific agent
-            agent_name = f"ClaudeSquad-{module}"
+            agent_name = f"acolyte.{module}"
             cursor.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
             if cursor.fetchone():
                 suggested_agent = agent_name
@@ -254,7 +254,7 @@ def smart_analyze():
             category_agents = {
                 'bug': 'error-detective',
                 'test': 'test-automation-specialist',
-                'docs': 'ClaudeSquad-documentation-specialist',
+                'docs': 'docs.specialist',
                 'refactor': 'architecture-engineer',
                 'feature': 'engineer-laravel',
                 'maintenance': 'devops-troubleshooter'
@@ -302,7 +302,7 @@ def delegate_todos():
         
         # Then check module-based assignment
         elif module:
-            agent_name = f"ClaudeSquad-{module}"
+            agent_name = f"acolyte.{module}"
             cursor.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
             if cursor.fetchone():
                 assigned = agent_name
@@ -312,7 +312,7 @@ def delegate_todos():
             category_agents = {
                 'bug': 'error-detective',
                 'test': 'test-automation-specialist',
-                'docs': 'ClaudeSquad-documentation-specialist',
+                'docs': 'docs.specialist',
                 'refactor': 'architecture-engineer',
                 'feature': 'engineer-laravel',
                 'maintenance': 'devops-troubleshooter'

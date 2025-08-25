@@ -1,4 +1,4 @@
-# ClaudeSquad Agents Routing Rules
+# Acolytes for Claude Code Agents Routing Rules
 
 ## 🎯 Agent Routing Rules
 

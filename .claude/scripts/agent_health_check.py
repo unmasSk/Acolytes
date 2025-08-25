@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Agent Health Check System for ClaudeSquad
+Agent Health Check System for Acolytes for Claude Code
 Implements the health checking system as defined in .claude/commands/agent-health.md
 """
 
@@ -318,7 +318,7 @@ def main():
     project_root = os.getcwd()
     checker = AgentHealthChecker(project_root)
     
-    print("ClaudeSquad Agent Health Check System")
+    print("Acolytes Health Check System")
     print("=" * 50)
     
     # Run health check on all agents

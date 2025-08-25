@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-MCP Setup for ClaudeSquad
+MCP Setup for Acolytes for Claude Code
 Configures Model Context Protocol servers for the project.
 
 Current MCPs configured:
@@ -28,7 +28,7 @@ def find_project_root() -> Path:
         if (current / ".claude").exists():
             return current
         current = current.parent
-    raise FileNotFoundError("No ClaudeSquad project found (.claude directory missing)")
+    raise FileNotFoundError("No .claude directory found in current project")
 
 def setup_mcp_sqlite():
     """Configure MCP SQLite server for the project"""
@@ -39,7 +39,7 @@ def setup_mcp_sqlite():
         print(f"Found project root: {project_root}")
     except FileNotFoundError as e:
         print(f"ERROR: {e}")
-        print("Make sure you're inside a ClaudeSquad project directory")
+        print("Make sure you're inside a project with .claude directory")
         return False
     
     claude_dir = project_root / ".claude"
@@ -224,7 +224,7 @@ def check_existing_mcps():
     return True
 
 if __name__ == "__main__":
-    print("ClaudeSquad MCP Setup")
+    print("Acolytes for Claude Code MCP Setup")
     print("=" * 30)
     
     # Check existing MCPs

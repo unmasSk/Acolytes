@@ -1,4 +1,4 @@
-# ClaudeSquad Agents Catalog & Routing Rules (58 agents)
+# Acolytes for Claude Code Agents Catalog & Routing Rules (58 agents)
 
 ---
 

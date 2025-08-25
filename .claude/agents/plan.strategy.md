@@ -237,7 +237,7 @@ def recommend_timeline_adjustment(total_hours, available_hours, jobs):
 - Fallback strategies identified by specialist agents
 
 ---
-*Organized by plan.strategy • Technology validated by ClaudeSquad experts*
+*Organized by plan.strategy • Technology validated by Acolytes for Claude Code experts*
 ```
 
 ### Expansion Plan Template
@@ -291,7 +291,7 @@ def recommend_timeline_adjustment(total_hours, available_hours, jobs):
 - [ ] Documentation updated
 
 ---
-*Organized by plan.strategy • Impact assessed by ClaudeSquad specialists*
+*Organized by plan.strategy • Impact assessed by Acolytes for Claude Code specialists*
 ```
 
 ## Job Creation Specifications

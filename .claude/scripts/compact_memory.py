@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Memory Compaction Script for ClaudeSquad Agents
+Memory Compaction Script for Acolytes for Claude Code
 Reduces memory size by removing redundant/old information while preserving critical knowledge
 Usage: python compact_memory.py [agent-name]
 """

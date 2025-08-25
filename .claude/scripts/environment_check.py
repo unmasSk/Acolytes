@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Environment Check and Setup for ClaudeSquad
-Validates and installs required dependencies for the ClaudeSquad system.
+Environment Check and Setup for Acolytes for Claude Code
+Validates and installs required dependencies for the Acolytes for Claude Code system.
 """
 import sys
 import subprocess
@@ -16,7 +16,7 @@ def find_project_root() -> Path:
         if (current / ".claude").exists():
             return current
         current = current.parent
-    raise FileNotFoundError("No ClaudeSquad project found (.claude directory missing)")
+    raise FileNotFoundError("No .claude directory found in current project")
 
 class EnvironmentChecker:
     def __init__(self):
@@ -108,7 +108,7 @@ class EnvironmentChecker:
     def check_permissions(self) -> Tuple[bool, str]:
         """Check file system permissions"""
         if not self.claude_dir:
-            return False, "No ClaudeSquad project found FAIL"
+            return False, "No .claude directory found FAIL"
             
         try:
             test_file = self.claude_dir / "test_permissions"
@@ -123,9 +123,9 @@ class EnvironmentChecker:
             return False, f"Permission error FAIL: {str(e)}"
     
     def check_directory_structure(self) -> Tuple[bool, str]:
-        """Verify we're in a valid ClaudeSquad project"""
+        """Verify we're in a valid Acolytes for Claude Code project"""
         if not self.project_root:
-            return False, "No ClaudeSquad project found FAIL"
+            return False, "No .claude directory found FAIL"
         
         required_dirs = ["scripts", "agents"]
         missing = []
@@ -137,7 +137,7 @@ class EnvironmentChecker:
         if missing:
             return False, f"Missing directories FAIL: {', '.join(missing)}"
         else:
-            return True, f"ClaudeSquad directory structure OK (found at {self.project_root})"
+            return True, f".claude directory structure OK (found at {self.project_root})"
     
     def install_uv_if_missing(self) -> bool:
         """Attempt to install uv package manager"""
@@ -190,7 +190,7 @@ class EnvironmentChecker:
     
     def run_full_check(self, auto_install: bool = True) -> Dict:
         """Run all environment checks"""
-        print("ClaudeSquad Environment Check")
+        print("Acolytes for Claude Code Environment Check")
         print("=" * 40)
         
         # System info
@@ -225,7 +225,7 @@ class EnvironmentChecker:
         
         if not failed_checks:
             print("All environment checks passed!")
-            print("ClaudeSquad ready for setup")
+            print("Acolytes for Claude Code ready for setup")
         else:
             print(f"{len(failed_checks)} checks failed:")
             for check in failed_checks:
@@ -264,14 +264,14 @@ class EnvironmentChecker:
                     print("   uv: curl -LsSf https://astral.sh/uv/install.sh | sh")
             
             elif "Directory Structure" in check:
-                print("   Directory: Make sure you're in the ClaudeSquad project root")
+                print("   Directory: Make sure you're in a project with .claude directory")
                 print("   Expected structure: .claude/ .claude/scripts/ .claude/agents/")
 
 def main():
     """Main execution function"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="ClaudeSquad Environment Check")
+    parser = argparse.ArgumentParser(description="Acolytes for Claude Code Environment Check")
     parser.add_argument("--no-install", action="store_true", 
                        help="Don't attempt to auto-install missing dependencies")
     parser.add_argument("--json", action="store_true", 

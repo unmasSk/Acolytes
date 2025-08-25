@@ -169,9 +169,9 @@ def create_agent(name, module=None, sub_module=None):
         return json.dumps({"error": "Module parameter is required for acolytes"})
     
     try:
-        # Insert agent in agents_dynamic
+        # Insert agent in acolytes
         cursor = conn.execute(
-            "INSERT INTO agents_dynamic (name, module, created_at) VALUES (?, ?, ?)",
+            "INSERT INTO acolytes (name, module, created_at) VALUES (?, ?, ?)",
             (name, module, timestamp)
         )
         agent_id = cursor.lastrowid
@@ -215,7 +215,7 @@ def update_memory(agent_name, memory_type, content):
     
     try:
         # Get agent_id
-        cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (agent_name,))
+        cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
         row = cursor.fetchone()
         if not row:
             return json.dumps({"error": f"Agent '{agent_name}' not found"})
@@ -250,7 +250,7 @@ def add_interaction(agent_name, interaction_type, request, response,
     
     try:
         # Get agent_id
-        cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (agent_name,))
+        cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
         row = cursor.fetchone()
         if not row:
             return json.dumps({"error": f"Agent '{agent_name}' not found"})
@@ -336,7 +336,7 @@ def get_memory(agent_name, memory_type, limit=None):
     cursor = conn.execute("""
         SELECT m.content, m.updated_at
         FROM agent_memory m
-        JOIN agents_dynamic a ON m.agent_id = a.id
+        JOIN acolytes a ON m.agent_id = a.id
         WHERE a.name = ? AND m.memory_type = ?
     """, (agent_name, memory_type))
     
@@ -373,7 +373,7 @@ def update_health(agent_name, drift_score, status, memory_size_kb=None,
     conn = sqlite3.connect(DB_PATH)
     
     # Get agent_id
-    cursor = conn.execute("SELECT id FROM agents_dynamic WHERE name = ?", (agent_name,))
+    cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
     agent = cursor.fetchone()
     if not agent:
         conn.close()
@@ -428,7 +428,7 @@ def get_agent_health(agent_name=None):
             h.memory_size_warning, h.needs_compaction, h.checked_at,
             h.recommendations
         FROM agent_health h
-        JOIN agents_dynamic a ON h.agent_id = a.id
+        JOIN acolytes a ON h.agent_id = a.id
     """
     params = []
     
@@ -738,7 +738,7 @@ def list_available_agents():
         # Get acolytes
         cursor = conn.execute("""
             SELECT name, module, created_at 
-            FROM agents_dynamic 
+            FROM acolytes 
             ORDER BY name
         """)
         acolytes = cursor.fetchall()
@@ -792,8 +792,8 @@ if __name__ == "__main__":
         elif command == "create-agent":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py create-agent [name] --module [module] [--sub-module [sub-module]]")
-                print("Example: python agent_db.py create-agent @auth-agent --module auth")
-                print("Example: python agent_db.py create-agent @api-auth-agent --module api --sub-module auth")
+                print("Example: python agent_db.py create-agent @acolyte.auth --module auth")
+                print("Example: python agent_db.py create-agent @acolyte.api-auth --module api --sub-module auth")
                 sys.exit(1)
             
             name = sys.argv[2]

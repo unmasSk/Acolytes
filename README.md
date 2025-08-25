@@ -1,17 +1,17 @@
-# 🚀 ClaudeSquad - Revolutionary Multi-Agent System for Claude Code
+# 🚀 Acolytes for Claude Code - Revolutionary Multi-Agent System
 
-> Transform Claude Code into an **intelligent project orchestrator** with 57 specialized global agents + dynamic module agents. Features enterprise-grade **FLAGS coordination system** for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
+> Transform Claude Code into an **intelligent project orchestrator** with 57 specialized global agents + project-specific Acolytes. Features enterprise-grade **FLAGS coordination system** for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
 
 [![Agents](https://img.shields.io/badge/Global%20Agents-57-blue)](./.claude/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-10%20Tables-green)](./.claude/memory)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-8-yellow)](./.claude/hooks)
-[![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/ClaudeSquad)
+[![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/Acolytes-for-Claude-Code)
 
-## 🧠 What Makes ClaudeSquad REVOLUTIONARY?
+## 🧠 What Makes Acolytes for Claude Code REVOLUTIONARY?
 
 ### 🚀 BREAKTHROUGH: Enterprise FLAGS Coordination System
 
-**PRODUCTION-READY**: ClaudeSquad features a sophisticated cross-agent communication protocol that enables seamless coordination between 57 specialists. The FLAGS system operates through SQLite database, ensuring no information loss and perfect task handoffs.
+**PRODUCTION-READY**: Acolytes for Claude Code features a sophisticated cross-agent communication protocol that enables seamless coordination between 57 specialists. The FLAGS system operates through SQLite database, ensuring no information loss and perfect task handoffs.
 
 #### **FLAGS System Success Stories**
 
@@ -62,8 +62,8 @@
 
 ````bash
 # 1. Clone repository
-git clone https://github.com/unmasSk/ClaudeSquad.git
-cd ClaudeSquad
+git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
+cd Acolytes-for-Claude-Code
 
 # 2. Copy agents to Claude Code (Windows)
 xcopy /e /i .claude %USERPROFILE%\.claude
@@ -74,8 +74,8 @@ cp -r .claude/* ~/.claude/
 # 3. Navigate to YOUR project
 cd /path/to/your/project
 
-# 4. Initialize ClaudeSquad (8-Phase Setup)
-# 4. Initialize ClaudeSquad (Unified 6-Phase Setup)
+# 4. Initialize Acolytes for Claude Code (8-Phase Setup)
+# 4. Initialize Acolytes for Claude Code (Unified 6-Phase Setup)
 claude /setup
 
 ### What `/setup` Does (6 Phases):
@@ -174,8 +174,8 @@ Main Claude Session (Orchestrator)
 - **`jobs`**: Project grouping for active work coordination
 - **`messages`**: Detailed conversation flow tracking
 - **`tool_logs`**: Tool usage analysis and optimization
-- **`agent_health`**: Performance metrics for acolytes
-- **`agents_dynamic`**: Project-specific agent configurations
+- **`agent_health`**: Performance metrics for Acolytes
+- **`acolytes`**: Project-specific agent configurations
 - **`todos`**: Persistent task management across sessions
 
 ### MCP Integration
@@ -192,7 +192,7 @@ Main Claude Session (Orchestrator)
 ```bash
 "Implement complete user authentication system"
 
-# ClaudeSquad automatically:
+# Acolytes for Claude Code automatically:
 # 1. coordinator.security → Choose OAuth2 vs JWT strategy
 # 2. service.auth → Implement authentication logic
 # 3. backend.laravel → Create middleware and controllers
@@ -302,11 +302,11 @@ Basic structure exists, being enhanced to audited perfect status.
 
 Strategic placeholders for future expansion.
 
-## 🎯 ClaudeSquad vs Standard Claude Code
+## 🎯 Acolytes for Claude Code vs Standard Claude Code
 
-| Feature               | Standard Claude Code  | ClaudeSquad                                     |
+| Feature               | Standard Claude Code  | Acolytes for Claude Code                       |
 | --------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**            | Single AI assistant   | **52 global specialists + acolytes**      |
+| **Agents**            | Single AI assistant   | **57 global specialists + Acolytes**      |
 | **Memory**            | Session-only context  | **Persistent SQLite + MCP integration**         |
 | **Coordination**      | Manual task switching | **Autonomous FLAGS system**                     |
 | **Parallelism**       | Sequential processing | **FLAGS-based coordination and agent handoffs** |
@@ -335,7 +335,7 @@ Strategic placeholders for future expansion.
 - **🚩 ENTERPRISE FLAGS**: Production-ready cross-agent coordination system
 - **🎯 Agent Routing Evolution**: 17-rule system with Keywords & Integrates
 - **💾 Enterprise Memory**: 10-table SQLite database with rich session history
-- **🏗️ Advanced Architecture**: Coordinators + Specialists + Dynamic agents
+- **🏗️ Advanced Architecture**: Coordinators + Specialists + Acolytes
 - **⚙️ Production Hooks**: 8 verified hooks for automated workflows
 - **🔧 Production Commands**: /todo, /flags, /save, /mcp for workflow optimization
 
@@ -346,7 +346,7 @@ Strategic placeholders for future expansion.
 - **Documentation**: API documentation generation
 - **Performance**: Cross-agent coordination optimization
 
-## 🌟 Why ClaudeSquad is Revolutionary
+## 🌟 Why Acolytes for Claude Code is Revolutionary
 
 ### **Enterprise FLAGS Coordination System**
 
@@ -354,11 +354,11 @@ No other system provides seamless cross-agent coordination through a sophisticat
 
 ### **Enterprise-Grade Architecture**
 
-Unlike simple prompt templates, ClaudeSquad is a complete development ecosystem with persistent memory, intelligent routing, and cross-agent coordination that scales with your project complexity.
+Unlike simple prompt templates, Acolytes for Claude Code is a complete development ecosystem with persistent memory, intelligent routing, and cross-agent coordination that scales with your project complexity.
 
 ### **Production-Ready Command System**
 
-With commands like /todo, /flags, /save, and /mcp, ClaudeSquad provides a complete workflow management system that bridges sessions and maintains project continuity.
+With commands like /todo, /flags, /save, and /mcp, Acolytes for Claude Code provides a complete workflow management system that bridges sessions and maintains project continuity.
 
 ## 🤝 Contributing
 
@@ -396,7 +396,7 @@ Use **`backend.laravel`** (1,634 lines) as the gold standard template for new ag
 
 ## 🏆 Recognition & Impact
 
-**ClaudeSquad represents a breakthrough in AI agent orchestration:**
+**Acolytes for Claude Code represents a breakthrough in AI agent orchestration:**
 
 - ✅ First enterprise FLAGS coordination system for AI agents
 - ✅ First implementation of persistent cross-session agent memory
@@ -411,13 +411,13 @@ MIT License - Free for commercial and personal use.
 
 ## ⭐ Transform Your Development Experience
 
-ClaudeSquad isn't just another tool—it's a **revolutionary development paradigm** that transforms Claude Code into an intelligent, coordinated team of specialists with persistent memory and autonomous coordination capabilities.
+Acolytes for Claude Code isn't just another tool—it's a **revolutionary development paradigm** that transforms Claude Code into an intelligent, coordinated team of specialists with persistent memory and autonomous coordination capabilities.
 
 **Ready to experience the future of AI-assisted development?**
 
 ```bash
-git clone https://github.com/unmasSk/ClaudeSquad.git
-cd ClaudeSquad
+git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
+cd Acolytes-for-Claude-Code
 xcopy /e /i .claude %USERPROFILE%\.claude
 cd /your/project
 claude /setup

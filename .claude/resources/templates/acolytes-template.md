@@ -1,5 +1,5 @@
 ---
-name: { { agent-name } }
+name: {{agent-name}}
 description: Expert knowledge agent for {{module_path}} module specializing in {{specialization}}. Maintains comprehensive understanding of structure, patterns, dependencies, and business context. Provides specific implementation guidance and coordinates with other agents through FLAGS system.
 model: sonnet
 color: "cyan"
@@ -596,16 +596,16 @@ uv run python ~/.claude/scripts/agent_db.py add-interaction "{{agent-name}}" \
 
 ```bash
 # For large modules with multiple specialized agents
-# Example: api-agent, api-auth-agent, api-payment-agent within /api module
+# Example: acolyte.api, acolyte.api-auth, acolyte.api-payment within /api module
 
 # 1. Discover sibling agents
-uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM agents_dynamic WHERE module = '{{module_name}}' AND name != '{{agent-name}}'"
+uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM acolytes WHERE module = '{{module_name}}' AND name != '{{agent-name}}'"
 
 # 2. Coordinate module-wide changes
 uv run python ~/.claude/scripts/agent_db.py create-flag \
     --flag_type "module_coordination" \
     --source_agent "@{{agent-name}}" \
-    --target_agent "@api-auth-agent" \
+    --target_agent "@acolyte.api-auth" \
     --change_description "Core API structure changes affecting authentication endpoints. Modified base controller pattern from RequestHandler to BaseAPIController with new middleware chain. Authentication service integration points changed from v1 to v2 pattern." \
     --action_required "Review and update authentication endpoint implementations in /api/auth/ directory. Update: 1) AuthController.ext to extend BaseAPIController, 2) middleware usage from authMiddleware to authMiddlewareV2, 3) error handling format to match new APIResponse schema, 4) response structure to use new standardized format. Test all auth endpoints for compatibility." \
     --impact_level "high" \

@@ -1,4 +1,4 @@
-# {{project_name}} Project Configuration - ClaudeSquad Edition
+# {{project_name}} Project Configuration - Acolytes for Claude Code Edition
 
 ---📋📋📋📋📋📋📋📋📋📋📋📋📋📋📋LA HORAAAAAAAAAAA
 
@@ -52,7 +52,7 @@
 
 ## 🤖 CLAUDESQUAD SYSTEM
 
-### ⚠️ CRITICAL: ClaudeSquad System Active
+### ⚠️ CRITICAL: Acolytes for Claude Code System Active
 
 **Specialized agents are configured with persistent knowledge and full tool access.**
 
@@ -72,9 +72,9 @@
 ```
 @{{agent_example}}, I need help with...
 
-@api-agent, review this implementation...
+@acolyte.api, review this implementation...
 
-@frontend-agent, optimize this component...
+@acolyte.frontend, optimize this component...
 ```
 
 ### 🚀 REAL PARALLELISM:
@@ -211,7 +211,7 @@ Consult the global agent routing rules:
 
 - **Database**: `.claude/memory/project.db`
 - **Direct SQL queries**: Use `mcp__MCP_SQLite_Server__query` tool
-- **Tables**: sessions, jobs, agents_dynamic, agent_memory, flags, messages, tool_logs, todos, agent_health
+- **Tables**: sessions, jobs, acolytes, agent_memory, flags, messages, tool_logs, todos, agent_health
 - **Example**: `mcp__MCP_SQLite_Server__query("SELECT * FROM sessions WHERE job_id = 'job_123'")`
 
 **Discovery:**
@@ -269,7 +269,7 @@ If an agent doesn't respond correctly:
 - **`team-preferences.md`** - Coding standards and development practices
 - **`project-context.md`** - Project history, team structure, and specific context
 
-These files are created and maintained by ClaudeSquad setup agents and provide comprehensive project knowledge for all development decisions.
+These files are created and maintained by Acolytes for Claude Code setup agents and provide comprehensive project knowledge for all development decisions.
 
 ## 🔄 Agent Memory Maintenance
 
