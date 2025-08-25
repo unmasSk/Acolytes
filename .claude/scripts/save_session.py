@@ -291,8 +291,19 @@ def save_to_database(session_data, session_text, message_text):
         try:
             # Build the Claude projects path for current directory
             import os
-            current_dir = os.getcwd().replace('\\', '-').replace(':', '-')
-            claude_projects_dir = Path(os.path.expanduser(f"~/.claude/projects/{current_dir}"))
+            import hashlib
+            
+            # Normalize path and replace all separators with hyphens
+            current_dir = os.path.abspath(os.getcwd())
+            sanitized_dir = current_dir.replace('\\', '-').replace('/', '-').replace(':', '-')
+            
+            # If path is too long (>100 chars), use hash instead
+            if len(sanitized_dir) > 100:
+                # Use first 16 chars of SHA256 hash for uniqueness
+                dir_hash = hashlib.sha256(current_dir.encode()).hexdigest()[:16]
+                sanitized_dir = f"project-{dir_hash}"
+            
+            claude_projects_dir = Path(os.path.expanduser(f"~/.claude/projects/{sanitized_dir}"))
             
             if claude_projects_dir.exists():
                 # Find the most recent .jsonl file

@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import subprocess
+import platform
 from pathlib import Path
 
 def play_stop_sound():
@@ -18,25 +19,54 @@ def play_stop_sound():
         sound_file = Path('.claude/resources/sfx/work-complete.wav')
         
         if sound_file.exists():
-            # Play the custom sound file at 20% volume using PowerShell
-            powershell_cmd = f'''
-            Add-Type -AssemblyName presentationCore
-            $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
-            $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
-            $mediaPlayer.Volume = 0.2
-            $mediaPlayer.Play()
-            Start-Sleep -Milliseconds 2000
-            $mediaPlayer.Stop()
-            $mediaPlayer.Close()
-            '''
+            system = platform.system()
             
-            # Execute PowerShell command silently
-            subprocess.run(
-                ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', powershell_cmd],
-                capture_output=True,
-                text=True,
-                timeout=3
-            )
+            if system == "Windows":
+                # Play the custom sound file at 20% volume using PowerShell
+                powershell_cmd = f'''
+                Add-Type -AssemblyName presentationCore
+                $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
+                $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
+                $mediaPlayer.Volume = 0.2
+                $mediaPlayer.Play()
+                Start-Sleep -Milliseconds 2000
+                $mediaPlayer.Stop()
+                $mediaPlayer.Close()
+                '''
+                
+                # Execute PowerShell command silently
+                subprocess.run(
+                    ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', powershell_cmd],
+                    capture_output=True,
+                    text=True,
+                    timeout=3
+                )
+            elif system == "Darwin":  # macOS
+                # Use afplay with reduced volume (0.2 = 20%)
+                subprocess.run(
+                    ['afplay', '-v', '0.2', str(sound_file.resolve())],
+                    capture_output=True,
+                    timeout=3
+                )
+            elif system == "Linux":
+                # Try paplay (PulseAudio) first, then aplay (ALSA)
+                try:
+                    # PulseAudio with 20% volume (32768 * 0.2 = 6554)
+                    subprocess.run(
+                        ['paplay', '--volume=6554', str(sound_file.resolve())],
+                        capture_output=True,
+                        timeout=3
+                    )
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    try:
+                        # Fallback to ALSA aplay
+                        subprocess.run(
+                            ['aplay', str(sound_file.resolve())],
+                            capture_output=True,
+                            timeout=3
+                        )
+                    except (FileNotFoundError, subprocess.CalledProcessError):
+                        pass  # No audio player available
             
             # Print success message
             print("\n🎵 WORK COMPLETE")

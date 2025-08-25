@@ -692,6 +692,15 @@ BEGIN
   SELECT RAISE(ABORT, 'Cannot create active job - another job is already active. Create as paused instead.');
 END;
 
+-- Prevents updating a job to active when another is already active
+CREATE TRIGGER enforce_single_active_job_update
+BEFORE UPDATE ON jobs
+FOR EACH ROW
+WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active' AND id != NEW.id)
+BEGIN
+  SELECT RAISE(ABORT, 'Cannot set job to active - another job is already active. Pause the other job first.');
+END;
+
 -- TRIGGERS FOR FLAGS QUALITY CONTROL
 CREATE TRIGGER validate_flag_quality
 BEFORE INSERT ON flags

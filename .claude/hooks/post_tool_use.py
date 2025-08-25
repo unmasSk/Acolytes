@@ -103,22 +103,39 @@ def handle_edit_tool(tool_data):
         project_root = Path.cwd()
         output_file = project_root / 'update_tool_output.md'
         
-        # Prepare content to save
+        # Helper function to make paths relative
+        def make_relative_path(file_path):
+            if not file_path or file_path == 'N/A':
+                return 'N/A'
+            try:
+                path = Path(file_path).resolve()
+                # Try to make relative to project root
+                return str(path.relative_to(project_root))
+            except (ValueError, Exception):
+                # If not under project root, just return filename
+                return Path(file_path).name
+        
+        # Determine success correctly
+        success = not bool(tool_response.get('tool_error')) if 'tool_error' in tool_response else tool_response.get('success', True)
+        
+        # Prepare content to save with relative paths
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        input_file = make_relative_path(tool_input.get('file_path', 'N/A'))
+        response_file = make_relative_path(tool_response.get('filePath', 'N/A'))
         
         content = f"""# Edit Tool Output
 **Timestamp**: {timestamp}
 **Tool**: {tool_name}
-**File**: {tool_input.get('file_path', 'N/A')}
+**File**: {input_file}
 
 ## Input (What was requested)
 - **Old String**: {tool_input.get('old_string', 'N/A')[:100]}...
 - **New String**: {tool_input.get('new_string', 'N/A')[:100]}...
 
 ## Response (What happened)
-- **Success**: {tool_response.get('userModified', False) == False}
+- **Success**: {success}
 - **Replace All**: {tool_response.get('replaceAll', False)}
-- **File Path**: {tool_response.get('filePath', 'N/A')}
+- **File Path**: {response_file}
 
 ---
 """
@@ -132,6 +149,7 @@ def handle_edit_tool(tool_data):
 
 def handle_todo_sync(tool_data):
     """Handle TodoWrite tool - sync with SQLite"""
+    conn = None
     try:
         tool_name = tool_data.get('tool_name', 'unknown')
         
@@ -154,28 +172,58 @@ def handle_todo_sync(tool_data):
         conn = sqlite3.connect(str(db_path))
         cursor = conn.cursor()
         
-        # Clear existing todos
-        cursor.execute("DELETE FROM todos")
+        # Use transaction for atomic operation
+        cursor.execute("BEGIN TRANSACTION")
         
-        # Insert new todos
-        for idx, todo in enumerate(todos):
-            cursor.execute("""
-                INSERT INTO todos (id, content, status, active_form, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                idx + 1,
-                todo.get('content', ''),
-                todo.get('status', 'pending'),
-                todo.get('activeForm', ''),
-                datetime.now().isoformat(),
-                datetime.now().isoformat()
-            ))
+        try:
+            # Get current session_id if available
+            cursor.execute("SELECT id FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
+            session_result = cursor.fetchone()
+            session_id = session_result[0] if session_result else None
+            
+            # Clear existing todos (within transaction for safety)
+            cursor.execute("DELETE FROM todos")
+            
+            # Insert new todos with correct column names
+            timestamp = datetime.now().isoformat()
+            for todo in todos:
+                # Map 'content' to 'task' (correct column name)
+                task = todo.get('content', '')
+                status = todo.get('status', 'pending')
+                
+                # Store activeForm in metadata as JSON
+                metadata = json.dumps({
+                    'activeForm': todo.get('activeForm', ''),
+                    'source': 'TodoWrite'
+                })
+                
+                cursor.execute("""
+                    INSERT INTO todos (task, status, created_at, session_id, metadata)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (
+                    task,
+                    status,
+                    timestamp,
+                    session_id,
+                    metadata
+                ))
+            
+            # Commit transaction
+            conn.commit()
+            
+        except Exception as inner_e:
+            # Rollback on any error
+            if conn:
+                conn.rollback()
+            # Log error for debugging (but don't break hook)
+            print(f"TodoWrite sync error: {inner_e}", file=sys.stderr)
         
-        conn.commit()
-        conn.close()
-        
-    except Exception:
-        pass  # Fail silently
+    except Exception as e:
+        # Log outer errors
+        print(f"TodoWrite handler error: {e}", file=sys.stderr)
+    finally:
+        if conn:
+            conn.close()
 
 def main():
     try:

@@ -753,6 +753,9 @@ def create_job(title, description, priority="medium", estimated_hours=None,
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
+    # Start transaction for atomic operation
+    cursor.execute("BEGIN TRANSACTION")
+    
     # Generate unique job ID
     job_id = f"job_{uuid.uuid4().hex[:12]}"
     
@@ -770,23 +773,22 @@ def create_job(title, description, priority="medium", estimated_hours=None,
         "created_by": "plan.strategy"
     }
     
-    # If there's already an active job and trying to create as active, force to paused
-    if status == "active":
-        cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
-        active_count = cursor.fetchone()[0]
-        if active_count > 0:
-            # FORCE the new job to be paused, don't touch existing jobs
-            status = "paused"
-            pause_reason = "Created as paused - another job is already active"
-    
-    # Check if no jobs exist or all are paused/completed, make this one active
+    # Single check for active jobs to determine final status
     cursor.execute("SELECT COUNT(*) FROM jobs WHERE status = 'active'")
     active_count = cursor.fetchone()[0]
     
-    if active_count == 0 and status == "paused":
-        # No active jobs, make this one active
-        status = "active"
-        pause_reason = None
+    if active_count > 0:
+        # There's already an active job
+        if status == "active":
+            # Force to paused if trying to create as active
+            status = "paused"
+            pause_reason = "Created as paused - another job is already active"
+    else:
+        # No active jobs exist
+        if status == "paused":
+            # Auto-activate if no other jobs are active
+            status = "active"
+            pause_reason = None
     
     # Insert the job
     timestamp = get_timestamp()
@@ -819,6 +821,7 @@ def create_job(title, description, priority="medium", estimated_hours=None,
         }, indent=2)
         
     except Exception as e:
+        conn.rollback()  # Rollback transaction on error
         conn.close()
         return json.dumps({
             "success": False,

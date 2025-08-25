@@ -226,6 +226,17 @@ class SemanticEngine:
 #### 2. Database Schema Enhancement
 
 ```sql
+-- Schema version tracking for safe migrations
+CREATE TABLE IF NOT EXISTS schema_version (
+    version INTEGER PRIMARY KEY,
+    applied_at TEXT NOT NULL DEFAULT (datetime('now')),
+    description TEXT NOT NULL
+);
+
+-- Insert initial version if not exists
+INSERT OR IGNORE INTO schema_version (version, applied_at, description) 
+VALUES (1, datetime('now'), 'Initial semantic chat schema with intent capture');
+
 -- Enhanced agent_memory table with intent and embeddings
 CREATE TABLE IF NOT EXISTS agent_memory_enhanced (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -613,7 +624,13 @@ from sentence_transformers import SentenceTransformer
 class IntentCapture:
     def __init__(self):
         self.db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        # Lazy load model with error handling
+        self.model = None
+        try:
+            self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        except Exception as e:
+            print(f"Warning: Could not load SentenceTransformer: {e}", file=sys.stderr)
+            # Continue without embeddings
 
     def capture_tool_use(self, tool_data):
         """
@@ -627,9 +644,15 @@ class IntentCapture:
         # Extract intent from context
         intent = self.extract_intent_from_context(tool_data)
 
-        # Generate embedding
-        text_for_embedding = f"{intent['user_request']} {intent['reasoning']}"
-        embedding = self.model.encode(text_for_embedding)
+        # Generate embedding if model is available
+        embedding = None
+        if self.model:
+            text_for_embedding = f"{intent['user_request']} {intent['reasoning']}"
+            try:
+                embedding = self.model.encode(text_for_embedding)
+            except Exception as e:
+                print(f"Warning: Could not generate embedding: {e}", file=sys.stderr)
+                # Continue without embedding
 
         # Store in database
         conn = sqlite3.connect(self.db_path)
@@ -651,7 +674,7 @@ class IntentCapture:
             intent['trade_offs'],
             tool_name,
             tool_data.get('session_id'),
-            embedding.tobytes(),
+            embedding.tobytes() if embedding is not None else None,
             json.dumps(intent['tags']),
             intent['category']
         ))
