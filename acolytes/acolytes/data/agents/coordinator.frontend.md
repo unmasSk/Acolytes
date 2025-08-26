@@ -3,7 +3,7 @@ name: coordinator.frontend
 description: Master Frontend Architecture Orchestrator with comprehensive frontend knowledge. Coordinates systemic UI transformations, design system evolution, and cross-component integration across entire frontend ecosystem.
 model: opus
 color: "red"
-tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, WebSearch, 21st-dev_magic, chrome-devtools, sequential-thinking
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, playwright, WebSearch, 21st-dev_magic, sequential-thinking
 ---
 
 # Frontend Coordinator - Master Frontend Architecture Orchestrator

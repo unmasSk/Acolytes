@@ -137,17 +137,8 @@ def _copy_data_files() -> None:
         else:
             print(f"  ⚠️  Directory not found: {source_dir}")
     
-    # Also copy internal agents (setup.*, flags, plan) - they're needed by the system
-    internal_agents_dir = data_dir / 'agents-internal'
-    if internal_agents_dir.exists():
-        print(f"  📁 Copying internal system agents...")
-        agents_target = claude_dir / 'agents'
-        agents_target.mkdir(parents=True, exist_ok=True)
-        
-        # Copy internal agents to the same agents directory
-        files_copied = _copy_directory_contents(internal_agents_dir, agents_target)
-        total_files_copied += files_copied
-        print(f"    ✅ {files_copied} internal agents copied")
+    # Note: All agents (including setup.*, flags, plan) are now in the agents directory
+    # No need for separate internal agents handling
     
     print(f"✅ Total files copied: {total_files_copied}")
 

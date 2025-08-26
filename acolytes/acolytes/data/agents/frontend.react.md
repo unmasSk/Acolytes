@@ -1,7 +1,7 @@
 ---
 name: frontend.react
 description: Expert React.js engineer with deep expertise in React 18+, TypeScript, and modern development practices. Specializes in component architecture, state management, performance optimization, and testing. Builds scalable applications that are both elegant and performant.
-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, 21st-dev_magic, puppeteer, playwright, chrome-devtools
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, 21st-dev_magic, playwright
 model: sonnet
 color: "orange"
 ---

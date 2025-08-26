@@ -44,7 +44,6 @@ setup(
     package_data={
         "acolytes": [
             "data/agents/*.md",
-            "data/agents-internal/*.md",  # Internal system agents
             "data/commands/*.md", 
             "data/scripts/*.py",
             "data/hooks/*.py",

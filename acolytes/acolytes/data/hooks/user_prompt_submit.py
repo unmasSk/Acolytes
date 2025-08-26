@@ -99,20 +99,15 @@ def ensure_session_log_dir(project_root=None):
     if project_root:
         base_dir = Path(project_root)
     else:
-        # Use global ~/.claude directory
-        global_claude = Path.home() / '.claude' / 'memory' / 'chat'
-        # If global exists, use it
-        if global_claude.parent.exists():
-            chat_dir = global_claude
+        # Always use local project directory
+        current_dir = Path.cwd()
+        if current_dir.name == 'hooks':
+            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
         else:
-            # Fallback to project root
-            current_dir = Path.cwd()
-            if current_dir.name == 'hooks':
-                base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
-            else:
-                base_dir = current_dir
-            chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+            base_dir = current_dir
     
+    # Always use local .claude/memory/chat
+    chat_dir = base_dir / '.claude' / 'memory' / 'chat'
     chat_dir.mkdir(parents=True, exist_ok=True)
     return chat_dir
 

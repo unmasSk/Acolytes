@@ -1,7 +1,7 @@
 ---
 name: business.payment
 description: Expert payment processing engineer with deep expertise in payment gateways, PCI compliance, and secure financial integrations. Specializes in Stripe, PayPal, tokenization, fraud prevention, and regulatory compliance. Builds secure payment systems that are both reliable and performant.
-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, server-fetch, chrome-devtools, playwright
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, server-fetch, playwright
 model: sonnet
 color: "blue"
 ---

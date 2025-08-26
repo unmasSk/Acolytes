@@ -1,7 +1,7 @@
 ---
 name: service.mapbox
 description: Mapbox Platform Integration Specialist for interactive mapping, navigation, geocoding, and geospatial services. Expert in vector tile rendering, EV routing, real-time traffic, and custom map styling with enterprise-grade performance optimization.
-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, server-fetch, playwright, puppeteer, chrome-devtools
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, server-fetch, playwright
 model: sonnet
 color: "yellow"
 ---
