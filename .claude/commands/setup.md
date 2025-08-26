@@ -75,8 +75,9 @@ DATABASE_AND_MCP:
 
   3. Install/verify required MCP servers
     - Ensure: code-index MCP is installed and available to Claude Code
-    - If missing: install per MCP guide (see TODO/MCP_INSTALLATION_GUIDE.md)
+    - If missing: install per MCP guide (see INSTALLATION_GUIDE.md)
     - Verify: code-index responds to health check before proceeding
+    - Example: uv run python install_verify.py --check mcp code-index
 
   4. Initialize code-index MCP silently (NO COMMENTARY):
     - Execute: mcp__code-index__set_project_path(project_root)

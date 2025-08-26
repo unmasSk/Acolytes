@@ -14,7 +14,7 @@
 [![Agents](https://img.shields.io/badge/Global%20Agents-52-blue)](./.claude/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./.claude/memory)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-14%20Tables-green)](./.claude/memory)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-9-yellow)](./.claude/hooks)
-[![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/Acolytes-for-Claude-Code)
+[![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/Acolytes)
 
 ## 🧠 What Makes Acolytes for Claude Code REVOLUTIONARY?
 
@@ -71,7 +71,7 @@
 
 ````bash
 # 1. Clone repository
-git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
+git clone https://github.com/unmasSk/Acolytes.git
 cd Acolytes-for-Claude-Code
 
 # 2. Copy agents to Claude Code (Windows)
@@ -425,7 +425,7 @@ Acolytes for Claude Code isn't just another tool—it's a **revolutionary develo
 **Ready to experience the future of AI-assisted development?**
 
 ```bash
-git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
+git clone https://github.com/unmasSk/Acolytes.git
 cd Acolytes-for-Claude-Code
 xcopy /e /i .claude %USERPROFILE%\.claude
 cd /your/project

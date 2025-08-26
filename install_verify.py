@@ -248,8 +248,8 @@ def main():
     
     if not results.get('directories'):
         print("\nClone and install Acolytes for Claude Code:")
-        print("  git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git")
-        print("  cd Acolytes-for-Claude-Code")
+        print("  git clone https://github.com/unmasSk/Acolytes.git")
+        print("  cd Acolytes")
         if sys.platform == 'win32':
             print("  xcopy /e /i .claude %USERPROFILE%\\.claude")
         else:

@@ -1,89 +1,89 @@
-# 🚀 Guía Completa de Instalación - Acolytes for Claude Code
+# 🚀 Complete Installation Guide - Acolytes for Claude Code
 
-## 📋 Requisitos del Sistema
+## 📋 System Requirements
 
-### Software Necesario
-- **Claude Code CLI** (versión más reciente)
-- **Git** para control de versiones
-- **Python 3.10+** con pip/uv instalado
-- **Node.js 18+** y npm (para MCP servers)
-- **SQLite3** (incluido en Python)
+### Required Software
+- **Claude Code CLI** (latest version)
+- **Git** for version control
+- **Python 3.10+** with pip/uv installed
+- **Node.js 18+** and npm (for MCP servers)
+- **SQLite3** (included with Python)
 - **Windows/Mac/Linux** compatible
 
-### Espacio en Disco
-- **Mínimo**: 500 MB para instalación base
-- **Recomendado**: 2 GB incluyendo MCP servers y dependencias
+### Disk Space
+- **Minimum**: 500 MB for base installation
+- **Recommended**: 2 GB including MCP servers and dependencies
 
-## 🎯 Instalación Rápida (3 minutos)
+## 🎯 Quick Installation (3 minutes)
 
 ### Windows PowerShell
 ```powershell
-# 1. Clonar el repositorio
-git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
-cd Acolytes-for-Claude-Code
+# 1. Clone the repository
+git clone https://github.com/unmasSk/Acolytes.git
+cd Acolytes
 
-# 2. Copiar archivos de agentes a Claude Code
+# 2. Copy agent files to Claude Code
 xcopy /e /i .claude %USERPROFILE%\.claude
 
-# 3. Navegar a tu proyecto
-cd C:\ruta\a\tu\proyecto
+# 3. Navigate to your project
+cd C:\path\to\your\project
 
-# 4. Inicializar el sistema (6 fases automatizadas)
+# 4. Initialize the system (8 automated phases)
 claude /setup
 ```
 
 ### Mac/Linux Bash
 ```bash
-# 1. Clonar el repositorio
-git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
-cd Acolytes-for-Claude-Code
+# 1. Clone the repository
+git clone https://github.com/unmasSk/Acolytes.git
+cd Acolytes
 
-# 2. Copiar archivos de agentes a Claude Code
+# 2. Copy agent files to Claude Code
 cp -r .claude/* ~/.claude/
 
-# 3. Navegar a tu proyecto
-cd /ruta/a/tu/proyecto
+# 3. Navigate to your project
+cd /path/to/your/project
 
-# 4. Inicializar el sistema
+# 4. Initialize the system
 claude /setup
 ```
 
-## 📦 Instalación Detallada Paso a Paso
+## 📦 Detailed Step-by-Step Installation
 
-### Paso 1: Preparación del Entorno
+### Step 1: Environment Preparation
 
-#### 1.1 Verificar Requisitos
+#### 1.1 Verify Requirements
 ```bash
-# Verificar Claude Code
+# Check Claude Code
 claude --version
 
-# Verificar Python
-python --version  # Debe ser 3.10+
+# Check Python
+python --version  # Must be 3.10+
 
-# Verificar Node.js
-node --version   # Debe ser 18+
+# Check Node.js
+node --version   # Must be 18+
 
-# Verificar Git
+# Check Git
 git --version
 ```
 
-#### 1.2 Instalar Dependencias Faltantes
+#### 1.2 Install Missing Dependencies
 
 **Windows:**
 ```powershell
-# Instalar Python desde Microsoft Store o python.org
+# Install Python from Microsoft Store or python.org
 winget install Python.Python.3.11
 
-# Instalar Node.js
+# Install Node.js
 winget install OpenJS.NodeJS.LTS
 
-# Instalar Git
+# Install Git
 winget install Git.Git
 ```
 
 **Mac:**
 ```bash
-# Con Homebrew
+# With Homebrew
 brew install python@3.11
 brew install node@18
 brew install git
@@ -97,14 +97,14 @@ sudo apt install nodejs npm
 sudo apt install git
 ```
 
-### Paso 2: Clonar e Instalar Acolytes for Claude Code
+### Step 2: Clone and Install Acolytes for Claude Code
 
 ```bash
-# 1. Clonar repositorio
-git clone https://github.com/unmasSk/Acolytes-for-Claude-Code.git
-cd Acolytes-for-Claude-Code
+# 1. Clone repository
+git clone https://github.com/unmasSk/Acolytes.git
+cd Acolytes
 
-# 2. Crear estructura de directorios (si no existe)
+# 2. Create directory structure (if not exists)
 mkdir -p ~/.claude/agents
 mkdir -p ~/.claude/commands
 mkdir -p ~/.claude/hooks
@@ -112,313 +112,321 @@ mkdir -p ~/.claude/memory
 mkdir -p ~/.claude/resources
 ```
 
-### Paso 3: Copiar Archivos del Sistema
+### Step 3: Copy System Files
 
-#### Windows (PowerShell como Administrador)
+#### Windows (PowerShell as Administrator)
 ```powershell
-# Copiar toda la estructura .claude
+# Copy entire .claude structure
 xcopy /e /i /y .claude %USERPROFILE%\.claude
 
-# Verificar copia
+# Verify copy
 dir %USERPROFILE%\.claude\agents
-# Deberías ver 57+ archivos .md de agentes
+# You should see 59+ agent .md files
 ```
 
 #### Mac/Linux
 ```bash
-# Copiar con preservación de estructura
+# Copy preserving structure
 cp -r .claude/* ~/.claude/
 
-# Verificar
+# Verify
 ls -la ~/.claude/agents/ | head -10
-# Deberías ver los archivos de agentes
+# You should see agent files
 ```
 
-### Paso 4: Configurar MCP Servers
+### Step 4: Configure MCP Servers
 
-#### 4.1 Instalar SQLite MCP Server (CRÍTICO)
+#### 4.1 Install SQLite MCP Server (CRITICAL)
 ```bash
-# Instalar servidor SQLite para memoria persistente
+# Install SQLite server for persistent memory
 claude mcp add sqlite -s user -- npx -y @modelcontextprotocol/server-sqlite
 
-# Verificar instalación
+# Verify installation
 claude mcp list
-# Debe mostrar: sqlite: npx -y @modelcontextprotocol/server-sqlite - ✓ Connected
+# Should show: sqlite: npx -y @modelcontextprotocol/server-sqlite - ✓ Connected
 ```
 
-#### 4.2 Instalar Git MCP Server
+#### 4.2 Install Git MCP Server
 ```bash
-# Para control de versiones integrado
+# For integrated version control
 claude mcp add server-git -s user -- npx -y @modelcontextprotocol/server-git
 ```
 
-#### 4.3 Instalar Fetch MCP Server
+#### 4.3 Install Fetch MCP Server
 ```bash
-# Para obtener información desde URLs
+# To retrieve information from URLs
 claude mcp add server-fetch -s user -- npx -y @modelcontextprotocol/server-fetch
 ```
 
-#### 4.4 Instalar Puppeteer MCP (Opcional - Automatización Web)
+#### 4.4 Install Puppeteer MCP (Optional - Web Automation)
 ```bash
-# Para automatización visual de navegador
+# For visual browser automation
 claude mcp add puppeteer -s user -- npx -y @modelcontextprotocol/server-puppeteer
 ```
 
-#### 4.5 Instalar Magic UI MCP (Opcional - Componentes UI)
+#### 4.5 Install Magic UI MCP (Optional - UI Components)
 ```bash
-# Para generación instantánea de componentes React/Vue
+# For instant React/Vue component generation
 claude mcp add 21st-dev_magic -s user -- npx -y 21st.dev
 ```
 
-### Paso 5: Configurar Base de Datos SQLite
+### Step 5: Configure SQLite Database
 
 ```bash
-# 1. Navegar a tu proyecto
-cd /ruta/a/tu/proyecto
+# 1. Navigate to your project
+cd /path/to/your/project
 
-# 2. Crear estructura de base de datos
+# 2. Create database structure
 mkdir -p .claude/memory
 
-# 3. El comando /setup creará automáticamente:
-# - project.db con 10 tablas
-# - Esquema completo de agents, sessions, flags, etc.
+# 3. The /setup command will automatically create:
+# - project.db with 10 tables
+# - Complete schema for agents, sessions, flags, etc.
 ```
 
-### Paso 6: Inicializar en Tu Proyecto
+### Step 6: Initialize in Your Project
 
 ```bash
-# En la raíz de tu proyecto
-cd /ruta/a/tu/proyecto
+# In your project root
+cd /path/to/your/project
 
-# Ejecutar setup de 6 fases
+# Run 8-phase setup
 claude /setup
 ```
 
-#### Qué hace `/setup`:
+#### What `/setup` does:
 
-**Fase 1: Environment & Database Setup**
-- Configura SQLite database
-- Inicializa 10 tablas del sistema
-- Configura MCP connections
+**Phase 1: Environment & Database Setup**
+- Configures SQLite database
+- Initializes 10 system tables
+- Configures MCP connections
 
-**Fase 2: Analysis & Documentation** 
-- Para proyectos existentes: Análisis paralelo con 4 agentes
-- Para proyectos nuevos: Interview interactivo + especialistas
+**Phase 2: Analysis & Documentation**
+- For existing projects: Parallel analysis with 4 agents
+- For new projects: Interactive interview + specialists
 
-**Fase 3: CLAUDE.md Creation**
-- Genera configuración específica del proyecto
-- Define convenciones y estándares
+**Phase 3: CLAUDE.md Creation**
+- Generates project-specific configuration
+- Defines conventions and standards
 
-**Fase 4: Jobs & Agent Creation**
-- Crea job activo en base de datos
-- Configura agentes específicos del proyecto
+**Phase 4: Jobs & Agent Creation**
+- Creates active job in database
+- Configures project-specific agents
 
-**Fase 5: Deep Analysis & Initialization**
-- Análisis profundo de módulos
-- Creación de Acolytes por módulo
+**Phase 5: Deep Analysis & Initialization**
+- Deep module analysis
+- Creates Acolytes per module
 
-**Fase 6: Finalization**
-- Verificación de sistema
-- Resumen de configuración
+**Phase 6: Acolyte Creation**
+- Generates module-specific agents
+- Configures agent memory
 
-## 🔧 Instalación de Hooks (Automatización)
+**Phase 7: Testing & Validation**
+- System verification
+- Component testing
 
-### Hooks Disponibles
+**Phase 8: Finalization**
+- System verification
+- Configuration summary
+
+## 🔧 Hook Installation (Automation)
+
+### Available Hooks
 ```bash
-# Ver hooks disponibles
+# View available hooks
 ls ~/.claude/hooks/
 
-# Hooks principales:
-# - session_start.py: Carga contexto previo automáticamente
-# - todo_sync.py: Sincroniza TODOs con SQLite
-# - pre_tool_use.py: Protección Git MCP
-# - stop.py: Auto-guardado de sesión
+# Main hooks:
+# - session_start.py: Loads previous context automatically
+# - todo_sync.py: Syncs TODOs with SQLite
+# - pre_tool_use.py: Git MCP protection
+# - stop.py: Auto-save session
 ```
 
-### Activar Hooks
-Los hooks se activan automáticamente al copiar `.claude/hooks/`. 
-No requieren configuración adicional.
+### Activate Hooks
+Hooks activate automatically when copying `.claude/hooks/`.
+No additional configuration required.
 
-## 🚨 Solución de Problemas Comunes
+## 🚨 Common Troubleshooting
 
 ### Error: "MCP Server not connected"
 ```bash
-# 1. Reiniciar Claude Code
+# 1. Restart Claude Code
 claude exit
 claude
 
-# 2. Verificar MCP servers
+# 2. Verify MCP servers
 claude mcp list
 
-# 3. Si falta alguno, reinstalar
-claude mcp remove [nombre] -s user
-claude mcp add [nombre] -s user -- [comando]
+# 3. If any missing, reinstall
+claude mcp remove [name] -s user
+claude mcp add [name] -s user -- [command]
 ```
 
 ### Error: "Database not found"
 ```bash
-# Crear manualmente si /setup falla
+# Create manually if /setup fails
 mkdir -p .claude/memory
 touch .claude/memory/project.db
 
-# Reintentar setup
+# Retry setup
 claude /setup
 ```
 
 ### Error: "Agents not found"
 ```bash
-# Verificar instalación de agentes
+# Verify agent installation
 ls ~/.claude/agents/ | wc -l
-# Debe mostrar 57+ archivos
+# Should show 59+ files
 
-# Si faltan, recopiar
-cd /ruta/al/repo/clonado
+# If missing, recopy
+cd /path/to/cloned/repo
 cp -r .claude/agents/* ~/.claude/agents/
 ```
 
-### Error en Windows: "Access denied"
+### Windows Error: "Access denied"
 ```powershell
-# Ejecutar PowerShell como Administrador
-# Luego repetir comandos xcopy
+# Run PowerShell as Administrator
+# Then repeat xcopy commands
 xcopy /e /i /y .claude %USERPROFILE%\.claude
 ```
 
-## 📊 Verificación de Instalación
+## 📊 Installation Verification
 
-### Test Completo del Sistema
+### Complete System Test
 ```bash
-# 1. Verificar MCP servers
+# 1. Verify MCP servers
 claude mcp list
-# Debe mostrar al menos: sqlite, server-git, server-fetch
+# Should show at least: sqlite, server-git, server-fetch
 
-# 2. Verificar base de datos
+# 2. Verify database
 claude "Check SQLite database connection"
-# Claude ejecutará: mcp__MCP_SQLite_Server__db_info
+# Claude will execute: mcp__MCP_SQLite_Server__db_info
 
-# 3. Verificar agentes
+# 3. Verify agents
 claude "List available agents"
-# Debe mostrar 57 agentes globales
+# Should show 59 agents (52 user + 7 internal)
 
-# 4. Probar comando FLAGS
+# 4. Test FLAGS command
 claude /flags
-# Debe mostrar sistema FLAGS funcionando
+# Should show FLAGS system working
 
-# 5. Probar TODO system
+# 5. Test TODO system
 claude /todo add "Test task"
 claude /todo
-# Debe mostrar la tarea agregada
+# Should show added task
 ```
 
-## 🎯 Configuración Post-Instalación
+## 🎯 Post-Installation Configuration
 
-### 1. Personalizar CLAUDE.md
+### 1. Customize CLAUDE.md
 ```bash
-# Editar configuración del proyecto
+# Edit project configuration
 claude "Edit CLAUDE.md to add project specific instructions"
 ```
 
-### 2. Configurar Idioma Preferido
+### 2. Configure Preferred Language
 ```bash
-# En CLAUDE.md agregar:
+# In CLAUDE.md add:
 ## Language Configuration
-- **User interaction**: Spanish (o tu idioma)
+- **User interaction**: Spanish (or your language)
 - **Documentation**: English
 - **Code comments**: English
 ```
 
-### 3. Crear Primer Job
+### 3. Create First Job
 ```bash
-# Crear job activo
+# Create active job
 claude "/job create 'Initial Setup'"
 ```
 
-### 4. Generar Acolytes Específicos
+### 4. Generate Specific Acolytes
 ```bash
-# Si tienes módulos específicos
+# If you have specific modules
 claude "Create acolyte for authentication module"
 claude "Create acolyte for payment module"
 ```
 
-## 🔐 Seguridad y Mejores Prácticas
+## 🔐 Security and Best Practices
 
-### Nunca Hacer
+### Never Do
 ```bash
-# ❌ NUNCA usar Git MCP para agregar archivos
-mcp__server-git__git_add con ["."] o ["*"]
+# ❌ NEVER use Git MCP to add files
+mcp__server-git__git_add with ["."] or ["*"]
 
-# ❌ NUNCA commitear .claude/memory/project.db
-# Agregar a .gitignore:
+# ❌ NEVER commit .claude/memory/project.db
+# Add to .gitignore:
 echo ".claude/memory/*.db" >> .gitignore
 ```
 
-### Siempre Hacer
+### Always Do
 ```bash
-# ✅ Usar Bash para git operations
+# ✅ Use Bash for git operations
 git add -A
 git commit -m "message"
 
-# ✅ Backup regular de base de datos
+# ✅ Regular database backup
 cp .claude/memory/project.db .claude/memory/backup_$(date +%Y%m%d).db
 ```
 
-## 🚀 Comandos Esenciales Post-Instalación
+## 🚀 Essential Post-Installation Commands
 
 ```bash
-# Sistema de agentes
+# Agent system
 claude "Use @backend.python to optimize the API"
 claude "Use @coordinator.database for architecture decisions"
 
-# Gestión de tareas
-claude /todo           # Ver todas las tareas
-claude /todo smart     # Análisis AI de tareas pendientes
-claude /save          # Guardar sesión actual
+# Task management
+claude /todo           # View all tasks
+claude /todo smart     # AI analysis of pending tasks
+claude /save          # Save current session
 
-# Coordinación FLAGS
-claude /flags         # Procesar FLAGS pendientes
+# FLAGS coordination
+claude /flags         # Process pending FLAGS
 
-# Verificación sistema
-claude /mcp          # Estado de MCP servers
+# System verification
+claude /mcp          # MCP servers status
 ```
 
-## 📚 Recursos Adicionales
+## 📚 Additional Resources
 
-### Documentación
-- [Repositorio GitHub](https://github.com/unmasSk/Acolytes-for-Claude-Code)
+### Documentation
+- [GitHub Repository](https://github.com/unmasSk/Acolytes)
 - [Agent Catalog](./.claude/resources/rules/agent-routing-catalog.md)
 - [Setup Documentation](./.claude/commands/setup.md)
 - [FLAGS System](./.claude/memory/README.md)
 
-### Soporte
-- Issues: https://github.com/unmasSk/Acolytes-for-Claude-Code/issues
-- Discord: [Comunidad ClaudeSquad]
-- Email: soporte@claudesquad.ai
+### Support
+- Issues: https://github.com/unmasSk/Acolytes/issues
+- Discord: [Community Discord]
+- Email: support@acolytes.ai
 
-## ✅ Checklist de Instalación Completa
+## ✅ Complete Installation Checklist
 
-- [ ] Claude Code CLI instalado y funcionando
-- [ ] Python 3.10+ y Node.js 18+ instalados
-- [ ] Repositorio clonado exitosamente
-- [ ] Archivos .claude copiados a directorio home
-- [ ] MCP servers instalados (sqlite, git, fetch mínimo)
-- [ ] Comando /setup ejecutado en proyecto
-- [ ] Base de datos SQLite creada (10 tablas)
-- [ ] Hooks activos y funcionando
-- [ ] Test de comandos básicos exitoso
-- [ ] CLAUDE.md personalizado para tu proyecto
+- [ ] Claude Code CLI installed and working
+- [ ] Python 3.10+ and Node.js 18+ installed
+- [ ] Repository cloned successfully
+- [ ] .claude files copied to home directory
+- [ ] MCP servers installed (sqlite, git, fetch minimum)
+- [ ] /setup command executed in project
+- [ ] SQLite database created (10 tables)
+- [ ] Hooks active and working
+- [ ] Basic command tests successful
+- [ ] CLAUDE.md customized for your project
 
-## 🎉 ¡Instalación Completa!
+## 🎉 Installation Complete!
 
-Si todos los checks están completos, tu sistema Acolytes for Claude Code está listo.
+If all checks are complete, your Acolytes for Claude Code system is ready.
 
-**Próximos pasos recomendados:**
-1. Ejecuta `claude /todo add "Explorar agentes disponibles"`
-2. Prueba un agente: `claude "Use @backend.python to analyze the codebase"`
-3. Revisa FLAGS: `claude /flags`
-4. Guarda tu primera sesión: `claude /save`
+**Recommended next steps:**
+1. Run `claude /todo add "Explore available agents"`
+2. Try an agent: `claude "Use @backend.python to analyze the codebase"`
+3. Review FLAGS: `claude /flags`
+4. Save your first session: `claude /save`
 
-**¡Bienvenido a la era de los equipos de desarrollo AI autónomos!** 🚀✨
+**Welcome to the era of autonomous AI development teams!** 🚀✨
 
 ---
 
-*Última actualización: Agosto 2025*
-*Versión: 2.0.0 - Enterprise FLAGS System*
+*Last updated: August 2025*
+*Version: 2.0.0 - Enterprise FLAGS System*
