@@ -7,14 +7,33 @@ description: Save session and messages to SQLite with rich text content using ar
 
 Saves current session and messages to SQLite database with rich English content and comprehensive metrics.
 
+## 🔇 SILENT EXECUTION RULE
+
+**CRITICAL**: During /save execution, Claude must:
+- Show ONLY: "============================ 💾 Saving Session... ============================" at the start
+- Execute ALL commands silently (no additional commentary)
+- Show ONLY the final result summary
+- NEVER add extra text between tool executions
+
+## CODE INDEX REINDEXING
+
+Before saving the session, Claude MUST silently execute:
+```
+mcp__code-index__set_project_path(current_project_path)
+```
+
+This ensures the code index is up-to-date for the next session (takes ~1 second).
+The reindexing removes deleted files and adds new ones automatically.
+
 ## CRITICAL INFORMATION FOR FUTURE CLAUDE SESSIONS
 
 ### How It Works Now (TESTED & WORKING)
 
-1. **Claude analyzes** the conversation manually (script cannot read conversation)
-2. **Claude executes** ONE command with rich English text
-3. **Script parses** and saves to SQLite with proper formatting
-4. **Database gets** rich content with line breaks, no emojis, all English
+1. **Claude reindexes** the project silently (for next session's fast search)
+2. **Claude analyzes** the conversation manually (script cannot read conversation)
+3. **Claude executes** ONE command with rich English text
+4. **Script parses** and saves to SQLite with proper formatting
+5. **Database gets** rich content with line breaks, no emojis, all English
 
 ### EXACT COMMAND FORMAT
 

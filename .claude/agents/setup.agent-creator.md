@@ -1,5 +1,5 @@
 ---
-name: setup.agent-creator
+name: setup.acolytes-creator
 description: Specialist in processing expert documentation and creating acolyte files
 model: sonnet
 color: "orange"
@@ -89,14 +89,24 @@ EXTRACT:
 
 ### Step 2: Apply 30-File Rule
 
-```yaml
+```python
+# PREFERRED: Use code-index MCP for fast file counting
 FOR each module:
-  IF module_size < 31 files:
+  # Count files using code-index (instant)
+  module_files = mcp__code-index__find_files(f"{module_path}/*")
+  file_count = len(module_files)
+  
+  IF file_count < 31:
     CREATE single agent: acolyte.[module].md
     SPECIALIZATION: "full_module"
   ELSE:
     CREATE multiple agents: acolyte.[module]-[submodule].md
     SPECIALIZATION: specific submodule role
+
+# FALLBACK: If code-index not available
+# FOR each module:
+#   file_count = bash(f"find {module_path} -type f | wc -l")
+#   IF file_count < 31 files: ...
 
 SINGLE_AGENT_NAMING:
   - "acolyte.auth" (for /auth module)

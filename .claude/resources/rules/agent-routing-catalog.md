@@ -4,7 +4,7 @@
 
 # 🚀 Setup and configuration
 
-### **@setup.agent-creator** `362 lines`
+### **@setup.acolytes-creator** `362 lines`
 
 Module research specialist that reads all module files, understands code purpose and creates the perfect acolyte for the assigned module.
 

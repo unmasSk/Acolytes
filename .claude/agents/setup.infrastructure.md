@@ -147,20 +147,38 @@ When executing infrastructure analysis:
 
 ## Detection Commands
 
-```bash
-# Run infrastructure detection script
-uv run python ~/.claude/scripts/infrastructure_check.py
+### PREFERRED: Using MCP code-index (50x FASTER)
 
-# The script automatically detects:
-# - Docker/Containerization
-# - Kubernetes/Orchestration
-# - CI/CD Pipelines
-# - Databases and Migrations
-# - Cloud/IaC Configuration
-# - External Services
-# - Security Configuration
-# - Monitoring Setup
-# - Networking Configuration
+```python
+# Infrastructure files with code-index MCP
+mcp__code-index__find_files("Dockerfile")           # Docker files
+mcp__code-index__find_files("docker-compose*")      # Docker compose
+mcp__code-index__find_files("*.yml")                # YAML configs
+mcp__code-index__find_files("*.yaml")               # YAML configs
+
+# CI/CD Detection
+mcp__code-index__find_files(".github/workflows/*")  # GitHub Actions
+mcp__code-index__find_files(".gitlab-ci.yml")       # GitLab CI
+mcp__code-index__find_files("Jenkinsfile")          # Jenkins
+mcp__code-index__find_files("azure-pipelines.yml")  # Azure DevOps
+
+# Infrastructure as Code
+mcp__code-index__find_files("*.tf")                 # Terraform
+mcp__code-index__find_files("*.tfvars")             # Terraform vars
+mcp__code-index__find_files("k8s/*")                # Kubernetes
+mcp__code-index__find_files("helm/*")               # Helm charts
+
+# Configuration files
+mcp__code-index__find_files("nginx.conf")           # Nginx
+mcp__code-index__find_files("*requirements.txt")    # Python deps
+mcp__code-index__find_files("package*.json")        # Node deps
+```
+
+### FALLBACK: Infrastructure detection script
+
+```bash
+# Use this if code-index MCP is not available
+uv run python ~/.claude/scripts/infrastructure_check.py
 ```
 
 ## Intelligence Analysis

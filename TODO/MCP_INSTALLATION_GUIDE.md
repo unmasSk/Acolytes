@@ -816,31 +816,42 @@ claude mcp remove [nombre-del-mcp] -s user
 
 ---
 
-## 🆕 MCPs RECOMENDADOS PARA AGENTES ESPECÍFICOS
+## 🆕 MCPs NO COMPATIBLES CON CLAUDE CODE
 
-### Para @backend.api - Apidog MCP
-**Instalación (aproximada):**
-```bash
-claude mcp add apidog -- npx @apidog/mcp-server
-```
+### ❌ MCPs que NO funcionan (probados y fallan)
+Los siguientes MCPs existen pero no conectan con Claude Code:
 
-**¿Qué hace para @backend.api?**
-- Lee especificaciones OpenAPI/Swagger directamente
-- Genera código basado en specs de API (DTOs, models, controllers)
-- Mantiene sincronización entre documentación y código
-- Actualiza automáticamente cuando cambia la API
-- Crea Postman collections desde specs
+| MCP | Paquete NPM | Propósito | Estado |
+|-----|-------------|-----------|---------|
+| **Apidog** | `apidog-mcp-server` | APIs OpenAPI/Swagger | ❌ No conecta |
+| **Mintlify** | `@mintlify/mcp` | Documentación | ❌ No conecta |
+| **Orval** | `@orval/mcp` | Generación de código desde OpenAPI | ❌ No conecta |
+| **Swagger Explorer** | `@johnneerdael/swagger-mcp` | Explorar Swagger/OpenAPI | ❌ No conecta |
+| **OpenAPI Explorer** | `mcp-openapi-schema-explorer` | Explorar esquemas OpenAPI | ❌ No conecta |
 
-**Uso práctico:**
-```javascript
-// Sin Apidog MCP:
-"@backend.api genera DTO para Product"
-→ Necesita que copies la spec manualmente
+### ✅ ALTERNATIVAS QUE SÍ FUNCIONAN
 
-// Con Apidog MCP:
-"@backend.api genera DTO para Product desde mi API"
-→ Lee directamente tu OpenAPI y genera código exacto
-```
+#### Para Documentación de Librerías
+**Context7 MCP** (YA INSTALADO)
+- Obtiene documentación actualizada de cualquier librería
+- Uso: `mcp__context7__resolve-library-id` y luego `mcp__context7__get-library-docs`
+- Ejemplo: Documentación de React, Vue, Next.js, etc.
+
+#### Para APIs OpenAPI/Swagger
+**Soluciones alternativas:**
+1. **Copiar specs directamente**: Copia el JSON/YAML de tu OpenAPI en el código
+2. **WebFetch con swagger.io**: Usa el tool WebFetch para obtener specs desde URLs
+3. **Agente @backend.api**: Usa el agente especializado con las especificaciones copiadas
+4. **Generar con herramientas externas**: 
+   - openapi-generator-cli
+   - swagger-codegen
+   - Luego importar el código generado
+
+#### Para Documentación General
+**Opciones disponibles:**
+1. **WebFetch**: Para obtener documentación desde sitios web
+2. **server-fetch MCP**: Para obtener contenido desde URLs
+3. **Agente @docs.specialist**: Para gestionar documentación del proyecto
 
 ---
 

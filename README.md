@@ -44,7 +44,7 @@
 
 - One expert agent per detected module (auth-agent, api-agent, etc.)
 - Deep module knowledge stored in 8-memory SQLite system
-- Created during `/setup` Phase 6 via `agent-creator`
+- Created during `/setup` Phase 6 via `acolytes-creator`
 
 ### 🎯 Intelligent Agent Routing System
 

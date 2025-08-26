@@ -73,7 +73,13 @@ DATABASE_AND_MCP:
     - Initial job 'Project Setup' automatically created with high priority
     - All tables, indexes, triggers, and constraints ready
 
-  3. Install missing MCP servers as needed
+  3. Initialize code-index MCP silently (NO COMMENTARY):
+    - Execute: mcp__code-index__set_project_path(project_root)
+    - This enables 50x faster searches for setup agents
+    - Do NOT announce or comment on this indexing
+    - Setup agents will use the index automatically
+
+  4. Install missing MCP servers as needed
 ```
 
 ---
@@ -377,14 +383,14 @@ CLAUDE_MD_GENERATION:
 
 ### 4️⃣ **PHASE 4: JOBS & AGENT CREATION**
 
-**WHAT YOU (CLAUDE) MUST DO**: Invoke the agent-creator specialist to create acolyte agents for each detected or planned module. The specialist handles template filling, file creation, and database registration. Follow the process below based on project type.
+**WHAT YOU (CLAUDE) MUST DO**: Invoke the acolytes-creator specialist to create acolyte agents for each detected or planned module. The specialist handles template filling, file creation, and database registration. Follow the process below based on project type.
 
 #### **FOR EXISTING PROJECTS**
 
 ```yaml
 ACOLYTE_CREATION:
   - Create project-specific agents based on detected modules
-  - execution: MULTIPLE TASK CALLS IN ONE MESSAGE with @setup.agent-creator
+  - execution: MULTIPLE TASK CALLS IN ONE MESSAGE with @setup.acolytes-creator
   - Example: acolyte.api, acolyte.auth, acolyte.frontend
 
 MODULE_DIVISION_RULES:
@@ -395,7 +401,7 @@ MODULE_DIVISION_RULES:
 
 AGENT_STRUCTURE:
   location: .claude/agents/acolyte.[module].md or .claude/agents/acolyte.[module]-[submodule].md
-  creation: Claude delegates to @setup.agent-creator with module/submodule information
+  creation: Claude delegates to @setup.acolytes-creator with module/submodule information
   memory_initialization: Agents create their own 14 memory records when first executed
 ```
 
@@ -405,7 +411,7 @@ AGENT_STRUCTURE:
 PLAN_EXECUTION:
   - Create acolytes based on planned architecture
   - Agent creation guided by plan.strategy module structure and component boundaries
-  - execution: MULTIPLE TASK CALLS IN ONE MESSAGE with @setup.agent-creator
+  - execution: MULTIPLE TASK CALLS IN ONE MESSAGE with @setup.acolytes-creator
 
 MODULE_DIVISION_RULES:
   - Apply same 30-file rule for planned modules

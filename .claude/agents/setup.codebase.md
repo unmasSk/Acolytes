@@ -138,33 +138,43 @@ When executing codebase analysis:
 
 ## Detection Commands
 
-```bash
-# Structure Analysis
-find . -type f -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" | wc -l
-find . -type f -name "*.php" | wc -l
-find . -type f -name "*.py" | wc -l
-find . -type d -maxdepth 3 | head -20
+### PREFERRED: Using MCP code-index (50x FASTER)
 
-# Module Detection (directories with substantial code)
-find . -maxdepth 2 -type d -not -path "*/\.*" -not -path "*/node_modules*" -print0 | \
-  while IFS= read -r -d '' dir; do
-    count=$(find "$dir" -type f \( -name "*.js" -o -name "*.ts" -o -name "*.php" -o -name "*.py" \) | wc -l)
-    if [ "$count" -gt 50 ]; then
-      echo "$dir: $count files"
-    fi
-  done
+```python
+# Structure Analysis with code-index MCP
+mcp__code-index__find_files("*.js")      # JavaScript files (instant)
+mcp__code-index__find_files("*.ts")      # TypeScript files (instant)  
+mcp__code-index__find_files("*.py")      # Python files (instant)
+mcp__code-index__find_files("*.php")     # PHP files (instant)
+
+# Module Detection - Count files per directory
+mcp__code-index__find_files("src/*")     # All files in src
+mcp__code-index__find_files("lib/*")     # All files in lib
+mcp__code-index__find_files("app/*")     # All files in app
 
 # Test Detection
-find . -type f -name "*.test.*" -o -name "*.spec.*" | wc -l
-find . -type d -name "__tests__" -o -name "tests" -o -name "test" | head -10
+mcp__code-index__find_files("*.test.*")  # Test files
+mcp__code-index__find_files("*.spec.*")  # Spec files
+mcp__code-index__find_files("test_*")    # Test prefixed files
 
-# Pattern Detection
-grep -r "Repository\|Service\|Controller\|Factory\|Observer" --include="*.php" --include="*.js" | head -20
-grep -r "export class\|export interface" --include="*.ts" | head -20
+# Pattern Detection with search
+mcp__code-index__search_code_advanced(
+    pattern="class|interface|abstract",
+    file_pattern="*.ts"
+)
 
-# Quality Config Detection
-ls -la | grep -E "eslint|prettier|phpcs|pylint|rubocop"
-cat package.json 2>/dev/null | grep -A5 '"scripts"'
+# Find configuration files
+mcp__code-index__find_files(".*rc")      # eslintrc, prettierrc, etc.
+mcp__code-index__find_files("*.json")    # package.json, tsconfig.json
+```
+
+### FALLBACK: Bash commands (if MCP unavailable)
+
+```bash
+# Use these ONLY if code-index MCP is not available
+find . -type f -name "*.js" -o -name "*.ts" | wc -l
+find . -type f -name "*.php" | wc -l
+find . -type f -name "*.py" | wc -l
 ```
 
 ## Document Creation Process

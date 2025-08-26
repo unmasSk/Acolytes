@@ -406,8 +406,23 @@ knowledge_check=$(uv run python ~/.claude/scripts/agent_db.py get-memory "{{agen
 
 if [ -z "$knowledge_check" ] || [ "$knowledge_check" = "null" ]; then
     echo "First invocation detected. Performing complete module analysis..."
-    # Perform deep analysis of {{module_path}}
-    # Analyze all files, patterns, dependencies
+    
+    # PREFERRED: Use code-index MCP for fast module analysis (50x faster)
+    # Count and analyze files in {{module_path}}
+    module_files = mcp__code-index__find_files("{{module_path}}/*")
+    test_files = mcp__code-index__find_files("{{module_path}}/**/*.test.*")
+    config_files = mcp__code-index__find_files("{{module_path}}/**/*.json")
+    
+    # Search for key patterns
+    classes = mcp__code-index__search_code_advanced(
+        pattern="class|interface|type",
+        file_pattern="{{module_path}}/**/*.{ts,js,py}"
+    )
+    
+    # FALLBACK: If code-index not available
+    # bash: find {{module_path}} -type f | wc -l
+    # bash: grep -r "class" {{module_path}} --include="*.js"
+    
     # Fill all 14 memories with discovered information
     # Then continue to STEP 1
 fi

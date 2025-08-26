@@ -45,7 +45,8 @@ tools: Read, Write, MultiEdit, Bash, cargo, rustc, clippy, rustfmt, miri, rust-a
 | **typescript** | Tool     | 3 veces    | Superset tipado de JavaScript                     |
 | **magic**      | MCP      | 3 veces    | MCP para generar componentes UI con IA            |
 | **context7**   | MCP      | 2 veces    | MCP para obtener documentación de librerías       |
-| **playwright** | Tool/MCP | 2 veces    | Automatización de navegador y testing E2E         |
+| **playwright** | 
+P | 2 veces    | Automatización de navegador y testing E2E         |
 | **database**   | Tool     | 2 veces    | Herramientas genéricas de base de datos           |
 
 ## Herramientas por Categoría
