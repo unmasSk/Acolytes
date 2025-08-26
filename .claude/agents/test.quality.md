@@ -1,7 +1,7 @@
 ---
 name: test.quality
 description: Comprehensive testing and quality assurance expert specializing in test automation frameworks, quality gates, performance testing, and end-to-end testing strategies. Master of Jest, Cypress, Playwright, code coverage analysis, and enterprise testing methodologies.
-tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, puppeteer, playwright, chrome-devtools
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, playwright
 model: sonnet
 color: "red"
 ---

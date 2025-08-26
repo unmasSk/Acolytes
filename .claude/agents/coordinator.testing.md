@@ -3,7 +3,7 @@ name: coordinator.testing
 description: Master Testing Architecture Orchestrator with comprehensive testing ecosystem knowledge. Coordinates systemic testing transformations, quality gate implementations, and cross-framework integration across entire testing landscape.
 model: opus
 color: "red"
-tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, WebSearch, playwright, chrome-devtools, sequential-thinking
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, WebSearch, playwright, sequential-thinking
 ---
 
 # Testing Coordinator - Master Testing Architecture Orchestrator

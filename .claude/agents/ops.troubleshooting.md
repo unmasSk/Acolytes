@@ -3,7 +3,7 @@ name: ops.troubleshooting
 description: System debugging and incident resolution expert specializing in production environment troubleshooting, systematic root cause analysis, performance profiling, and emergency response procedures for enterprise systems.
 model: sonnet
 color: "blue"
-tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, chrome-devtools
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, playwright, context7
 ---
 
 # ops.troubleshooting - System Debugging & Incident Resolution Expert
