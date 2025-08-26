@@ -68,7 +68,7 @@ DATABASE_AND_MCP:
     - User may need to restart Claude Code
 
   2. Initialize database schema:
-    - Execute: python ~/.claude/scripts/init_db.py (if exists) OR directly create DB with schema
+    - Execute: python ~/.claude/scripts/init_db.py
     - Database will auto-create: agents_catalog (51 agents), jobs table with initial job, sessions, messages, etc.
     - Initial job 'Project Setup' automatically created with high priority
     - All tables, indexes, triggers, and constraints ready
