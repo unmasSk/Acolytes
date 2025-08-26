@@ -3,6 +3,7 @@ name: setup.context
 description: Analyzes project context, purpose, phase, decisions, and documentation to understand what the project is about
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS
 ---
 
 # Setup Context Analyzer - Project Understanding Specialist

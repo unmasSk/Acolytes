@@ -1,6 +1,7 @@
 ---
 name: database.redis
 description: Expert Redis engineer with deep expertise in Redis 7+, high-performance caching, and in-memory data architectures. Enterprise-level performance optimization, clustering, and systematic troubleshooting.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking
 model: sonnet
 color: "green"
 ---

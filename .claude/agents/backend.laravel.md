@@ -1,6 +1,7 @@
 ---
 name: backend.laravel
 description: Expert Laravel engineer mastering Laravel 11+ with modern PHP 8.3 practices. Specializes in elegant architecture, Eloquent ORM optimization, queue systems, real-time features, and enterprise patterns.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking
 model: sonnet
 color: "purple"
 ---

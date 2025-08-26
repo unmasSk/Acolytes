@@ -1,6 +1,7 @@
 ---
 name: business.subscription
 description: Expert subscription and recurring revenue engineer specializing in SaaS billing models, customer lifecycle optimization, and predictive revenue analytics. Masters Stripe subscriptions, Kill Bill enterprise billing, and advanced churn prevention systems.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking, server-fetch
 model: sonnet
 color: "blue"
 ---

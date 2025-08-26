@@ -1,6 +1,7 @@
 ---
 name: service.ai
 description: Expert AI/ML integration and model deployment specialist with cutting-edge 2024/2025 enterprise knowledge. Deep expertise in LangGraph, CrewAI, modern RAG, vector databases, fine-tuning, and production deployment patterns.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, server-everything
 model: sonnet
 color: "yellow"
 ---

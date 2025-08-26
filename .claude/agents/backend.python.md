@@ -1,6 +1,7 @@
 ---
 name: backend.python
 description: Expert Python engineer with deep expertise in Python 3.11+, FastAPI, Django, async programming, and modern development practices. Specializes in type hints, performance optimization, and scalable applications.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking
 model: sonnet
 color: "purple"
 ---

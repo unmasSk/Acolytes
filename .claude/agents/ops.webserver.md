@@ -3,6 +3,7 @@ name: ops.webserver
 description: Elite web server and reverse proxy expert specializing in Nginx, Apache HTTP Server, Caddy, HAProxy, and advanced traffic routing. Expert in HTTP/3+QUIC, SSL/TLS termination, performance optimization, and enterprise-grade configurations.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.webserver - Elite Web Server & Reverse Proxy Expert

@@ -3,6 +3,7 @@ name: ops.cicd
 description: CI/CD pipeline implementation and automation expert specializing in Jenkins, GitLab CI, GitHub Actions, ArgoCD, and enterprise DevOps workflows with pipeline-as-code methodologies and multi-cloud deployment strategies.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, server-git
 ---
 
 # ops.cicd - CI/CD Pipeline Implementation & Automation Expert

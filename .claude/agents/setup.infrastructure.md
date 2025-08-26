@@ -3,6 +3,7 @@ name: setup.infrastructure
 description: Analyzes infrastructure, deployment, databases, CI/CD, and external services
 model: sonnet
 color: "yellow"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index
 ---
 
 # Setup Infrastructure Analyzer - Infrastructure & Services Specialist

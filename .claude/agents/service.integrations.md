@@ -1,6 +1,7 @@
 ---
 name: service.integrations
 description: Expert specialist in integrating with external APIs, third-party services, webhooks, and SDKs. Handles authentication, API consumption, webhook processing, and service orchestration
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, server-fetch, n8n-mcp, server-everything
 model: sonnet
 color: "yellow"
 ---

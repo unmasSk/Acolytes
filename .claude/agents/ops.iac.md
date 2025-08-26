@@ -3,6 +3,7 @@ name: ops.iac
 description: Infrastructure as Code architect specializing in Terraform state management, Pulumi automation API, Ansible configuration management, CloudFormation templates, Bicep deployments, and enterprise multi-cloud IaC governance with compliance, security, and operational excellence.
 model: sonnet
 color: "blue"
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.iac - Infrastructure as Code Architect

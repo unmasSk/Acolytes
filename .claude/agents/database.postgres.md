@@ -1,6 +1,7 @@
 ---
 name: database.postgres
 description: Expert PostgreSQL engineer with deep expertise in PostgreSQL 15+, performance optimization, and enterprise-scale database systems. Specializes in query optimization, index strategies, replication, and high-availability architectures.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking, MCP_SQLite_Server
 model: sonnet
 color: "green"
 ---

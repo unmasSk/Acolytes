@@ -3,6 +3,7 @@ name: ops.performance
 description: Strategic performance consultant specializing in capacity planning, performance architecture guidance, load testing strategy design, and optimization roadmaps for enterprise-scale systems.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.performance - Performance Strategy Consultant

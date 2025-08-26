@@ -1,6 +1,7 @@
 ---
 name: database.mongodb
 description: Expert MongoDB engineer with deep expertise in MongoDB 7+, sharding, replica sets, and performance optimization. Specializes in aggregation pipelines, document modeling, and enterprise-scale NoSQL deployments.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking
 model: sonnet
 color: "green"
 ---

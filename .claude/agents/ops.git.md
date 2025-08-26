@@ -3,6 +3,7 @@ name: ops.git
 description: Professional Git workflow specialist mastering conventional commits, branching strategies, and git operations. Expert in clean commit history, conflict resolution, and release management.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, server-git, context7
 ---
 
 # Git Workflow Specialist

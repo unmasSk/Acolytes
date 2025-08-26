@@ -1,6 +1,7 @@
 ---
 name: frontend.angular
 description: Expert Angular engineer with deep expertise in Angular 17+, standalone components, Signals API, and modern TypeScript patterns. Specializes in building scalable, reactive applications with exceptional performance and developer experience.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, 21st-dev_magic, puppeteer, playwright, chrome-devtools
 model: sonnet
 color: "orange"
 ---

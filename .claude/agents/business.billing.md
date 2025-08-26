@@ -1,6 +1,7 @@
 ---
 name: business.billing
 description: Expert billing and invoicing engineer with deep expertise in subscription management, pricing models, tax calculation, and financial reporting. Specializes in Stripe Billing, recurring charges, revenue recognition, and compliance-ready billing systems.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking, server-fetch
 model: sonnet
 color: "blue"
 ---

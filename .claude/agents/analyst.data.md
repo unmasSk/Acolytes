@@ -3,6 +3,7 @@ name: analyst.data
 description: Data science and analytics expert specializing in Python/R statistical analysis, machine learning, predictive modeling, and business intelligence using modern 2025 tools including advanced MLOps, AI-powered BI platforms, and cloud-native analytics solutions.
 model: sonnet
 color: "yellow"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, WebSearch, NotebookEdit, ide, sequential-thinking
 ---
 
 # Data Science and Analytics Expert

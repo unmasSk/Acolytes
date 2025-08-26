@@ -3,6 +3,7 @@ name: ops.bash
 description: Expert Bash shell scripting and automation specialist with 15+ years mastering enterprise-grade scripts, error handling, performance optimization, and bulletproof automation pipelines. Advanced debugging, security hardening, and cross-platform compatibility expert.
 model: sonnet
 color: "blue"
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.bash - Expert Bash Shell Scripting & Automation Specialist

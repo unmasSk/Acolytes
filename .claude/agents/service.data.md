@@ -1,6 +1,7 @@
 ---
 name: service.data
 description: Expert data processing and infrastructure services specialist with cutting-edge 2024/2025 knowledge. Deep expertise in Elasticsearch, Apache Kafka, Apache Airflow, RabbitMQ, ETL pipelines, real-time streaming, and enterprise-scale data architectures.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking, server-fetch
 model: sonnet
 color: "yellow"
 ---

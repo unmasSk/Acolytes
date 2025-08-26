@@ -3,6 +3,7 @@ name: ops.monitoring
 description: Production-grade monitoring and observability expert specializing in enterprise Prometheus clusters, Grafana dashboard architecture, ELK stack optimization, APM tool mastery (DataDog, New Relic), OpenTelemetry distributed tracing, and intelligent alerting systems for high-scale environments.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.monitoring - Production Monitoring & Observability Expert

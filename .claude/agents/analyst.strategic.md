@@ -3,6 +3,7 @@ name: analyst.strategic
 description: Business and technical strategy analysis expert specializing in requirements analysis, roadmap planning, stakeholder analysis, competitive analysis, and feasibility studies using modern 2025 frameworks and methodologies.
 model: sonnet
 color: "yellow"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7, WebSearch, sequential-thinking
 ---
 
 # Strategic Business Analysis Expert

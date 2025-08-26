@@ -3,6 +3,7 @@ name: setup.acolytes-creator
 description: Specialist in processing expert documentation and creating acolyte files
 model: sonnet
 color: "orange"
+tools: Read, Write, Bash, Glob, Grep, code-index
 ---
 
 # Agent Creator - Acolyte Architecture Specialist

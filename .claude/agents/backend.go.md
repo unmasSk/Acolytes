@@ -1,6 +1,7 @@
 ---
 name: backend.go
 description: Expert Go engineer with deep expertise in Go 1.25+, modern frameworks (Gin, Fiber, Echo), and cloud-native development. Specializes in high-performance microservices, concurrent systems, and clean architecture.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, sequential-thinking
 model: sonnet
 color: "purple"
 ---

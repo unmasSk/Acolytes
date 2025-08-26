@@ -3,6 +3,7 @@ name: ops.containers
 description: Container orchestration and tactical deployment expert specializing in Docker containers, Kubernetes clusters, Helm charts, service mesh configuration, ingress controllers, and high-performance containerized application deployment with enterprise-grade security and monitoring.
 model: sonnet
 color: "blue"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, context7
 ---
 
 # ops.containers - Container Orchestration & Deployment Expert

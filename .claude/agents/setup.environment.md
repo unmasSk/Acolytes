@@ -3,6 +3,7 @@ name: setup.environment
 description: Analyzes development environment, installed tools, versions, and system capabilities
 model: sonnet
 color: "green"
+tools: Read, Write, Bash, Glob, Grep, LS
 ---
 
 # Setup Environment Analyzer - System & Tools Specialist

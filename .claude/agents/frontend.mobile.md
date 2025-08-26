@@ -1,6 +1,7 @@
 ---
 name: frontend.mobile
 description: Expert-level cross-platform mobile development specialist with comprehensive mastery of React Native (New Architecture), Flutter 3.24+, Expo SDK 52+, and Capacitor 7+. Deep expertise in mobile architecture patterns, performance optimization, native module integration, and modern deployment strategies including EAS workflows and mobile DevOps excellence.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, puppeteer, playwright, chrome-devtools
 model: sonnet
 color: "orange"
 ---

@@ -1,269 +1,265 @@
-# 🎯 MCPs Recomendados por Agente - Acolytes
+# MCP and Tools Recommendations by Agent Type
+
+## 🎯 Tool Assignment Strategy
+
+### Core Principles:
+1. **Coordinators** - No code editing tools (no Edit/MultiEdit/Write)
+2. **Setup/Analysis Agents** - Read-only tools + code-index MCP
+3. **Implementation Agents** - Full toolset including editing
+4. **Audit/Security Agents** - Read-only + analysis tools
+5. **Service Agents** - Specific MCPs for their domain
+
+## 📊 Complete Tool & MCP Inventory
+
+### Base Tools (17):
+- Task, Bash, Glob, Grep, LS, ExitPlanMode
+- Read, Edit, MultiEdit, Write, NotebookEdit
+- WebFetch, TodoWrite, WebSearch
+- BashOutput, KillBash
+- ListMcpResourcesTool, ReadMcpResourceTool
+
+### MCP Servers (15):
+1. **server-git** - Git operations (13 tools)
+2. **server-fetch** - URL fetching (1 tool)
+3. **server-everything** - Testing/demo (10 tools)
+4. **21st-dev_magic** - UI components (4 tools)
+5. **MCP_SQLite_Server** - Project database (8 tools)
+6. **voice-mode** - Voice interaction (26 tools)
+7. **puppeteer** - Browser automation (6 tools)
+8. **chrome-devtools** - Chrome DevTools (65 tools)
+9. **sequential-thinking** - Sequential reasoning (1 tool)
+10. **n8n-mcp** - Workflow automation (22 tools)
+11. **code-index** - Fast code search (10 tools) ⚡
+12. **context7** - Library documentation (2 tools)
+13. **playwright** - Web automation (24 tools)
+14. **ide** - VS Code integration (2 tools)
+15. **server-everything** - Testing utilities (10 tools)
+
+## 🏗️ Setup Agents (4)
+**Tools:** Read, Bash, Glob, Grep, LS, Task, TodoWrite
+**MCPs:** code-index (CRITICAL), MCP_SQLite_Server
+**FORBIDDEN:** Edit, MultiEdit, Write, NotebookEdit
+
+### setup.infrastructure
+- Additional MCPs: server-git (for repo analysis)
+
+### setup.environment  
+- Additional MCPs: None
+
+### setup.context
+- Additional MCPs: None
+
+### setup.codebase
+- Additional MCPs: ide (for diagnostics if available)
+
+## 🎯 Coordinators (9)
+**Tools:** Read, Task, TodoWrite, Grep, Glob, LS, sequential-thinking
+**MCPs:** MCP_SQLite_Server (for FLAGS)
+**FORBIDDEN:** Edit, MultiEdit, Write, NotebookEdit
+
+### coordinator.backend
+### coordinator.frontend  
+### coordinator.database
+### coordinator.devops
+### coordinator.testing
+### coordinator.security
+### coordinator.infrastructure
+### coordinator.migration
+### coordinator.data
 
-## ⚠️ ACLARACIONES IMPORTANTES
+## 💻 Backend Engineers (7)
+**Tools:** ALL base tools
+**Base MCPs:** code-index, MCP_SQLite_Server, server-git, context7
 
-### ❌ **NO necesitas `server-filesystem`**
+### backend.nodejs
+- Additional: n8n-mcp, ide
 
-Claude Code YA tiene herramientas nativas para archivos:
+### backend.python
+- Additional: NotebookEdit, ide
 
-- `Read` - Lee archivos
-- `Write` - Escribe archivos
-- `Edit` - Edita archivos
-- `MultiEdit` - Múltiples ediciones
-- `LS` - Lista directorios
-- `Glob` - Busca archivos por patrón
-- `Grep` - Busca dentro de archivos
+### backend.go
+- Additional: ide
+
+### backend.rust
+- Additional: ide
 
-### ✅ **Context7 es ESENCIAL**
+### backend.java
+- Additional: ide
+
+### backend.laravel
+- Additional: ide
+
+### backend.serverless
+- Additional: n8n-mcp
+
+### backend.api
+- Additional: n8n-mcp, server-fetch
+
+## 🎨 Frontend Engineers (4)
+**Tools:** ALL base tools
+**Base MCPs:** code-index, MCP_SQLite_Server, server-git, 21st-dev_magic
+
+### frontend.react
+- Additional: playwright, puppeteer, chrome-devtools
 
-TODOS los agentes deberían tener Context7 porque:
+### frontend.vue
+- Additional: playwright, puppeteer, chrome-devtools
 
-- Proporciona documentación actualizada de CUALQUIER librería
-- React, Vue, Angular, Express, Django, Laravel, PostgreSQL, MongoDB, etc.
-- Siempre tiene la versión más reciente
-- Evita que los agentes usen información desactualizada
+### frontend.angular
+- Additional: playwright, puppeteer, chrome-devtools
 
-### 📌 **`server-fetch` es SOLO para APIs externas**
+### frontend.mobile
+- Additional: None (mobile-specific)
 
-Solo útil para agentes que necesitan:
+## 🗄️ Database Engineers (9)
+**Tools:** ALL base tools
+**Base MCPs:** code-index, MCP_SQLite_Server
 
-- Consumir APIs REST externas
-- Obtener contenido de sitios web
-- Hacer requests HTTP/HTTPS
+### database.postgres
+### database.mongodb  
+### database.mysql/mariadb
+### database.redis
+### database.sqlite
+- Additional: MCP_SQLite_Server (expert usage)
 
-## 📊 Tabla de Compatibilidad MCP-Agente
+### database.pgvector
+- Additional: context7 (for AI docs)
 
-Esta guía mapea cada agente de Acolytes con los MCPs más útiles para potenciar sus capacidades.
+### database.postgis
+- Additional: None
 
----
+### database.vectorial
+- Additional: context7 (for AI docs)
 
-## 🔧 Backend Agents
+## 🔧 Service Engineers (6)
+**Tools:** ALL base tools
+**Base MCPs:** code-index, MCP_SQLite_Server, server-git
 
-| Agente                 | MCPs Recomendados                                                           | Propósito                                   |
-| ---------------------- | --------------------------------------------------------------------------- | ------------------------------------------- |
-| **backend.api**        | • Context7<br>• `server-fetch`<br>• Postman MCP*<br>• REST API Testing MCP* | Documentación, APIs REST, testing endpoints |
-| **backend.nodejs**     | • Context7<br>• npm MCP*<br>• ESLint MCP*                                   | Docs Node.js/Express, paquetes npm, linting |
-| **backend.python**     | • Context7<br>• pip MCP*<br>• Poetry MCP*                                   | Docs Python/Django/FastAPI, dependencias    |
-| **backend.go**         | • Context7<br>• Go Modules MCP\*                                            | Docs Go, módulos, compilación               |
-| **backend.rust**       | • Context7<br>• Cargo MCP\*                                                 | Docs Rust, Cargo, compilación               |
-| **backend.serverless** | • Context7<br>• AWS MCP (oficial)<br>• Vercel MCP\*                         | Docs serverless, deploy AWS Lambda          |
-| **backend.laravel**    | • Context7<br>• MySQL MCP<br>• Composer MCP\*                               | Docs Laravel, DB, Composer                  |
-| **backend.java**       | • Context7<br>• Maven MCP*<br>• Gradle MCP*                                 | Docs Spring/Java, build tools               |
+### service.auth
+- Additional: None
 
----
+### service.ai
+- Additional: context7, voice-mode
 
-## 💾 Database Agents
+### service.integrations
+- Additional: n8n-mcp, server-fetch
+
+### service.data
+- Additional: n8n-mcp
 
-| Agente                 | MCPs Recomendados                                | Propósito                                |
-| ---------------------- | ------------------------------------------------ | ---------------------------------------- |
-| **database.postgres**  | • Context7<br>• PostgreSQL MCP<br>• Supabase MCP | Docs PostgreSQL, queries, administración |
-| **database.mongodb**   | • Context7<br>• MongoDB MCP (oficial)            | Docs MongoDB, operaciones NoSQL          |
-| **database.redis**     | • Context7<br>• Upstash Redis MCP                | Docs Redis, cache, operaciones           |
-| **database.sqlite**    | • Context7<br>• SQLite MCP (`mcp-sqlite`)        | Docs SQLite, operaciones locales         |
-| **database.vectorial** | • Context7<br>• Pinecone MCP<br>• Vectara MCP    | Docs vector DBs, embeddings, RAG         |
-| **database.pgvector**  | • Context7<br>• PostgreSQL MCP<br>• Supabase MCP | Docs pgvector, PostgreSQL con vectores   |
-| **database.mariadb**   | • Context7<br>• MySQL MCP                        | Docs MariaDB/MySQL                       |
-| **database.postgis**   | • Context7<br>• PostgreSQL MCP                   | Docs PostGIS, extensiones geo            |
+### service.communication
+- Additional: voice-mode
 
----
-
-## 🎨 Frontend Agents
-
-| Agente               | MCPs Recomendados                                                 | Propósito                       |
-| -------------------- | ----------------------------------------------------------------- | ------------------------------- |
-| **frontend.react**   | • Context7 (para docs)<br>• `puppeteer` MCP<br>• `playwright` MCP | Testing UI, documentación React |
-| **frontend.vue**     | • Context7<br>• `puppeteer` MCP                                   | Testing, docs Vue               |
-| **frontend.angular** | • Context7<br>• `playwright` MCP                                  | Testing, docs Angular           |
-| **frontend.mobile**  | • React Native MCP*<br>• Flutter MCP*                             | Desarrollo móvil                |
-
----
-
-## 🛠️ Operations Agents
-
-| Agente                  | MCPs Recomendados                      | Propósito                 |
-| ----------------------- | -------------------------------------- | ------------------------- |
-| **ops.git**             | • `server-git` MCP                     | Operaciones Git completas |
-| **ops.containers**      | • Docker MCP<br>• Kubernetes MCP       | Gestión contenedores      |
-| **ops.cicd**            | • GitHub MCP (oficial)<br>• GitLab MCP | CI/CD pipelines           |
-| **ops.monitoring**      | • Datadog MCP<br>• Sentry MCP          | Monitoreo, alertas        |
-| **ops.iac**             | • AWS MCP<br>• Terraform MCP\*         | Infrastructure as Code    |
-| **ops.webserver**       | • Nginx MCP*<br>• Apache MCP*          | Configuración servidores  |
-| **ops.bash**            | • `server-filesystem`                  | Scripts, automatización   |
-| **ops.performance**     | • Chrome DevTools MCP                  | Análisis performance      |
-| **ops.troubleshooting** | • Chrome DevTools MCP<br>• Sentry MCP  | Debugging, logs           |
-
----
-
-## 🔐 Service Agents
-
-| Agente                    | MCPs Recomendados                        | Propósito                   |
-| ------------------------- | ---------------------------------------- | --------------------------- |
-| **service.auth**          | • Auth0 MCP*<br>• Firebase Auth MCP*     | Autenticación, OAuth        |
-| **service.ai**            | • OpenAI MCP*<br>• Anthropic MCP*        | Integración LLMs            |
-| **service.communication** | • Twilio MCP (oficial)<br>• SendGrid MCP | SMS, emails, notificaciones |
-| **service.data**          | • Kafka MCP*<br>• RabbitMQ MCP*          | Streaming, colas mensajes   |
-| **service.integrations**  | • Zapier MCP (oficial)<br>• n8n MCP      | Integraciones externas      |
-| **service.mapbox**        | • Mapbox MCP*<br>• Google Maps MCP*      | Mapas, geolocalización      |
-
----
-
-## 💼 Business Agents
-
-| Agente                    | MCPs Recomendados                        | Propósito                  |
-| ------------------------- | ---------------------------------------- | -------------------------- |
-| **business.payment**      | • Stripe MCP (oficial)<br>• PayPal MCP\* | Procesamiento pagos        |
-| **business.billing**      | • Stripe MCP<br>• Paddle MCP             | Facturación, suscripciones |
-| **business.subscription** | • Stripe MCP<br>• Paddle MCP             | Gestión suscripciones      |
-
----
-
-## 📈 Analysis & Audit Agents
-
-| Agente                | MCPs Recomendados                  | Propósito                 |
-| --------------------- | ---------------------------------- | ------------------------- |
-| **analyst.data**      | • BigQuery MCP<br>• Databricks MCP | Análisis datos            |
-| **analyst.strategic** | • Notion MCP<br>• Airtable MCP     | Documentación estratégica |
-| **audit.security**    | • Snyk MCP*<br>• OWASP MCP*        | Análisis seguridad        |
-| **audit.compliance**  | • GDPR MCP*<br>• SOC2 MCP*         | Compliance checks         |
-
----
-
-## 🎯 Coordinator Agents
-
-| Agente                         | MCPs Recomendados               | Propósito                |
-| ------------------------------ | ------------------------------- | ------------------------ |
-| **coordinator.backend**        | Combina MCPs de backend agents  | Coordinación backend     |
-| **coordinator.frontend**       | Combina MCPs de frontend agents | Coordinación frontend    |
-| **coordinator.database**       | Combina MCPs de database agents | Coordinación bases datos |
-| **coordinator.devops**         | Combina MCPs de ops agents      | Coordinación DevOps      |
-| **coordinator.infrastructure** | • AWS MCP<br>• Azure MCP        | Coordinación infra       |
-| **coordinator.testing**        | • `puppeteer`<br>• `playwright` | Coordinación testing     |
-| **coordinator.security**       | Combina MCPs de security        | Coordinación seguridad   |
-| **coordinator.migration**      | Combina MCPs relevantes         | Coordinación migraciones |
-
----
-
-## 🚀 Setup Agents
-
-| Agente                     | MCPs Recomendados                       | Propósito                  |
-| -------------------------- | --------------------------------------- | -------------------------- |
-| **setup.infrastructure**   | • AWS MCP<br>• Docker MCP               | Setup inicial infra        |
-| **setup.environment**      | • `server-filesystem`<br>• npm MCP\*    | Setup entorno dev          |
-| **setup.context**          | • `server-git`<br>• Context7            | Análisis contexto proyecto |
-| **setup.codebase**         | • `server-filesystem`<br>• `server-git` | Análisis código            |
-| **setup.acolytes-creator** | • `server-filesystem`                   | Creación de agentes        |
-
----
-
-## 🧪 Test & Quality Agents
-
-| Agente           | MCPs Recomendados                                    | Propósito               |
-| ---------------- | ---------------------------------------------------- | ----------------------- |
-| **test.quality** | • `puppeteer`<br>• `playwright`<br>• Chrome DevTools | Testing E2E, UI testing |
-
----
-
-## 📝 Documentation & Planning
-
-| Agente              | MCPs Recomendados              | Propósito            |
-| ------------------- | ------------------------------ | -------------------- |
-| **docs.specialist** | • Context7<br>• Notion MCP     | Documentación        |
-| **plan.strategy**   | • Notion MCP<br>• Airtable MCP | Planning estratégico |
-| **flags.agent**     | • SQLite MCP (ya usado)        | Gestión FLAGS system |
-
----
-
-## 🔍 MCPs Universales (útiles para TODOS los agentes)
-
-### ✅ ESENCIALES (todos deberían tenerlos):
-
-1. **Context7** - Documentación actualizada de CUALQUIER librería/framework
-2. **SQLite MCP** - Base de datos local (YA instalado para Acolytes)
-3. **`sequential-thinking`** - Resolución estructurada de problemas complejos
-
-### 📌 OPCIONALES (según necesidad):
-
-4. **`server-git`** - Control de versiones avanzado (más completo que Bash git)
-5. **`server-fetch`** - Solo para agentes que consumen APIs externas
-6. **`server-filesystem`** - NO NECESARIO (Claude ya tiene Read/Write/Edit/LS integrados)
-
----
-
-## ⚡ MCPs Instalados y Funcionando
-
-✅ **Actualmente funcionando en tu sistema:**
-
-- server-git
-- server-fetch
-- server-everything
-- @21st-dev/magic
-- MCP SQLite Server
-- voice-mode
-- puppeteer
-- chrome-devtools
-- sequential-thinking
-- context7
-- playwright
-
----
-
-## 📦 Instalación de MCPs Adicionales
-
-### Para instalar un MCP:
-
-```bash
-# Formato general
-claude mcp add [nombre] -s user -- npx -y [paquete-npm]
-
-# Ejemplos:
-claude mcp add stripe -s user -- npx -y @stripe/mcp-server
-claude mcp add github -s user -- npx -y @github/mcp-server
-claude mcp add docker -s user -- npx -y docker-mcp
-```
-
-### Para verificar MCPs instalados:
-
-```bash
-claude mcp list
-```
-
-### Para desinstalar un MCP:
-
-```bash
-claude mcp remove [nombre] -s user
-```
-
----
-
-## 📌 Notas Importantes
-
-1. **MCPs marcados con (\*)** pueden no existir o estar en desarrollo
-2. **MCPs oficiales** tienen mejor soporte y documentación
-3. **Siempre reinicia Claude Code** después de instalar MCPs
-4. **Algunos MCPs requieren configuración adicional** (API keys, tokens, etc.)
-5. **Los coordinadores** no necesitan MCPs propios, usan los de los agentes que coordinan
-
----
-
-## 🎯 Recomendaciones Top por Categoría
-
-### 🏆 Los 5 MCPs más valiosos para desarrollo general:
-
-1. **GitHub MCP** - Control total sobre repositorios
-2. **Docker MCP** - Gestión de contenedores
-3. **PostgreSQL/MongoDB MCP** - Bases de datos
-4. **Stripe MCP** - Pagos y facturación
-5. **AWS MCP** - Servicios cloud
-
-### 🏆 Los 5 MCPs más valiosos para testing:
-
-1. **Puppeteer MCP** - Testing visual automatizado
-2. **Playwright MCP** - Testing cross-browser
-3. **Chrome DevTools MCP** - Debugging profundo
-4. **Sequential Thinking** - Resolución problemas complejos
-5. **Sentry MCP** - Error tracking
-
----
-
-_Última actualización: Agosto 2025_
-_Basado en el catálogo awesome-mcp-servers y directorios oficiales_
+### service.mapbox
+- Additional: None
+
+## 💰 Business Engineers (3)
+**Tools:** ALL base tools
+**Base MCPs:** code-index, MCP_SQLite_Server
+
+### business.payment
+### business.billing
+### business.subscription
+
+## 🚀 Operations (13)
+**Tools:** Read, Bash, Grep, Glob, LS, TodoWrite
+**MCPs:** code-index, MCP_SQLite_Server, server-git
+**FORBIDDEN:** Edit, MultiEdit, Write (except ops.bash, ops.iac)
+
+### ops.bash
+- ALLOWED: Edit, MultiEdit, Write (for scripts)
+
+### ops.iac
+- ALLOWED: Edit, MultiEdit, Write (for terraform/ansible)
+
+### ops.cicd
+- Additional: n8n-mcp
+
+### ops.containers
+### ops.git
+### ops.monitoring
+### ops.performance
+### ops.troubleshooting
+### ops.webserver
+
+## 🔍 Audit Agents (3)
+**Tools:** Read, Bash, Grep, Glob, LS, WebSearch
+**MCPs:** code-index, MCP_SQLite_Server
+**FORBIDDEN:** Edit, MultiEdit, Write, NotebookEdit
+
+### audit.security
+### audit.compliance
+
+## 📊 Analyst Agents (2)
+**Tools:** Read, Bash, Grep, Glob, LS, WebSearch, TodoWrite
+**MCPs:** code-index, MCP_SQLite_Server
+**FORBIDDEN:** Edit, MultiEdit, Write
+
+### analyst.strategic
+### analyst.data
+- ALLOWED: NotebookEdit (for data analysis)
+
+## 📝 Other Agents
+
+### docs.specialist
+**Tools:** ALL base tools
+**MCPs:** code-index, MCP_SQLite_Server, context7
+
+### plan.strategy
+**Tools:** Read, Task, TodoWrite, sequential-thinking
+**MCPs:** MCP_SQLite_Server
+**FORBIDDEN:** Edit, MultiEdit, Write
+
+### agent-creator
+**Tools:** Read, Write, MultiEdit, Glob, Grep
+**MCPs:** code-index, MCP_SQLite_Server
+**Note:** Creates agents, needs Write
+
+### flags.agent / flags-agent
+**Tools:** Read, Task, TodoWrite
+**MCPs:** MCP_SQLite_Server (primary tool)
+**FORBIDDEN:** Edit, MultiEdit, Write
+
+## 🎯 Testing Agents (3)
+**Tools:** ALL base tools
+**MCPs:** code-index, MCP_SQLite_Server, playwright, puppeteer
+
+### coordinator.testing
+### test.automation
+### test.quality
+
+## 📋 Summary Statistics
+
+- **Total Agents:** 57
+- **Agents with NO Edit/MultiEdit:** 23 (40%)
+  - All Coordinators (9)
+  - All Setup agents (4)
+  - Most Ops agents (11, except bash/iac)
+  - All Audit agents (3)
+  - Most Analyst agents (1, except data)
+  - Plan/Flags agents (2)
+  
+- **Most Used MCPs:**
+  1. code-index - 57 agents (100%)
+  2. MCP_SQLite_Server - 57 agents (100%)
+  3. server-git - 30+ agents
+  4. context7 - 10+ agents
+  5. playwright/puppeteer - Frontend & Testing agents
+
+## 🚀 Implementation Priority
+
+1. **Phase 1:** Update all Setup agents (4) - Remove Edit/MultiEdit
+2. **Phase 2:** Update all Coordinators (9) - Remove Edit/MultiEdit
+3. **Phase 3:** Update Ops agents (13) - Remove Edit/MultiEdit except bash/iac
+4. **Phase 4:** Update Audit/Analyst agents (5) - Remove Edit/MultiEdit
+5. **Phase 5:** Add specialized MCPs to implementation agents
+6. **Phase 6:** Verify consistency across all agents
+
+## Notes
+
+- **code-index** is MANDATORY for all agents for fast file operations
+- **MCP_SQLite_Server** is MANDATORY for FLAGS system
+- **sequential-thinking** recommended for complex reasoning agents
+- **21st-dev_magic** for UI-generating agents only
+- **voice-mode** for agents that interact with users
+- **n8n-mcp** for workflow/automation agents

@@ -53,7 +53,7 @@ Claude's single message contains:
 
 **WHAT YOU (CLAUDE) MUST DO**: Validate the development environment, create the SQLite database with all required tables, and configure MCP connection. Follow the steps below to establish the complete system foundation.
 
-```yaml
+````yaml
 ENVIRONMENT_CHECK:
   - Execute: uv run python ~/.claude/scripts/environment_check.py
   - Validates: Python 3.8+, Git 2.0+, Node 18+, uv package manager
@@ -62,26 +62,27 @@ ENVIRONMENT_CHECK:
 
 DATABASE_AND_MCP:
   1. Configure MCP SQLite:
-    - Run: python ~/.claude/scripts/setup_mcp.py
+    - Run: uv run python ~/.claude/scripts/setup_mcp.py
     - Create project.db if not exists
     - Configure MCP to point to project.db
     - User may need to restart Claude Code
 
   2. Initialize database schema:
-    - Execute: python ~/.claude/scripts/init_db.py
+    - Execute: uv run python ~/.claude/scripts/init_db.py
     - Database will auto-create: agents_catalog (51 agents), jobs table with initial job, sessions, messages, etc.
     - Initial job 'Project Setup' automatically created with high priority
     - All tables, indexes, triggers, and constraints ready
 
-  3. Initialize code-index MCP silently (NO COMMENTARY):
+  3. Install/verify required MCP servers
+    - Ensure: code-index MCP is installed and available to Claude Code
+    - If missing: install per MCP guide (see TODO/MCP_INSTALLATION_GUIDE.md)
+    - Verify: code-index responds to health check before proceeding
+
+  4. Initialize code-index MCP silently (NO COMMENTARY):
     - Execute: mcp__code-index__set_project_path(project_root)
-    - This enables 50x faster searches for setup agents
+    - Effect: enables faster searches for setup agents
     - Do NOT announce or comment on this indexing
     - Setup agents will use the index automatically
-
-  4. Install missing MCP servers as needed
-```
-
 ---
 
 ### 2️⃣ **PHASE 2: ANALYSIS & DOCUMENTATION**
@@ -115,7 +116,7 @@ DOCUMENTATION_CREATION:
     - project-context.md (specific project details)
   format: English markdown with consistent structure
   note: "roadmap.md is NOT created here - only for existing projects. New projects get roadmap.md from plan.strategy"
-```
+````
 
 #### **FOR NEW PROJECTS**
 

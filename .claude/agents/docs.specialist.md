@@ -3,6 +3,7 @@ name: docs.specialist
 description: Professional documentation specialist managing all project documentation. Maintains changelogs, technical documentation, API docs, architecture guides, and ensures comprehensive documentation coverage across the entire project.
 model: sonnet
 color: "purple"
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, WebSearch, server-git, 21st-dev_magic, sequential-thinking
 ---
 
 # Core Identity

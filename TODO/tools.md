@@ -30,24 +30,22 @@ tools: Read, Write, MultiEdit, Bash, cargo, rustc, clippy, rustfmt, miri, rust-a
 
 ## Top Herramientas Más Usadas
 
-| Herramienta    | Tipo     | Frecuencia | Para qué sirve                                    |
-| -------------- | -------- | ---------- | ------------------------------------------------- |
-| **Read**       | Tool     | 15+ veces  | Leer archivos locales del sistema                 |
-| **Write**      | Tool     | 15+ veces  | Escribir/crear archivos nuevos                    |
-| **MultiEdit**  | Tool     | 15+ veces  | Editar múltiples secciones de un archivo a la vez |
-| **Bash**       | Tool     | 15+ veces  | Ejecutar comandos de terminal/shell               |
-| **git**        | Tool     | 8 veces    | Control de versiones y gestión de código          |
-| **docker**     | Tool     | 6 veces    | Contenedorización y entornos aislados             |
-| **npm**        | Tool     | 5 veces    | Gestor de paquetes de Node.js                     |
-| **redis**      | Service  | 5 veces    | Base de datos en memoria/caché (requiere servidor)|
-| **postgresql** | Service  | 4 veces    | Base de datos relacional SQL (requiere servidor)  |
-| **pytest**     | Tool     | 3 veces    | Framework de testing para Python                  |
-| **typescript** | Tool     | 3 veces    | Superset tipado de JavaScript                     |
-| **magic**      | MCP      | 3 veces    | MCP para generar componentes UI con IA            |
-| **context7**   | MCP      | 2 veces    | MCP para obtener documentación de librerías       |
-| **playwright** | 
-P | 2 veces    | Automatización de navegador y testing E2E         |
-| **database**   | Tool     | 2 veces    | Herramientas genéricas de base de datos           |
+| Herramienta    | Tipo    | Frecuencia | Para qué sirve                                     |
+| -------------- | ------- | ---------- | -------------------------------------------------- | --- | ------------ | ---- | ------- | --------------------------------------- |
+| **Read**       | Tool    | 15+ veces  | Leer archivos locales del sistema                  |
+| **Write**      | Tool    | 15+ veces  | Escribir/crear archivos nuevos                     |
+| **MultiEdit**  | Tool    | 15+ veces  | Editar múltiples secciones de un archivo a la vez  |
+| **Bash**       | Tool    | 15+ veces  | Ejecutar comandos de terminal/shell                |
+| **git**        | Tool    | 8 veces    | Control de versiones y gestión de código           |
+| **docker**     | Tool    | 6 veces    | Contenedorización y entornos aislados              |
+| **npm**        | Tool    | 5 veces    | Gestor de paquetes de Node.js                      |
+| **redis**      | Service | 5 veces    | Base de datos en memoria/caché (requiere servidor) |
+| **postgresql** | Service | 4 veces    | Base de datos relacional SQL (requiere servidor)   |
+| **pytest**     | Tool    | 3 veces    | Framework de testing para Python                   |
+| **typescript** | Tool    | 3 veces    | Superset tipado de JavaScript                      |
+| **magic**      | MCP     | 3 veces    | MCP para generar componentes UI con IA             |
+| **context7**   | MCP     | 2 veces    | MCP para obtener documentación de librerías        |
+| **playwright** | MCP     | 2 veces    | Automatización de navegador y testing E2E          |     | **database** | Tool | 2 veces | Herramientas genéricas de base de datos |
 
 ## Herramientas por Categoría
 

@@ -3,6 +3,7 @@ name: plan.strategy
 description: Strategic project organizer that transforms expert recommendations into structured execution plans with phased timelines, job creation, and dependency management for optimal project delivery.
 model: sonnet
 color: "pink"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index, sequential-thinking
 ---
 
 # plan.strategy - Strategic Project Organizer

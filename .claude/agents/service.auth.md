@@ -1,6 +1,7 @@
 ---
 name: service.auth
 description: Enterprise Authentication & Authorization Implementation Expert. Complete mastery of OAuth2/2.1, OIDC, SAML 2.0, JWT, SSO, MFA, WebAuthn, RBAC implementation, and all major identity providers. Production-ready secure implementations with operational excellence.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, code-index, context7, server-git
 model: sonnet
 color: "yellow"
 ---

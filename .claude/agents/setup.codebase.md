@@ -3,6 +3,7 @@ name: setup.codebase
 description: Analyzes code structure, modules, quality, tests, and technical patterns
 model: sonnet
 color: "purple"
+tools: Read, Write, Bash, Glob, Grep, LS, code-index
 ---
 
 # Setup Codebase Analyzer - Code & Quality Specialist
@@ -143,7 +144,7 @@ When executing codebase analysis:
 ```python
 # Structure Analysis with code-index MCP
 mcp__code-index__find_files("*.js")      # JavaScript files (instant)
-mcp__code-index__find_files("*.ts")      # TypeScript files (instant)  
+mcp__code-index__find_files("*.ts")      # TypeScript files (instant)
 mcp__code-index__find_files("*.py")      # Python files (instant)
 mcp__code-index__find_files("*.php")     # PHP files (instant)
 
@@ -172,9 +173,14 @@ mcp__code-index__find_files("*.json")    # package.json, tsconfig.json
 
 ```bash
 # Use these ONLY if code-index MCP is not available
-find . -type f -name "*.js" -o -name "*.ts" | wc -l
+# JS/TS (includes JSX/TSX)
+find . -type f \( -name "*.js" -o -name "*.jsx" -o -name "*.ts" -o -name "*.tsx" \) | wc -l
+# PHP
 find . -type f -name "*.php" | wc -l
+# Python
 find . -type f -name "*.py" | wc -l
+# Tests
+find . -type f \( -name "*.test.*" -o -name "*.spec.*" -o -path "*/__tests__/*" \) | wc -l
 ```
 
 ## Document Creation Process
@@ -225,7 +231,7 @@ I use `~/.claude/resources/templates/template-architecture.md` to create documen
 After creating `.claude/project/architecture.md`, I MUST provide this concise summary to Claude:
 
 ```
-CODEBASE ANALYSIS COMPLETE 
+CODEBASE ANALYSIS COMPLETE
 
  Documents Updated:
 - architecture.md (complete document created)

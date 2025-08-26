@@ -1,6 +1,7 @@
 ---
 name: backend.api
 description: Expert API architect specializing in RESTful design, GraphQL, gRPC, and API lifecycle management. Masters OpenAPI/Swagger, versioning strategies, rate limiting, authentication patterns, and developer experience optimization.
+tools: Read, Write, Edit, MultiEdit, Bash, Glob, Grep, LS, WebSearch, code-index, context7, sequential-thinking, server-fetch
 model: sonnet
 color: "purple"
 ---
