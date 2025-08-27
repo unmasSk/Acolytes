@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.5 - 2025-08-27
+
+### Critical Windows Path Fixes
+
+#### Fixed
+- **CRITICAL**: Fixed path handling across all Python scripts for Windows compatibility
+- Corrected backslash vs forward slash inconsistencies in file operations
+- Fixed path joining issues that caused failures on Windows systems
+- Added proper path quoting for directories with spaces
+- Updated all scripts to use os.path.join() and pathlib for cross-platform compatibility
+
+#### Changed
+- README badge now uses dynamic PyPI version from shields.io
+- CHANGELOG examples updated with shell-specific command formats
+- Removed hardcoded version from README badge
+
 ## 1.0.4 - 2025-08-27
 
 ### Improved - Single Source of Truth for Version
