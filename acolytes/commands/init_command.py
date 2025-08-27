@@ -213,82 +213,125 @@ def _is_uv_available() -> bool:
 
 
 def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, Any]:
-    """Create the settings configuration dictionary."""
+    """Create the settings configuration dictionary in Claude Code format."""
     
     # Base Python command
     if uv_available:
-        base_python_cmd = "uv run python"
+        base_cmd = "uv run"
     else:
-        base_python_cmd = python_cmd
+        base_cmd = python_cmd
     
     settings = {
-        "system": {
-            "python_command": python_cmd,
-            "uv_available": uv_available,
-            "base_command": base_python_cmd
+        "permissions": {
+            "allow": [
+                "Bash(mkdir:*)",
+                "Bash(uv:*)",
+                "Bash(find:*)",
+                "Bash(mv:*)",
+                "Bash(grep:*)",
+                "Bash(npm:*)",
+                "Bash(ls:*)",
+                "Bash(cp:*)",
+                "Write",
+                "Edit",
+                "Bash(chmod:*)",
+                "Bash(touch:*)"
+            ],
+            "deny": []
         },
+        "statusLine": {
+            "type": "command",
+            "command": f"{base_cmd} .claude/scripts/status_line.py",
+            "padding": 0
+        },
+        "disableAllHooks": False,
         "hooks": {
-            "session_start": {
-                "enabled": True,
-                "file": "session_start.py",
-                "description": "Load previous session context from SQLite"
-            },
-            "todo_sync": {
-                "enabled": True,
-                "file": "todo_sync.py", 
-                "description": "Sync TodoWrite with SQLite todos table"
-            },
-            "pre_tool_use": {
-                "enabled": True,
-                "file": "pre_tool_use.py",
-                "description": "Tool usage tracking and Git MCP protection"
-            },
-            "post_tool_use": {
-                "enabled": True,
-                "file": "post_tool_use.py",
-                "description": "Post tool execution processing"
-            },
-            "subagent_stop": {
-                "enabled": True,
-                "file": "subagent_stop.py",
-                "description": "Handle agent completion with transcript parsing"
-            },
-            "user_prompt_submit": {
-                "enabled": True,
-                "file": "user_prompt_submit.py",
-                "description": "Process user input"
-            },
-            "stop": {
-                "enabled": True,
-                "file": "stop.py",
-                "description": "Session termination with auto-save"
-            },
-            "pre_compact": {
-                "enabled": True,
-                "file": "pre_compact.py",
-                "description": "Pre-compaction memory optimization"
-            }
-        },
-        "database": {
-            "path": "~/.claude/memory/project.db",
-            "mcp_server": "MCP_SQLite_Server"
-        },
-        "agents": {
-            "total_count": 59,
-            "global_agents": 52,
-            "internal_agents": 7,
-            "acolytes": "dynamic",
-            "catalog_file": "~/.claude/resources/rules/agent-routing-catalog.md"
-        },
-        "features": {
-            "flags_system": True,
-            "parallel_execution": True,
-            "autonomous_spawning": True,
-            "memory_persistence": True,
-            "hooks_system": True
-        },
-        "version": "1.0.0",
-        "initialized": True
+            "SessionStart": [
+                {
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/session_start.py"
+                        }
+                    ]
+                }
+            ],
+            "PostToolUse": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/post_tool_use.py"
+                        }
+                    ]
+                },
+                {
+                    "matcher": "TodoWrite",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/post_tool_use.py --todowrite"
+                        }
+                    ]
+                }
+            ],
+            "PreCompact": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/pre_compact.py"
+                        }
+                    ]
+                }
+            ],
+            "PreToolUse": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/pre_tool_use.py"
+                        }
+                    ]
+                }
+            ],
+            "UserPromptSubmit": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/user_prompt_submit.py"
+                        }
+                    ]
+                }
+            ],
+            "Stop": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/stop.py"
+                        }
+                    ]
+                }
+            ],
+            "SubagentStop": [
+                {
+                    "matcher": "",
+                    "hooks": [
+                        {
+                            "type": "command",
+                            "command": f"{base_cmd} .claude/hooks/subagent_stop.py --chat"
+                        }
+                    ]
+                }
+            ]
+        }
     }
     
     return settings
@@ -328,8 +371,7 @@ def _show_final_status() -> None:
         print(f"  ⚠️  uv: not available (recommended)")
     
     print("\n💡 Next steps:")
-    print("  1. Restart Claude Code to load new configuration")
-    print("  2. Run: claude /setup (to initialize project-specific settings)")
-    print("  3. Use: /todo to manage tasks")
-    print("  4. Use: @agent-name to invoke specific agents")
-    print("  5. Check: ~/.claude/settings.json for configuration details")
+    print("  1. Go to the path to your project")
+    print("  2. Run: claude --dangerously-skip-permissions")
+    print("  3. Type: /setup")
+    print("  4. Y déjate fluir...")
