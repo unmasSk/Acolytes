@@ -11,14 +11,14 @@
 .env.*.local
 
 # Claude Code local settings (personal configurations)
-.claude/settings.local.json
+.claude/
 CLAUDE.md
-
 # Session files (temporary conversation logs)
 SESSIONS/**
 
 # Development and research notes (not for public repo)
-MEJORAS-INVESTIGACION/**
+MEJORAS-INVESTIGACION/
+TODO/
 
 # 🚨 CRITICAL: Memory directory with personal data - NEVER commit!
 .claude/memory/
@@ -31,6 +31,7 @@ mypy.ini
 .mypy_cache/
 *.pyc
 __pycache__/
+.bumpversion.cfg
 
 # Audio files (SFX directory)
 .claude/resources/sfx/
