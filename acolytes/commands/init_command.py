@@ -12,7 +12,13 @@ import subprocess
 import platform
 from pathlib import Path
 from typing import Dict, Any, Optional
-import pkg_resources
+try:
+    from importlib.resources import files
+    use_importlib = True
+except ImportError:
+    # Fallback for older Python versions
+    import pkg_resources
+    use_importlib = False
 
 
 def run() -> None:
@@ -107,7 +113,12 @@ def _copy_data_files() -> None:
     
     # Get package data directory
     try:
-        data_dir = Path(pkg_resources.resource_filename('acolytes', 'data'))
+        if use_importlib:
+            # Modern way using importlib.resources
+            data_dir = Path(str(files('acolytes') / 'data'))
+        else:
+            # Fallback using pkg_resources
+            data_dir = Path(pkg_resources.resource_filename('acolytes', 'data'))
     except Exception:
         # Fallback for development/editable installs
         current_dir = Path(__file__).parent.parent

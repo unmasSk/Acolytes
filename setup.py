@@ -1,13 +1,27 @@
 from setuptools import setup, find_packages
 import os
+from importlib.metadata import version, PackageNotFoundError
 
 # Read README for long description
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+# Try to get version from installed package, fallback to reading from __init__.py
+try:
+    pkg_version = version("acolytes")
+except PackageNotFoundError:
+    # If package is not installed, read from __init__.py
+    import re
+    with open("acolytes/__init__.py", "r") as f:
+        version_match = re.search(r'^__version__ = [\'"]([^\'"]*)[\'"]', f.read(), re.M)
+        if version_match:
+            pkg_version = version_match.group(1)
+        else:
+            pkg_version = "0.0.0"  # fallback
+
 setup(
     name="acolytes",
-    version="1.0.3",
+    version=pkg_version,
     author="unmasSk",
     author_email="",
     description="Acolytes for Claude Code - Multi-agent system with 57+ specialized AI assistants",

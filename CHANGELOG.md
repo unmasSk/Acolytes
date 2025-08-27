@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.4 - 2025-08-27
+
+### Improved - Single Source of Truth for Version
+
+#### Changed
+- Made pyproject.toml the single source of truth for version
+- Updated setup.py to dynamically obtain version at runtime
+- Modified __init__.py to derive version from importlib.metadata
+- Removed version duplication across files
+
+#### Fixed
+- Replaced deprecated pkg_resources with importlib.resources
+- Eliminated UserWarning about pkg_resources deprecation
+- Cleaned up bumpversion configuration
+
 ## 1.0.3 - 2025-08-27
 
 ### Patch - Corrected Package Build
