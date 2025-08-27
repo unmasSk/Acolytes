@@ -1,6 +1,6 @@
 ---
 command: pr
-description: 🔀 Create pull request with analysis. Params: none
+description: ♾️  Create pull request with analysis | No parameters
 ---
 
 # 🔀 Pull Request Creation Command

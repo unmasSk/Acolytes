@@ -287,7 +287,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
             "memory_persistence": True,
             "hooks_system": True
         },
-        "version": "2.0.0",
+        "version": "1.0.0",
         "initialized": True
     }
     

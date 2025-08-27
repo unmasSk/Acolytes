@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="acolytes",
-    version="2.0.0",
+    version="1.0.0",
     author="unmasSk",
     author_email="",
     description="Acolytes for Claude Code - Multi-agent system with 57+ specialized AI assistants",

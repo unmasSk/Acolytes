@@ -621,6 +621,31 @@ function determineVersion(current: string, changes: VersionBump): string {
 }
 ```
 
+### Version Update Execution
+
+When updating versions after determining the appropriate bump:
+
+**Priority order for version management:**
+
+1. **bump2version/bumpversion** (if available):
+   - Check for existing configuration file
+   - Analyze project structure to determine configured files
+   - Execute with appropriate parameters based on project setup
+   - Preferred for consistency and automation
+
+2. **Poetry** (for Python projects using poetry):
+   - Use `poetry version [patch|minor|major]`
+   - Automatically updates pyproject.toml
+
+3. **npm/yarn** (for Node.js projects):
+   - Use `npm version [patch|minor|major]`
+   - Updates package.json and creates git tag
+
+4. **Manual update** (fallback):
+   - Identify all files containing version strings
+   - Update systematically maintaining consistency
+   - Create appropriate git tags
+
 ### Documentation Maintenance Protocol
 
 - **Preserve Custom Content**: Never overwrite user-added custom sections

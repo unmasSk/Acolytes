@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.0 - 2025-08-27
+
+### Major Release - Complete PyPI Package
+
+#### Added
+- **PyPI Package**: Complete Python package for easy installation via `pip install acolytes`
+- **CLI Tool**: Global `acolytes` command with init, update, doctor, repair, list, backup, and clean commands
+- **Automated Installation**: One-command setup with `acolytes --init` that configures everything
+- **52 Public Agents**: All specialized agents for backend, frontend, database, ops, and more
+- **7 Internal Agents**: System agents (setup.*, flags.*, plan.*) for internal operations
+- **Complete Hook System**: 8 hooks for Claude Code integration
+- **Templates & Resources**: Internal templates for project initialization
+
+#### Changed
+- Consolidated all agents into single directory structure
+- Improved agent filtering to show only public agents in list command
+- Enhanced installation flow with automatic uv installation
+- Standardized all documentation and code to English
+
 ## 0.14.1 - 2025-08-27
 
 ### Changed

@@ -1,6 +1,6 @@
 ---
 command: flags
-description: FLAGS system orchestration and inter-agent coordination
+description: ♾️  FLAGS system orchestration and inter-agent coordination | No parameters
 ---
 
 When this command is invoked:

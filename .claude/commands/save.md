@@ -1,6 +1,6 @@
 ---
 allowed-tools: [Bash, TodoWrite, mcp__MCP_SQLite_Server__query]
-description: Save session and messages to SQLite with rich text content using argument-based system
+description: ♾️  Save session and messages to SQLite database | No parameters
 ---
 
 # Save Command - WORKING SYSTEM

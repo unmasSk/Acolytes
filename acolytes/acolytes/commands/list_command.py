@@ -63,6 +63,12 @@ def parse_agent_file(file_path: Path) -> Optional[AgentInfo]:
         
         # Extract basic info
         name = metadata.get('name', file_path.stem)
+        
+        # Skip internal agents (setup.*, flags.*, plan.*)
+        internal_prefixes = ('setup.', 'flags.', 'plan.')
+        if name.startswith(internal_prefixes):
+            return None
+        
         description = metadata.get('description', 'No description available')
         tools = metadata.get('tools', [])
         model = metadata.get('model', 'Unknown')

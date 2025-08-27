@@ -86,83 +86,6 @@ def update_tool_log(tool_data):
     except Exception:
         pass  # Fail silently to not interrupt tool execution
 
-def handle_edit_tool(tool_data):
-    """Handle Edit tool - save to update_tool_output.md"""
-    try:
-        tool_name = tool_data.get('tool_name', 'unknown')
-        
-        # Only process Edit tool
-        if tool_name != 'Edit':
-            return
-            
-        # Get the correct fields
-        tool_input = tool_data.get('tool_input', {})
-        tool_response = tool_data.get('tool_response', {})
-        
-        # Create output file in project root
-        project_root = Path.cwd()
-        output_file = project_root / 'update_tool_output.md'
-        
-        # File rotation logic - max 10MB
-        MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB
-        try:
-            if output_file.exists() and output_file.stat().st_size > MAX_FILE_SIZE:
-                # Rotate the file
-                backup_file = project_root / 'update_tool_output.old.md'
-                
-                # Remove old backup if exists
-                if backup_file.exists():
-                    backup_file.unlink()
-                
-                # Rename current to backup
-                output_file.rename(backup_file)
-        except Exception:
-            pass  # Continue even if rotation fails
-        
-        # Helper function to make paths relative
-        def make_relative_path(file_path):
-            if not file_path or file_path == 'N/A':
-                return 'N/A'
-            try:
-                path = Path(file_path).resolve()
-                # Try to make relative to project root
-                return str(path.relative_to(project_root))
-            except (ValueError, Exception):
-                # If not under project root, just return filename
-                return Path(file_path).name
-        
-        # Determine success correctly
-        success = not bool(tool_response.get('tool_error')) if 'tool_error' in tool_response else tool_response.get('success', True)
-        
-        # Prepare content to save with relative paths
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        input_file = make_relative_path(tool_input.get('file_path', 'N/A'))
-        response_file = make_relative_path(tool_response.get('filePath', 'N/A'))
-        
-        content = f"""# Edit Tool Output
-**Timestamp**: {timestamp}
-**Tool**: {tool_name}
-**File**: {input_file}
-
-## Input (What was requested)
-- **Old String**: {tool_input.get('old_string', 'N/A')[:100]}...
-- **New String**: {tool_input.get('new_string', 'N/A')[:100]}...
-
-## Response (What happened)
-- **Success**: {success}
-- **Replace All**: {tool_response.get('replaceAll', False)}
-- **File Path**: {response_file}
-
----
-"""
-        
-        # Append to file (create if doesn't exist)
-        with open(output_file, 'a', encoding='utf-8') as f:
-            f.write(content + '\n')
-            
-    except Exception:
-        pass  # Fail silently
-
 def handle_todo_sync(tool_data):
     """Handle TodoWrite tool - sync with SQLite"""
     conn = None
@@ -250,9 +173,6 @@ def main():
         args = sys.argv[1:]
         
         # Execute based on arguments
-        if '--edit' in args:
-            handle_edit_tool(tool_data)
-        
         if '--todowrite' in args:
             handle_todo_sync(tool_data)
         

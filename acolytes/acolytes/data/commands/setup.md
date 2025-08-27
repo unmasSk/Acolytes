@@ -1,6 +1,6 @@
 ---
 command: setup
-description: 🚀 Setup project with Acolytes for Claude Code. Params: --update
+description: ♾️  Setup project with Acolytes for Claude Code | Optional: --update
 ---
 
 ## ⚡ MANDATORY COMMAND FLOW
