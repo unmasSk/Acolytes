@@ -217,9 +217,20 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
     
     # Base Python command
     if uv_available:
-        base_cmd = "uv run"
+        base_cmd = "uv run python"
     else:
         base_cmd = python_cmd
+    
+    # Get the correct path format based on OS
+    # IMPORTANT: The hooks are installed in ~/.claude/ (user's home directory)
+    # Windows doesn't expand ~ correctly, so we need absolute paths
+    if platform.system() == 'Windows':
+        # Windows needs full absolute path with forward slashes
+        claude_path = str(Path.home() / ".claude").replace('\\', '/')
+        script_prefix = claude_path
+    else:
+        # Unix-like systems can use ~/ which will be expanded by the shell
+        script_prefix = "~/.claude"
     
     settings = {
         "permissions": {
@@ -241,7 +252,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
         },
         "statusLine": {
             "type": "command",
-            "command": f"{base_cmd} .claude/scripts/status_line.py",
+            "command": f"{base_cmd} {script_prefix}/scripts/status_line.py",
             "padding": 0
         },
         "disableAllHooks": False,
@@ -251,7 +262,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/session_start.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/session_start.py"
                         }
                     ]
                 }
@@ -262,7 +273,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/post_tool_use.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py"
                         }
                     ]
                 },
@@ -271,7 +282,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/post_tool_use.py --todowrite"
+                            "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py --todowrite"
                         }
                     ]
                 }
@@ -282,7 +293,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/pre_compact.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/pre_compact.py"
                         }
                     ]
                 }
@@ -293,7 +304,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/pre_tool_use.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/pre_tool_use.py"
                         }
                     ]
                 }
@@ -304,7 +315,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/user_prompt_submit.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/user_prompt_submit.py"
                         }
                     ]
                 }
@@ -315,7 +326,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/stop.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/stop.py"
                         }
                     ]
                 }
@@ -326,7 +337,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} .claude/hooks/subagent_stop.py --chat"
+                            "command": f"{base_cmd} {script_prefix}/hooks/subagent_stop.py --chat"
                         }
                     ]
                 }
