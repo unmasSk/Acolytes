@@ -33,6 +33,12 @@ mypy.ini
 __pycache__/
 .bumpversion.cfg
 
+# Python build artifacts
+dist/
+build/
+*.egg-info/
+acolytes.egg-info/
+
 # Audio files (SFX directory)
 .claude/resources/sfx/
 
