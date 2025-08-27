@@ -11,6 +11,7 @@
   </p>
 </div>
 
+[![Version](https://img.shields.io/badge/Version%201.0.3-PyPI-orange)](https://pypi.org/project/acolytes/)
 [![Agents](https://img.shields.io/badge/Global%20Agents-59-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./acolytes/data/resources/rules/flags-protocol.md)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-11%20Tables-green)](./acolytes/data/scripts/init_db.sql)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-7-yellow)](./acolytes/data/hooks)

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.3 - 2025-08-27
+
+### Patch - Corrected Package Build
+
+#### Fixed
+- Synchronized all version numbers across files (setup.py was outdated)
+- Fixed bump2version configuration with correct file paths
+- Added Version badge to README for clear version tracking
+- Ensured proper build process for PyPI distribution
+
 ## 1.0.2 - 2025-08-27
 
 ### Critical Fix - Hook Command Format
