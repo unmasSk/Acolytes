@@ -25,6 +25,7 @@ The entire process is automated based on your changes and commit type.
 I'll automatically select the most appropriate emoji based on file changes and commit type:
 
 ### Core Types
+
 - ✨ `feat`: New feature
 - 🐛 `fix`: Bug fix
 - 📝 `docs`: Documentation
@@ -35,6 +36,7 @@ I'll automatically select the most appropriate emoji based on file changes and c
 - 🔧 `chore`: Tooling, configuration
 
 ### Extended Classification
+
 - 🚀 `ci`: CI/CD improvements
 - 🗑️ `revert`: Reverting changes
 - 🧪 `test`: Add a failing test
@@ -96,8 +98,9 @@ I'll automatically select the most appropriate emoji based on file changes and c
 Following [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemVer), the commit emoji and type automatically determine the version bump:
 
 **PATCH** (1.0.0 → 1.0.1) - Backward compatible bug fixes:
+
 - 🐛 `fix:` Bug fixes
-- 🩹 `fix:` Simple fixes  
+- 🩹 `fix:` Simple fixes
 - 🚑️ `fix:` Critical hotfixes
 - ✏️ `fix:` Typo corrections
 - 🔇 `fix:` Remove logs
@@ -105,6 +108,7 @@ Following [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemV
 - 🥅 `fix:` Catch errors
 
 **MINOR** (1.0.0 → 1.1.0) - Backward compatible new functionality:
+
 - ✨ `feat:` New features
 - ⚡️ `perf:` Performance improvements
 - 🚸 `feat:` UX improvements
@@ -114,12 +118,14 @@ Following [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemV
 - 🦺 `feat:` Add validation
 
 **MAJOR** (1.0.0 → 2.0.0) - Backward incompatible changes:
+
 - 💥 `feat:` Breaking changes (explicit)
 - 🏗️ `refactor:` Architectural changes (only if breaking)
 - 🗑️ `revert:` Major reversions (only if breaking)
 - 🔥 `fix:` Remove code/files (if public API)
 
 **NO VERSION BUMP** - Changes that don't affect functionality:
+
 - 📝 `docs:` Documentation only
 - 💄 `style:` Code formatting (no logic changes)
 - ♻️ `refactor:` Code refactoring (non-breaking)
@@ -146,7 +152,7 @@ WIP_COUNT=0
 while true; do
     # Get the last commit message
     LAST_MSG=$(git log -1 --pretty=%s 2>/dev/null)
-    
+
     # Check if it starts with 🚧 WIP:
     if [[ "$LAST_MSG" == "🚧 WIP:"* ]]; then
         echo "Found WIP commit: $LAST_MSG"
@@ -227,6 +233,7 @@ git diff --cached --name-status
 I'll create a conventional commit message with emoji:
 
 **Format**: `emoji type(scope): description`
+
 - **Emoji**: Automatically selected from 110+ classification
 - **Type**: Conventional commit type (feat, fix, docs, etc.)
 - **Scope**: Component or area affected (optional)
@@ -258,6 +265,7 @@ session: $SESSION_ID"
 ### Step 6: Update Changelog
 
 After the commit is created, I'll automatically invoke @docs.specialist to:
+
 - Analyze the commit message
 - Update CHANGELOG.md with technical details
 - Maintain proper version history
@@ -265,6 +273,7 @@ After the commit is created, I'll automatically invoke @docs.specialist to:
 ### Step 7: Automatic Version Bump
 
 Based on the commit type, bump2version will:
+
 - Detect version bump type (patch/minor/major)
 - Update all version files automatically
 - Create annotated git tag
@@ -296,6 +305,7 @@ bump2version [patch|minor|major] --no-commit --tag
 ## Important Notes
 
 **I will NEVER:**
+
 - Add "Co-authored-by" or any Claude signatures
 - Include "Generated with Claude Code" or similar messages
 - Modify git config or user credentials
@@ -310,7 +320,9 @@ The commit will use only your existing git user configuration, maintaining full 
 You can customize the behavior with these optional arguments:
 
 ### `/commit --wip`
+
 **Work In Progress** - Quick save of unfinished work:
+
 - Adds 🚧 emoji and "WIP:" prefix automatically
 - Skips ALL validations (tests, linting, build)
 - NO version bump or changelog update
@@ -318,6 +330,7 @@ You can customize the behavior with these optional arguments:
 - Perfect for end-of-day saves or branch switches
 
 **Automatic WIP consolidation**: When you run `/commit` (without --wip), Claude automatically:
+
 1. Detects all consecutive WIP commits
 2. Consolidates them into the working directory
 3. Creates a single proper commit with all changes
@@ -328,7 +341,7 @@ You can customize the behavior with these optional arguments:
 # Result: "🚧 WIP: working on authentication"
 
 # Day 2: Another quick save
-/commit --wip  
+/commit --wip
 # Result: "🚧 WIP: continuing auth implementation"
 
 # Day 3: Ready to make proper commit
@@ -340,7 +353,9 @@ You can customize the behavior with these optional arguments:
 ```
 
 ### `/commit --push`
+
 Automatically push to remote after successful commit:
+
 - Creates commit with all normal workflow
 - Executes `git push` to current branch
 - Fails safely if push is rejected
@@ -354,7 +369,9 @@ Automatically push to remote after successful commit:
 ```
 
 ### `/commit --validate`
+
 **Professional CI/CD validations** before committing:
+
 - Invokes @test.quality agent for comprehensive testing
 - Runs test suite, linting, type checking
 - Build verification and security scans
@@ -373,14 +390,46 @@ Automatically push to remote after successful commit:
 ## Examples
 
 **Quick saves:**
+
 ```bash
 /commit --wip              # Quick WIP commit, no validations
 /commit --wip --push       # WIP + push to share with team
 ```
 
 **Professional workflow:**
+
 ```bash
 /commit                    # Normal commit with emoji + changelog + version
 /commit --validate         # Validate everything before commit
 /commit --validate --push  # Validate, commit, and push
 ```
+
+==============================================================================
+
+● Tienes razón, el commit.md podría estar más claro sobre el orden exacto. El flujo que describiste es mucho más lógico:
+
+Flujo correcto debería ser:
+
+1. Analizar cambios → determinar tipo de commit (feat/fix/etc)
+2. Planear mensaje de commit mentalmente (sin ejecutar)
+3. Invocar @docs.specialist con el commit planeado → actualiza CHANGELOG.md
+4. Ejecutar bump2version → actualiza archivos de versión + crea tag (pero NO commitea)
+5. UN SOLO git commit final con:
+
+   - Todos los cambios originales
+   - CHANGELOG.md actualizado
+   - Archivos de versión actualizados
+   - El mensaje planeado en paso 2
+
+Esto tiene sentido porque:
+
+- El tag queda apuntando al commit correcto (no a uno intermedio)
+- Un solo commit atomic con todo
+- El CHANGELOG refleja los cambios antes de commitear
+
+El documento actual dice "Step 5: Create Smart Commit" antes de "Step 6: Update Changelog", lo cual es confuso porque
+implica que primero commiteas y luego actualizas el CHANGELOG.
+
+¿Quieres que proponga una versión más clara del commit.md con el orden correcto?
+
+==============================================================================
