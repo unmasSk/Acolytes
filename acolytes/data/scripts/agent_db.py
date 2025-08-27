@@ -26,7 +26,19 @@ def get_timestamp():
     """Get current timestamp in local time format"""
     return datetime.now().strftime('%Y-%m-%d %H:%M')
 
-DB_PATH = Path(__file__).parent.parent / 'memory' / 'project.db'
+# Try to find project database in current working directory first
+# If not found, fall back to global database
+cwd_db = Path.cwd() / '.claude' / 'memory' / 'project.db'
+global_db = Path.home() / '.claude' / 'memory' / 'project.db'
+
+if cwd_db.exists():
+    DB_PATH = cwd_db
+elif global_db.exists():
+    DB_PATH = global_db
+else:
+    # Create in current directory if neither exists
+    DB_PATH = cwd_db
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
 MEMORY_TYPES = ['knowledge', 'structure', 'patterns', 'interfaces', 
                 'dependencies', 'schemas', 'quality', 'operations', 
                 'context', 'domain', 'security', 'errors', 
@@ -166,9 +178,24 @@ def create_agent(name, module=None, sub_module=None):
     
     # Module is required for acolytes
     if not module:
+        conn.close()
         return json.dumps({"error": "Module parameter is required for acolytes"})
     
     try:
+        # Check if agent already exists in either table
+        cursor = conn.execute("SELECT 1 FROM acolytes WHERE name = ?", (name,))
+        if cursor.fetchone():
+            conn.close()
+            return json.dumps({"error": f"Agent '{name}' already exists in acolytes table"})
+        
+        cursor = conn.execute("SELECT 1 FROM agents_catalog WHERE name = ?", (name,))
+        if cursor.fetchone():
+            conn.close()
+            return json.dumps({"error": f"Agent '{name}' already exists in agents_catalog table"})
+        
+        # Start explicit transaction
+        conn.execute("BEGIN TRANSACTION")
+        
         # Insert agent in acolytes
         cursor = conn.execute(
             "INSERT INTO acolytes (name, module, created_at) VALUES (?, ?, ?)",
@@ -185,11 +212,13 @@ def create_agent(name, module=None, sub_module=None):
         
         # Insert into agents_catalog for discovery
         conn.execute(
-            "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'dynamic', ?, ?)",
+            "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'acolyte', ?, ?)",
             (name, module, sub_module)
         )
         
+        # Commit the transaction
         conn.commit()
+        
         return json.dumps({
             "success": True, 
             "agent_id": agent_id, 
@@ -199,9 +228,13 @@ def create_agent(name, module=None, sub_module=None):
             "memories_created": len(MEMORY_TYPES),
             "catalog_entry": "created"
         })
+        
+    except sqlite3.IntegrityError as e:
+        conn.rollback()
+        return json.dumps({"error": f"Database integrity error: {str(e)}"})
     except Exception as e:
         conn.rollback()
-        return json.dumps({"error": str(e)})
+        return json.dumps({"error": f"Unexpected error: {str(e)}"})
     finally:
         conn.close()
 

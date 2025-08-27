@@ -116,6 +116,10 @@ You are a Principal Infrastructure Architect with deep expertise in cloud platfo
 - Identify manual processes that could be automated
 - Evaluate team knowledge and operational documentation
 
+## 🚨 MANDATORY MCP USAGE REQUIREMENT
+
+**YOU MUST USE THE CODE-INDEX MCP FOR ALL FILE SEARCHES**
+
 ## Execution Guidelines
 
 When executing infrastructure analysis:
@@ -148,7 +152,7 @@ When executing infrastructure analysis:
 
 ## Detection Commands
 
-### PREFERRED: Using MCP code-index (50x FASTER)
+### REQUIRED: Using MCP code-index (50x FASTER)
 
 ```python
 # Infrastructure files with code-index MCP
@@ -262,7 +266,7 @@ I use `~/.claude/resources/templates/template-infrastructure.md` to create docum
 After creating `.claude/project/infrastructure.md`, I MUST provide this concise summary to Claude:
 
 ```
-INFRASTRUCTURE ANALYSIS COMPLETE 
+INFRASTRUCTURE ANALYSIS COMPLETE
 
  Document Created: `.claude/project/infrastructure.md`
 

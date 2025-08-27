@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CRITICAL**: Fixed broken hook command format that prevented hooks from executing
 - Added missing 'python' after 'uv run' in all hook commands
 - Corrected path handling for Windows (absolute paths) vs Unix (~/ expansion)
+
+#### Removed
 - Removed accidentally committed settings.json from repository
 
 #### Technical Details

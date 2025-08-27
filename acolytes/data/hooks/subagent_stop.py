@@ -8,7 +8,6 @@
 
 import argparse
 import json
-import os
 import sys
 import sqlite3
 from pathlib import Path
@@ -22,7 +21,7 @@ except ImportError:
 
 
 def ensure_session_log_dir(project_root=None):
-    """Ensure minions directory exists and return path."""
+    """Ensure acolytes directory exists and return path."""
     if project_root:
         base_dir = Path(project_root)
     else:
@@ -32,9 +31,9 @@ def ensure_session_log_dir(project_root=None):
             base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
         else:
             base_dir = current_dir
-    minions_dir = base_dir / '.claude' / 'memory' / 'minions'
-    minions_dir.mkdir(parents=True, exist_ok=True)
-    return minions_dir
+    acolytes_dir = base_dir / '.claude' / 'memory' / 'acolytes'
+    acolytes_dir.mkdir(parents=True, exist_ok=True)
+    return acolytes_dir
 
 
 def get_our_session_id(project_cwd):
@@ -63,12 +62,12 @@ def get_our_session_id(project_cwd):
 
 
 def log_subagent_completion(input_data, session_id):
-    """Log subagent completion details to minions directory."""
+    """Log subagent completion details to acolytes directory."""
     try:
         project_cwd = input_data.get("cwd", "")
         our_session_id = get_our_session_id(project_cwd)
         
-        # Get minions directory
+        # Get acolytes directory
         log_dir = ensure_session_log_dir(project_cwd if project_cwd else None)
         
         # Store ALL input data for debugging - capture everything Claude Code sends
@@ -168,24 +167,24 @@ def log_subagent_completion(input_data, session_id):
             "raw_claude_input": raw_input  # Store ALL fields Claude Code sends
         }
         
-        # Save to minions log file
-        log_file = log_dir / f"{our_session_id}_minions.json"
+        # Save to acolytes log file
+        log_file = log_dir / f"{our_session_id}_acolytes.json"
         
         # Read existing log or create new list
-        minions_log = []
+        acolytes_log = []
         if log_file.exists():
             try:
                 with open(log_file, "r", encoding="utf-8") as f:
-                    minions_log = json.load(f)
+                    acolytes_log = json.load(f)
             except (json.JSONDecodeError, OSError, IOError):
-                minions_log = []
+                acolytes_log = []
         
         # Add subagent entry
-        minions_log.append(subagent_entry)
+        acolytes_log.append(subagent_entry)
         
         # Write back
         with open(log_file, "w", encoding="utf-8") as f:
-            json.dump(minions_log, f, indent=2, ensure_ascii=False)
+            json.dump(acolytes_log, f, indent=2, ensure_ascii=False)
             
         print(f"Subagent logged: {subagent_name} - {completion_status}")
             
@@ -198,7 +197,7 @@ def main():
         # Parse command line arguments
         parser = argparse.ArgumentParser()
         parser.add_argument(
-            "--chat", action="store_true", help="Copy to minions log"
+            "--chat", action="store_true", help="Copy to acolytes log"
         )
         args = parser.parse_args()
 

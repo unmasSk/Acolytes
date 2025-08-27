@@ -35,7 +35,10 @@ def run() -> None:
         # Step 3: Generate settings.json
         _generate_settings_json()
         
-        # Step 4: Show final status
+        # Step 4: Create local project structure
+        _create_local_project_structure()
+        
+        # Step 5: Show final status
         _show_final_status()
         
         print("✅ Initialization complete!")
@@ -357,6 +360,72 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
     }
     
     return settings
+
+
+def _create_local_project_structure() -> None:
+    """Create local .claude/ structure in current project directory."""
+    print("[LOCAL] Creating local project structure...")
+    
+    # Get current working directory
+    project_dir = Path.cwd()
+    claude_project_dir = project_dir / ".claude"
+    
+    # Create main .claude directory
+    claude_project_dir.mkdir(exist_ok=True)
+    
+    # Create subdirectories
+    directories = {
+        'project': claude_project_dir / 'project',
+        'memory': claude_project_dir / 'memory',
+        'memory_chat': claude_project_dir / 'memory' / 'chat',
+        'agents': claude_project_dir / 'agents'
+    }
+    
+    for name, path in directories.items():
+        path.mkdir(parents=True, exist_ok=True)
+        if name == 'memory_chat':
+            print(f"  [OK] Created memory/chat/")
+        else:
+            print(f"  [OK] Created {name}/")
+    
+    # Create initial session files - ALWAYS use these hardcoded IDs
+    # This ensures hooks work even before database exists
+    chat_dir = directories['memory_chat']
+    
+    # Create JSON file
+    json_file = chat_dir / "session_ac01e7e4e110.json"
+    if not json_file.exists():
+        json_content = {
+            "session_id": "session_ac01e7e4e110",
+            "job_id": "job_5e770c0deba5e",
+            "created_at": "Initial setup session",
+            "messages": []
+        }
+        with open(json_file, 'w', encoding='utf-8') as f:
+            json.dump(json_content, f, indent=2)
+        print(f"  [OK] Created session_ac01e7e4e110.json")
+    
+    # Create MD file
+    md_file = chat_dir / "session_ac01e7e4e110.md"
+    if not md_file.exists():
+        md_content = """# Session: session_ac01e7e4e110
+
+## Job: Project Setup (job_5e770c0deba5e)
+
+### Session Start
+- **Created**: Initial setup session
+- **Purpose**: Acolytes for Claude Code initialization
+
+### Notes
+This is the initial session created during project setup.
+
+---
+"""
+        with open(md_file, 'w', encoding='utf-8') as f:
+            f.write(md_content)
+        print(f"  [OK] Created session_ac01e7e4e110.md")
+    
+    print(f"  [PATH] Project structure created at: {claude_project_dir}")
 
 
 def _show_final_status() -> None:

@@ -297,5 +297,80 @@ You are the **conductor of an orchestra**:
 - You interpret the score (user needs)
 - You ensure harmony (system coherence)
 
+## 📊 Database Quick Reference
+
+### Core Tables
+
+```sql
+-- jobs: Work organization and context management
+CREATE TABLE jobs (
+    id TEXT PRIMARY KEY DEFAULT ('job_' || lower(hex(randomblob(5)))),
+    title TEXT NOT NULL,
+    description TEXT,
+    status TEXT DEFAULT 'active' CHECK(status IN ('active', 'paused', 'completed')),
+    priority INTEGER DEFAULT 5 CHECK(priority BETWEEN 1 AND 10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    parent_job_id TEXT,
+    metadata JSON
+);
+
+-- sessions: Work sessions within jobs
+CREATE TABLE sessions (
+    id TEXT PRIMARY KEY DEFAULT ('session_' || lower(hex(randomblob(5)))),
+    job_id TEXT REFERENCES jobs(id),
+    claude_session_id TEXT,
+    accomplishments TEXT,
+    decisions TEXT,
+    bugs_fixed TEXT,
+    errors_encountered TEXT,
+    breakthrough_moment TEXT,
+    next_session_priority TEXT,
+    quality_score INTEGER CHECK(quality_score BETWEEN 1 AND 10),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ended_at TIMESTAMP
+);
+
+-- messages: Conversation history
+CREATE TABLE messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id TEXT REFERENCES sessions(id),
+    role TEXT NOT NULL CHECK(role IN ('user', 'assistant', 'system')),
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata JSON
+);
+
+Useful Views
+
+-- latest_session: Gets current session without ORDER BY
+SELECT * FROM latest_session;
+
+-- pending_flags: Pre-filtered and sorted pending flags
+SELECT * FROM pending_flags;
+```
+
+```bash
+  # Job Management
+  uv run python ~/.claude/scripts/agent_db.py --job --title "Fix auth" --description "OAuth bug" --activate
+  uv run python ~/.claude/scripts/agent_db.py --job --list
+  uv run python ~/.claude/scripts/agent_db.py --job  # Shows active job
+
+  # Session Management
+  uv run python ~/.claude/scripts/save_session.py  # Auto-save current session
+
+  # Agent Search (with relevance score)
+  uv run python ~/.claude/scripts/agent_db.py search-agents "authentication OAuth2" --top 5
+  # Returns: Score: 95 - @service.auth (OAuth specialist)
+
+  # Flag Check (for FLAGS system)
+  uv run python ~/.claude/scripts/agent_db.py get-workable-flags
+
+  # Custom queries (agent_db.py doesn't support raw SQL)
+  sqlite3 .claude/memory/project.db "SELECT * FROM latest_session"
+  sqlite3 .claude/memory/project.db "SELECT title, status FROM jobs WHERE status='active'"
+```
+
 At the end of each chat that you have to say:
 "──────────────────────────────────────────────────────────────────────────────"

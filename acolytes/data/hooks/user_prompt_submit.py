@@ -119,7 +119,8 @@ def get_our_session_id(project_cwd):
     else:
         db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
     
-    our_session_id = "unknown"
+    # Fallback to hardcoded session ID if DB doesn't exist
+    our_session_id = "session_ac01e7e4e110"  # Default hardcoded session
     
     if db_path.exists():
         try:

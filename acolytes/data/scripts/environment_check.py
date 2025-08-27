@@ -9,14 +9,29 @@ import platform
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-def find_project_root() -> Path:
-    """Find project root by looking for .claude directory"""
+def find_or_create_project_root() -> Path:
+    """Find project root or create .claude structure in current directory"""
     current = Path.cwd()
-    while current != current.parent:
-        if (current / ".claude").exists():
-            return current
-        current = current.parent
-    raise FileNotFoundError("No .claude directory found in current project")
+    
+    # First, try to find existing .claude directory
+    temp = current
+    while temp != temp.parent:
+        if (temp / ".claude").exists():
+            return temp
+        temp = temp.parent
+    
+    # If no .claude found, use current directory as project root
+    # and CREATE the necessary structure for MCP to work
+    project_root = current
+    print(f"Creating .claude structure in: {project_root}")
+    
+    # Create only the essential directories for MCP
+    (project_root / ".claude").mkdir(exist_ok=True)
+    (project_root / ".claude" / "memory").mkdir(exist_ok=True)
+    (project_root / ".claude" / "project").mkdir(exist_ok=True)
+    (project_root / ".claude" / "agents").mkdir(exist_ok=True)
+    
+    return project_root
 
 class EnvironmentChecker:
     def __init__(self):
@@ -30,13 +45,9 @@ class EnvironmentChecker:
             'python_version': sys.version
         }
         
-        # Find project root during initialization
-        try:
-            self.project_root = find_project_root()
-            self.claude_dir = self.project_root / ".claude"
-        except FileNotFoundError:
-            self.project_root = None
-            self.claude_dir = None
+        # Find or create project root during initialization
+        self.project_root = find_or_create_project_root()
+        self.claude_dir = self.project_root / ".claude"
     
     def check_python_version(self) -> Tuple[bool, str]:
         """Check Python version (3.8+ required)"""
@@ -51,7 +62,11 @@ class EnvironmentChecker:
     def check_git_version(self) -> Tuple[bool, str]:
         """Check Git version (2.0+ required)"""
         try:
-            result = subprocess.run(['git', '--version'], capture_output=True, text=True, timeout=10)
+            # WARNING: shell=True is insecure due to potential command injection/path traversal
+            # but needed for Windows Git Bash compatibility until a better solution is found
+            use_shell = sys.platform == 'win32'
+            result = subprocess.run('git --version' if use_shell else ['git', '--version'], 
+                                  capture_output=True, text=True, timeout=10, shell=use_shell)
             if result.returncode == 0:
                 version_str = result.stdout.strip()
                 # Extract version number
@@ -74,7 +89,11 @@ class EnvironmentChecker:
     def check_nodejs_version(self) -> Tuple[bool, str]:
         """Check Node.js version (18+ required for MCPs)"""
         try:
-            result = subprocess.run(['node', '--version'], capture_output=True, text=True, timeout=10)
+            # WARNING: shell=True is insecure due to potential command injection/path traversal
+            # but needed for Windows Git Bash compatibility until a better solution is found
+            use_shell = sys.platform == 'win32'
+            result = subprocess.run('node --version' if use_shell else ['node', '--version'], 
+                                  capture_output=True, text=True, timeout=10, shell=use_shell)
             if result.returncode == 0:
                 version_str = result.stdout.strip()
                 # Extract major version
@@ -91,10 +110,33 @@ class EnvironmentChecker:
         except (FileNotFoundError, ValueError):
             return False, "Node.js not installed FAIL"
     
+    def check_sqlite3(self) -> Tuple[bool, str]:
+        """Check SQLite3 CLI tool (required for database initialization)"""
+        try:
+            # WARNING: shell=True is insecure due to potential command injection/path traversal
+            # but needed for Windows Git Bash compatibility until a better solution is found
+            use_shell = sys.platform == 'win32'
+            result = subprocess.run('sqlite3 --version' if use_shell else ['sqlite3', '--version'], 
+                                  capture_output=True, text=True, timeout=10, shell=use_shell)
+            if result.returncode == 0:
+                version_str = result.stdout.strip()
+                # SQLite3 version format: "3.40.1 2022-12-28 14:03:47 ..."
+                return True, f"SQLite3 {version_str.split()[0] if version_str else 'unknown version'} OK"
+            else:
+                return False, "SQLite3 not working FAIL"
+        except subprocess.TimeoutExpired:
+            return False, "SQLite3 check timed out FAIL"
+        except FileNotFoundError:
+            return False, "SQLite3 not installed FAIL (required for database)"
+    
     def check_uv_package_manager(self) -> Tuple[bool, str]:
         """Check uv package manager"""
         try:
-            result = subprocess.run(['uv', '--version'], capture_output=True, text=True, timeout=10)
+            # WARNING: shell=True is insecure due to potential command injection/path traversal
+            # but needed for Windows Git Bash compatibility until a better solution is found
+            use_shell = sys.platform == 'win32'
+            result = subprocess.run('uv --version' if use_shell else ['uv', '--version'], 
+                                  capture_output=True, text=True, timeout=10, shell=use_shell)
             if result.returncode == 0:
                 version_str = result.stdout.strip()
                 return True, f"uv {version_str} OK"
@@ -107,9 +149,6 @@ class EnvironmentChecker:
     
     def check_permissions(self) -> Tuple[bool, str]:
         """Check file system permissions"""
-        if not self.claude_dir:
-            return False, "No .claude directory found FAIL"
-            
         try:
             test_file = self.claude_dir / "test_permissions"
             
@@ -209,7 +248,7 @@ class EnvironmentChecker:
     def run_full_check(self, auto_install: bool = True) -> Dict:
         """Run all environment checks"""
         print("Acolytes for Claude Code Environment Check")
-        print("=" * 40)
+        print("=" * 42)
         
         # System info
         print(f"System: {self.system_info['os']} {self.system_info['architecture']}")
@@ -220,6 +259,7 @@ class EnvironmentChecker:
             ("Python Version", self.check_python_version),
             ("Git Version", self.check_git_version),
             ("Node.js Version", self.check_nodejs_version),
+            ("SQLite3 CLI", self.check_sqlite3),
             ("UV Package Manager", self.check_uv_package_manager),
             ("File Permissions", self.check_permissions),
             ("Directory Structure", self.check_directory_structure)
@@ -244,6 +284,7 @@ class EnvironmentChecker:
         if not failed_checks:
             print("All environment checks passed!")
             print("Acolytes for Claude Code ready for setup")
+            print("\nCOMPLETED")
         else:
             print(f"{len(failed_checks)} checks failed:")
             for check in failed_checks:
@@ -251,6 +292,7 @@ class EnvironmentChecker:
             
             print("\nInstallation recommendations:")
             self._print_installation_help(failed_checks)
+            print("\nFAILED")
         
         return self.results
     
@@ -274,6 +316,15 @@ class EnvironmentChecker:
                     print("   Node.js: brew install node")
                 else:  # Linux
                     print("   Node.js: curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs")
+            
+            elif "SQLite3" in check:
+                if system == "Windows":
+                    print("   SQLite3: Download from https://sqlite.org/download.html")
+                    print("           Extract sqlite3.exe to a folder in your PATH")
+                elif system == "Darwin":  # macOS
+                    print("   SQLite3: brew install sqlite3")
+                else:  # Linux
+                    print("   SQLite3: sudo apt install sqlite3  (or equivalent for your distro)")
             
             elif "UV Package Manager" in check:
                 if system == "Windows":

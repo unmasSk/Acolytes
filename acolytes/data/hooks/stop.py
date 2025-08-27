@@ -4,7 +4,6 @@
 # dependencies = []
 # ///
 
-import argparse
 import json
 import os
 import sys
@@ -177,7 +176,8 @@ def main():
             db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
         else:
             db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
-        our_session_id = "unknown"
+        # Fallback to hardcoded session ID if DB doesn't exist
+        our_session_id = "session_ac01e7e4e110"  # Default hardcoded session
         
         if db_path.exists():
             try:

@@ -24,6 +24,11 @@ I am skilled in these areas:
 6. **Project Context Adaptation** - Adapting template filling based on existing vs new project requirements
 7. **Multi-Agent Planning** - Determining how many agent files to create for complex modules
 
+## ⚠️ CRITICAL: Git Bash Path Resolution and code-index use
+
+**MANDATORY**: Can use `~/.claude/` paths - they expand correctly in Git Bash on Windows.
+**MANDATORY**: Use MCP code-index for instant file counting: `mcp__code-index__find_files("path/*")`
+
 ## Investigation Process
 
 ### For Existing Projects
@@ -65,7 +70,7 @@ AGENT_FILE_STRATEGY:
   multiple_agents_naming: "acolyte.[module]-[submodule].md"
 
 AGENT_FILE_CREATION:
-  - Load template from .claude/resources/templates/acolytes-template.md
+  - Load template from ~/.claude/resources/templates/acolytes-template.md
   - Fill template variables with documentation data
   - Create agent files in .claude/agents/
 ```
@@ -91,12 +96,12 @@ EXTRACT:
 ### Step 2: Apply 30-File Rule
 
 ```python
-# PREFERRED: Use code-index MCP for fast file counting
+# CRITICAL: Use code-index MCP for fast file counting
 FOR each module:
   # Count files using code-index (instant)
   module_files = mcp__code-index__find_files(f"{module_path}/*")
   file_count = len(module_files)
-  
+
   IF file_count < 31:
     CREATE single agent: acolyte.[module].md
     SPECIALIZATION: "full_module"

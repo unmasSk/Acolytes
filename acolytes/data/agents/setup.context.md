@@ -78,8 +78,7 @@ You are a Principal Project Context Analyst with deep expertise in business inte
 
 1. **Context Compilation** - Aggregate findings into comprehensive project profile
 2. **Recommendation Generation** - Provide actionable insights for other setup agents
-3. **Documentation** - Create structured output for Claude's decision making
-4. **Intelligence Delivery** - Ensure all contextual insights reach appropriate agents
+3. **Intelligence Delivery** - Ensure all contextual insights reach appropriate agents
 
 ## Best Practices
 
@@ -175,7 +174,7 @@ When informing Claude, I must generate {{context_lite}} content:
 After creating `.claude/project/vision.md`, I MUST provide this concise summary to Claude:
 
 ```
-CONTEXT ANALYSIS COMPLETE 
+CONTEXT ANALYSIS COMPLETE
 
  Document Created: `.claude/project/vision.md`
 
