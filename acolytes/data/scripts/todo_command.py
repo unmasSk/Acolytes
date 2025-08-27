@@ -18,7 +18,7 @@ def get_timestamp():
 def add_todo(task, priority='medium', due_date=None):
     """Add a new TODO with AI categorization"""
     if not DB_PATH.exists():
-        print("[ERROR] Database not initialized. Run: python .claude/scripts/agent_db.py init")
+        print("[ERROR] Database not initialized. Run: python ~/.claude/scripts/agent_db.py init")
         return
     
     conn = sqlite3.connect(str(DB_PATH))

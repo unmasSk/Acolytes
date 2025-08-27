@@ -251,9 +251,9 @@ def main():
         print("  git clone https://github.com/unmasSk/Acolytes.git")
         print("  cd Acolytes")
         if sys.platform == 'win32':
-            print("  xcopy /e /i .claude %USERPROFILE%\\.claude")
+            print("  xcopy /e /i acolytes\\data %USERPROFILE%\\.claude")
         else:
-            print("  cp -r .claude/* ~/.claude/")
+            print("  cp -r acolytes/data/* ~/.claude/")
     
     if not results.get('mcp'):
         print("\nInstall critical MCP servers:")

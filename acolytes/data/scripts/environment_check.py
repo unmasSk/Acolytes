@@ -123,21 +123,39 @@ class EnvironmentChecker:
             return False, f"Permission error FAIL: {str(e)}"
     
     def check_directory_structure(self) -> Tuple[bool, str]:
-        """Verify we're in a valid Acolytes for Claude Code project"""
-        if not self.project_root:
-            return False, "No .claude directory found FAIL"
+        """Verify Acolytes for Claude Code global installation"""
+        # Check GLOBAL installation at ~/.claude, not local project
+        home = Path.home()
+        global_claude = home / ".claude"
         
-        required_dirs = ["scripts", "agents"]
+        # Essential directories that must exist in global installation
+        required_dirs = ["scripts", "agents", "resources/templates", "commands", "hooks"]
         missing = []
         
         for dir_name in required_dirs:
-            if not (self.claude_dir / dir_name).exists():
-                missing.append(f".claude/{dir_name}")
+            if not (global_claude / dir_name).exists():
+                missing.append(f"~/.claude/{dir_name}")
+        
+        # Essential scripts that must exist for the system to work
+        essential_scripts = [
+            "environment_check.py",
+            "setup_mcp.py",
+            "agent_db.py",
+            "save_session.py",
+            "compact_memory.py"
+        ]
+        
+        missing_scripts = []
+        for script in essential_scripts:
+            if not (global_claude / "scripts" / script).exists():
+                missing_scripts.append(script)
         
         if missing:
-            return False, f"Missing directories FAIL: {', '.join(missing)}"
+            return False, f"Missing global directories FAIL: {', '.join(missing)}"
+        elif missing_scripts:
+            return False, f"Missing essential scripts FAIL: {', '.join(missing_scripts)}"
         else:
-            return True, f".claude directory structure OK (found at {self.project_root})"
+            return True, f"Acolytes system installed OK at ~/.claude/ ({global_claude})"
     
     def install_uv_if_missing(self) -> bool:
         """Attempt to install uv package manager"""

@@ -75,16 +75,16 @@
 
 ```bash
 # Create job (always starts paused)
-uv run python .claude/scripts/agent_db.py --job --title "Fix auth bug" --description "OAuth2 issue"
+uv run python ~/.claude/scripts/agent_db.py --job --title "Fix auth bug" --description "OAuth2 issue"
 
 # Create and activate immediately (auto-pauses current)
-uv run python .claude/scripts/agent_db.py --job --title "New feature" --description "Add dashboard" --activate
+uv run python ~/.claude/scripts/agent_db.py --job --title "New feature" --description "Add dashboard" --activate
 
 # Switch active job (only for existing paused jobs)
-uv run python .claude/scripts/agent_db.py --job --activate job_48330ca18339
+uv run python ~/.claude/scripts/agent_db.py --job --activate job_48330ca18339
 
 # List last 10 jobs with status
-uv run python .claude/scripts/agent_db.py --job --list
+uv run python ~/.claude/scripts/agent_db.py --job --list
 ```
 
 #### 🚨 Edge Cases - Claude Must Handle
@@ -118,7 +118,7 @@ uv run python .claude/scripts/agent_db.py --job --list
 | **todos**          | Task management        | task, status, assigned_to, dependencies               |
 | **tool_logs**      | Tool usage tracking    | tool_name, parameters, success, duration_ms           |
 
-**Access**: `uv run python .claude/scripts/agent_db.py [command]`
+**Access**: `uv run python ~/.claude/scripts/agent_db.py [command]`
 
 ### 3️⃣ FLAGS SYSTEM - Async Agent Coordination
 
@@ -202,7 +202,7 @@ Task("@acolyte.database", "review schema")
 # - SCENARIOS (use cases)
 # - CAPABILITIES (what they can do)
 # - TECH_STACK (technologies)
-uv run python .claude/scripts/agent_db.py search-agents "[anything you need]" 5
+uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 5
 ```
 
 **💾 ALL IN DATABASE**: Tags, scenarios, capabilities - everything searchable in SQLite

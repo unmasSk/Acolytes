@@ -45,8 +45,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Technical Details
 - Previous broken format: `uv run /path/to/hook.py`
 - Correct format: `uv run python /path/to/hook.py`
-- Windows now uses: `uv run python C:/Users/xxx/.claude/hooks/...`
-- Unix uses: `uv run python ~/.claude/hooks/...`
+
+Shell-specific examples with proper quoting:
+- **PowerShell**: `uv run python "$env:USERPROFILE/.claude/hooks/session_start.py"`
+- **CMD**: `uv run python "%USERPROFILE%\.claude\hooks\session_start.py"`
+- **Unix/Mac/Git Bash**: `uv run python "$HOME/.claude/hooks/session_start.py"`
+
+Note: Always quote paths to handle spaces in usernames or directories. The 'python' token after 'uv run' is required for proper execution.
 
 ## 1.0.1 - 2025-08-27
 

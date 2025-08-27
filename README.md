@@ -1,4 +1,4 @@
-<div align="center">
+escu<div align="center">
   <img src="acolytes/data/resources/assets/logo.png" alt="Acolytes for Claude Code Logo" width="600">
   
   <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
@@ -11,7 +11,7 @@
   </p>
 </div>
 
-[![Version](https://img.shields.io/badge/Version%201.0.4-PyPI-orange)](https://pypi.org/project/acolytes/)
+[![PyPI version](https://img.shields.io/pypi/v/acolytes)](https://pypi.org/project/acolytes/)
 [![Agents](https://img.shields.io/badge/Global%20Agents-59-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./acolytes/data/resources/rules/flags-protocol.md)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-11%20Tables-green)](./acolytes/data/scripts/init_db.sql)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-7-yellow)](./acolytes/data/hooks)

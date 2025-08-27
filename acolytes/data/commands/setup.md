@@ -547,10 +547,10 @@ python .claude/scripts/agent_db.py get-workable-flags
 
 **Agent Workflow**:
 
-1. **Check**: `python .claude/scripts/agent_db.py get-agent-flags "@agent-name"`
+1. **Check**: `python ~/.claude/scripts/agent_db.py get-agent-flags "@agent-name"`
 2. **Work**: Process flags with full context
-3. **Create**: `python .claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`
-4. **Complete**: `python .claude/scripts/agent_db.py complete-flag [id] "@agent-name"`
+3. **Create**: `python ~/.claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`
+4. **Complete**: `python ~/.claude/scripts/agent_db.py complete-flag [id] "@agent-name"`
 
 ---
 
