@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## 1.0.2 - 2025-08-27
+
+### Critical Fix - Hook Command Format
+
+#### Fixed
+- **CRITICAL**: Fixed broken hook command format that prevented hooks from executing
+- Added missing 'python' after 'uv run' in all hook commands
+- Corrected path handling for Windows (absolute paths) vs Unix (~/ expansion)
+- Removed accidentally committed settings.json from repository
+
+#### Technical Details
+- Previous broken format: `uv run /path/to/hook.py`
+- Correct format: `uv run python /path/to/hook.py`
+- Windows now uses: `uv run python C:/Users/xxx/.claude/hooks/...`
+- Unix uses: `uv run python ~/.claude/hooks/...`
+
+## 1.0.1 - 2025-08-27
+
+### Hotfix - Settings.json Generation
+
+#### Fixed
+- Corrected settings.json format to match Claude Code requirements
+- Fixed hook structure from simplified to proper Claude Code format
+- Updated next steps instructions in init command output
+
 ## 1.0.0 - 2025-08-27
 
 ### Major Release - Complete PyPI Package
