@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+- Fixed agent_db.py to detect project database in current directory first for improved database path resolution
+- Added validation checks before agent insertion to prevent UNIQUE constraint errors in database operations
+- Improved Windows path handling in setup agents and scripts for better cross-platform compatibility
+- Enhanced pre_tool_use hook with better error messages and validation feedback
+- Simplified setup_mcp.py removing redundant logic and improving code maintainability
+- Updated templates with Git Bash path resolution notes for better user guidance
+- Fixed SQL schema formatting and organization for improved readability
+
+### Removed
+- Removed obsolete install_verify.py script that was no longer needed
+
 ## 1.0.5 - 2025-08-27
 
 ### Critical Windows Path Fixes
