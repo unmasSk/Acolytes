@@ -4,14 +4,14 @@ Init command for Acolytes - System initialization.
 Initializes the Acolytes system with default configuration.
 """
 
-import os
 import sys
 import json
 import shutil
 import subprocess
 import platform
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
+from datetime import datetime
 try:
     from importlib.resources import files
     use_importlib = True
@@ -202,14 +202,25 @@ def _generate_settings_json() -> None:
 
 def _detect_python_command() -> str:
     """Detect the best Python command to use."""
-    candidates = ['python3', 'python', 'py']
+    # List of candidates: can be single command or command with args
+    candidates = [
+        ['python3', '--version'],
+        ['python', '--version'],
+        ['py', '-3', '--version'],  # Windows launcher with Python 3
+        ['py', '--version']          # Windows launcher fallback
+    ]
     
-    for cmd in candidates:
+    for cmd_list in candidates:
         try:
-            result = subprocess.run([cmd, '--version'], 
+            result = subprocess.run(cmd_list, 
                                   capture_output=True, text=True, check=True)
-            if 'Python 3' in result.stdout:
-                return cmd
+            # Check both stdout and stderr (some versions print to stderr)
+            output = result.stdout + result.stderr
+            if 'Python 3' in output:
+                # Return the command part (without --version)
+                if cmd_list[0] == 'py' and len(cmd_list) > 2:
+                    return 'py -3'  # Return Windows launcher with -3 flag
+                return cmd_list[0]
         except (subprocess.CalledProcessError, FileNotFoundError):
             continue
     
@@ -384,7 +395,7 @@ def _create_local_project_structure() -> None:
     for name, path in directories.items():
         path.mkdir(parents=True, exist_ok=True)
         if name == 'memory_chat':
-            print(f"  [OK] Created memory/chat/")
+            print("  [OK] Created memory/chat/")
         else:
             print(f"  [OK] Created {name}/")
     
@@ -392,28 +403,37 @@ def _create_local_project_structure() -> None:
     # This ensures hooks work even before database exists
     chat_dir = directories['memory_chat']
     
-    # Create JSON file
-    json_file = chat_dir / "session_ac01e7e4e110.json"
-    if not json_file.exists():
-        json_content = {
-            "session_id": "session_ac01e7e4e110",
-            "job_id": "job_5e770c0deba5e",
-            "created_at": "Initial setup session",
-            "messages": []
-        }
-        with open(json_file, 'w', encoding='utf-8') as f:
-            json.dump(json_content, f, indent=2)
-        print(f"  [OK] Created session_ac01e7e4e110.json")
+    # Find available filenames with uniqueness guard
+    base_name = "session_ac01e7e4e110"
+    json_file = chat_dir / f"{base_name}.json"
+    md_file = chat_dir / f"{base_name}.md"
+    
+    # If files exist, find next available number
+    counter = 1
+    while json_file.exists() or md_file.exists():
+        json_file = chat_dir / f"{base_name}_{counter}.json"
+        md_file = chat_dir / f"{base_name}_{counter}.md"
+        counter += 1
+    
+    # Create JSON file with ISO timestamp
+    timestamp = datetime.utcnow().isoformat() + "Z"
+    json_content = {
+        "session_id": "session_ac01e7e4e110",
+        "job_id": "job_5e770c0deba5e",
+        "created_at": timestamp,
+        "messages": []
+    }
+    with open(json_file, 'w', encoding='utf-8') as f:
+        json.dump(json_content, f, indent=2, ensure_ascii=False)
+    print(f"  [OK] Created {json_file.name}")
     
     # Create MD file
-    md_file = chat_dir / "session_ac01e7e4e110.md"
-    if not md_file.exists():
-        md_content = """# Session: session_ac01e7e4e110
+    md_content = f"""# Session: session_ac01e7e4e110
 
 ## Job: Project Setup (job_5e770c0deba5e)
 
 ### Session Start
-- **Created**: Initial setup session
+- **Created**: {timestamp}
 - **Purpose**: Acolytes for Claude Code initialization
 
 ### Notes
@@ -421,9 +441,9 @@ This is the initial session created during project setup.
 
 ---
 """
-        with open(md_file, 'w', encoding='utf-8') as f:
-            f.write(md_content)
-        print(f"  [OK] Created session_ac01e7e4e110.md")
+    with open(md_file, 'w', encoding='utf-8') as f:
+        f.write(md_content)
+    print(f"  [OK] Created {md_file.name}")
     
     print(f"  [PATH] Project structure created at: {claude_project_dir}")
 
@@ -447,9 +467,9 @@ def _show_final_status() -> None:
     # Check settings file
     settings_file = claude_dir / "settings.json"
     if settings_file.exists():
-        print(f"  ✅ settings.json")
+        print("  ✅ settings.json")
     else:
-        print(f"  ❌ settings.json (missing)")
+        print("  ❌ settings.json (missing)")
     
     # Check Python and uv
     python_cmd = _detect_python_command()
@@ -457,9 +477,9 @@ def _show_final_status() -> None:
     
     print(f"  ✅ Python: {python_cmd}")
     if uv_available:
-        print(f"  ✅ uv: available")
+        print("  ✅ uv: available")
     else:
-        print(f"  ⚠️  uv: not available (recommended)")
+        print("  ⚠️  uv: not available (recommended)")
     
     print("\n💡 Next steps:")
     print("  1. Go to the path to your project")

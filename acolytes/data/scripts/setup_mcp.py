@@ -13,17 +13,21 @@ Core MCPs required:
 import sys
 import subprocess
 import logging
+import shutil
 
 # Configure logging - only errors will show
 logging.basicConfig(level=logging.ERROR, format='[%(levelname)s] %(message)s')
 logger = logging.getLogger(__name__)
 
 def get_installed_mcps():
-    """Get list of currently installed MCPs"""
+    """Get list of currently installed MCPs
+    
+    Note: shell=True used for simple trusted command 'claude mcp list'
+    """
     try:
         result = subprocess.run(
             "claude mcp list",
-            shell=True,
+            shell=True,  # Simple trusted command, no user input
             capture_output=True,
             text=True,
             timeout=30
@@ -36,12 +40,17 @@ def get_installed_mcps():
         return ""
 
 def install_mcp(name, install_command):
-    """Install a missing MCP"""
+    """Install a missing MCP
+    
+    Note: shell=True is required here because the claude CLI command
+    includes complex arguments with '--' separators that need shell parsing.
+    The commands are trusted constants from CORE_MCPS dict, not user input.
+    """
     try:
-        # Execute the installation
+        # Execute the installation (shell=True needed for claude CLI syntax)
         result = subprocess.run(
             install_command,
-            shell=True,
+            shell=True,  # Required for claude CLI's complex argument structure
             capture_output=True,
             text=True,
             timeout=60
@@ -57,8 +66,33 @@ def install_mcp(name, install_command):
         logger.error(f"Failed to install {name}: {e}")
         return False
 
+def check_prerequisites():
+    """Check that required executables are available"""
+    required_tools = {
+        'npx': 'Node.js npx (install Node.js from https://nodejs.org)',
+        'uvx': 'UV tool (install with: pip install uv)',
+        'claude': 'Claude CLI (required for MCP management)'
+    }
+    
+    missing_tools = []
+    for tool, description in required_tools.items():
+        if not shutil.which(tool):
+            missing_tools.append(f"  - {tool}: {description}")
+    
+    if missing_tools:
+        print("ERROR: Missing required tools:")
+        print("\n".join(missing_tools))
+        print("\nPlease install the missing tools before running this script.")
+        return False
+    
+    return True
+
 def ensure_core_mcps():
     """Ensure all core MCPs are installed"""
+    
+    # Check prerequisites first
+    if not check_prerequisites():
+        return False
     
     # Core MCPs with their verified installation commands
     CORE_MCPS = {

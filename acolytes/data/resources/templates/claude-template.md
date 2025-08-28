@@ -105,17 +105,17 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 
 **Location**: `.claude/memory/project.db` (SQLite via MCP)
 
-| Table              | Purpose                | Key Fields                                            |
-| ------------------ | ---------------------- | ----------------------------------------------------- |
-| **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack |
-| **agents_memory**  | 14 memories per agent  | agent_name, memory_type, content (JSON)               |
-| **agent_health**   | Agent drift monitoring | drift_score, confidence_score, needs_compaction       |
-| **flags**          | Agent coordination     | target_agent, status, locked, impact_level            |
-| **jobs**           | Groups 4-5 sessions    | id, status (active/paused), title, description (JSON) |
-| **messages**       | Chat history           | session_id, conversation_flow, duration_minutes       |
-| **sessions**       | Work tracking          | job_id, accomplishments, decisions, quality_score     |
-| **todos**          | Task management        | task, status, assigned_to, dependencies               |
-| **tool_logs**      | Tool usage tracking    | tool_name, parameters, success, duration_ms           |
+| Table              | Purpose                    | Key Fields                                            |
+| ------------------ | -------------------------- | ----------------------------------------------------- |
+| **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack      |
+| **agents_memory**  | 14 memories per agent      | agent_name, memory_type, content (JSON)               |
+| **agent_health**   | Agent drift monitoring     | drift_score, confidence_score, needs_compaction       |
+| **flags**          | Agent coordination         | target_agent, status, locked, impact_level            |
+| **jobs**           | Groups 4-5 sessions        | id, status (active/paused), title, description (JSON) |
+| **messages**       | Chat history               | session_id, conversation_flow, duration_minutes       |
+| **sessions**       | Work tracking              | job_id, accomplishments, decisions, quality_score     |
+| **todos**          | Task management            | task, status, assigned_to, dependencies               |
+| **tool_logs**      | Tool usage tracking        | tool_name, parameters, success, duration_ms           |
 
 **Access**: `uv run python ~/.claude/scripts/agent_db.py [command]`
 
@@ -341,6 +341,15 @@ CREATE TABLE messages (
     metadata JSON
 );
 
+-- IMPORTANT: JSON Column Type in SQLite
+-- The JSON type is only an affinity hint in SQLite - data is stored as TEXT
+-- SQLite does NOT enforce JSON validity or structure
+-- To work with JSON data safely:
+--   • Use SQLite JSON1 functions: json_extract(), json_set(), json_valid()
+--   • Validate JSON at application layer before insertion
+--   • Alternative: Use TEXT type explicitly if you want clear storage semantics
+-- Example: SELECT json_extract(metadata, '$.key') FROM messages;
+
 Useful Views
 
 -- latest_session: Gets current session without ORDER BY
@@ -366,10 +375,10 @@ SELECT * FROM pending_flags;
   # Flag Check (for FLAGS system)
   uv run python ~/.claude/scripts/agent_db.py get-workable-flags
 
-  # Custom queries (agent_db.py doesn't support raw SQL)
+  # Custom read-only queries (agent_db.py doesn't support raw SQL writes)
   sqlite3 .claude/memory/project.db "SELECT * FROM latest_session"
   sqlite3 .claude/memory/project.db "SELECT title, status FROM jobs WHERE status='active'"
 ```
 
-At the end of each chat that you have to say:
+At the end of each chat, you must say:
 "──────────────────────────────────────────────────────────────────────────────"

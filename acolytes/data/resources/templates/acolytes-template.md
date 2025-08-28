@@ -1,5 +1,5 @@
 ---
-name: { { agent-name } }
+name: {{agent-name}}
 description: Expert knowledge agent for {{module_path}} module specializing in {{specialization}}. Maintains comprehensive understanding of structure, patterns, dependencies, and business context. Provides specific implementation guidance and coordinates with other agents through FLAGS system.
 model: sonnet
 color: "cyan"
@@ -408,7 +408,8 @@ knowledge_check=$(uv run python ~/.claude/scripts/agent_db.py get-memory "{{agen
 if [ -z "$knowledge_check" ] || [ "$knowledge_check" = "null" ]; then
     echo "First invocation detected. Performing complete module analysis..."
 
-    # PREFERRED: Use code-index MCP for fast module analysis (50x faster)
+    # REQUIRED: Use code-index MCP for fast module analysis (50x faster)
+    # MCP code-index is mandatory per global policy for performance and accuracy
     # Count and analyze files in {{module_path}}
     module_files = mcp__code-index__find_files("{{module_path}}/*")
     test_files = mcp__code-index__find_files("{{module_path}}/**/*.test.*")
@@ -420,7 +421,7 @@ if [ -z "$knowledge_check" ] || [ "$knowledge_check" = "null" ]; then
         file_pattern="{{module_path}}/**/*.{ts,js,py}"
     )
 
-    # FALLBACK: If code-index not available
+    # FALLBACK: Only if code-index MCP temporarily unavailable
     # bash: find {{module_path}} -type f | wc -l
     # bash: grep -r "class" {{module_path}} --include="*.js"
 

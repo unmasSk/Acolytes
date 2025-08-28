@@ -1,4 +1,4 @@
-escu<div align="center">
+<div align="center">
 <img src="acolytes/data/resources/assets/logo.png" alt="Acolytes for Claude Code Logo" width="600">
 
   <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
@@ -130,14 +130,12 @@ claude --dangerously-skip-permissions -c
 ### Available Commands
 
 | Command     | Description                                                                | Agent Integration                  |
-| ----------- | -------------------------------------------------------------------------- | ---------------------------------- | --- |
+| ----------- | -------------------------------------------------------------------------- | ---------------------------------- | --------------------------- |
 | `/setup`    | Integrates Acolytes into your project (new or existing) - 6-phase analysis | 5 setup agents + Acolytes creation |
 | `/commit`   | Smart commits with auto-versioning, changelog, and git tagging             | `@docs.specialist` + bump2version  |
 | `/pr`       | Create pull request with comprehensive analysis                            | `@ops.git` + review agents         |
 | `/acolytes` | Process pending FLAGS from agents                                          | `@flags.agent` coordinator         |
-| `/save`     | Save current session to SQLite database                                    | Session persistence                |     |
-
-### How Claude Orchestrates
+| `/save`     | Save current session to SQLite database                                    | Session persistence                | ### How Claude Orchestrates |
 
 **Claude auto-selects the right agent based on context:**
 
@@ -289,7 +287,7 @@ All decisions preserved in Jobs system for future reference
 
 ## 🗺️ Roadmap to Revolution
 
-**Current Version: v1.0.6** ✨ → **Target Version: v2.0.0** 🚀
+**Current Version: v1.0.7** ✨ → **Target Version: v2.0.0** 🚀
 
 ### 🎯 7-Phase Evolution (6 Months)
 

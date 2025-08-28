@@ -167,7 +167,7 @@ def is_dangerous_git_operation(tool_name, tool_input):
 def log_to_sqlite(tool_data, blocked=False, block_reason=None):
     """Log tool usage to SQLite database"""
     try:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        db_path = _resolve_db_path()
         if not db_path.exists():
             return  # Database not initialized yet
         
@@ -224,7 +224,15 @@ def log_to_sqlite(tool_data, blocked=False, block_reason=None):
     except Exception:
         pass  # Fail silently to not interrupt tool execution
 
-DB_PATH_TODO = Path.cwd() / '.claude' / 'memory' / 'project.db'
+def _resolve_db_path() -> Path:
+    """Resolve database path robustly - check global first (where hook lives), then project"""
+    global_db = Path.home() / '.claude' / 'memory' / 'project.db'
+    if global_db.exists():
+        return global_db
+    # Fallback to project (rare case)
+    return Path.cwd() / '.claude' / 'memory' / 'project.db'
+
+DB_PATH_TODO = _resolve_db_path()
 
 def get_timestamp_todo_sync():
     """Get current timestamp without seconds for todo_sync operations"""
@@ -235,13 +243,19 @@ def sync_todo_to_sqlite(todo, session_id=None):
     if not DB_PATH_TODO.exists():
         return None
 
+    # Extract claude_id first, before opening connection
+    claude_id = todo.get('id', '')
+    
+    # Skip sync if no claude_id to prevent duplicate ambiguous records
+    if not claude_id:
+        return False
+    
     conn = sqlite3.connect(str(DB_PATH_TODO))
     cursor = conn.cursor()
 
     try:
         content = todo.get('content', '')
         status = todo.get('status', 'pending')
-        claude_id = todo.get('id', '')
 
         timestamp = get_timestamp_todo_sync()
         completed_at = timestamp if status == 'completed' else None
@@ -293,15 +307,57 @@ def get_current_session_id_todo_sync():
         return None
 
 def process_todowrite_integrated(todos_data):
-    """Simple process: sync all TODOs to SQLite (integrated)"""
+    """Simple process: sync all TODOs to SQLite (integrated)
+    
+    Returns: tuple (success_count, failure_count) for monitoring
+    """
     todos = todos_data.get('todos', [])
     if not todos:
-        return
+        return (0, 0)
+    
+    # Validate that todos is actually a list
+    if not isinstance(todos, list):
+        print(f"[TODO_SYNC] Error: todos is not a list (type: {type(todos).__name__})", file=sys.stderr)
+        return (0, 1)
 
     session_id = get_current_session_id_todo_sync()
-
-    for todo in todos:
-        sync_todo_to_sqlite(todo, session_id)
+    
+    success_count = 0
+    failure_count = 0
+    
+    for idx, todo in enumerate(todos):
+        try:
+            # Validate todo is a dict with required fields
+            if not isinstance(todo, dict):
+                print(f"[TODO_SYNC] Skipping item {idx}: not a dict (type: {type(todo).__name__})", file=sys.stderr)
+                failure_count += 1
+                continue
+            
+            # Check for minimal required fields
+            if not todo.get('content') and not todo.get('task'):
+                print(f"[TODO_SYNC] Skipping item {idx}: missing content/task", file=sys.stderr)
+                failure_count += 1
+                continue
+            
+            # Attempt sync
+            result = sync_todo_to_sqlite(todo, session_id)
+            if result:
+                success_count += 1
+            else:
+                failure_count += 1
+                
+        except Exception as e:
+            # Log error but continue with other todos
+            todo_id = todo.get('id', f'idx_{idx}')
+            print(f"[TODO_SYNC] Failed to sync todo {todo_id}: {e}", file=sys.stderr)
+            failure_count += 1
+            continue
+    
+    # Log summary if there were any issues
+    if failure_count > 0:
+        print(f"[TODO_SYNC] Batch complete: {success_count} succeeded, {failure_count} failed", file=sys.stderr)
+    
+    return (success_count, failure_count)
 
 def main():
     try:
@@ -357,9 +413,9 @@ def main():
         
         sys.exit(0)
 
-    except Exception:
-        # Log error but don\'t block
-        pass # Fail silently to not interrupt tool execution
+    except Exception as e:
+        # Don’t block, but surface minimal info
+        print(f"pre_tool_use: non-fatal error: {type(e).__name__}", file=sys.stderr)
         sys.exit(0)
 
 if __name__ == '__main__':

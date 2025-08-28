@@ -10,6 +10,8 @@ import argparse
 import json
 import sys
 import sqlite3
+import tempfile
+import os
 from pathlib import Path
 from datetime import datetime
 
@@ -70,8 +72,8 @@ def log_subagent_completion(input_data, session_id):
         # Get acolytes directory
         log_dir = ensure_session_log_dir(project_cwd if project_cwd else None)
         
-        # Store ALL input data for debugging - capture everything Claude Code sends
-        raw_input = input_data.copy()
+        # Store only non-sensitive fields for debugging
+        raw_input = {k: input_data[k] for k in ("cwd", "session_id", "transcript_path") if k in input_data}
         
         # Extract subagent info from transcript (Claude Code sends transcript_path)
         transcript_path = input_data.get("transcript_path", "")
@@ -158,13 +160,13 @@ def log_subagent_completion(input_data, session_id):
         subagent_entry = {
             "session_id": our_session_id,
             "claude_session_id": session_id,
-            "timestamp": datetime.now().isoformat() + "Z",
+            "timestamp": datetime.now().isoformat(),  # Local time without timezone suffix
             "subagent_name": subagent_name,
             "task_description": task_description,
             "completion_status": completion_status,
             "output_summary": output_summary,
             "event_type": "subagent_stop",
-            "raw_claude_input": raw_input  # Store ALL fields Claude Code sends
+            "raw_claude_input": raw_input  # Store only whitelisted fields
         }
         
         # Save to acolytes log file
@@ -182,9 +184,13 @@ def log_subagent_completion(input_data, session_id):
         # Add subagent entry
         acolytes_log.append(subagent_entry)
         
-        # Write back
-        with open(log_file, "w", encoding="utf-8") as f:
-            json.dump(acolytes_log, f, indent=2, ensure_ascii=False)
+        # Write back atomically to prevent corruption
+        with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False, dir=str(log_dir)) as tf:
+            json.dump(acolytes_log, tf, indent=2, ensure_ascii=False)
+            tmp_name = tf.name
+        
+        # Atomic replace - either succeeds completely or fails completely
+        os.replace(tmp_name, str(log_file))
             
         print(f"Subagent logged: {subagent_name} - {completion_status}")
             

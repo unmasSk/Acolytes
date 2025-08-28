@@ -155,6 +155,15 @@ When executing infrastructure analysis:
 ### REQUIRED: Using MCP code-index (50x FASTER)
 
 ```python
+# Verify MCP code-index is available before proceeding
+try:
+    mcp__code-index__get_settings_info()  # Health check
+except Exception as e:
+    print(f"ERROR: MCP code-index is not available. Please ensure it's installed and running.")
+    print(f"Error details: {e}")
+    print("Falling back to bash commands...")
+    # Exit or use fallback commands below
+
 # Infrastructure files with code-index MCP
 mcp__code-index__find_files("Dockerfile")           # Docker files
 mcp__code-index__find_files("docker-compose*")      # Docker compose

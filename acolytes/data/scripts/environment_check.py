@@ -322,7 +322,7 @@ class EnvironmentChecker:
                     print("   SQLite3: Download from https://sqlite.org/download.html")
                     print("           Extract sqlite3.exe to a folder in your PATH")
                 elif system == "Darwin":  # macOS
-                    print("   SQLite3: brew install sqlite3")
+                    print("   SQLite3: brew install sqlite")
                 else:  # Linux
                     print("   SQLite3: sudo apt install sqlite3  (or equivalent for your distro)")
             

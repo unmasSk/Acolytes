@@ -20,15 +20,18 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
     type TEXT NOT NULL CHECK(type IN ('analyst', 'audit', 'backend', 'business', 'coordinator', 'database', 'docs', 'frontend', 'ops', 'service', 'test', 'acolyte')),
     
     -- Only for Acolytes
-    module TEXT,                    -- Required if type='dynamic' (auth, api, payments, etc)
-    sub_module TEXT,                -- Optional if type='dynamic' 
+    module TEXT,                    -- Required if type='acolyte' (auth, api, payments, etc)
+    sub_module TEXT,                -- Optional if type='acolyte' 
     
     -- Only for PRO agents (not dynamic)
     role JSON,                      -- Professional agent role description
     tech_stack JSON,                -- Technology stack handled by agent
     scenarios JSON,                 -- Typical use case scenarios
     tags JSON,                      -- Tags for categorization and search
-    connections JSON                -- Connections with other agents
+    connections JSON,               -- Connections with other agents
+    
+    -- Enforce that acolytes MUST have a module
+    CHECK (type != 'acolyte' OR module IS NOT NULL)
 );
 
 -- 3. AGENT MEMORY
@@ -223,6 +226,14 @@ CREATE TABLE IF NOT EXISTS todos (
 );
 
 -- INDEXES
+-- Data Quality Enforcement: Ensure acolytes have modules
+-- This cleans up any existing acolyte entries without modules (sets a default)
+UPDATE agents_catalog 
+SET module = 'unknown_module' 
+WHERE type = 'acolyte' AND module IS NULL;
+
+-- Note: The CHECK constraint above ensures new acolytes MUST have a module
+
 CREATE INDEX IF NOT EXISTS idx_jobs_active ON jobs(completed_at) WHERE completed_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_sessions_job ON sessions(job_id);
 CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
