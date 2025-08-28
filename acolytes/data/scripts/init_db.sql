@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
 -- 'errors': Error handling - common errors, failure modes, recovery procedures
 -- 'performance': Optimization - bottlenecks, caching, targets, scaling strategies
 -- 'history': Recent interactions - last consultations, implementations, delegations
-CREATE TABLE IF NOT EXISTS agent_memory (
+CREATE TABLE IF NOT EXISTS agents_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     agent_id INTEGER NOT NULL,
     memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
@@ -243,9 +243,9 @@ CREATE INDEX IF NOT EXISTS idx_flags_session ON flags(session_id);
 CREATE INDEX IF NOT EXISTS idx_flags_workable ON flags(target_agent, locked, status) WHERE locked = FALSE AND status = 'pending';
 CREATE INDEX IF NOT EXISTS idx_flags_target ON flags(target_agent, status);
 CREATE INDEX IF NOT EXISTS idx_flags_chain ON flags(chain_origin_id);
-CREATE INDEX IF NOT EXISTS idx_agent_memory ON agent_memory(agent_id, memory_type);
+CREATE INDEX IF NOT EXISTS idx_agents_memory ON agents_memory(agent_id, memory_type);
 -- COVERING INDEX: Hot query optimization for agent memory access
-CREATE INDEX IF NOT EXISTS idx_agent_memory_covering ON agent_memory(agent_id, memory_type, updated_at, content);
+CREATE INDEX IF NOT EXISTS idx_agents_memory_covering ON agents_memory(agent_id, memory_type, updated_at, content);
 
 -- JSON EXTRACTION INDEX: Priority-based job queries
 CREATE INDEX IF NOT EXISTS idx_jobs_priority ON jobs(json_extract(description, '$.priority'), created_at);

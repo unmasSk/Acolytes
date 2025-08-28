@@ -176,7 +176,7 @@ def remove_empty_fields(obj):
         return [remove_empty_fields(item) for item in obj if item not in [None, '', 'null']]
     return obj
 
-def compact_agent_memory(agent_name):
+def compact_agents_memory(agent_name):
     """Main compaction function for an agent"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
@@ -192,7 +192,7 @@ def compact_agent_memory(agent_name):
     # Get all memories for this agent
     cursor = conn.execute("""
         SELECT memory_type, content 
-        FROM agent_memory 
+        FROM agents_memory 
         WHERE agent_id = ?
     """, (agent_id,))
     
@@ -230,7 +230,7 @@ def compact_agent_memory(agent_name):
         # Update if size reduced
         if size_after < size_before:
             conn.execute("""
-                UPDATE agent_memory 
+                UPDATE agents_memory 
                 SET content = ?, updated_at = ?
                 WHERE agent_id = ? AND memory_type = ?
             """, (json.dumps(content), get_timestamp(), agent_id, memory_type))
@@ -290,7 +290,7 @@ def auto_compact_if_needed(agent_name):
     conn.close()
     
     if health and (health['needs_compaction'] or health['memory_size_kb'] > 1000):
-        return compact_agent_memory(agent_name)
+        return compact_agents_memory(agent_name)
     
     return {'message': f"Agent '{agent_name}' does not need compaction"}
 
@@ -305,6 +305,6 @@ if __name__ == "__main__":
         result = auto_compact_if_needed(sys.argv[2])
     else:
         # Force compact
-        result = compact_agent_memory(sys.argv[1])
+        result = compact_agents_memory(sys.argv[1])
     
     print(json.dumps(result, indent=2))

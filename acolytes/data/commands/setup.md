@@ -429,7 +429,7 @@ ACOLYTE_ACTIVATION:
     - Claude invokes all acolytes in parallel (max 10 per batch)
     - Each acolyte performs deep analysis of their assigned module
     - Fill their 14 memory records with comprehensive knowledge
-    - Update agent_memory table in SQLite with discovered information
+    - Update agents_memory table in SQLite with discovered information
 
   new_projects:
     - Claude invokes acolytes to review .claude/project/ documentation

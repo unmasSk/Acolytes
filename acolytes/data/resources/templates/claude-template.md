@@ -109,7 +109,7 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 | ------------------ | ---------------------- | ----------------------------------------------------- |
 | **acolytes**       | Dynamic project agents | name, module, sub_module                              |
 | **agent_health**   | Agent drift monitoring | drift_score, confidence_score, needs_compaction       |
-| **agent_memory**   | 14 memories per agent  | agent_id, memory_type, content (JSON)                 |
+| **agents_memory**   | 14 memories per agent  | agent_id, memory_type, content (JSON)                 |
 | **agents_catalog** | All agents directory   | name, type, role, tech_stack                          |
 | **flags**          | Agent coordination     | target_agent, status, locked, impact_level            |
 | **jobs**           | Groups 4-5 sessions    | id, status (active/paused), title, description (JSON) |

@@ -7,11 +7,15 @@ Refactor the agent memory system to eliminate redundancy and use agent names dir
 1. **Redundant tables**: `acolytes` and `agents_catalog` store duplicate information
 2. **Numeric agent_id**: Agents don't know their numeric ID, making memory updates difficult
 3. **Complex lookups**: Need to query ID first, then use it for memory operations
+4. **Phantom table**: Scripts reference table `agents` that doesn't exist (should be `agents_catalog`)
+5. **Deprecated scripts**: `todo_command.py` and `compact_memory.py` were created early and never used
 
 ## Proposed Solution
 - **Remove** `acolytes` table (redundant)
 - **Keep** `agents_catalog` as single source of truth
-- **Modify** `agent_memory` to use `agent_name` instead of `agent_id`
+- **Modify** `agents_memory` to use `agent_name` instead of `agent_id`
+- **Fix** phantom references to non-existent `agents` table
+- **Update** deprecated scripts to work with new schema
 
 ---
 
@@ -19,84 +23,57 @@ Refactor the agent memory system to eliminate redundancy and use agent names dir
 
 ### 1. Database Schema: `acolytes/data/scripts/init_db.sql`
 
-**REMOVE** the entire `acolytes` table creation (lines ~22-29):
+**REMOVE** the entire `acolytes` table creation (lines 17-24):
 ```sql
 -- DELETE THIS ENTIRE BLOCK
 CREATE TABLE IF NOT EXISTS acolytes (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,
-    module TEXT NOT NULL,
-    sub_module TEXT,
+    module TEXT NOT NULL,           
+    sub_module TEXT,                
     created_at TEXT NOT NULL,
     updated_at TEXT
 );
 ```
 
-**MODIFY** `agent_memory` table (lines ~60-75):
+**MODIFY** `agents_memory` table (lines 60-68) - NOTE: already renamed with 's':
 ```sql
--- OLD VERSION (REMOVE)
-CREATE TABLE IF NOT EXISTS agent_memory (
+-- OLD VERSION (CURRENT)
+CREATE TABLE IF NOT EXISTS agents_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     agent_id INTEGER NOT NULL,
-    memory_type TEXT CHECK(...) NOT NULL,
-    content TEXT NOT NULL DEFAULT '{}',
+    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
+    content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (agent_id) REFERENCES acolytes (id) ON DELETE CASCADE,
-    UNIQUE(agent_id, memory_type)
+    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE CASCADE
 );
 
 -- NEW VERSION (REPLACE WITH)
-CREATE TABLE IF NOT EXISTS agent_memory (
+CREATE TABLE IF NOT EXISTS agents_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     agent_name TEXT NOT NULL,  -- Changed from agent_id INTEGER
     memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
-    content TEXT NOT NULL DEFAULT '{}',
+    content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
     FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
-    UNIQUE(agent_name, memory_type)  -- Changed from agent_id
+    UNIQUE(agent_name, memory_type)  -- Added unique constraint
 );
 ```
 
-**ADD** migration for existing databases (at end of file):
+**MODIFY** `todos` table to remove agent_id column (optional - can keep assigned_to):
 ```sql
--- Migration: Convert existing agent_memory from agent_id to agent_name
--- This will be run manually when needed
-/*
--- Step 1: Create new table with correct schema
-CREATE TABLE agent_memory_new (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    agent_name TEXT NOT NULL,
-    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
-    content TEXT NOT NULL DEFAULT '{}',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
-    UNIQUE(agent_name, memory_type)
-);
-
--- Step 2: Copy data with name lookup
-INSERT INTO agent_memory_new (agent_name, memory_type, content, created_at, updated_at)
-SELECT ac.name, am.memory_type, am.content, am.created_at, am.updated_at
-FROM agent_memory am
-JOIN acolytes a ON am.agent_id = a.id
-JOIN agents_catalog ac ON ac.name = a.name;
-
--- Step 3: Drop old table and rename new
-DROP TABLE agent_memory;
-ALTER TABLE agent_memory_new RENAME TO agent_memory;
-
--- Step 4: Drop redundant acolytes table
-DROP TABLE acolytes;
-*/
+-- Remove agent_id column, just use assigned_to TEXT field
+-- Line ~211: Remove "agent_id INTEGER," from table definition
+-- The assigned_to field already stores the agent name
 ```
 
 ---
 
 ### 2. Agent Database Script: `acolytes/data/scripts/agent_db.py`
 
-**Line 170-220** - Modify `create_agent` function:
+**Modify `create_agent` function** (currently at lines ~139-178):
 ```python
 def create_agent(name, module=None, sub_module=None):
     """Create agent with 14 empty memory records and add to agents_catalog"""
@@ -113,7 +90,7 @@ def create_agent(name, module=None, sub_module=None):
         return json.dumps({"error": "Module parameter is required for acolytes"})
     
     try:
-        # Check if agent already exists in agents_catalog
+        # Check if agent already exists in agents_catalog (NOT acolytes table)
         cursor = conn.execute("SELECT 1 FROM agents_catalog WHERE name = ?", (name,))
         if cursor.fetchone():
             conn.close()
@@ -122,16 +99,16 @@ def create_agent(name, module=None, sub_module=None):
         # Start explicit transaction
         conn.execute("BEGIN TRANSACTION")
         
-        # Insert into agents_catalog (single source of truth)
+        # Insert ONLY into agents_catalog (no more acolytes table)
         conn.execute(
-            "INSERT INTO agents_catalog (name, type, module, sub_module, created_at) VALUES (?, 'acolyte', ?, ?, ?)",
-            (name, module, sub_module, timestamp)
+            "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'acolyte', ?, ?)",
+            (name, module, sub_module)
         )
         
-        # Insert 14 empty memory records using agent name directly
+        # Insert 14 empty memory records using agent_name directly
         for memory_type in MEMORY_TYPES:
             conn.execute(
-                "INSERT INTO agent_memory (agent_name, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO agents_memory (agent_name, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                 (name, memory_type, '{}', timestamp, timestamp)  # Using name instead of agent_id
             )
         
@@ -141,7 +118,7 @@ def create_agent(name, module=None, sub_module=None):
         
         return json.dumps({
             "success": True,
-            "agent_name": name,  # Changed from agent_id
+            "agent_name": name,
             "module": module,
             "sub_module": sub_module,
             "memories_created": 14,
@@ -158,7 +135,7 @@ def create_agent(name, module=None, sub_module=None):
         return json.dumps({"error": f"Failed to create agent: {str(e)}"})
 ```
 
-**Lines 80-120** - Modify `update_memory` function:
+**Modify `update_memory` function** (currently at lines ~85-107):
 ```python
 def update_memory(agent_name, memory_type, content):
     """Update specific memory for an agent using agent name"""
@@ -172,9 +149,9 @@ def update_memory(agent_name, memory_type, content):
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
-    # Update memory directly using agent_name
+    # Update memory directly using agent_name (no ID lookup needed)
     cursor = conn.execute(
-        "UPDATE agent_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = ?",
+        "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = ?",
         (content, timestamp, agent_name, memory_type)
     )
     
@@ -193,7 +170,7 @@ def update_memory(agent_name, memory_type, content):
     })
 ```
 
-**Lines 120-140** - Modify `get_memory` function:
+**Modify `get_memory` function** (currently at lines ~108-136):
 ```python
 def get_memory(agent_name, memory_type=None):
     """Get memory content for an agent using agent name"""
@@ -210,13 +187,13 @@ def get_memory(agent_name, memory_type=None):
             return json.dumps({"error": f"Invalid memory_type. Must be one of: {MEMORY_TYPES}"})
         
         cursor = conn.execute(
-            "SELECT * FROM agent_memory WHERE agent_name = ? AND memory_type = ?",
+            "SELECT * FROM agents_memory WHERE agent_name = ? AND memory_type = ?",
             (agent_name, memory_type)
         )
     else:
         # Get all memories for agent
         cursor = conn.execute(
-            "SELECT * FROM agent_memory WHERE agent_name = ? ORDER BY memory_type",
+            "SELECT * FROM agents_memory WHERE agent_name = ? ORDER BY memory_type",
             (agent_name,)
         )
     
@@ -231,122 +208,90 @@ def get_memory(agent_name, memory_type=None):
 
 ---
 
-### 3. Acolyte Template: `~/.claude/resources/templates/acolytes-template.md`
+### 3. Todo Command Script: `acolytes/data/scripts/todo_command.py` (DEPRECATED - UPDATE)
 
-**Add section explaining how to access memories** (around line 900):
-```markdown
-## Accessing Your Memories
+**Fix phantom table references** - Change all references from `agents` to `agents_catalog`:
+```python
+# Line 53 - OLD:
+cursor.execute("SELECT id FROM agents WHERE name = ?", (assigned_to,))
+# NEW:
+cursor.execute("SELECT name FROM agents_catalog WHERE name = ?", (assigned_to,))
 
-To read or update your memories, use your agent name directly:
-
-```bash
-# Read a specific memory
-uv run python ~/.claude/scripts/agent_db.py get-memory "{{agent-name}}" "knowledge"
-
-# Update a memory
-uv run python ~/.claude/scripts/agent_db.py update-memory "{{agent-name}}" "knowledge" '{"learned": "something new"}'
-
-# Read all your memories
-uv run python ~/.claude/scripts/agent_db.py get-memory "{{agent-name}}"
+# Lines 248, 306, 324 - Same change
+# Line 439 - OLD:
+LEFT JOIN agents a ON t.agent_id = a.id
+# NEW:
+LEFT JOIN agents_catalog ac ON t.assigned_to = ac.name
 ```
 
-You don't need to know your numeric ID - just use your name!
-```
+**Remove agent_id usage** - Use assigned_to field directly for agent names
 
 ---
 
-### 4. Setup Command: `acolytes/data/commands/setup.md`
+### 4. Compact Memory Script: `acolytes/data/scripts/compact_memory.py` (DEPRECATED - UPDATE)
 
-**Phase 6** - Update references to remove acolytes table mentions:
-```markdown
-# OLD TEXT (around line 500)
-"Creating agent in database (acolytes + agent_memory + agents_catalog)..."
-
-# NEW TEXT
-"Creating agent in database (agents_catalog + agent_memory)..."
-```
-
----
-
-### 5. Todo Command Script: `acolytes/data/scripts/todo_command.py`
-
-**Lines 46-69** - Change agent_id assignment:
+**Fix phantom table references**:
 ```python
-# OLD
-agent_id = None
-if '@' in task:
-    match = re.search(r'@(\S+)', task)
-    if match:
-        assigned_to = match.group(1)
-        cursor.execute("SELECT id FROM agents WHERE name = ?", (f"@{assigned_to}",))
-        agent = cursor.fetchone()
-        if agent:
-            agent_id = agent[0]
-
-# NEW
-# Just use agent_name directly, no ID needed
-if '@' in task:
-    match = re.search(r'@(\S+)', task)
-    if match:
-        assigned_to = f"@{match.group(1)}"  # Store full name with @
-```
-
-**Update INSERT statement** (remove agent_id column):
-```python
-# Remove agent_id from todos table and queries
-```
-
----
-
-### 6. Memory Compaction Script: `acolytes/data/scripts/compact_memory.py`
-
-**Lines 184-198** - Use agent_name instead of ID lookup:
-```python
-# OLD
+# Line 186 - OLD:
 cursor = conn.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
-agent = cursor.fetchone()
-if not agent:
-    return {"error": f"Agent '{agent_name}' not found"}
-agent_id = agent['id']
+# NEW:
+cursor = conn.execute("SELECT name FROM agents_catalog WHERE name = ?", (agent_name,))
 
+# Line 196 - Change to agents_memory with agent_name:
 cursor = conn.execute("""
     SELECT memory_type, content 
-    FROM agent_memory 
-    WHERE agent_id = ?
-""", (agent_id,))
-
-# NEW
-cursor = conn.execute("""
-    SELECT memory_type, content 
-    FROM agent_memory 
+    FROM agents_memory 
     WHERE agent_name = ?
 """, (agent_name,))
-```
 
-**All UPDATE statements** - Replace agent_id with agent_name:
-```python
-# OLD: WHERE agent_id = ?
-# NEW: WHERE agent_name = ?
+# Line 283 - OLD:
+JOIN agents a ON h.agent_id = a.id
+# NEW:
+JOIN agents_catalog ac ON h.agent_name = ac.name
 ```
 
 ---
 
-### 7. CLAUDE.md Files (both in huellaCarbono and main project)
+### 5. Acolyte Template: `acolytes/data/resources/templates/acolytes-template.md`
 
-**Update database structure section**:
-```markdown
-# OLD
-| Table              | Purpose                | Key Fields                                            |
-| ------------------ | ---------------------- | ----------------------------------------------------- |
-| **acolytes**       | Dynamic project agents | name, module, sub_module                              |
-| **agent_memory**   | 14 memories per agent  | agent_id, memory_type, content (JSON)                 |
+**Update query at line 618**:
+```sql
+-- OLD:
+uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM acolytes WHERE module = '{{module_name}}' AND name != '{{agent-name}}'"
 
-# NEW
-| Table              | Purpose                | Key Fields                                            |
-| ------------------ | ---------------------- | ----------------------------------------------------- |
-| **agent_memory**   | 14 memories per agent  | agent_name, memory_type, content (JSON)               |
-| **agents_catalog** | All agents (includes acolytes) | name, type='acolyte', module, sub_module         |
+-- NEW:
+uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM agents_catalog WHERE type = 'acolyte' AND module = '{{module_name}}' AND name != '{{agent-name}}'"
 ```
+
+**Memory access examples already use agent names, so no changes needed there**
+
+---
+
+### 6. Claude Template: `acolytes/data/resources/templates/claude-template.md`
+
+**Update database structure documentation**:
+- Remove references to `acolytes` table
+- Update to show `agents_memory` uses `agent_name` instead of `agent_id`
+
+---
+
+### 7. Setup Acolytes Creator: `acolytes/data/agents/setup.acolytes-creator.md`
+
+**Update to work with new schema**:
+- Agent creation should only insert into `agents_catalog`
+- Memory initialization uses `agent_name` directly
+- No references to `acolytes` table
+
+
+
+---
+
+## IMPORTANT NOTES
+
+1. **NO EXISTING DATABASE** - This is a fresh installation, no migration needed
+2. **Table name already changed** - `agent_memory` → `agents_memory` (with 's') already done
+3. **Deprecated scripts** - `todo_command.py` and `compact_memory.py` were created early but never used, need updates
+4. **Phantom table** - Scripts reference table `agents` that doesn't exist in schema (should be `agents_catalog`)
 
 ---
 
@@ -354,65 +299,32 @@ cursor = conn.execute("""
 
 After implementing changes:
 
-1. [ ] Backup existing databases
-2. [ ] Run migration script on test database
-3. [ ] Test `create-agent` command creates agent correctly
-4. [ ] Test `update-memory` works with agent name
-5. [ ] Test `get-memory` retrieves memories by name
-6. [ ] Verify no references to `acolytes` table remain
-7. [ ] Verify no references to numeric `agent_id` remain
-8. [ ] Test setup.md Phase 6 creates agents correctly
-9. [ ] Verify existing agents still work after migration
+1. [ ] Test `create-agent` command creates agent in `agents_catalog` only
+2. [ ] Test `update-memory` works with agent name
+3. [ ] Test `get-memory` retrieves memories by name
+4. [ ] Verify no references to `acolytes` table remain
+5. [ ] Verify no references to numeric `agent_id` remain in agents_memory
+6. [ ] Test setup.acolytes-creator creates agents correctly
+7. [ ] Update todo_command.py if planning to use it
+8. [ ] Update compact_memory.py if planning to use it
 
 ---
 
-## MIGRATION SCRIPT
+## SUMMARY OF CHANGES
 
-Save as `migrate_agent_memory.sql` and run on existing databases:
+### Database Schema Changes:
+1. **Remove** `acolytes` table entirely
+2. **Modify** `agents_memory` to use `agent_name` instead of `agent_id`
+3. **Optional** - Remove `agent_id` from `todos` table (already has `assigned_to`)
 
-```sql
--- Backup first!
--- sqlite3 .claude/memory/project.db ".backup project_backup.db"
-
-BEGIN TRANSACTION;
-
--- Create new agent_memory table
-CREATE TABLE agent_memory_new (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    agent_name TEXT NOT NULL,
-    memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
-    content TEXT NOT NULL DEFAULT '{}',
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
-    UNIQUE(agent_name, memory_type)
-);
-
--- Migrate data
-INSERT INTO agent_memory_new (agent_name, memory_type, content, created_at, updated_at)
-SELECT a.name, am.memory_type, am.content, am.created_at, am.updated_at
-FROM agent_memory am
-JOIN acolytes a ON am.agent_id = a.id;
-
--- Replace old table
-DROP TABLE agent_memory;
-ALTER TABLE agent_memory_new RENAME TO agent_memory;
-
--- Remove redundant table
-DROP TABLE acolytes;
-
-COMMIT;
-```
-
----
-
-## ROLLBACK PLAN
-
-If something goes wrong:
-
-1. Restore from backup: `sqlite3 .claude/memory/project.db ".restore project_backup.db"`
-2. Revert code changes in git
-3. Document issues encountered
+### Code Changes Required:
+1. **agent_db.py** - Create agents only in `agents_catalog`, use `agent_name` for memories
+2. **todo_command.py** - Fix phantom `agents` table references → `agents_catalog`
+3. **compact_memory.py** - Fix phantom `agents` table references → `agents_catalog`
+4. **acolytes-template.md** - Update SQL query to use `agents_catalog`
+5. **claude-template.md** - Update documentation
+6. **setup.acolytes-creator.md** - Ensure it uses new schema
+7. **setup.md** - NO CHANGES NEEDED (delegates to setup.acolytes-creator)
 
 ---
 

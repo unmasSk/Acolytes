@@ -206,7 +206,7 @@ def create_agent(name, module=None, sub_module=None):
         # Insert 14 empty memory records
         for memory_type in MEMORY_TYPES:
             conn.execute(
-                "INSERT INTO agent_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO agents_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                 (agent_id, memory_type, '{}', timestamp, timestamp)
             )
         
@@ -257,7 +257,7 @@ def update_memory(agent_name, memory_type, content):
         
         # Update memory
         cursor = conn.execute(
-            "UPDATE agent_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = ?",
+            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = ?",
             (json.dumps(content) if isinstance(content, dict) else content, timestamp, agent_id, memory_type)
         )
         
@@ -292,7 +292,7 @@ def add_interaction(agent_name, interaction_type, request, response,
         
         # Get current interactions memory
         cursor = conn.execute("""
-            SELECT content FROM agent_memory 
+            SELECT content FROM agents_memory 
             WHERE agent_id = ? AND memory_type = 'interactions'
         """, (agent_id,))
         
@@ -301,7 +301,7 @@ def add_interaction(agent_name, interaction_type, request, response,
             # Create interactions memory if doesn't exist
             content = {"history": []}
             conn.execute(
-                "INSERT INTO agent_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                "INSERT INTO agents_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                 (agent_id, 'interactions', json.dumps(content), timestamp, timestamp)
             )
         else:
@@ -339,7 +339,7 @@ def add_interaction(agent_name, interaction_type, request, response,
         
         # Update the memory
         cursor = conn.execute(
-            "UPDATE agent_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = 'interactions'",
+            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = 'interactions'",
             (json.dumps(content), timestamp, agent_id)
         )
         
@@ -368,7 +368,7 @@ def get_memory(agent_name, memory_type, limit=None):
     
     cursor = conn.execute("""
         SELECT m.content, m.updated_at
-        FROM agent_memory m
+        FROM agents_memory m
         JOIN acolytes a ON m.agent_id = a.id
         WHERE a.name = ? AND m.memory_type = ?
     """, (agent_name, memory_type))
