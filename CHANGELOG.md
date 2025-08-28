@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added dependency check warning in setup.md
 - Updated README with command table including new /acolytes command
 
+## [1.0.7] - 2025-01-28
+
+### Added
+- **ROADMAP**: Comprehensive 7-phase evolution plan added to README.md with version targets from v1.1.0 to v2.0.0
+- Visual project timeline showing development phases, timelines, and key deliverables for transparent development roadmap
+- Dashboard feature prioritization with v1.1.0 target as Priority 1 deliverable for enhanced user experience
+- Strategic communication of project future direction to users and contributors through detailed roadmap documentation
+
 ## [1.0.6] - 2025-01-28
 
 ### Added

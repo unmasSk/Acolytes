@@ -1,6 +1,6 @@
 escu<div align="center">
-  <img src="acolytes/data/resources/assets/logo.png" alt="Acolytes for Claude Code Logo" width="600">
-  
+<img src="acolytes/data/resources/assets/logo.png" alt="Acolytes for Claude Code Logo" width="600">
+
   <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
   <h1 style="font-size: 2.5em; margin-top: 0; font-weight: bold;">
     ♾️ <span style="color: #568ee2;">NEURAL</span> <span style="color: #6B7FDB;">MEMORY</span> <span style="color: #8B5CF6;">NETWORK</span>
@@ -81,13 +81,13 @@ Claude → 🎯 "OAuth implemented with Google & GitHub providers"
 - **Auth vs Security**: OAuth/JWT → `@service.auth`, Architecture/compliance → `@coordinator.security`
 - **Multi-Agent Workflows**: Sequential, parallel, and coordinated execution patterns
 
-
 ## ⚡ Quick Start
 
 ### Installation
 
 #### Option 1: Install from PyPI (Recommended)
-````bash
+
+```bash
 # Install Acolytes package
 pip install acolytes
 
@@ -102,10 +102,11 @@ claude --dangerously-skip-permissions -c
 
 # Inside Claude, run setup
 /setup
-````
+```
 
 #### Option 2: Install from Source
-````bash
+
+```bash
 # Clone repository
 git clone https://github.com/unmasSk/Acolytes.git
 cd Acolytes
@@ -116,7 +117,7 @@ pip install -e .
 # Initialize Acolytes system
 acolytes init
 
-# Navigate to YOUR project  
+# Navigate to YOUR project
 cd /path/to/your/project
 
 # Open Claude with safety bypass (⚠️ hooks protect against malicious commands)
@@ -124,25 +125,28 @@ claude --dangerously-skip-permissions -c
 
 # Inside Claude, run setup
 /setup
-````
+```
 
 ### Available Commands
-| Command       | Description                                           | Agent Integration                 |
-| ------------- | ----------------------------------------------------- | --------------------------------- |
-| `/setup`      | Integrates Acolytes into your project (new or existing) - 6-phase analysis | 5 setup agents + Acolytes creation |
-| `/commit`     | Smart commits with auto-versioning, changelog, and git tagging | `@docs.specialist` + bump2version |
-| `/pr`         | Create pull request with comprehensive analysis       | `@ops.git` + review agents       |
-| `/acolytes`      | Process pending FLAGS from agents                     | `@flags.agent` coordinator        |
-| `/save`       | Save current session to SQLite database               | Session persistence               |  |
+
+| Command     | Description                                                                | Agent Integration                  |
+| ----------- | -------------------------------------------------------------------------- | ---------------------------------- | --- |
+| `/setup`    | Integrates Acolytes into your project (new or existing) - 6-phase analysis | 5 setup agents + Acolytes creation |
+| `/commit`   | Smart commits with auto-versioning, changelog, and git tagging             | `@docs.specialist` + bump2version  |
+| `/pr`       | Create pull request with comprehensive analysis                            | `@ops.git` + review agents         |
+| `/acolytes` | Process pending FLAGS from agents                                          | `@flags.agent` coordinator         |
+| `/save`     | Save current session to SQLite database                                    | Session persistence                |     |
 
 ### How Claude Orchestrates
 
 **Claude auto-selects the right agent based on context:**
+
 - USER> "Optimize my API endpoints" → Claude automatically invokes `@backend.python` or `@backend.nodejs`
 - USER> "The authentication is broken" → Claude knows to invoke `@service.auth`
 - USER> "Add payment processing to my app" → Claude orchestrates `@business.payment` + `@database.postgres` + `@backend.api`
 
 **Or you can explicitly request an agent:**
+
 - USER> "Use @database.postgres to fix the indexing issues" → Claude directs task to specified agent
 - USER> "Ask @coordinator.security about compliance requirements" → Claude consults the security coordinator
 
@@ -214,20 +218,22 @@ Main Claude Session (Orchestrator)
 ### MCP Server Integration
 
 **Required MCPs:**
+
 ```yaml
-mcp-code-index:        # Fast code search and indexing
-mcp-server-fetch:      # External API interactions  
-sequential-thinking:   # Complex reasoning chains
-playwright:            # Browser automation and testing
-context7:              # Advanced context management
+mcp-code-index: # Fast code search and indexing
+mcp-server-fetch: # External API interactions
+sequential-thinking: # Complex reasoning chains
+playwright: # Browser automation and testing
+context7: # Advanced context management
 ```
 
 **Optional MCPs:**
+
 ```yaml
-mcp-server-sqlite:     # Database operations (if needed)
-mcp-server-git:        # Git operations (if needed)
-n8n-mcp:               # Workflow automation
-21st-dev_magic:        # UI/UX enhancements
+mcp-server-sqlite: # Database operations (if needed)
+mcp-server-git: # Git operations (if needed)
+n8n-mcp: # Workflow automation
+21st-dev_magic: # UI/UX enhancements
 ```
 
 ## 🚀 Real-World Usage Examples
@@ -239,6 +245,7 @@ USER> "Implement OAuth authentication with Google and GitHub"
 ```
 
 Claude automatically orchestrates:
+
 1. `@coordinator.security` → Recommends OAuth2 + JWT hybrid approach
 2. `@service.auth` → Implements OAuth flow with passport.js
 3. `@database.postgres` → Creates users, sessions, oauth_providers tables
@@ -254,6 +261,7 @@ USER> "The API is timing out on user searches"
 ```
 
 Automatic FLAGS workflow:
+
 1. Claude → `@acolyte.api` analyzes endpoints
 2. `@acolyte.api` → 🚩 FLAG: "Missing database indexes on search columns"
 3. Claude → `@database.postgres` processes FLAG
@@ -269,6 +277,7 @@ USER> "Migrate from MongoDB to PostgreSQL"
 ```
 
 Coordinated execution:
+
 1. `@coordinator.migration` → Creates migration strategy
 2. `@database.mongodb` + `@database.postgres` → Schema mapping
 3. FLAGS created for data type mismatches
@@ -278,9 +287,87 @@ Coordinated execution:
 
 All decisions preserved in Jobs system for future reference
 
-## 🗺️ Roadmap
+## 🗺️ Roadmap to Revolution
 
-Coming soon...
+**Current Version: v1.0.6** ✨ → **Target Version: v2.0.0** 🚀
+
+### 🎯 7-Phase Evolution (6 Months)
+
+<table align="center">
+<tr>
+<td align="center" width="14%">
+<strong>📊 Phase 1</strong><br>
+<small><strong>v1.1.0</strong></small><br>
+<small>2 weeks</small><br><br>
+<strong>Dashboard & Control Center</strong><br>
+<small>Real-time agent monitoring, FLAGS visualization, performance metrics</small>
+</td>
+<td align="center" width="14%">
+<strong>📋 Phase 2</strong><br>
+<small><strong>v1.2.0</strong></small><br>
+<small>3 weeks</small><br><br>
+<strong>Templates & Patterns</strong><br>
+<small>8 specialized templates: E-commerce, SaaS, API, Mobile, ML, CMS</small>
+</td>
+<td align="center" width="14%">
+<strong>📦 Phase 3</strong><br>
+<small><strong>v1.3.0</strong></small><br>
+<small>2 weeks</small><br><br>
+<strong>Export/Import & Portability</strong><br>
+<small>Configuration portability, backup/restore, team sharing</small>
+</td>
+<td align="center" width="14%">
+<strong>🔄 Phase 4</strong><br>
+<small><strong>v1.4.0</strong></small><br>
+<small>2 weeks</small><br><br>
+<strong>Auto-Update & Intelligence</strong><br>
+<small>Zero-downtime updates, smart rollouts, community agents</small>
+</td>
+<td align="center" width="14%">
+<strong>🧠 Phase 5</strong><br>
+<small><strong>v1.5.0</strong></small><br>
+<small>3 weeks</small><br><br>
+<strong>Knowledge Management</strong><br>
+<small>Cross-project learning, pattern recognition, collective intelligence</small>
+</td>
+<td align="center" width="14%">
+<strong>🏢 Phase 6</strong><br>
+<small><strong>v1.6.0</strong></small><br>
+<small>4 weeks</small><br><br>
+<strong>Enterprise Features</strong><br>
+<small>Code review automation, notifications, achievements, RBAC</small>
+</td>
+<td align="center" width="14%">
+<strong>🌟 Phase 7</strong><br>
+<small><strong>v2.0.0</strong></small><br>
+<small>4 weeks</small><br><br>
+<strong>Next-Gen Revolution</strong><br>
+<small>Semantic routing, enhanced parallel spawning, universal MCP</small>
+</td>
+</tr>
+</table>
+
+### 🎯 What's Coming Next
+
+**🔥 Priority 1 - Dashboard Revolution (v1.1.0)**
+
+```bash
+/acolytes --dashboard  # Real-time command center with live agent monitoring
+```
+
+- 📈 **Real-time metrics** - Performance, success rates, agent health
+- 🚩 **FLAGS visualization** - Live coordination system monitoring
+- 🎯 **Agent status grid** - All 59 agents at a glance
+- ⚡ **<500ms rendering** - Lightning-fast dashboard experience
+
+**🚀 The V2.0.0 Vision:**
+
+- **Universal MCP compatibility** - Works with any MCP client
+- **Enterprise-grade reliability** - Production-ready for teams
+- **Autonomous parallel coordination** - 15+ Claude instances working together
+- **Collective intelligence** - Cross-project learning and knowledge sharing
+
+> _"From Revolutionary v1.0.6 to Legendary v2.0.0 - The Future of AI Development"_
 
 ## 🌟 Why Acolytes for Claude Code is Revolutionary
 
@@ -298,15 +385,15 @@ With commands like /todo, /acolytes, /save, and /mcp, Acolytes for Claude Code p
 
 ## 🎯 Acolytes for Claude Code vs Standard Claude Code
 
-| Feature               | Standard Claude Code  | Acolytes for Claude Code                        |
-| --------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**            | Single AI assistant   | **59 specialized agents + project Acolytes**    |
-| **Memory**            | Session-only context  | **Persistent SQLite + cross-session Jobs**      |
-| **Coordination**      | Manual task switching | **Automatic FLAGS system with handoffs**        |
-| **Agent Selection**   | User must specify     | **Auto-routing based on context**               |
-| **Setup**             | Manual configuration  | **Auto-detection + 6-phase analysis**           |
-| **Project Learning**  | Starts from zero      | **Builds cumulative module knowledge**          |
-| **Error Recovery**    | Manual intervention   | **Auto-FLAGS creation for cross-domain issues** |
+| Feature              | Standard Claude Code  | Acolytes for Claude Code                        |
+| -------------------- | --------------------- | ----------------------------------------------- |
+| **Agents**           | Single AI assistant   | **59 specialized agents + project Acolytes**    |
+| **Memory**           | Session-only context  | **Persistent SQLite + cross-session Jobs**      |
+| **Coordination**     | Manual task switching | **Automatic FLAGS system with handoffs**        |
+| **Agent Selection**  | User must specify     | **Auto-routing based on context**               |
+| **Setup**            | Manual configuration  | **Auto-detection + 6-phase analysis**           |
+| **Project Learning** | Starts from zero      | **Builds cumulative module knowledge**          |
+| **Error Recovery**   | Manual intervention   | **Auto-FLAGS creation for cross-domain issues** |
 
 ## 🐛 Issues & Bug Reports
 
@@ -369,18 +456,17 @@ Your feedback helps improve Acolytes for everyone!
 
 ### **💬 What Developers Say**
 
-> *"It's like having a senior dev team that never sleeps, never forgets, and never needs explanations twice."*
+> _"It's like having a senior dev team that never sleeps, never forgets, and never needs explanations twice."_
 
-> *"FLAGS changed everything. My agents solve problems I didn't even know existed."*
+> _"FLAGS changed everything. My agents solve problems I didn't even know existed."_
 
-> *"First time I've seen AI actually understand my entire codebase."*
+> _"First time I've seen AI actually understand my entire codebase."_
 
 ## 📜 License
 
 This project is licensed under the **[MIT License](./LICENSE)** - see the [LICENSE](./LICENSE) file for details.
 
 Free for commercial and personal use.
-
 
 ## ⭐ The Future is Here
 
@@ -389,8 +475,9 @@ Free for commercial and personal use.
 ```
 
 Imagine typing **"implement authentication"** and watching as:
+
 - 🔐 Security architects design the system
-- 🗄️ Database experts create the schema  
+- 🗄️ Database experts create the schema
 - ⚙️ Backend engineers write the logic
 - 🎨 Frontend developers build the UI
 - 🚩 All coordinating through FLAGS, automatically

@@ -17,9 +17,7 @@ CLAUDE.md
 SESSIONS/**
 
 # Development and research notes (not for public repo)
-MEJORAS-INVESTIGACION/
-TODO/
-
+.TODO
 # 🚨 CRITICAL: Memory directory with personal data - NEVER commit!
 .claude/memory/
 
