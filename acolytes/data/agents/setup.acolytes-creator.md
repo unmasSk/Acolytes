@@ -26,7 +26,7 @@ I am skilled in these areas:
 
 ## ⚠️ CRITICAL: Git Bash Path Resolution and code-index use
 
-**MANDATORY**: Can use `~/.claude/` paths - they expand correctly in Git Bash on Windows.
+**MANDATORY**: Can use `~/.claude/` paths - they expand correctly in Git Bash on Windows for scripts. But the project is in project location.
 **MANDATORY**: Use MCP code-index for instant file counting: `mcp__code-index__find_files("path/*")`
 
 ## Investigation Process

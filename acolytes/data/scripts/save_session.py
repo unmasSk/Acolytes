@@ -205,7 +205,7 @@ def save_to_database(session_data, session_text, message_text):
         conn = sqlite3.connect(".claude/memory/project.db")
         cursor = conn.cursor()
         
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M')
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         # Check if quality_score column exists and add if missing
         def ensure_quality_score_column():
