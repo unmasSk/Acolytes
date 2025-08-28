@@ -132,7 +132,7 @@ claude --dangerously-skip-permissions -c
 | `/setup`      | Integrates Acolytes into your project (new or existing) - 6-phase analysis | 5 setup agents + Acolytes creation |
 | `/commit`     | Smart commits with auto-versioning, changelog, and git tagging | `@docs.specialist` + bump2version |
 | `/pr`         | Create pull request with comprehensive analysis       | `@ops.git` + review agents       |
-| `/flags`      | Process pending FLAGS from agents                     | `@flags.agent` coordinator        |
+| `/acolytes`      | Process pending FLAGS from agents                     | `@flags.agent` coordinator        |
 | `/save`       | Save current session to SQLite database               | Session persistence               |  |
 
 ### How Claude Orchestrates
@@ -294,7 +294,7 @@ Unlike simple prompt templates, Acolytes for Claude Code is a complete developme
 
 ### **Production-Ready Command System**
 
-With commands like /todo, /flags, /save, and /mcp, Acolytes for Claude Code provides a complete workflow management system that bridges sessions and maintains project continuity.
+With commands like /todo, /acolytes, /save, and /mcp, Acolytes for Claude Code provides a complete workflow management system that bridges sessions and maintains project continuity.
 
 ## 🎯 Acolytes for Claude Code vs Standard Claude Code
 
@@ -329,7 +329,7 @@ Your feedback helps improve Acolytes for everyone!
 - **[Setup Command](./acolytes/data/commands/setup.md)** - 6-phase project initialization
 - **[Commit Command](./acolytes/data/commands/commit.md)** - Smart commits with auto-versioning
 - **[PR Command](./acolytes/data/commands/pr.md)** - Pull request automation
-- **[FLAGS Command](./acolytes/data/commands/flags.md)** - Process coordination tasks
+- **[FLAGS Command](./acolytes/data/commands/acolytes.md)** - Process coordination tasks
 - **[Save Command](./acolytes/data/commands/save.md)** - Session persistence
 
 ### **Templates & Resources**

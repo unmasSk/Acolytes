@@ -110,12 +110,17 @@ Following [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemV
 **MINOR** (1.0.0 → 1.1.0) - Backward compatible new functionality:
 
 - ✨ `feat:` New features
-- ⚡️ `perf:` Performance improvements
-- 🚸 `feat:` UX improvements
-- ➕ `chore:` Add dependencies (if adds functionality)
-- 🏷️ `feat:` Add types
+- ⚡️ `perf:` Performance improvements (if adds new capabilities)
+- 🚸 `feat:` UX improvements (new features)
+- 🏷️ `feat:` Add types (if public API)
 - 🔊 `feat:` Add logs (if part of public API)
-- 🦺 `feat:` Add validation
+- 🦺 `feat:` Add validation (new feature)
+- 🚩 `feat:` Add feature flags
+- 📈 `feat:` Add analytics
+- ♿️ `feat:` Add accessibility features
+- 🌐 `feat:` Add internationalization
+- 👔 `feat:` Add business logic
+- ✈️ `feat:` Add offline support
 
 **MAJOR** (1.0.0 → 2.0.0) - Backward incompatible changes:
 
@@ -133,6 +138,17 @@ Following [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html) (SemV
 - 🔧 `chore:` Build/config changes
 - 🎨 `style:` Code structure improvements
 - 🚧 `wip:` Work in progress (with --wip flag)
+- ➕ `chore:` Add dependencies (internal only)
+- ➖ `chore:` Remove dependencies (internal only)
+- 📌 `chore:` Pin dependencies
+- 🙈 `chore:` Update .gitignore
+- 👥 `chore:` Update contributors
+- 📄 `chore:` Update license
+- 🚚 `refactor:` Move/rename files (non-breaking)
+- ⚰️ `refactor:` Remove dead code (non-breaking)
+- 🧪 `test:` Add failing tests
+- 🤡 `test:` Mock things
+- 📸 `test:` Add snapshots
 
 ## Execution Process
 
@@ -196,24 +212,24 @@ I'll analyze the changes to determine:
 
 Based on file analysis, I'll select the most appropriate emoji:
 
-- **package.json/requirements.txt changes**: ➕ (add dependency) or ➖ (remove dependency)
-- **.gitignore changes**: 🙈 (update .gitignore)
-- **CI/CD files**: 🚀 (CI improvements) or 👷 (CI build system)
-- **Documentation files**: 📝 (docs) or 💡 (code comments)
-- **Test files**: ✅ (tests), 🧪 (failing test), 📸 (snapshots), 🤡 (mocks)
-- **Security fixes**: 🔒️ (security issues)
-- **Performance**: ⚡️ (performance improvements)
-- **UI/UX**: 💄 (style), 📱 (responsive), 🚸 (UX), 💫 (animations)
-- **Database**: 🗃️ (database changes)
-- **Breaking changes**: 💥 (breaking changes)
-- **Critical fixes**: 🚑️ (critical hotfix)
-- **Code structure**: 🎨 (structure), ♻️ (refactor), ⚰️ (dead code)
-- **Assets**: 🍱 (assets)
-- **Accessibility**: ♿️ (accessibility)
-- **Logs**: 🔊 (add logs), 🔇 (remove logs)
-- **Feature flags**: 🚩 (feature flags)
-- **Validation**: 🦺 (validation)
-- **Offline support**: ✈️ (offline support)
+- **package.json/requirements.txt changes**: ➕ (add dependency) or ➖ (remove dependency) → Usually NO bump
+- **.gitignore changes**: 🙈 (update .gitignore) → NO bump
+- **CI/CD files**: 🚀 (CI improvements) or 👷 (CI build system) → Usually NO bump
+- **Documentation files**: 📝 (docs) or 💡 (code comments) → NO bump
+- **Test files**: ✅ (tests), 🧪 (failing test), 📸 (snapshots), 🤡 (mocks) → NO bump
+- **Security fixes**: 🔒️ (security issues) → PATCH bump
+- **Performance**: ⚡️ (performance improvements) → PATCH (fix) or MINOR (new capability)
+- **UI/UX**: 💄 (style) → NO bump, 📱 (responsive) → MINOR, 🚸 (UX) → MINOR, 💫 (animations) → NO bump
+- **Database**: 🗃️ (database changes) → Depends on impact
+- **Breaking changes**: 💥 (breaking changes) → MAJOR bump
+- **Critical fixes**: 🚑️ (critical hotfix) → PATCH bump
+- **Code structure**: 🎨 (structure) → NO bump, ♻️ (refactor) → NO bump, ⚰️ (dead code) → NO bump
+- **Assets**: 🍱 (assets) → Usually NO bump
+- **Accessibility**: ♿️ (accessibility) → MINOR bump (new feature)
+- **Logs**: 🔊 (add logs) → MINOR if public API, 🔇 (remove logs) → PATCH if fixing bug
+- **Feature flags**: 🚩 (feature flags) → MINOR bump
+- **Validation**: 🦺 (validation) → MINOR bump (new feature)
+- **Offline support**: ✈️ (offline support) → MINOR bump (new feature)
 
 ### Step 4: Stage Changes
 
@@ -228,9 +244,9 @@ fi
 git diff --cached --name-status
 ```
 
-### Step 5: Create Smart Commit
+### Step 5: Prepare Commit Message
 
-I'll create a conventional commit message with emoji:
+I'll prepare a conventional commit message with emoji (but NOT execute it yet):
 
 **Format**: `emoji type(scope): description`
 
@@ -256,50 +272,83 @@ except Exception as e:
     print('unknown')
 ")
 
-# Create commit with emoji, conventional format, and session tracking
-git commit -m "✨ feat(auth): add OAuth2 integration with GitHub
+# Prepare the commit message (NOT executed yet)
+COMMIT_MESSAGE="✨ feat(auth): add OAuth2 integration with GitHub
 
 session: $SESSION_ID"
 ```
 
 ### Step 6: Update Changelog
 
-After the commit is created, I'll automatically invoke @docs.specialist to:
+BEFORE creating the actual commit, I'll invoke @docs.specialist with the planned message to:
 
-- Analyze the commit message
+- Analyze the planned commit message
 - Update CHANGELOG.md with technical details
-- Maintain proper version history
+- Add the new version entry
+- Stage the updated CHANGELOG.md
 
 ### Step 7: Automatic Version Bump
 
 Based on the commit type, bump2version will:
 
 - Detect version bump type (patch/minor/major)
-- Update all version files automatically
-- Create annotated git tag
+- Update all version files automatically (pyproject.toml, etc.)
+- **NO commit, NO tag** (controlled by .bumpversion.cfg)
 
 ```bash
 # Execute version bump based on commit type
-bump2version [patch|minor|major] --no-commit --tag
+# This ONLY updates version files, does NOT commit or tag
+bump2version [patch|minor|major] --no-commit --no-tag
+```
+
+### Step 8: Create Single Atomic Commit
+
+Now I'll create ONE single commit with ALL changes:
+
+```bash
+# Stage all modified files (original changes + CHANGELOG + version files)
+git add -A
+
+# Create the single atomic commit with everything
+git commit -m "$COMMIT_MESSAGE"
+```
+
+This single commit includes:
+- Your original code changes
+- Updated CHANGELOG.md from @docs.specialist
+- Updated version files from bump2version
+- Proper emoji and conventional format
+
+### Step 9: Create Version Tag
+
+After the successful commit, create the version tag:
+
+```bash
+# Create annotated tag pointing to the commit
+git tag -a v1.0.7 -m "Release version 1.0.7"
 ```
 
 ## Commit Examples
 
 - `✨ feat(auth): add OAuth2 integration with GitHub` → Minor version bump
 - `🐛 fix(api): resolve timeout issue in user endpoints` → Patch version bump
-- `📝 docs(readme): update installation instructions` → Patch version bump
-- `⚡️ perf(database): optimize query performance` → Minor version bump
+- `📝 docs(readme): update installation instructions` → No version bump
+- `⚡️ perf(database): optimize query performance` → Patch version bump (bug fix) or Minor (new capability)
 - `🔒️ fix(security): patch XSS vulnerability` → Patch version bump
 - `💥 feat(api): breaking API changes` → Major version bump
 - `♻️ refactor(components): extract reusable logic` → No version bump
-- `➕ chore(deps): add lodash for utilities` → Minor version bump
-- `🎨 style(components): improve code structure` → Patch version bump
+- `➕ chore(deps): add lodash for utilities` → No version bump (internal dependency)
+- `🎨 style(components): improve code structure` → No version bump
 - `🚑️ fix(critical): patch memory leak` → Patch version bump
+- `✅ test(auth): add unit tests for login` → No version bump
+- `🔧 chore(config): update webpack configuration` → No version bump
 
 ## Requirements
 
 - **bump2version** installed: `pip install bump2version`
-- **.bumpversion.cfg** configured in project root
+- **.bumpversion.cfg** configured in project root with:
+  - `commit = False` (bump2version should NOT commit)
+  - `tag = False` (bump2version should NOT tag)
 - **@docs.specialist** agent available
 
 ## Important Notes
@@ -404,32 +453,3 @@ Automatically push to remote after successful commit:
 /commit --validate --push  # Validate, commit, and push
 ```
 
-==============================================================================
-
-● Tienes razón, el commit.md podría estar más claro sobre el orden exacto. El flujo que describiste es mucho más lógico:
-
-Flujo correcto debería ser:
-
-1. Analizar cambios → determinar tipo de commit (feat/fix/etc)
-2. Planear mensaje de commit mentalmente (sin ejecutar)
-3. Invocar @docs.specialist con el commit planeado → actualiza CHANGELOG.md
-4. Ejecutar bump2version → actualiza archivos de versión + crea tag (pero NO commitea)
-5. UN SOLO git commit final con:
-
-   - Todos los cambios originales
-   - CHANGELOG.md actualizado
-   - Archivos de versión actualizados
-   - El mensaje planeado en paso 2
-
-Esto tiene sentido porque:
-
-- El tag queda apuntando al commit correcto (no a uno intermedio)
-- Un solo commit atomic con todo
-- El CHANGELOG refleja los cambios antes de commitear
-
-El documento actual dice "Step 5: Create Smart Commit" antes de "Step 6: Update Changelog", lo cual es confuso porque
-implica que primero commiteas y luego actualizas el CHANGELOG.
-
-¿Quieres que proponga una versión más clara del commit.md con el orden correcto?
-
-==============================================================================

@@ -5,6 +5,15 @@ All notable changes to the Acolytes for Claude Code project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 2025-08-28
+
+### Changed
+- Fixed commit.md workflow to show correct order: prepare message → update changelog → bump version → single commit → tag
+- Updated semantic versioning rules to strictly follow SemVer 2.0.0 specification
+- Clarified that docs/style/chore/test changes should NOT bump version
+- Added dependency check warning in setup.md
+- Updated README with command table including new /acolytes command
+
 ## [1.0.6] - 2025-01-28
 
 ### Added

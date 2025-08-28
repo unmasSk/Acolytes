@@ -126,7 +126,7 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 **YOUR ONLY JOB**:
 
 ```bash
-# When user says "check flags", "/flags" or you detect pending work:
+# When user says "check flags", "/acolytes" or you detect pending work:
 "@flags.agent, orchestrate all pending flags"
 
 # Agent response tells you EXACTLY what to do:
