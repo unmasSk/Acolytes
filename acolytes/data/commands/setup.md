@@ -14,8 +14,6 @@ This system provides intelligent project setup with Acolytes for Claude Code's +
 /setup --update # Update existing setup (new modules, refresh agents)
 ```
 
----
-
 ## 🚨 **MANDATORY EXECUTION RULE**
 
 **PARALLEL EXECUTION = ONE MESSAGE WITH MULTIPLE TASK CALLS**
@@ -44,8 +42,6 @@ Claude's single message contains:
 4. **NEVER** ask whether to create — just create
 5. **ALL** documentation, code, comments, SQLite in English
 6. **ALWAYS** use MULTIPLE TASK CALLS IN ONE MESSAGE for parallel execution
-
----
 
 ## 🎯 UNIFIED FLOW FOR BOTH PROJECT TYPES
 
@@ -314,6 +310,12 @@ PLAN_STRATEGY_ORGANIZATION:
 
 ---
 
+**⚠️ IMPORTANT**: After Phase 2, @setup.infrastructure will report any missing dependencies (🚨 MISSING DEPENDENCIES).
+If dependencies are missing (npm install, Docker, database clients), ask the user for permission to install them.
+Do NOT proceed to Phase 3 until critical dependencies are installed or user explicitly says to skip.
+
+---
+
 ### 3️⃣ **PHASE 3: CLAUDE.MD CREATION**
 
 **WHAT YOU (CLAUDE) MUST DO**: Generate a customized CLAUDE.md file using the template and documentation from Phase 2. Fill all template placeholders with project-specific information following the specifications below.
@@ -373,8 +375,6 @@ CLAUDE_MD_GENERATION:
     - {{agent_example}} → primary agent for project domain
     - {{first_agent}}, {{second_agent}}, {{third_agent}} → example agents for parallel execution
 ```
-
----
 
 ### 4️⃣ **PHASE 4: JOBS & AGENT CREATION**
 
@@ -437,8 +437,6 @@ ACOLYTE_ACTIVATION:
     - Set up knowledge base for future module implementation
     - Prepare memory structures for development phase
 ```
-
----
 
 ### 6️⃣ **PHASE 6: FINALIZATION**
 
@@ -506,13 +504,11 @@ NEXT_STEPS:
   new_projects: "Ready to begin development following the generated roadmap and job structure"
 ```
 
----
-
 ## 📁 **STRUCTURE CREATED BY /setup**
 
 ```
 [PROJECT_ROOT]/
-├── CLAUDE.md                   # PROJECT INSTRUCTIONS
+├── CLAUDE.md                       # PROJECT INSTRUCTIONS
 ├── .claude/
 │   ├── project/                    # PROJECT DOCUMENTATION (NEW!)
 │   │   ├── vision.md               # Project vision and business context
@@ -530,25 +526,24 @@ NEXT_STEPS:
 │       └── project.db              # SQLite with agent memories, jobs, setup data
 ```
 
----
-
 ## 🚩 **FLAGS Protocol**
 
-**Claude's Role**: Check workable flags and invoke agents, NOT read flag content
+**How FLAGS work for Claude**:
 
-```bash
-# Claude checks summary ONLY (no context overload)
-python .claude/scripts/agent_db.py get-workable-flags
-# Result: @acolyte.auth: 3 flags, @acolyte.api: 1 flag
-# Claude invokes: "@acolyte.auth review your pending flags"
+1. **User asks to see flags**: Claude runs `python ~/.claude/scripts/agent_db.py get-workable-flags` and shows pending flags
+2. **User types /flags**: Claude invokes `@flags.agent` to orchestrate all pending flags
+3. **@flags.agent responds**: Tells Claude EXACTLY how to invoke agents (parallel or sequential)
+4. **Claude follows instructions**: Invokes agents as directed, with simple prompt "process your pending flags"
+
+**Example flow**:
+```
+User: /flags
+Claude: "@flags.agent, orchestrate all pending flags"
+@flags.agent: "Execute in parallel: [@service.auth, @backend.nodejs]"
+Claude: [Invokes both agents in ONE message with Task calls]
 ```
 
-**Agent Workflow**:
-
-1. **Check**: `python ~/.claude/scripts/agent_db.py get-agent-flags "@agent-name"`
-2. **Work**: Process flags with full context
-3. **Create**: `python ~/.claude/scripts/agent_db.py create-flag-for-agent --target_agent "@other-agent" ...`
-4. **Complete**: `python ~/.claude/scripts/agent_db.py complete-flag [id] "@agent-name"`
+**IMPORTANT**: Claude never reads flag content or decides execution order - @flags.agent handles all orchestration
 
 ---
 
@@ -584,9 +579,10 @@ User: /setup
 
 Claude:
 1. [Phase 1] Environment + Database setup ✅
-2. [Phase 2]
+2. [Phase 2] 
    - IF existing project: "Analyze this project using 4 setup agents IN PARALLEL"
    - IF new project: "Starting requirements interview - Business & Domain questions"
+   - Check for missing dependencies and install if needed ⚠️
 3. [Phase 3] Generate CLAUDE.md with project context ✅
 4. [Phase 4] Create acolytes + jobs (if new project) ✅
 5. [Phase 5] Initialize agent memories ✅

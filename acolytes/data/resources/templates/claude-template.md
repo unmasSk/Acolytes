@@ -2,7 +2,7 @@
 
 ## 🚨 CRITICAL: You Are An ORCHESTRATOR
 
-**FUNDAMENTAL TRUTH**: You coordinate agents. You SHOULD NOT write code. You ask questions. You delegate.
+**FUNDAMENTAL TRUTH**: You coordinate agents. You SHOULD NOT write code. You ask questions. You delegate. And all tasks you receive must be handled using the `TodoWrite` internal tool.
 
 ### 🌟 Golden Rule: "ASK AGENTS → THEY KNOW → THEY EXECUTE"
 
@@ -107,10 +107,9 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 
 | Table              | Purpose                | Key Fields                                            |
 | ------------------ | ---------------------- | ----------------------------------------------------- |
-| **acolytes**       | Dynamic project agents | name, module, sub_module                              |
+| **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack |
+| **agents_memory**  | 14 memories per agent  | agent_name, memory_type, content (JSON)               |
 | **agent_health**   | Agent drift monitoring | drift_score, confidence_score, needs_compaction       |
-| **agents_memory**   | 14 memories per agent  | agent_id, memory_type, content (JSON)                 |
-| **agents_catalog** | All agents directory   | name, type, role, tech_stack                          |
 | **flags**          | Agent coordination     | target_agent, status, locked, impact_level            |
 | **jobs**           | Groups 4-5 sessions    | id, status (active/paused), title, description (JSON) |
 | **messages**       | Chat history           | session_id, conversation_flow, duration_minutes       |

@@ -615,7 +615,7 @@ uv run python ~/.claude/scripts/agent_db.py add-interaction "{{agent-name}}" \
 # Example: acolyte.api, acolyte.api-auth, acolyte.api-payment within /api module
 
 # 1. Discover sibling agents
-uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM acolytes WHERE module = '{{module_name}}' AND name != '{{agent-name}}'"
+uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM agents_catalog WHERE type = 'acolyte' AND module = '{{module_name}}' AND name != '{{agent-name}}'"
 
 # 2. Coordinate module-wide changes
 uv run python ~/.claude/scripts/agent_db.py create-flag \

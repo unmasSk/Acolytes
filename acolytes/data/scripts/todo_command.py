@@ -45,27 +45,27 @@ def add_todo(task, priority='medium', due_date=None):
     
     # Check for @mentions for assignment
     assigned_to = None
-    agent_id = None
     if '@' in task:
         match = re.search(r'@(\S+)', task)
         if match:
-            assigned_to = match.group(1)
-            cursor.execute("SELECT id FROM agents WHERE name = ?", (assigned_to,))
+            assigned_to = f"@{match.group(1)}"
+            # Verify agent exists
+            cursor.execute("SELECT name FROM agents_catalog WHERE name = ?", (assigned_to,))
             agent = cursor.fetchone()
-            if agent:
-                agent_id = agent[0]
+            if not agent:
+                print(f"[WARNING] Agent {assigned_to} not found in catalog")
     
     cursor.execute("""
         INSERT INTO todos (
             task, priority, status, created_at, session_id,
             category, module, related_files, due_date, 
-            assigned_to, agent_id, created_by
-        ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, ?, 'user')
+            assigned_to, created_by
+        ) VALUES (?, ?, 'pending', ?, ?, ?, ?, ?, ?, ?, 'user')
     """, (
         task, priority, get_timestamp(), session_id,
         category, module,
         json.dumps(files) if files else None,
-        due_date, assigned_to, agent_id
+        due_date, assigned_to
     ))
     
     conn.commit()
@@ -245,7 +245,7 @@ def smart_analyze():
         if module:
             # Check for module-specific agent
             agent_name = f"acolyte.{module}"
-            cursor.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
+            cursor.execute("SELECT name FROM agents_catalog WHERE name = ?", (agent_name,))
             if cursor.fetchone():
                 suggested_agent = agent_name
         
@@ -303,7 +303,7 @@ def delegate_todos():
         # Then check module-based assignment
         elif module:
             agent_name = f"acolyte.{module}"
-            cursor.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
+            cursor.execute("SELECT name FROM agents_catalog WHERE name = ?", (agent_name,))
             if cursor.fetchone():
                 assigned = agent_name
         
@@ -320,19 +320,13 @@ def delegate_todos():
             assigned = category_agents.get(category)
         
         if assigned:
-            # Get agent_id
-            cursor.execute("SELECT id FROM agents WHERE name = ?", (assigned,))
-            agent = cursor.fetchone()
-            agent_id = agent[0] if agent else None
-            
             cursor.execute("""
                 UPDATE todos 
-                SET assigned_to = ?, 
-                    agent_id = ?,
+                SET assigned_to = ?,
                     updated_at = ?,
                     updated_by = 'system'
                 WHERE id = ?
-            """, (assigned, agent_id, get_timestamp(), todo_id))
+            """, (assigned, get_timestamp(), todo_id))
             
             print(f"[ASSIGNED] TODO #{todo_id} to {assigned}")
             print(f"   Task: {task[:60]}...")
@@ -434,9 +428,8 @@ def list_todos(filter_type='pending'):
             t.assigned_to, t.due_date, t.created_at, t.module,
             t.subtasks_total, t.subtasks_completed,
             t.auto_created, t.ai_suggested, t.blocked_reason,
-            a.name as agent_name
+            t.assigned_to as agent_name
         FROM todos t
-        LEFT JOIN agents a ON t.agent_id = a.id
         WHERE {where_clause}
         ORDER BY 
             CASE 

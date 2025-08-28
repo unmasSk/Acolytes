@@ -181,20 +181,22 @@ def compact_agents_memory(agent_name):
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     
-    # Get agent_id
-    cursor = conn.execute("SELECT id FROM agents WHERE name = ?", (agent_name,))
+    # Ensure agent_name starts with @
+    if not agent_name.startswith('@'):
+        agent_name = '@' + agent_name
+    
+    # Verify agent exists
+    cursor = conn.execute("SELECT name FROM agents_catalog WHERE name = ?", (agent_name,))
     agent = cursor.fetchone()
     if not agent:
-        return {"error": f"Agent '{agent_name}' not found"}
-    
-    agent_id = agent['id']
+        return {"error": f"Agent '{agent_name}' not found in catalog"}
     
     # Get all memories for this agent
     cursor = conn.execute("""
         SELECT memory_type, content 
         FROM agents_memory 
-        WHERE agent_id = ?
-    """, (agent_id,))
+        WHERE agent_name = ?
+    """, (agent_name,))
     
     memories = cursor.fetchall()
     
@@ -232,8 +234,8 @@ def compact_agents_memory(agent_name):
             conn.execute("""
                 UPDATE agents_memory 
                 SET content = ?, updated_at = ?
-                WHERE agent_id = ? AND memory_type = ?
-            """, (json.dumps(content), get_timestamp(), agent_id, memory_type))
+                WHERE agent_name = ? AND memory_type = ?
+            """, (json.dumps(content), get_timestamp(), agent_name, memory_type))
             
             compacted_types.append({
                 'type': memory_type,
@@ -244,20 +246,20 @@ def compact_agents_memory(agent_name):
     
     conn.commit()
     
-    # Update health record to clear compaction flag
-    if compacted_types:
-        conn.execute("""
-            UPDATE agent_health 
-            SET needs_compaction = 0, 
-                memory_size_kb = ?,
-                memory_size_warning = CASE 
-                    WHEN ? > 2000 THEN 'critical'
-                    WHEN ? > 1000 THEN 'large'
-                    ELSE NULL
-                END
-            WHERE agent_id = ?
-        """, (total_after, total_after, total_after, agent_id))
-        conn.commit()
+    # TODO: Update health record when agent_health table is refactored to use agent_name
+    # if compacted_types:
+    #     conn.execute("""
+    #         UPDATE agent_health 
+    #         SET needs_compaction = 0, 
+    #             memory_size_kb = ?,
+    #             memory_size_warning = CASE 
+    #                 WHEN ? > 2000 THEN 'critical'
+    #                 WHEN ? > 1000 THEN 'large'
+    #                 ELSE NULL
+    #             END
+    #         WHERE agent_name = ?
+    #     """, (total_after, total_after, total_after, agent_name))
+    #     conn.commit()
     
     conn.close()
     
@@ -273,26 +275,27 @@ def compact_agents_memory(agent_name):
 
 def auto_compact_if_needed(agent_name):
     """Check if agent needs compaction and do it automatically"""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
+    # TODO: Re-enable when agent_health table is refactored to use agent_name
+    # conn = sqlite3.connect(DB_PATH)
+    # conn.row_factory = sqlite3.Row
+    # 
+    # # Check agent health
+    # cursor = conn.execute("""
+    #     SELECT h.needs_compaction, h.memory_size_kb
+    #     FROM agent_health h
+    #     JOIN agents_catalog ac ON h.agent_name = ac.name
+    #     WHERE ac.name = ?
+    #     ORDER BY h.checked_at DESC
+    #     LIMIT 1
+    # """, (agent_name,))
+    # 
+    # health = cursor.fetchone()
+    # conn.close()
+    # 
+    # if health and (health['needs_compaction'] or health['memory_size_kb'] > 1000):
+    #     return compact_agents_memory(agent_name)
     
-    # Check agent health
-    cursor = conn.execute("""
-        SELECT h.needs_compaction, h.memory_size_kb
-        FROM agent_health h
-        JOIN agents a ON h.agent_id = a.id
-        WHERE a.name = ?
-        ORDER BY h.checked_at DESC
-        LIMIT 1
-    """, (agent_name,))
-    
-    health = cursor.fetchone()
-    conn.close()
-    
-    if health and (health['needs_compaction'] or health['memory_size_kb'] > 1000):
-        return compact_agents_memory(agent_name)
-    
-    return {'message': f"Agent '{agent_name}' does not need compaction"}
+    return {'message': f"Agent health checks temporarily disabled during refactoring"}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

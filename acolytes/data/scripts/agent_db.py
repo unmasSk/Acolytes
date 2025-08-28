@@ -182,47 +182,34 @@ def create_agent(name, module=None, sub_module=None):
         return json.dumps({"error": "Module parameter is required for acolytes"})
     
     try:
-        # Check if agent already exists in either table
-        cursor = conn.execute("SELECT 1 FROM acolytes WHERE name = ?", (name,))
-        if cursor.fetchone():
-            conn.close()
-            return json.dumps({"error": f"Agent '{name}' already exists in acolytes table"})
-        
+        # Check if agent already exists in agents_catalog
         cursor = conn.execute("SELECT 1 FROM agents_catalog WHERE name = ?", (name,))
         if cursor.fetchone():
             conn.close()
-            return json.dumps({"error": f"Agent '{name}' already exists in agents_catalog table"})
+            return json.dumps({"error": f"Agent '{name}' already exists in agents_catalog"})
         
         # Start explicit transaction
         conn.execute("BEGIN TRANSACTION")
         
-        # Insert agent in acolytes
-        cursor = conn.execute(
-            "INSERT INTO acolytes (name, module, created_at) VALUES (?, ?, ?)",
-            (name, module, timestamp)
-        )
-        agent_id = cursor.lastrowid
-        
-        # Insert 14 empty memory records
-        for memory_type in MEMORY_TYPES:
-            conn.execute(
-                "INSERT INTO agents_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-                (agent_id, memory_type, '{}', timestamp, timestamp)
-            )
-        
-        # Insert into agents_catalog for discovery
+        # Insert ONLY into agents_catalog (no more acolytes table)
         conn.execute(
             "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'acolyte', ?, ?)",
             (name, module, sub_module)
         )
+        
+        # Insert 14 empty memory records using agent_name directly
+        for memory_type in MEMORY_TYPES:
+            conn.execute(
+                "INSERT INTO agents_memory (agent_name, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                (name, memory_type, '{}', timestamp, timestamp)
+            )
         
         # Commit the transaction
         conn.commit()
         
         return json.dumps({
             "success": True, 
-            "agent_id": agent_id, 
-            "name": name,
+            "agent_name": name,
             "module": module,
             "sub_module": sub_module,
             "memories_created": len(MEMORY_TYPES),
@@ -239,33 +226,29 @@ def create_agent(name, module=None, sub_module=None):
         conn.close()
 
 def update_memory(agent_name, memory_type, content):
-    """Update specific memory for an agent"""
+    """Update specific memory for an agent using agent name"""
     if memory_type not in MEMORY_TYPES:
         return json.dumps({"error": f"Invalid memory_type. Must be one of: {MEMORY_TYPES}"})
+    
+    # Ensure agent_name starts with @
+    if not agent_name.startswith('@'):
+        agent_name = '@' + agent_name
     
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
     try:
-        # Get agent_id
-        cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
-        row = cursor.fetchone()
-        if not row:
-            return json.dumps({"error": f"Agent '{agent_name}' not found"})
-        
-        agent_id = row[0]
-        
-        # Update memory
+        # Update memory directly using agent_name (no ID lookup needed)
         cursor = conn.execute(
-            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = ?",
-            (json.dumps(content) if isinstance(content, dict) else content, timestamp, agent_id, memory_type)
+            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = ?",
+            (json.dumps(content) if isinstance(content, dict) else content, timestamp, agent_name, memory_type)
         )
         
         if cursor.rowcount == 0:
             return json.dumps({"error": f"Memory type '{memory_type}' not found for agent '{agent_name}'"})
         
         conn.commit()
-        return json.dumps({"success": True, "agent": agent_name, "memory_type": memory_type, "updated": timestamp})
+        return json.dumps({"success": True, "agent": agent_name, "memory_type": memory_type, "updated_at": timestamp})
     except Exception as e:
         conn.rollback()
         return json.dumps({"error": str(e)})
@@ -275,34 +258,31 @@ def update_memory(agent_name, memory_type, content):
 def add_interaction(agent_name, interaction_type, request, response, 
                    files_touched=None, flags_created=None, flags_processed=None,
                    delegated_to=None, outcome='success'):
-    """Add a new interaction to agent's interactions memory
-    This appends to the history array in the interactions memory
+    """Add a new interaction to agent's history memory
+    This appends to the history array in the history memory type
     """
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
+    # Ensure agent_name starts with @
+    if not agent_name.startswith('@'):
+        agent_name = '@' + agent_name
+    
     try:
-        # Get agent_id
-        cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
-        row = cursor.fetchone()
-        if not row:
-            return json.dumps({"error": f"Agent '{agent_name}' not found"})
         
-        agent_id = row[0]
-        
-        # Get current interactions memory
+        # Get current history memory (interactions was renamed to history)
         cursor = conn.execute("""
             SELECT content FROM agents_memory 
-            WHERE agent_id = ? AND memory_type = 'interactions'
-        """, (agent_id,))
+            WHERE agent_name = ? AND memory_type = 'history'
+        """, (agent_name,))
         
         row = cursor.fetchone()
         if not row:
-            # Create interactions memory if doesn't exist
+            # Create history memory if doesn't exist
             content = {"history": []}
             conn.execute(
-                "INSERT INTO agents_memory (agent_id, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-                (agent_id, 'interactions', json.dumps(content), timestamp, timestamp)
+                "INSERT INTO agents_memory (agent_name, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
+                (agent_name, 'history', json.dumps(content), timestamp, timestamp)
             )
         else:
             content = json.loads(row[0]) if row[0] else {"history": []}
@@ -339,8 +319,8 @@ def add_interaction(agent_name, interaction_type, request, response,
         
         # Update the memory
         cursor = conn.execute(
-            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_id = ? AND memory_type = 'interactions'",
-            (json.dumps(content), timestamp, agent_id)
+            "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = 'history'",
+            (json.dumps(content), timestamp, agent_name)
         )
         
         conn.commit()
@@ -358,19 +338,22 @@ def add_interaction(agent_name, interaction_type, request, response,
 
 def get_memory(agent_name, memory_type, limit=None):
     """Get specific memory content for an agent
-    For 'interactions' memory, only returns last 10 entries by default
+    For 'history' memory, only returns last 10 entries by default
     """
     if memory_type not in MEMORY_TYPES:
         return json.dumps({"error": f"Invalid memory_type. Must be one of: {MEMORY_TYPES}"})
+    
+    # Ensure agent_name starts with @
+    if not agent_name.startswith('@'):
+        agent_name = '@' + agent_name
     
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     
     cursor = conn.execute("""
-        SELECT m.content, m.updated_at
-        FROM agents_memory m
-        JOIN acolytes a ON m.agent_id = a.id
-        WHERE a.name = ? AND m.memory_type = ?
+        SELECT content, updated_at
+        FROM agents_memory
+        WHERE agent_name = ? AND memory_type = ?
     """, (agent_name, memory_type))
     
     row = cursor.fetchone()
@@ -379,8 +362,8 @@ def get_memory(agent_name, memory_type, limit=None):
     if row:
         content = json.loads(row['content']) if row['content'] else {}
         
-        # Special handling for interactions - only return last 10
-        if memory_type == 'interactions' and isinstance(content, dict) and 'history' in content:
+        # Special handling for history - only return last 10
+        if memory_type == 'history' and isinstance(content, dict) and 'history' in content:
             if isinstance(content['history'], list):
                 # Store total count BEFORE slicing
                 total_interactions = len(content['history'])
@@ -405,14 +388,16 @@ def update_health(agent_name, drift_score, status, memory_size_kb=None,
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
-    # Get agent_id
-    cursor = conn.execute("SELECT id FROM acolytes WHERE name = ?", (agent_name,))
+    # Ensure agent_name starts with @
+    if not agent_name.startswith('@'):
+        agent_name = '@' + agent_name
+    
+    # Verify agent exists
+    cursor = conn.execute("SELECT name FROM agents_catalog WHERE name = ?", (agent_name,))
     agent = cursor.fetchone()
     if not agent:
         conn.close()
-        return json.dumps({"error": f"Agent '{agent_name}' not found"})
-    
-    agent_id = agent[0]
+        return json.dumps({"error": f"Agent '{agent_name}' not found in catalog"})
     
     # Get current session_id
     cursor = conn.execute("SELECT id FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
@@ -430,12 +415,12 @@ def update_health(agent_name, drift_score, status, memory_size_kb=None,
     # Insert new health record (maintains history)
     conn.execute("""
         INSERT INTO agent_health (
-            agent_id, session_id, drift_score, status, memory_size_kb,
+            agent_name, session_id, drift_score, status, memory_size_kb,
             memory_size_warning, largest_memory_type, needs_compaction,
             file_count_current, recommendations, checked_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        agent_id, session_id, drift_score, status, memory_size_kb,
+        agent_name, session_id, drift_score, status, memory_size_kb,
         memory_warning, largest_memory_type, needs_compaction,
         file_count_current, recommendations, timestamp
     ))
@@ -457,16 +442,18 @@ def get_agent_health(agent_name=None):
     """Get health status for agent(s)"""
     sql = """
         SELECT 
-            a.name, h.drift_score, h.status, h.memory_size_kb,
+            h.agent_name, h.drift_score, h.status, h.memory_size_kb,
             h.memory_size_warning, h.needs_compaction, h.checked_at,
             h.recommendations
         FROM agent_health h
-        JOIN acolytes a ON h.agent_id = a.id
+        JOIN agents_catalog ac ON h.agent_name = ac.name
     """
     params = []
     
     if agent_name:
-        sql += " WHERE a.name = ?"
+        if not agent_name.startswith('@'):
+            agent_name = '@' + agent_name
+        sql += " WHERE h.agent_name = ?"
         params.append(agent_name)
     
     sql += " ORDER BY h.checked_at DESC"
@@ -963,43 +950,41 @@ def create_job(title, description, priority="medium", estimated_hours=None,
         }
 
 def list_available_agents():
-    """List all available agents from catalog and acolytes"""
+    """List all available agents from catalog"""
     conn = sqlite3.connect(DB_PATH)
     
     try:
-        # Get global agents from catalog
+        # Get all agents from catalog (including acolytes with type='acolyte')
         cursor = conn.execute("""
             SELECT name, type, module, sub_module, role 
             FROM agents_catalog 
             ORDER BY type, module, name
         """)
-        global_agents = cursor.fetchall()
+        all_agents = cursor.fetchall()
         
-        # Get acolytes
-        cursor = conn.execute("""
-            SELECT name, module, created_at 
-            FROM acolytes 
-            ORDER BY name
-        """)
-        acolytes = cursor.fetchall()
+        # Separate global agents from acolytes
+        global_agents = []
+        acolytes = []
         
-        result = {
-            "global_agents": [
-                {
+        for agent in all_agents:
+            if agent[1] == 'acolyte':
+                acolytes.append({
                     "name": agent[0],
-                    "type": agent[1], 
+                    "module": agent[2],
+                    "sub_module": agent[3]
+                })
+            else:
+                global_agents.append({
+                    "name": agent[0],
+                    "type": agent[1],
                     "module": agent[2],
                     "sub_module": agent[3],
                     "role": agent[4]
-                } for agent in global_agents
-            ],
-            "acolytes": [
-                {
-                    "name": agent[0],
-                    "module": agent[1],
-                    "created_at": agent[2]
-                } for agent in acolytes
-            ],
+                })
+        
+        result = {
+            "global_agents": global_agents,
+            "acolytes": acolytes,
             "total_global": len(global_agents),
             "total_dynamic": len(acolytes)
         }

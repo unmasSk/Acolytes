@@ -183,7 +183,12 @@ mcp__code-index__find_files("package*.json")        # Node deps
 
 ```bash
 # Use this if code-index MCP is not available
-uv run python ~/.claude/scripts/infrastructure_check.py
+# IMPORTANT: Use system Python, NOT uv from the target project!
+python ~/.claude/scripts/infrastructure_check.py
+
+# Alternative commands if python doesn't work:
+# python3 ~/.claude/scripts/infrastructure_check.py
+# py ~/.claude/scripts/infrastructure_check.py
 ```
 
 ## Intelligence Analysis
@@ -276,6 +281,15 @@ INFRASTRUCTURE ANALYSIS COMPLETE
 - [INFRASTRUCTURE_HEALTH_SCORE] overall infrastructure health
 - [TOP_RISK] requires immediate attention
 - [TOP_OPPORTUNITY] for optimization
+
+🚨 MISSING DEPENDENCIES TO INSTALL:
+[LIST_EACH_MISSING_DEPENDENCY_WITH_COMMAND]
+- Node modules missing → Run: npm install
+- Docker not found → Install Docker Desktop
+- PostgreSQL client missing → Run: apt-get install postgresql-client
+[END_LIST]
+
+⚠️ CLAUDE: Install these dependencies BEFORE Phase 3 of setup!
 
  For detailed analysis: Please read `.claude/project/infrastructure.md`
 

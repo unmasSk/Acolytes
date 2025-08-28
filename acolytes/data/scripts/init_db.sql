@@ -13,17 +13,7 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 INSERT OR IGNORE INTO schema_migrations (version, description) VALUES 
 (1, 'Initial Acolytes for Claude Code database schema with SQLite audit improvements');
 
--- 1. ACOLYTES (Project-specific agents with memories)
-CREATE TABLE IF NOT EXISTS acolytes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT UNIQUE NOT NULL,
-    module TEXT NOT NULL,           -- Main module (e.g., "rag", "auth", "payments")
-    sub_module TEXT,                -- Sub-module for complex modules (e.g., "embeddings", "retrieval")
-    created_at TEXT NOT NULL,
-    updated_at TEXT
-);
-
--- 2. AGENTS CATALOG (Directory of all available agents)
+-- 1. AGENTS CATALOG (Directory of all available agents including acolytes)
 CREATE TABLE IF NOT EXISTS agents_catalog (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT UNIQUE NOT NULL,      -- '@backend.nodejs', '@database.postgres'
@@ -59,12 +49,13 @@ CREATE TABLE IF NOT EXISTS agents_catalog (
 -- 'history': Recent interactions - last consultations, implementations, delegations
 CREATE TABLE IF NOT EXISTS agents_memory (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    agent_id INTEGER NOT NULL,
+    agent_name TEXT NOT NULL,
     memory_type TEXT CHECK(memory_type IN ('knowledge', 'structure', 'patterns', 'interfaces', 'dependencies', 'schemas', 'quality', 'operations', 'context', 'domain', 'security', 'errors', 'performance', 'history')) NOT NULL,
     content JSON NOT NULL,
     created_at TEXT NOT NULL,
     updated_at TEXT NOT NULL,
-    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE CASCADE
+    FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
+    UNIQUE(agent_name, memory_type)
 );
 
 -- 3. JOBS
@@ -140,7 +131,7 @@ CREATE TABLE IF NOT EXISTS flags (
 -- Monitors agent drift and memory size to maintain system health
 CREATE TABLE IF NOT EXISTS agent_health (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    agent_id INTEGER NOT NULL,
+    agent_name TEXT NOT NULL,
     session_id TEXT,                      -- Session where check happened
     drift_score INTEGER NOT NULL,         -- 0-100 drift from reality
     confidence_score INTEGER,              -- 0-100 confidence in agent knowledge
@@ -159,7 +150,7 @@ CREATE TABLE IF NOT EXISTS agent_health (
     checked_at TEXT NOT NULL,
     last_upgrade_at TEXT,                  -- When agent was last upgraded
     upgraded_by TEXT,                      -- Who upgraded (auto/manual/agent)
-    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE CASCADE,
+    FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
@@ -194,9 +185,8 @@ CREATE TABLE IF NOT EXISTS todos (
     completed_at TEXT,
     
     -- Integration with agents and sessions
-    agent_id INTEGER,                      -- Agent that created or is assigned
     session_id TEXT,                       -- Session when created
-    assigned_to TEXT,                      -- Agent or module assigned to
+    assigned_to TEXT,                      -- Agent name or module assigned to
     
     -- Better time management
     estimated_hours REAL,                  -- Estimated time to complete
@@ -229,7 +219,6 @@ CREATE TABLE IF NOT EXISTS todos (
     ai_suggested BOOLEAN DEFAULT 0,       -- If suggested by AI
     context JSON,                          -- Additional context
     
-    FOREIGN KEY (agent_id) REFERENCES acolytes(id) ON DELETE SET NULL,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
 );
 
@@ -243,9 +232,9 @@ CREATE INDEX IF NOT EXISTS idx_flags_session ON flags(session_id);
 CREATE INDEX IF NOT EXISTS idx_flags_workable ON flags(target_agent, locked, status) WHERE locked = FALSE AND status = 'pending';
 CREATE INDEX IF NOT EXISTS idx_flags_target ON flags(target_agent, status);
 CREATE INDEX IF NOT EXISTS idx_flags_chain ON flags(chain_origin_id);
-CREATE INDEX IF NOT EXISTS idx_agents_memory ON agents_memory(agent_id, memory_type);
+CREATE INDEX IF NOT EXISTS idx_agents_memory ON agents_memory(agent_name, memory_type);
 -- COVERING INDEX: Hot query optimization for agent memory access
-CREATE INDEX IF NOT EXISTS idx_agents_memory_covering ON agents_memory(agent_id, memory_type, updated_at, content);
+CREATE INDEX IF NOT EXISTS idx_agents_memory_covering ON agents_memory(agent_name, memory_type, updated_at, content);
 
 -- JSON EXTRACTION INDEX: Priority-based job queries
 CREATE INDEX IF NOT EXISTS idx_jobs_priority ON jobs(json_extract(description, '$.priority'), created_at);

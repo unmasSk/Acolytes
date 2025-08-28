@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- **NEW COMMAND**: Created `/acolytes` command to replace `/flags` with improved branding and user experience
+- Enhanced dependency detection system in infrastructure_check.py for better setup validation
+- Improved setup flow with automatic dependency checking and installation before Phase 3
+
+### Changed
+- **DATABASE REFACTORING**: Eliminated redundant `acolytes` table, consolidated all agents in `agents_catalog` for simplified architecture
+- Modified `agents_memory` table to use `agent_name` (TEXT) instead of `agent_id` (INTEGER) for direct agent access without joins
+- Enhanced system architecture with streamlined database design and improved data access patterns
+
 ### Fixed
 - Fixed agent_db.py to detect project database in current directory first for improved database path resolution
 - Added validation checks before agent insertion to prevent UNIQUE constraint errors in database operations

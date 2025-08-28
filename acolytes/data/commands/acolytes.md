@@ -1,11 +1,11 @@
 ---
-command: flags
-description: ♾️  FLAGS system orchestration and inter-agent coordination | No parameters
+command: acolytes
+description: ♾️  "Summoning the acolytes to serve... — ready to work, boss!"
 ---
 
 When this command is invoked:
 
-For `/flags` (no arguments):
+For `/acolytes` (no arguments):
 
 - Invoke @flags.agent to orchestrate pending FLAGS
 - @flags.agent will analyze all pending flags in SQLite database
@@ -30,7 +30,9 @@ Expected output from @flags.agent:
 
 For future expansion:
 
-- `/flags --doctor`: Diagnose flag system issues (ONLY reports problems, user decides fixes)
+- `/acolytes --doctor`: Diagnose flag system issues (ONLY reports problems, user decides fixes)
   - Can receive Claude context for specific investigations
   - Reports: zombie flags, circular dependencies, timeout patterns, overload conditions
   - Does NOT auto-fix - only diagnostics
+
+- `/acolytes --pending`

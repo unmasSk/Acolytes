@@ -2,6 +2,7 @@
 """
 Infrastructure Detection Script for Acolytes for Claude Code Setup
 Analyzes project infrastructure, deployment, databases, CI/CD, and external services
+Detects missing dependencies and reports them for Claude to install
 """
 
 import subprocess
@@ -22,6 +23,7 @@ class InfrastructureChecker:
             "security": {},
             "networking": {},
             "monitoring": {},
+            "missing_dependencies": {},  # NEW: Track what needs to be installed
             "errors": []
         }
         # Ensure errors is a list for type safety
@@ -124,7 +126,13 @@ class InfrastructureChecker:
         return results
     
     def check_containerization(self):
-        """Check Docker and container configuration"""
+        """Check Docker and container configuration
+        
+        CLAUDE SHOULD:
+        - If Docker not installed but Dockerfile exists: offer 'docker build .'
+        - If docker-compose.yml exists but no Docker: suggest installing Docker Desktop
+        - Check if services are running: docker ps
+        """
         docker = {
             "enabled": False,
             "dockerfiles": [],
@@ -142,31 +150,25 @@ class InfrastructureChecker:
         compose_files = self.find_files("docker-compose*.yml") + self.find_files("docker-compose*.yaml")
         docker["compose_files"] = compose_files
         
-        # Parse docker-compose for services
+        # Parse docker-compose for services (using basic parsing, no yaml dependency)
         if compose_files and compose_files[0]:
-            try:
-                import yaml
-                with open(self.project_path / compose_files[0], 'r') as f:
-                    compose_data = yaml.safe_load(f)
-                    if compose_data and 'services' in compose_data:
-                        docker["services"] = list(compose_data['services'].keys())
-            except (ImportError, FileNotFoundError, Exception):
-                # If yaml parsing fails, try basic parsing
-                lines = self.read_file_lines(compose_files[0])
-                in_services = False
-                for line in lines:
-                    stripped = line.strip()
-                    if stripped == 'services:':
-                        in_services = True
-                        continue
-                    if in_services and stripped and not stripped.startswith('#'):
-                        if ':' in stripped and not stripped.startswith(' '):
-                            # This is a service definition
-                            service = stripped.split(':')[0].strip()
-                            if service not in ['version', 'networks', 'volumes']:
-                                docker["services"].append(service)
-                        elif not stripped.startswith(' ') and stripped.endswith(':'):
-                            # End of services section
+            lines = self.read_file_lines(compose_files[0])
+            in_services = False
+            for line in lines:
+                stripped = line.strip()
+                if stripped == 'services:':
+                    in_services = True
+                    continue
+                if in_services and stripped and not stripped.startswith('#'):
+                    # Check if this is a service name (starts at beginning of line with colon)
+                    if ':' in stripped and not stripped.startswith(' ') and not stripped.startswith('-'):
+                        service = stripped.split(':')[0].strip()
+                        # Exclude top-level keywords that aren't services
+                        if service not in ['version', 'networks', 'volumes', 'secrets', 'configs']:
+                            docker["services"].append(service)
+                    elif not stripped.startswith(' ') and not stripped.startswith('-'):
+                        # If we hit another top-level key, we're done with services
+                        if stripped.endswith(':'):
                             break
         
         self.results["containerization"]["docker"] = docker
@@ -207,7 +209,14 @@ class InfrastructureChecker:
         self.results["orchestration"]["nomad"] = bool(self.find_files("*.nomad"))
         
     def check_databases(self):
-        """Check database configuration and migrations"""
+        """Check database configuration and migrations
+        
+        CLAUDE SHOULD:
+        - If PostgreSQL detected but psql not installed: apt-get install postgresql-client
+        - If MySQL detected: apt-get install mysql-client
+        - If migrations pending: offer to run them (npm run migrate, python manage.py migrate)
+        - Check if database server is running
+        """
         db = {
             "migrations": [],
             "sql_files": [],
@@ -364,7 +373,14 @@ class InfrastructureChecker:
         self.results["cloud_iac"] = iac
         
     def check_external_services(self):
-        """Check external service integrations"""
+        """Check external service integrations
+        
+        CLAUDE SHOULD:
+        - If Stripe detected but not installed: npm install stripe
+        - If missing API keys: remind user to set .env variables
+        - If services detected but packages missing: offer installation
+        - Verify API endpoints are accessible
+        """
         services = {
             "payment": [],
             "email": [],
@@ -487,6 +503,61 @@ class InfrastructureChecker:
                             
         self.results["monitoring"] = monitoring
         
+    def check_missing_dependencies(self):
+        """Detect missing dependencies that Claude should install"""
+        missing = {
+            "system_packages": [],
+            "npm_packages": [],
+            "python_packages": [],
+            "docker_images": [],
+            "installation_commands": []
+        }
+        
+        # Check if package.json exists but no node_modules
+        if self.file_exists("package.json") and not self.file_exists("node_modules"):
+            missing["npm_packages"].append("node_modules")
+            missing["installation_commands"].append("npm install")
+            
+        # Check if requirements.txt exists but packages might be missing
+        if self.file_exists("requirements.txt"):
+            # Check for virtual environment
+            if not self.file_exists("venv") and not self.file_exists(".venv"):
+                missing["python_packages"].append("virtual environment")
+                missing["installation_commands"].append("python -m venv venv && venv\\Scripts\\activate && pip install -r requirements.txt")
+        
+        # Check if Docker is needed but not available
+        if self.file_exists("Dockerfile") or self.file_exists("docker-compose.yml"):
+            docker_check = self.run_command("docker --version")
+            if not docker_check:
+                missing["system_packages"].append("Docker")
+                missing["installation_commands"].append("Install Docker Desktop from https://docker.com")
+                
+        # Check for database clients based on detected databases
+        if self.results.get("databases", {}).get("detected_types"):
+            for db_type in self.results["databases"]["detected_types"]:
+                if db_type == "postgresql":
+                    psql_check = self.run_command("psql --version")
+                    if not psql_check:
+                        missing["system_packages"].append("PostgreSQL client")
+                        missing["installation_commands"].append("apt-get install postgresql-client (Linux) or brew install postgresql (Mac)")
+                elif db_type == "mysql":
+                    mysql_check = self.run_command("mysql --version")
+                    if not mysql_check:
+                        missing["system_packages"].append("MySQL client")
+                        missing["installation_commands"].append("apt-get install mysql-client (Linux) or brew install mysql (Mac)")
+        
+        # Check for specific npm packages based on external services
+        if self.results.get("external_services"):
+            services = self.results["external_services"]
+            if "stripe" in str(services).lower() and self.file_exists("package.json"):
+                # Check if stripe is in package.json
+                package_content = self.read_file_lines("package.json", 1000)
+                if package_content and "stripe" not in " ".join(package_content):
+                    missing["npm_packages"].append("stripe")
+                    missing["installation_commands"].append("npm install stripe")
+                    
+        self.results["missing_dependencies"] = missing
+        
     def check_networking(self):
         """Check networking and CDN configuration"""
         networking = {
@@ -522,7 +593,14 @@ class InfrastructureChecker:
         self.results["networking"] = networking
         
     def generate_summary(self):
-        """Generate infrastructure summary"""
+        """Generate infrastructure summary
+        
+        CLAUDE ACTION ITEMS:
+        - If security_level is 'needs-improvement': suggest security enhancements
+        - If no CI/CD detected: offer to set up GitHub Actions
+        - If no monitoring: suggest Sentry or DataDog integration
+        - Create a checklist of missing dependencies to install
+        """
         summary = {
             "hosting_type": "unknown",
             "primary_database": "unknown",
@@ -603,13 +681,24 @@ class InfrastructureChecker:
         self.check_networking()
         print("  - Networking checked")
         
+        self.check_missing_dependencies()
+        print("  - Missing dependencies checked")
+        
         self.generate_summary()
         print("  - Summary generated")
         
         return self.results
         
 def main():
-    """Main execution"""
+    """Main execution
+    
+    CLAUDE POST-EXECUTION:
+    1. Review the summary for missing dependencies
+    2. Check security_level - if 'needs-improvement', prioritize fixes
+    3. Verify all detected services have their packages installed
+    4. If containerized=true but Docker not running, start it
+    5. Create TODO items for any missing configurations
+    """
     import sys
     
     # Determine project path
@@ -704,6 +793,15 @@ def main():
                 print("\nMONITORING:")
                 monitoring_found = True
             print(f"  {monitor_type.upper()}: {', '.join(monitor_list)}")
+    
+    # Print missing dependencies - CRITICAL FOR CLAUDE
+    missing_deps = results.get("missing_dependencies", {})
+    if missing_deps and missing_deps.get("installation_commands"):
+        print("\n🚨 MISSING DEPENDENCIES - CLAUDE MUST INSTALL:")
+        print("="*60)
+        for command in missing_deps["installation_commands"]:
+            print(f"  → {command}")
+        print("="*60)
     
     # Print errors if any
     if results.get("errors"):
