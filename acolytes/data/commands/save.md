@@ -40,7 +40,7 @@ The reindexing removes deleted files and adds new ones automatically.
 ### EXACT COMMAND FORMAT
 
 ```bash
-uv run ~/.claude/scripts/save_session.py \
+uv run python ~/.claude/scripts/save_session.py \
   -session "accomplishments: [Rich detailed text]. decisions: [Rich detailed text]. bugs_fixed: [Rich detailed text]. errors_encountered: [Rich detailed text]. breakthrough_moment: [Rich detailed text]. next_session_priority: [Rich detailed text]." \
   -message "conversation_flow: [Rich Q&A format with detailed analysis]. total_exchanges: [number] duration_minutes: [number]"
 ```
@@ -108,7 +108,7 @@ uv run ~/.claude/scripts/save_session.py \
 ## WORKING EXAMPLE (COPY THIS FORMAT)
 
 ```bash
-uv run ~/.claude/scripts/save_session.py \
+uv run python ~/.claude/scripts/save_session.py \
   -session "accomplishments: Fixed critical save system issue where hooks were blocking pipe operations causing systematic failures in session persistence. Analyzed save_session.py architecture and identified stdin JSON approach as problematic. Implemented new argument-based rich text system replacing minimal JSON with comprehensive English content. decisions: Chose rich text approach over minimal JSON data structure for better session quality and readability. Selected command-line arguments as most efficient method avoiding file creation and token overhead. bugs_fixed: None identified in this session as focus was on architectural analysis rather than bug resolution. errors_encountered: Hook system blocking pipe operations preventing JSON data transfer via stdin to save script. User frustration with minimal session data quality in current system. breakthrough_moment: User without programming background identified most optimal technical solution demonstrating that practical efficiency often trumps complex technical approaches. next_session_priority: Complete frontend mobile agent creation using Context7 and WebSearch for proper documentation research followed by Final QA execution from fix.md checklist." \
   -message "conversation_flow: Q: What was the primary problem addressed in this session? A: Save system completely non-functional due to hook interference with pipe operations plus user dissatisfaction with minimal session data quality. Q: What solution was ultimately implemented? A: Command-line arguments with rich English text parsing automatic formatting with line breaks and emoji cleaning. total_exchanges: 18 duration_minutes: 30"
 ```
@@ -119,28 +119,28 @@ uv run ~/.claude/scripts/save_session.py \
 
 ```bash
 # Missing colons in field definitions
-❌ uv run ~/.claude/scripts/save_session.py -session "accomplishments Fixed save system"
+❌ uv run python ~/.claude/scripts/save_session.py -session "accomplishments Fixed save system"
 
 # Empty or minimal field content
-❌ uv run ~/.claude/scripts/save_session.py -session "accomplishments: . decisions: ."
+❌ uv run python ~/.claude/scripts/save_session.py -session "accomplishments: . decisions: ."
 
 # Using pipe operations (blocked by hooks)
-❌ echo "data" | uv run ~/.claude/scripts/save_session.py -session "..."
+❌ echo "data" | uv run python ~/.claude/scripts/save_session.py -session "..."
 
 # JSON format instead of text
-❌ uv run ~/.claude/scripts/save_session.py -session '{"accomplishments": ["item1"]}'
+❌ uv run python ~/.claude/scripts/save_session.py -session '{"accomplishments": ["item1"]}'
 
 # Missing required session argument
-❌ uv run ~/.claude/scripts/save_session.py -message "conversation_flow: Q: Test? A: Yes"
+❌ uv run python ~/.claude/scripts/save_session.py -message "conversation_flow: Q: Test? A: Yes"
 
 # Swapped argument order or missing -message
-❌ uv run ~/.claude/scripts/save_session.py "session data" "message data"
+❌ uv run python ~/.claude/scripts/save_session.py "session data" "message data"
 
 # Special characters without proper quoting
-❌ uv run ~/.claude/scripts/save_session.py -session accomplishments: Fixed & improved system
+❌ uv run python ~/.claude/scripts/save_session.py -session accomplishments: Fixed & improved system
 
 # Mixing old JSON format with new text format
-❌ uv run ~/.claude/scripts/save_session.py -session "{accomplishments: [Fixed system]}"
+❌ uv run python ~/.claude/scripts/save_session.py -session "{accomplishments: [Fixed system]}"
 ```
 
 **Remember**: Always use the exact format from the working example above.
@@ -186,7 +186,7 @@ uv run ~/.claude/scripts/save_session.py \
 
 3. **Retry save with minimal data first**:
    ```bash
-   uv run ~/.claude/scripts/save_session.py \
+   uv run python ~/.claude/scripts/save_session.py \
      -session "accomplishments: Basic session save test. decisions: Test recovery." \
      -message "conversation_flow: Q: Test? A: Recovery test. total_exchanges: 1 duration_minutes: 1"
    ```

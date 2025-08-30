@@ -861,3 +861,47 @@ BEGIN
     THEN RAISE(ABORT, 'Breaking changes and security issues cannot have low impact level')
   END;
 END;
+
+-- ============================================================================
+-- ACOLYTES LOOP SYSTEM TABLES
+-- Revolutionary eternal agent communication system
+-- Agents stay alive forever using sleep loops
+-- ============================================================================
+
+-- Main quest table for ACOLYTE QUESTS SYSTEM
+CREATE TABLE IF NOT EXISTS acolyte_quests (
+    quest_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quest_name TEXT NOT NULL,              -- "quest-20241229-143000"
+    quest_phase TEXT DEFAULT '1/1',        -- "1/6" from acolyte's roadmap
+    mission TEXT NOT NULL,                 -- The task/mission description
+    recruited TEXT NOT NULL,               -- JSON array ["@acolyte.api", "@backend.nodejs"]
+    current_agent TEXT,                    -- Who has the turn NOW
+    status TEXT NOT NULL DEFAULT 'working', -- working/waiting/reviewing/completed/failed/timeout
+    broadcast TEXT,                        -- JSON {"to": "@backend.nodejs", "message": "create..."}
+    context TEXT,                          -- JSON context from acolyte
+    result TEXT,                           -- JSON final result when quest completes
+    created_at INTEGER DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+-- Indexes for ACOLYTE QUESTS performance
+CREATE INDEX IF NOT EXISTS idx_current_agent ON acolyte_quests(current_agent);
+CREATE INDEX IF NOT EXISTS idx_status ON acolyte_quests(status);
+CREATE INDEX IF NOT EXISTS idx_created_at ON acolyte_quests(created_at);
+
+-- Optional: Status change history for metrics and debugging
+CREATE TABLE IF NOT EXISTS acolyte_status_changes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quest_id INTEGER NOT NULL REFERENCES acolyte_quests(quest_id),
+    old_status TEXT,
+    new_status TEXT NOT NULL,
+    old_agent TEXT,
+    new_agent TEXT,
+    changed_at INTEGER DEFAULT (strftime('%s', 'now')),
+    loop_count INTEGER,
+    message TEXT                           -- Optional message about the change
+);
+
+-- Index for status changes
+CREATE INDEX IF NOT EXISTS idx_acolyte_status_quest ON acolyte_status_changes(quest_id);
+CREATE INDEX IF NOT EXISTS idx_acolyte_status_time ON acolyte_status_changes(changed_at);

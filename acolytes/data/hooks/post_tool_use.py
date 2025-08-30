@@ -9,10 +9,62 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
+def append_to_log(message, log_type='post_tool_use', project_cwd=''):
+    """Append message to hook log file"""
+    try:
+        # Use same logic as stop.py for finding log directory
+        if project_cwd:
+            log_dir = Path(project_cwd) / '.claude' / 'memory' / 'logs'
+        else:
+            current_dir = Path.cwd()
+            if current_dir.name == 'hooks':
+                log_dir = current_dir.parent.parent / '.claude' / 'memory' / 'logs'
+            else:
+                log_dir = current_dir / '.claude' / 'memory' / 'logs'
+        
+        # Create logs directory if it doesn't exist
+        log_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Create log file with date
+        today = datetime.now().strftime('%Y-%m-%d')
+        log_file = log_dir / f'hooks_{today}.log'
+        
+        # Append to log file
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+        with open(log_file, 'a', encoding='utf-8') as f:
+            f.write(f"[{timestamp}] [{log_type}] {message}\n")
+            
+    except Exception:
+        pass  # Fail silently to not interrupt hook execution
+
 def update_tool_log(tool_data):
     """Update tool log with results in SQLite"""
     try:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        # Get project_cwd from tool_data (passed by Claude Code)
+        project_cwd = tool_data.get('cwd', '')
+        
+        # Log tool call with session info
+        tool_name = tool_data.get('tool_name', 'unknown')
+        session_id = tool_data.get('session_id', 'unknown')
+        tool_error = tool_data.get('tool_error')
+        
+        # Get result info
+        if tool_error:
+            append_to_log(f"[{session_id}] {tool_name} - ERROR: {str(tool_error)[:100]}", 'post_tool_use', project_cwd)
+        else:
+            append_to_log(f"[{session_id}] {tool_name} - OK", 'post_tool_use', project_cwd)
+        
+        # Use same logic as stop.py for finding database
+        if project_cwd:
+            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+        else:
+            # Always use project root, not current directory
+            current_dir = Path.cwd()
+            if current_dir.name == 'hooks':
+                db_path = current_dir.parent.parent / '.claude' / 'memory' / 'project.db'  # Go up from .claude/hooks to project root
+            else:
+                db_path = current_dir / '.claude' / 'memory' / 'project.db'
+        
         if not db_path.exists():
             return  # Database not initialized yet
         
@@ -57,7 +109,10 @@ def update_tool_log(tool_data):
                     match_count = len(tool_result.splitlines())
                     result_summary = f"Found {match_count} matches"
             elif tool_name == 'Task':
-                result_summary = "Task delegated to subagent"
+                # Extract subagent from tool_input if available
+                tool_input = tool_data.get('tool_input', {})
+                subagent = tool_input.get('subagent_type', 'unknown')
+                result_summary = f"Launched {subagent} agent"
         
         # Update the most recent log entry for this tool in this session
         # (matches by tool_name and timestamp within last 60 seconds)
@@ -83,7 +138,11 @@ def update_tool_log(tool_data):
         conn.commit()
         conn.close()
         
-    except Exception:
+        # Log success
+        append_to_log(f"Updated {tool_name} log: success={success}, result={result_summary}", 'post_tool_use', project_cwd)
+        
+    except Exception as e:
+        append_to_log(f"Error updating tool log: {e}", 'post_tool_use', project_cwd)
         pass  # Fail silently to not interrupt tool execution
 
 def handle_todo_sync(tool_data):
@@ -103,8 +162,20 @@ def handle_todo_sync(tool_data):
         if not todos:
             return
             
-        # Connect to database
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        # Get project_cwd from tool_data (passed by Claude Code)
+        project_cwd = tool_data.get('cwd', '')
+        
+        # Use same logic as stop.py for finding database
+        if project_cwd:
+            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+        else:
+            # Always use project root, not current directory
+            current_dir = Path.cwd()
+            if current_dir.name == 'hooks':
+                db_path = current_dir.parent.parent / '.claude' / 'memory' / 'project.db'  # Go up from .claude/hooks to project root
+            else:
+                db_path = current_dir / '.claude' / 'memory' / 'project.db'
+            
         if not db_path.exists():
             return
             
