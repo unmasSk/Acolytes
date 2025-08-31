@@ -1,17 +1,14 @@
 -- Acolytes for Claude Code SQLite Schema v1.0
--- Timestamp format: 'YYYY-MM-DD HH:MM'
+-- Timestamp format: 'YYYY-MM-DD HH:MM:SS' (TEXT using datetime)
 
--- SCHEMA VERSION MANAGEMENT
-PRAGMA user_version = 1;
+-- PRODUCTION SQLITE CONFIGURATION
+PRAGMA journal_mode = WAL;          -- Write-Ahead Logging for better concurrency
+PRAGMA foreign_keys = ON;           -- Enforce foreign key constraints
+PRAGMA synchronous = NORMAL;        -- Balance between safety and speed
+PRAGMA cache_size = -64000;         -- 64MB cache
+PRAGMA temp_store = MEMORY;         -- Use memory for temp tables
+PRAGMA user_version = 1;            -- Schema version
 
-CREATE TABLE IF NOT EXISTS schema_migrations (
-    version INTEGER PRIMARY KEY,
-    applied_at TEXT NOT NULL DEFAULT (datetime('now')),
-    description TEXT NOT NULL
-);
-
-INSERT OR IGNORE INTO schema_migrations (version, description) VALUES 
-(1, 'Initial Acolytes for Claude Code database schema with SQLite audit improvements');
 
 -- 1. AGENTS CATALOG (Directory of all available agents including acolytes)
 CREATE TABLE IF NOT EXISTS agents_catalog (
@@ -74,63 +71,78 @@ CREATE TABLE IF NOT EXISTS jobs (
     pause_reason TEXT  -- Why was it paused? What interrupted it?
 );
 
--- 4. SESSIONS
+-- 4. SESSIONS (Enhanced with 21 columns)
 CREATE TABLE IF NOT EXISTS sessions (
-    id TEXT PRIMARY KEY,  -- "session_a1b2c3d4e5f6", "session_9f8e7d6c5b4a", etc.
+    -- Core identifiers (3)
+    id TEXT PRIMARY KEY,
     job_id TEXT NOT NULL,
-    claude_session_id TEXT,  -- Real Claude session UUID from .jsonl files
+    claude_session_id TEXT,
+    
+    -- Enhanced fields (9)
+    primary_request TEXT,
+    technical_concepts JSON,
+    files_and_code JSON,
+    errors_and_fixes JSON,
+    problem_solving TEXT,
+    user_messages JSON,
+    pending_tasks JSON,
+    current_work TEXT,
+    next_step TEXT,
+    
+    -- Classic metrics fields (5)
     accomplishments JSON,
-    decisions JSON,
     bugs_fixed JSON,
-    errors_encountered JSON,
+    decisions JSON,
     breakthrough_moment TEXT,
-    next_session_priority TEXT,
+    conversation_flow TEXT,
+    
+    -- Control fields (4)
     quality_score INTEGER,
     created_at TEXT NOT NULL,
     ended_at TEXT,
+    metadata JSON,
+    
     FOREIGN KEY (job_id) REFERENCES jobs(id)
 );
 
 -- 5. MESSAGES
--- Complete chronological conversation flow (backup, not auto-loaded)
+-- Complete conversation analysis with JSON backup and auto-calculated metrics
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT NOT NULL,
-    conversation_flow TEXT NOT NULL,  -- Full narrative: what happened from start to end
-    total_exchanges INTEGER,          -- Number of user-assistant exchanges
-    duration_minutes INTEGER,         -- Session duration
-    created_at TEXT NOT NULL,
+    session_id TEXT NOT NULL UNIQUE,
+    
+    -- Basic metrics (auto-calculated from JSON)
+    total_messages INTEGER,
+    user_messages INTEGER,
+    assistant_messages INTEGER,
+    first_timestamp TEXT,
+    last_timestamp TEXT,
+    duration_minutes INTEGER,
+    avg_message_length INTEGER,
+    avg_response_time_seconds INTEGER,
+    
+    -- Content analysis (auto-extracted)
+    commands_used TEXT,           -- JSON array of commands like /save
+    agents_mentioned TEXT,        -- JSON array of @agent.name mentions
+    errors_count INTEGER,         -- Count of "error", "failed" keywords
+    code_blocks_count INTEGER,    -- Count of ``` blocks
+    frustration_level INTEGER,    -- 0-10 scale based on keywords
+    keywords TEXT,                -- JSON array of main topics
+    
+    -- Derived metrics
+    session_active BOOLEAN,       -- If last message < 30 min ago
+    productivity_ratio REAL,      -- Ratio of work vs chat
+    complexity_score INTEGER,     -- 1-10 based on length and code
+    interactions_per_hour REAL,   -- Message frequency
+    
+    -- Full conversation backup
+    conversation JSON,            -- Complete JSON from .claude/memory/chat/
+    
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
--- 6. FLAGS
--- Inter-module communication system for changes that affect other modules
-CREATE TABLE IF NOT EXISTS flags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    chain_origin_id INTEGER,              -- Links to original FLAG in chain (NULL for origin flags)
-    session_id TEXT,                      -- Session where flag was created
-    flag_type TEXT NOT NULL,              -- change/new_feature/refactor/deprecation/breaking_change/enhancement
-    source_agent TEXT NOT NULL,           -- Agent that created the flag
-    target_agent TEXT,                    -- Specific agent target (@agent-name)
-    change_description TEXT NOT NULL,     -- What changed (e.g., "Created global TIME utility")
-    action_required TEXT NOT NULL,        -- What other modules need to do
-    impact_level TEXT DEFAULT 'medium',   -- low/medium/high/critical (impact, not error severity)
-    status TEXT DEFAULT 'pending',        -- pending/completed
-    locked BOOLEAN DEFAULT FALSE,         -- NEW: TRUE if waiting for response, FALSE if actionable
-    related_files TEXT,                   -- Files involved (comma-separated)
-    code_location TEXT,                   -- file:line_number format if specific location
-    example_usage TEXT,                   -- Example of how to use the new change
-    context JSON,                          -- Additional structured data
-    created_at TEXT NOT NULL,
-    acknowledged_at TEXT,                 -- When affected modules acknowledged
-    completed_at TEXT,                     -- When all affected modules adapted
-    completed_by TEXT,                     -- Agents that completed the adaptation
-    notes TEXT,                            -- Resolution notes or comments
-    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL,
-    FOREIGN KEY (chain_origin_id) REFERENCES flags(id) ON DELETE SET NULL
-);
-
--- 7. AGENT HEALTH
+-- 6. AGENT HEALTH
 -- Monitors agent drift and memory size to maintain system health
 CREATE TABLE IF NOT EXISTS agent_health (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -154,7 +166,7 @@ CREATE TABLE IF NOT EXISTS agent_health (
     last_upgrade_at TEXT,                  -- When agent was last upgraded
     upgraded_by TEXT,                      -- Who upgraded (auto/manual/agent)
     FOREIGN KEY (agent_name) REFERENCES agents_catalog(name) ON DELETE CASCADE,
-    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
 -- 8. TOOL LOGS
@@ -176,7 +188,7 @@ CREATE TABLE IF NOT EXISTS tool_logs (
     hook_message TEXT,                     -- Hook block reason
     duration_ms INTEGER,                  -- Execution time
     timestamp TEXT NOT NULL,               -- When tool was called
-    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
 -- 9. TODOS
@@ -222,7 +234,7 @@ CREATE TABLE IF NOT EXISTS todos (
     ai_suggested BOOLEAN DEFAULT 0,       -- If suggested by AI
     context JSON,                          -- Additional context
     
-    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE SET NULL
+    FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
 );
 
 -- INDEXES
@@ -237,12 +249,6 @@ WHERE type = 'acolyte' AND module IS NULL;
 CREATE INDEX IF NOT EXISTS idx_jobs_active ON jobs(completed_at) WHERE completed_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_sessions_job ON sessions(job_id);
 CREATE INDEX IF NOT EXISTS idx_messages_session ON messages(session_id);
-CREATE INDEX IF NOT EXISTS idx_flags_pending ON flags(status) WHERE status = 'pending';
-CREATE INDEX IF NOT EXISTS idx_flags_source ON flags(source_agent);
-CREATE INDEX IF NOT EXISTS idx_flags_session ON flags(session_id);
-CREATE INDEX IF NOT EXISTS idx_flags_workable ON flags(target_agent, locked, status) WHERE locked = FALSE AND status = 'pending';
-CREATE INDEX IF NOT EXISTS idx_flags_target ON flags(target_agent, status);
-CREATE INDEX IF NOT EXISTS idx_flags_chain ON flags(chain_origin_id);
 CREATE INDEX IF NOT EXISTS idx_agents_memory ON agents_memory(agent_name, memory_type);
 -- COVERING INDEX: Hot query optimization for agent memory access
 CREATE INDEX IF NOT EXISTS idx_agents_memory_covering ON agents_memory(agent_name, memory_type, updated_at, content);
@@ -256,27 +262,124 @@ CREATE INDEX IF NOT EXISTS idx_sessions_time ON sessions(datetime(created_at) DE
 -- Ensure only one job can be active at a time
 CREATE UNIQUE INDEX IF NOT EXISTS idx_only_one_active_job ON jobs (status) WHERE status = 'active';
 
--- VIEWS
-CREATE VIEW IF NOT EXISTS latest_session AS
-SELECT * FROM sessions 
-ORDER BY datetime(created_at) DESC 
-LIMIT 1;
 
-CREATE VIEW IF NOT EXISTS pending_flags AS
-SELECT * FROM flags 
-WHERE status = 'pending' 
-ORDER BY 
-    CASE impact_level 
-        WHEN 'critical' THEN 1 
-        WHEN 'high' THEN 2 
-        WHEN 'medium' THEN 3 
-        WHEN 'low' THEN 4 
-    END,
-    created_at ASC;
 
--- 52 AGENTS INSERT statements generated from agent-routing-catalog.md (excluded setup, flags, and plan agents)
+-- DEFAULT INITIAL JOB
+INSERT OR IGNORE INTO jobs (id, title, description, status, created_at) VALUES (
+'job_5e770c0deba5e',
+'Project Setup',
+'{"summary": "Initial project setup and configuration", "goals": ["Configure Acolytes for Claude Code System", "Initialize database", "Setup agents"], "scope": "Complete system initialization", "priority": "high"}',
+'active',
+datetime('now')
+);
+
+-- DEFAULT INITIAL SESSION (associated with initial job)
+INSERT OR IGNORE INTO sessions (id, job_id, claude_session_id, created_at) VALUES (
+'session_ac01e7e4e110',
+'job_5e770c0deba5e',
+NULL,  -- Claude session ID will be populated when available
+datetime('now')
+);
+
+-- JSON VALIDATION TRIGGERS
+CREATE TRIGGER validate_job_description
+BEFORE INSERT ON jobs
+BEGIN
+  SELECT CASE
+    WHEN json_extract(NEW.description, '$.priority') NOT IN ('high', 'medium', 'low')
+    THEN RAISE(ABORT, 'Invalid priority level in job description')
+    WHEN json_type(NEW.description, '$.goals') != 'array'
+    THEN RAISE(ABORT, 'Goals must be an array in job description')
+    WHEN LENGTH(json_extract(NEW.description, '$.summary')) < 10
+    THEN RAISE(ABORT, 'Job summary must be at least 10 characters')
+  END;
+END;
+
+CREATE TRIGGER validate_job_description_update
+BEFORE UPDATE ON jobs
+BEGIN
+  SELECT CASE
+    WHEN json_extract(NEW.description, '$.priority') NOT IN ('high', 'medium', 'low')
+    THEN RAISE(ABORT, 'Invalid priority level in job description')
+    WHEN json_type(NEW.description, '$.goals') != 'array'
+    THEN RAISE(ABORT, 'Goals must be an array in job description')
+    WHEN LENGTH(json_extract(NEW.description, '$.summary')) < 10
+    THEN RAISE(ABORT, 'Job summary must be at least 10 characters')
+  END;
+END;
+
+-- TRIGGER FOR JOB AUTO-STATUS MANAGEMENT
+-- Ensures only 1 job is active at a time
+-- Prevents creating active jobs when one already exists
+CREATE TRIGGER enforce_single_active_job
+BEFORE INSERT ON jobs
+FOR EACH ROW
+WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active')
+BEGIN
+  SELECT RAISE(ABORT, 'Cannot create active job - another job is already active. Create as paused instead.');
+END;
+
+-- Prevents updating a job to active when another is already active
+CREATE TRIGGER enforce_single_active_job_update
+BEFORE UPDATE ON jobs
+FOR EACH ROW
+WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active' AND id != NEW.id)
+BEGIN
+  SELECT RAISE(ABORT, 'Cannot set job to active - another job is already active. Pause the other job first.');
+END;
+
+
+-- ============================================================================
+-- ACOLYTES LOOP SYSTEM TABLES
+-- Revolutionary eternal agent communication system
+-- Agents stay alive forever using sleep loops
+-- ============================================================================
+
+-- Main quest table for ACOLYTE QUESTS SYSTEM
+CREATE TABLE IF NOT EXISTS acolyte_quests (
+    quest_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quest_name TEXT NOT NULL,              -- "quest-20241229-143000"
+    quest_phase TEXT DEFAULT '1/1',        -- "1/6" from acolyte's roadmap
+    mission TEXT NOT NULL,                 -- The task/mission description
+    recruited TEXT NOT NULL,               -- JSON array ["@acolyte.api", "@backend.nodejs"]
+    current_agent TEXT,                    -- Who has the turn NOW
+    status TEXT NOT NULL DEFAULT 'working', -- working/waiting/reviewing/completed/failed/timeout
+    broadcast TEXT,                        -- JSON {"to": "@backend.nodejs", "message": "create..."}
+    context TEXT,                          -- JSON context from acolyte
+    result TEXT,                           -- JSON final result when quest completes
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+
+-- Indexes for ACOLYTE QUESTS performance
+CREATE INDEX IF NOT EXISTS idx_current_agent ON acolyte_quests(current_agent);
+CREATE INDEX IF NOT EXISTS idx_status ON acolyte_quests(status);
+CREATE INDEX IF NOT EXISTS idx_created_at ON acolyte_quests(created_at);
+
+-- Optional: Status change history for metrics and debugging
+CREATE TABLE IF NOT EXISTS acolyte_status_changes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    quest_id INTEGER NOT NULL REFERENCES acolyte_quests(quest_id),
+    old_status TEXT,
+    new_status TEXT NOT NULL,
+    old_agent TEXT,
+    new_agent TEXT,
+    changed_at INTEGER DEFAULT (strftime('%s', 'now')),
+    loop_count INTEGER,
+    message TEXT                           -- Optional message about the change
+);
+
+-- Index for status changes
+CREATE INDEX IF NOT EXISTS idx_acolyte_status_quest ON acolyte_status_changes(quest_id);
+CREATE INDEX IF NOT EXISTS idx_acolyte_status_time ON acolyte_status_changes(changed_at);
+
+-- ============================================================================
+-- AGENT DATA INSERT
+-- ============================================================================
+-- 52 AGENTS INSERT statements generated from agent-routing-catalog.md (excluded setup and plan agents)
 -- Following the exact format from coordinator.backend example
 -- Generated automatically with proper JSON formatting
+
 INSERT OR IGNORE INTO
   agents_catalog (
     name,
@@ -310,7 +413,7 @@ VALUES
     '@coordinator.devops',
     'coordinator',
     '["Strategic DevOps and automation orchestrator specializing in GitOps workflows and enterprise deployment orchestration"]',
-    '["CI/CD strategy design (pipeline architecture, build optimization, artifact management, deployment strategies)", "GitOps implementation (ArgoCD, Flux, GitOps workflows, configuration drift detection, automated rollbacks)", "release management patterns (semantic versioning, changelog automation, feature flags, canary releases, blue-green deployments)", "automation workflows (Jenkins pipeline orchestration, GitLab CI optimization, GitHub Actions workflows, CircleCI integration)", "infrastructure automation (Terraform workflows, Ansible playbooks, configuration management, policy as code)", "container orchestration strategy (Kubernetes deployment patterns, Helm chart management, service mesh integration)", "monitoring architecture (observability strategy, alerting policies, SLA monitoring, incident response automation)", "deployment automation (zero-downtime deployments, rollback strategies, environment promotion, approval workflows)", "pipeline optimization (build caching, parallel execution, resource allocation, performance tuning)", "environment management (staging environments, production readiness, environment parity, configuration management)"]',
+    '["CI/CD strategy design (pipeline architecture, build optimization, artifact management, deployment strategies)", "GitOps implementation (ArgoCD, Flux, GitOps workflows, configuration drift detection, automated rollbacks)", "release management patterns (semantic versioning, changelog automation, canary releases, blue-green deployments)", "automation workflows (Jenkins pipeline orchestration, GitLab CI optimization, GitHub Actions workflows, CircleCI integration)", "infrastructure automation (Terraform workflows, Ansible playbooks, configuration management, policy as code)", "container orchestration strategy (Kubernetes deployment patterns, Helm chart management, service mesh integration)", "monitoring architecture (observability strategy, alerting policies, SLA monitoring, incident response automation)", "deployment automation (zero-downtime deployments, rollback strategies, environment promotion, approval workflows)", "pipeline optimization (build caching, parallel execution, resource allocation, performance tuning)", "environment management (staging environments, production readiness, environment parity, configuration management)"]',
     '["DevOps strategy design and implementation", "CI/CD pipeline architecture and optimization", "GitOps workflow setup and management", "release management process design", "automation strategy development", "infrastructure deployment orchestration", "monitoring and observability architecture", "deployment pattern selection and implementation", "environment management and promotion strategies", "incident response and rollback automation", "performance optimization and resource planning", "compliance and security integration"]',
     '["DevOps-strategy", "CI-CD", "GitOps", "pipeline-architecture", "release-management", "automation-workflows", "Jenkins", "GitLab-CI", "GitHub-Actions", "ArgoCD", "deployment-orchestration", "infrastructure-automation", "monitoring-architecture", "zero-downtime", "rollback-strategies", "environment-management", "observability", "incident-response", "compliance-automation"]',
     '["@ops.git [optional]", "@ops.cicd [optional]", "@ops.iac [optional]", "@ops.containers [optional]", "@ops.monitoring [optional]", "@coordinator.infrastructure [optional,seq:2]"]'
@@ -337,7 +440,7 @@ VALUES
     '@coordinator.migration',
     'coordinator',
     '["Strategic migration and transformation orchestrator specializing in zero-downtime enterprise modernization and legacy system evolution"]',
-    '["Legacy modernization strategies (strangler fig pattern, facade pattern, anticorruption layer, event interception, gradual replacement)", "cloud migration planning (lift-and-shift, re-platforming, re-architecting, cloud-native transformation, hybrid approaches)", "data migration orchestration (database modernization, schema evolution, data synchronization, consistency management, rollback strategies)", "re-architecture patterns (monolith decomposition, domain-driven design, bounded contexts, event sourcing, CQRS implementation)", "zero-downtime migration (blue-green deployments, canary releases, feature flags, traffic splitting, rollback automation)", "database migration strategies (schema versioning, data pipelines, ETL processes, real-time synchronization, conflict resolution)", "application modernization (API-first design, microservices extraction, containerization, cloud-native patterns)", "microservices extraction (domain identification, service boundaries, data decomposition, communication patterns, transaction management)", "API transformation (REST modernization, GraphQL adoption, versioning strategies, backward compatibility)", "infrastructure migration (cloud provider transitions, hybrid setups, network migration, security transformation)", "dependency mapping (system analysis, impact assessment, migration ordering, risk evaluation)", "risk assessment (migration planning, contingency planning, testing strategies, validation frameworks)", "rollback planning (recovery procedures, data consistency, system state management, emergency protocols)"]',
+    '["Legacy modernization strategies (strangler fig pattern, facade pattern, anticorruption layer, event interception, gradual replacement)", "cloud migration planning (lift-and-shift, re-platforming, re-architecting, cloud-native transformation, hybrid approaches)", "data migration orchestration (database modernization, schema evolution, data synchronization, consistency management, rollback strategies)", "re-architecture patterns (monolith decomposition, domain-driven design, bounded contexts, event sourcing, CQRS implementation)", "zero-downtime migration (blue-green deployments, canary releases, traffic splitting, rollback automation)", "database migration strategies (schema versioning, data pipelines, ETL processes, real-time synchronization, conflict resolution)", "application modernization (API-first design, microservices extraction, containerization, cloud-native patterns)", "microservices extraction (domain identification, service boundaries, data decomposition, communication patterns, transaction management)", "API transformation (REST modernization, GraphQL adoption, versioning strategies, backward compatibility)", "infrastructure migration (cloud provider transitions, hybrid setups, network migration, security transformation)", "dependency mapping (system analysis, impact assessment, migration ordering, risk evaluation)", "risk assessment (migration planning, contingency planning, testing strategies, validation frameworks)", "rollback planning (recovery procedures, data consistency, system state management, emergency protocols)"]',
     '["Legacy system modernization planning", "cloud migration strategy development", "zero-downtime migration execution", "database modernization and migration", "microservices extraction from monoliths", "API transformation and modernization", "infrastructure cloud migration", "dependency analysis and mapping", "risk assessment and mitigation planning", "rollback strategy implementation", "system re-architecture planning", "technology stack migration", "compliance and regulatory migration requirements"]',
     '["migration-strategy", "legacy-modernization", "cloud-migration", "zero-downtime", "database-migration", "microservices-extraction", "re-architecture", "API-transformation", "infrastructure-migration", "dependency-mapping", "risk-assessment", "rollback-planning", "strangler-fig", "blue-green", "canary-releases", "data-synchronization", "system-transformation"]',
     '["@coordinator.backend [optional]", "@coordinator.database [optional]", "@coordinator.infrastructure [optional]", "@ops.iac [optional,seq:2]", "@database.postgres [optional,seq:3]"]'
@@ -697,7 +800,7 @@ VALUES
     '@ops.cicd',
     'ops',
     '["CI/CD pipeline implementation and automation expert specializing in enterprise GitOps workflows and deployment orchestration"]',
-    '["Jenkins advanced (pipeline as code, Blue Ocean, distributed builds, plugin ecosystem, pipeline optimization)", "GitLab CI expertise (YAML pipelines, runners, container registry, security scanning, deployment strategies)", "GitHub Actions mastery (workflow automation, custom actions, matrix builds, reusable workflows, secrets management)", "CircleCI optimization (parallelism, caching strategies, orbs, workflow orchestration)", "ArgoCD GitOps (application deployment, sync policies, rollback strategies, multi-cluster management)", "deployment automation (blue-green deployments, canary releases, rolling updates, feature flags)", "pipeline optimization (build caching, artifact management, parallel execution, dependency optimization)", "security integration (SAST, DAST, dependency scanning, container security, secrets scanning)", "monitoring integration (build metrics, deployment tracking, failure alerting, performance monitoring)"]',
+    '["Jenkins advanced (pipeline as code, Blue Ocean, distributed builds, plugin ecosystem, pipeline optimization)", "GitLab CI expertise (YAML pipelines, runners, container registry, security scanning, deployment strategies)", "GitHub Actions mastery (workflow automation, custom actions, matrix builds, reusable workflows, secrets management)", "CircleCI optimization (parallelism, caching strategies, orbs, workflow orchestration)", "ArgoCD GitOps (application deployment, sync policies, rollback strategies, multi-cluster management)", "deployment automation (blue-green deployments, canary releases, rolling updates)", "pipeline optimization (build caching, artifact management, parallel execution, dependency optimization)", "security integration (SAST, DAST, dependency scanning, container security, secrets scanning)", "monitoring integration (build metrics, deployment tracking, failure alerting, performance monitoring)"]',
     '["Enterprise CI/CD pipeline design and implementation", "GitOps workflow setup with ArgoCD", "multi-environment deployment orchestration", "security-first pipeline development", "automated testing integration", "container-based build systems", "deployment strategy optimization", "pipeline performance tuning", "build artifact management", "secrets and security scanning integration", "monitoring and alerting setup", "disaster recovery planning", "rollback automation", "compliance automation"]',
     '["Jenkins", "GitLab-CI", "GitHub-Actions", "CircleCI", "ArgoCD", "CI-CD", "pipeline", "deployment-automation", "GitOps", "blue-green", "canary", "rolling-updates", "build-optimization", "security-scanning", "SAST", "DAST", "container-builds", "artifact-management", "secrets-management", "monitoring-integration", "automation", "orchestration", "rollback", "compliance"]',
     '["@ops.git [required]", "@ops.containers [optional]", "@coordinator.devops [optional,seq:2]", "@audit.security [optional,seq:3]"]'
@@ -758,150 +861,3 @@ VALUES
   );
 
 -- Generated 52 INSERT statements for 52 agents
-
--- DEFAULT INITIAL JOB
-INSERT OR IGNORE INTO jobs (id, title, description, status, created_at) VALUES (
-'job_5e770c0deba5e',
-'Project Setup',
-'{"summary": "Initial project setup and configuration", "goals": ["Configure Acolytes for Claude Code System", "Initialize database", "Setup agents"], "scope": "Complete system initialization", "priority": "high"}',
-'active',
-datetime('now')
-);
-
--- DEFAULT INITIAL SESSION (associated with initial job)
-INSERT OR IGNORE INTO sessions (id, job_id, claude_session_id, created_at) VALUES (
-'session_ac01e7e4e110',
-'job_5e770c0deba5e',
-NULL,  -- Claude session ID will be populated when available
-datetime('now')
-);
-
--- JSON VALIDATION TRIGGERS
-CREATE TRIGGER validate_job_description
-BEFORE INSERT ON jobs
-BEGIN
-  SELECT CASE
-    WHEN json_extract(NEW.description, '$.priority') NOT IN ('high', 'medium', 'low')
-    THEN RAISE(ABORT, 'Invalid priority level in job description')
-    WHEN json_type(NEW.description, '$.goals') != 'array'
-    THEN RAISE(ABORT, 'Goals must be an array in job description')
-    WHEN LENGTH(json_extract(NEW.description, '$.summary')) < 10
-    THEN RAISE(ABORT, 'Job summary must be at least 10 characters')
-  END;
-END;
-
-CREATE TRIGGER validate_job_description_update
-BEFORE UPDATE ON jobs
-BEGIN
-  SELECT CASE
-    WHEN json_extract(NEW.description, '$.priority') NOT IN ('high', 'medium', 'low')
-    THEN RAISE(ABORT, 'Invalid priority level in job description')
-    WHEN json_type(NEW.description, '$.goals') != 'array'
-    THEN RAISE(ABORT, 'Goals must be an array in job description')
-    WHEN LENGTH(json_extract(NEW.description, '$.summary')) < 10
-    THEN RAISE(ABORT, 'Job summary must be at least 10 characters')
-  END;
-END;
-
--- TRIGGER FOR JOB AUTO-STATUS MANAGEMENT
--- Ensures only 1 job is active at a time
--- Prevents creating active jobs when one already exists
-CREATE TRIGGER enforce_single_active_job
-BEFORE INSERT ON jobs
-FOR EACH ROW
-WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active')
-BEGIN
-  SELECT RAISE(ABORT, 'Cannot create active job - another job is already active. Create as paused instead.');
-END;
-
--- Prevents updating a job to active when another is already active
-CREATE TRIGGER enforce_single_active_job_update
-BEFORE UPDATE ON jobs
-FOR EACH ROW
-WHEN NEW.status = 'active' AND EXISTS (SELECT 1 FROM jobs WHERE status = 'active' AND id != NEW.id)
-BEGIN
-  SELECT RAISE(ABORT, 'Cannot set job to active - another job is already active. Pause the other job first.');
-END;
-
--- TRIGGERS FOR FLAGS QUALITY CONTROL
-CREATE TRIGGER validate_flag_quality
-BEFORE INSERT ON flags
-BEGIN
-  SELECT CASE
-    WHEN LENGTH(NEW.action_required) < 100 
-    THEN RAISE(ABORT, 'action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.')
-    WHEN LENGTH(NEW.change_description) < 50 
-    THEN RAISE(ABORT, 'change_description must be at least 50 characters. Describe what changed and why.')
-    WHEN NEW.target_agent IS NULL AND NEW.impact_level IN ('high', 'critical')
-    THEN RAISE(ABORT, 'High/critical impact flags must have specific target_agent specified.')
-  END;
-END;
-
-CREATE TRIGGER validate_flag_quality_update
-BEFORE UPDATE ON flags
-BEGIN
-  SELECT CASE
-    WHEN LENGTH(NEW.action_required) < 100 
-    THEN RAISE(ABORT, 'action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.')
-    WHEN LENGTH(NEW.change_description) < 50 
-    THEN RAISE(ABORT, 'change_description must be at least 50 characters. Describe what changed and why.')
-    WHEN NEW.target_agent IS NULL AND NEW.impact_level IN ('high', 'critical')
-    THEN RAISE(ABORT, 'High/critical impact flags must have specific target_agent specified.')
-  END;
-END;
-
--- ENHANCED FLAG CONSISTENCY VALIDATION
-CREATE TRIGGER validate_flag_consistency
-BEFORE INSERT ON flags  
-BEGIN
-  SELECT CASE
-    WHEN NEW.impact_level = 'critical' AND NEW.flag_type NOT IN ('breaking_change', 'security', 'data_loss')
-    THEN RAISE(ABORT, 'Critical flags must be breaking changes, security issues, or data loss scenarios')
-    WHEN NEW.impact_level = 'low' AND NEW.flag_type IN ('breaking_change', 'security')
-    THEN RAISE(ABORT, 'Breaking changes and security issues cannot have low impact level')
-  END;
-END;
-
--- ============================================================================
--- ACOLYTES LOOP SYSTEM TABLES
--- Revolutionary eternal agent communication system
--- Agents stay alive forever using sleep loops
--- ============================================================================
-
--- Main quest table for ACOLYTE QUESTS SYSTEM
-CREATE TABLE IF NOT EXISTS acolyte_quests (
-    quest_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    quest_name TEXT NOT NULL,              -- "quest-20241229-143000"
-    quest_phase TEXT DEFAULT '1/1',        -- "1/6" from acolyte's roadmap
-    mission TEXT NOT NULL,                 -- The task/mission description
-    recruited TEXT NOT NULL,               -- JSON array ["@acolyte.api", "@backend.nodejs"]
-    current_agent TEXT,                    -- Who has the turn NOW
-    status TEXT NOT NULL DEFAULT 'working', -- working/waiting/reviewing/completed/failed/timeout
-    broadcast TEXT,                        -- JSON {"to": "@backend.nodejs", "message": "create..."}
-    context TEXT,                          -- JSON context from acolyte
-    result TEXT,                           -- JSON final result when quest completes
-    created_at INTEGER DEFAULT (strftime('%s', 'now')),
-    updated_at INTEGER DEFAULT (strftime('%s', 'now'))
-);
-
--- Indexes for ACOLYTE QUESTS performance
-CREATE INDEX IF NOT EXISTS idx_current_agent ON acolyte_quests(current_agent);
-CREATE INDEX IF NOT EXISTS idx_status ON acolyte_quests(status);
-CREATE INDEX IF NOT EXISTS idx_created_at ON acolyte_quests(created_at);
-
--- Optional: Status change history for metrics and debugging
-CREATE TABLE IF NOT EXISTS acolyte_status_changes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    quest_id INTEGER NOT NULL REFERENCES acolyte_quests(quest_id),
-    old_status TEXT,
-    new_status TEXT NOT NULL,
-    old_agent TEXT,
-    new_agent TEXT,
-    changed_at INTEGER DEFAULT (strftime('%s', 'now')),
-    loop_count INTEGER,
-    message TEXT                           -- Optional message about the change
-);
-
--- Index for status changes
-CREATE INDEX IF NOT EXISTS idx_acolyte_status_quest ON acolyte_status_changes(quest_id);
-CREATE INDEX IF NOT EXISTS idx_acolyte_status_time ON acolyte_status_changes(changed_at);

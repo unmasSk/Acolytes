@@ -349,15 +349,9 @@ CREATE TABLE messages (
 --   • Validate JSON at application layer before insertion
 --   • Alternative: Use TEXT type explicitly if you want clear storage semantics
 -- Example: SELECT json_extract(metadata, '$.key') FROM messages;
+```
 
 Useful Views
-
--- latest_session: Gets current session without ORDER BY
-SELECT * FROM latest_session;
-
--- pending_flags: Pre-filtered and sorted pending flags
-SELECT * FROM pending_flags;
-```
 
 ```bash
   # Job Management
@@ -372,11 +366,7 @@ SELECT * FROM pending_flags;
   uv run python ~/.claude/scripts/agent_db.py search-agents "authentication OAuth2" --top 5
   # Returns: Score: 95 - @service.auth (OAuth specialist)
 
-  # Flag Check (for FLAGS system)
-  uv run python ~/.claude/scripts/agent_db.py get-workable-flags
-
   # Custom read-only queries (agent_db.py doesn't support raw SQL writes)
-  sqlite3 .claude/memory/project.db "SELECT * FROM latest_session"
   sqlite3 .claude/memory/project.db "SELECT title, status FROM jobs WHERE status='active'"
 ```
 
