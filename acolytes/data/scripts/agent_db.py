@@ -11,8 +11,6 @@ Commands:
   list-agents              - List all agents
   query [sql]              - Run read-only query
   execute [sql]            - Run write operation
-  create-flag              - Create flag targeting specific agent (action_required >= 100 chars, change_description >= 50 chars)
-  get_flags [target_agent] - Get pending flags for specific agent
   search-agents [query]    - Search agents semantically by tags/tech_stack (e.g., "JWT authentication")
 """
 import sqlite3
@@ -63,95 +61,6 @@ def execute(sql, params=None):
     conn.close()
     return json.dumps({"affected": affected, "id": last_id})
 
-def create_flag(flag_type, source_agent, target_agent, 
-                change_description, action_required, impact_level='medium',
-                related_files=None, code_location=None, example_usage=None,
-                context=None, chain_origin_id=None):
-    """Create a FLAG for inter-module communication about changes
-    This is the main function for creating FLAGS - unified version
-    """
-    
-    # QUALITY VALIDATION
-    if len(action_required) < 100:
-        return json.dumps({
-            "error": "action_required must be at least 100 characters for quality control. Be specific: include file paths, line numbers, exact changes needed.",
-            "current_length": len(action_required),
-            "required_length": 100
-        })
-    
-    if len(change_description) < 50:
-        return json.dumps({
-            "error": "change_description must be at least 50 characters. Describe what changed and why.",
-            "current_length": len(change_description),
-            "required_length": 50
-        })
-    
-    if not target_agent and impact_level in ['high', 'critical']:
-        return json.dumps({
-            "error": "High/critical impact flags must have specific target_agent specified."
-        })
-    
-    timestamp = get_timestamp()
-    conn = sqlite3.connect(DB_PATH)
-    
-    # Get current session_id
-    cursor = conn.execute("SELECT id FROM sessions WHERE ended_at IS NULL ORDER BY created_at DESC LIMIT 1")
-    row = cursor.fetchone()
-    session_id = row[0] if row else None
-    
-    # Ensure agents have @ prefix
-    if source_agent and not source_agent.startswith('@'):
-        source_agent = f"@{source_agent}"
-    if target_agent and not target_agent.startswith('@'):
-        target_agent = f"@{target_agent}"
-    
-    # Validate and sanitize related_files (keep as comma-separated TEXT)
-    if related_files and isinstance(related_files, list):
-        related_files = ', '.join(related_files)
-    
-    try:
-        cursor = conn.execute("""
-            INSERT INTO flags (
-                chain_origin_id, session_id, flag_type, source_agent, target_agent,
-                change_description, action_required, impact_level, related_files,
-                code_location, example_usage, context, status, created_at, locked
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, FALSE)
-        """, (
-            chain_origin_id, session_id, flag_type, source_agent, target_agent,
-            change_description, action_required, impact_level, related_files,
-            code_location, example_usage, json.dumps(context) if context else None, timestamp
-        ))
-        
-        flag_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        
-        return json.dumps({
-            "success": True,
-            "flag_id": flag_id,
-            "message": f"FLAG #{flag_id} created: {flag_type}",
-            "from": source_agent,
-            "to": target_agent,
-            "priority": impact_level
-        })
-    except Exception as e:
-        conn.rollback()
-        conn.close()
-        return json.dumps({"error": str(e)})
-
-def get_pending_flags(target_agent=None):
-    """Get pending flags targeting a specific agent"""
-    sql = "SELECT * FROM flags WHERE status='pending'"
-    params = []
-    if target_agent:
-        # Validate agent name format
-        if not target_agent.startswith('@'):
-            target_agent = f"@{target_agent}"
-        sql += " AND target_agent = ?"
-        params.append(target_agent)
-    sql += " ORDER BY CASE impact_level WHEN 'critical' THEN 1 WHEN 'high' THEN 2 WHEN 'medium' THEN 3 ELSE 4 END, created_at ASC"
-    return query(sql, params)
-
 def init_database():
     """Initialize database with schema from init_db.sql"""
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -187,26 +96,21 @@ def create_agent(name, module=None, sub_module=None):
         if cursor.fetchone():
             conn.close()
             return json.dumps({"error": f"Agent '{name}' already exists in agents_catalog"})
-        
         # Start explicit transaction
         conn.execute("BEGIN TRANSACTION")
-        
         # Insert ONLY into agents_catalog (no more acolytes table)
         conn.execute(
             "INSERT INTO agents_catalog (name, type, module, sub_module) VALUES (?, 'acolyte', ?, ?)",
             (name, module, sub_module)
         )
-        
         # Insert 14 empty memory records using agent_name directly
         for memory_type in MEMORY_TYPES:
             conn.execute(
                 "INSERT INTO agents_memory (agent_name, memory_type, content, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
                 (name, memory_type, '{}', timestamp, timestamp)
             )
-        
         # Commit the transaction
         conn.commit()
-        
         return json.dumps({
             "success": True, 
             "agent_name": name,
@@ -229,11 +133,9 @@ def update_memory(agent_name, memory_type, content):
     """Update specific memory for an agent using agent name"""
     if memory_type not in MEMORY_TYPES:
         return json.dumps({"error": f"Invalid memory_type. Must be one of: {MEMORY_TYPES}"})
-    
     # Ensure agent_name starts with @
     if not agent_name.startswith('@'):
         agent_name = '@' + agent_name
-    
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
     
@@ -243,10 +145,8 @@ def update_memory(agent_name, memory_type, content):
             "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = ?",
             (json.dumps(content) if isinstance(content, dict) else content, timestamp, agent_name, memory_type)
         )
-        
         if cursor.rowcount == 0:
             return json.dumps({"error": f"Memory type '{memory_type}' not found for agent '{agent_name}'"})
-        
         conn.commit()
         return json.dumps({"success": True, "agent": agent_name, "memory_type": memory_type, "updated_at": timestamp})
     except Exception as e:
@@ -256,26 +156,22 @@ def update_memory(agent_name, memory_type, content):
         conn.close()
 
 def add_interaction(agent_name, interaction_type, request, response, 
-                   files_touched=None, flags_created=None, flags_processed=None,
+                   files_touched=None,
                    delegated_to=None, outcome='success'):
     """Add a new interaction to agent's history memory
     This appends to the history array in the history memory type
     """
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
-    
     # Ensure agent_name starts with @
     if not agent_name.startswith('@'):
         agent_name = '@' + agent_name
-    
     try:
-        
         # Get current history memory (interactions was renamed to history)
         cursor = conn.execute("""
             SELECT content FROM agents_memory 
             WHERE agent_name = ? AND memory_type = 'history'
         """, (agent_name,))
-        
         row = cursor.fetchone()
         if not row:
             # Create history memory if doesn't exist
@@ -286,11 +182,9 @@ def add_interaction(agent_name, interaction_type, request, response,
             )
         else:
             content = json.loads(row[0]) if row[0] else {"history": []}
-        
         # Ensure history array exists
         if 'history' not in content:
             content['history'] = []
-        
         # Add new interaction
         new_interaction = {
             "timestamp": timestamp,
@@ -299,17 +193,11 @@ def add_interaction(agent_name, interaction_type, request, response,
             "response": response,
             "outcome": outcome
         }
-        
         # Add optional fields if provided
         if files_touched:
             new_interaction["files_touched"] = files_touched
-        if flags_created:
-            new_interaction["flags_created"] = flags_created
-        if flags_processed:
-            new_interaction["flags_processed"] = flags_processed
         if delegated_to:
             new_interaction["delegated_to"] = delegated_to
-        
         # Append to history
         content['history'].append(new_interaction)
         
@@ -322,7 +210,6 @@ def add_interaction(agent_name, interaction_type, request, response,
             "UPDATE agents_memory SET content = ?, updated_at = ? WHERE agent_name = ? AND memory_type = 'history'",
             (json.dumps(content), timestamp, agent_name)
         )
-        
         conn.commit()
         return json.dumps({
             "success": True, 
@@ -342,7 +229,6 @@ def get_memory(agent_name, memory_type, limit=None):
     """
     if memory_type not in MEMORY_TYPES:
         return json.dumps({"error": f"Invalid memory_type. Must be one of: {MEMORY_TYPES}"})
-    
     # Ensure agent_name starts with @
     if not agent_name.startswith('@'):
         agent_name = '@' + agent_name
@@ -371,7 +257,6 @@ def get_memory(agent_name, memory_type, limit=None):
                 content['history'] = content['history'][-10:]
                 content['showing_last'] = 10
                 content['total_count'] = total_interactions
-        
         return json.dumps({
             "agent": agent_name,
             "memory_type": memory_type,
@@ -387,7 +272,6 @@ def update_health(agent_name, drift_score, status, memory_size_kb=None,
     """Update agent health record"""
     timestamp = get_timestamp()
     conn = sqlite3.connect(DB_PATH)
-    
     # Ensure agent_name starts with @
     if not agent_name.startswith('@'):
         agent_name = '@' + agent_name
@@ -459,113 +343,6 @@ def get_agent_health(agent_name=None):
     sql += " ORDER BY h.checked_at DESC"
     
     return query(sql, params)
-
-
-# NEW FLAGS SYSTEM FUNCTIONS
-
-def get_workable_flags_summary():
-    """Get summary of workable flags for Claude (locked=FALSE, status='pending')"""
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    
-    cursor = conn.execute("""
-        SELECT target_agent, COUNT(*) as workable_flags,
-               MAX(impact_level) as highest_priority
-        FROM flags 
-        WHERE locked = FALSE AND status = 'pending' AND target_agent IS NOT NULL
-        GROUP BY target_agent
-        ORDER BY workable_flags DESC
-    """)
-    
-    results = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return json.dumps(results, indent=2)
-
-def get_agent_flags(agent_name):
-    """Get all pending flags for a specific agent"""
-    # Ensure agent name has @ prefix for FLAGS table
-    if agent_name and not agent_name.startswith('@'):
-        agent_name = f"@{agent_name}"
-    
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    
-    cursor = conn.execute("""
-        SELECT * FROM flags 
-        WHERE target_agent = ? AND status = 'pending'
-        ORDER BY created_at ASC
-    """, (agent_name,))
-    
-    results = [dict(row) for row in cursor.fetchall()]
-    conn.close()
-    return json.dumps(results, indent=2)
-
-def complete_flag(flag_id, agent_name=None):
-    """Mark a flag as completed"""
-    timestamp = get_timestamp()
-    conn = sqlite3.connect(DB_PATH)
-    
-    try:
-        cursor = conn.execute("""
-            UPDATE flags 
-            SET status = 'completed', completed_at = ?, completed_by = ?
-            WHERE id = ?
-        """, (timestamp, agent_name, flag_id))
-        
-        if cursor.rowcount == 0:
-            return json.dumps({"error": f"Flag {flag_id} not found"})
-        
-        conn.commit()
-        return json.dumps({
-            "success": True,
-            "flag_id": flag_id,
-            "completed_by": agent_name,
-            "completed_at": timestamp
-        })
-        
-    except Exception as e:
-        conn.rollback()
-        return json.dumps({"error": str(e)})
-    finally:
-        conn.close()
-
-def lock_flag(flag_id):
-    """Lock a flag (set locked=TRUE)"""
-    conn = sqlite3.connect(DB_PATH)
-    
-    try:
-        cursor = conn.execute("UPDATE flags SET locked = TRUE WHERE id = ?", (flag_id,))
-        
-        if cursor.rowcount == 0:
-            return json.dumps({"error": f"Flag {flag_id} not found"})
-        
-        conn.commit()
-        return json.dumps({"success": True, "flag_id": flag_id, "locked": True})
-        
-    except Exception as e:
-        conn.rollback()
-        return json.dumps({"error": str(e)})
-    finally:
-        conn.close()
-
-def unlock_flag(flag_id):
-    """Unlock a flag (set locked=FALSE)"""
-    conn = sqlite3.connect(DB_PATH)
-    
-    try:
-        cursor = conn.execute("UPDATE flags SET locked = FALSE WHERE id = ?", (flag_id,))
-        
-        if cursor.rowcount == 0:
-            return json.dumps({"error": f"Flag {flag_id} not found"})
-        
-        conn.commit()
-        return json.dumps({"success": True, "flag_id": flag_id, "locked": False})
-        
-    except Exception as e:
-        conn.rollback()
-        return json.dumps({"error": str(e)})
-    finally:
-        conn.close()
 
 def search_agents_semantic(search_query, limit=5):
     """Search agents using semantic matching with tags, tech_stack, role and scenarios
@@ -778,7 +555,6 @@ def activate_job(job_id):
                 pause_reason = NULL
             WHERE id = ?
         """, (job_id,))
-        
         conn.commit()
         
         result = {
@@ -834,7 +610,6 @@ def cleanup_orphaned_jobs():
                     pause_reason = 'Auto-paused: No recent sessions detected'
                 WHERE id = ?
             """, (get_timestamp(), job[0]))
-        
         conn.commit()
         result = f"Cleaned up {len(orphaned_jobs)} orphaned jobs"
     else:
@@ -926,7 +701,6 @@ def create_job(title, description, priority="medium", estimated_hours=None,
             timestamp if status == "paused" else None,
             pause_reason if status == "paused" else None
         ))
-        
         conn.commit()
         conn.close()
         
@@ -996,9 +770,6 @@ def list_available_agents():
     finally:
         conn.close()
 
-# create_flag_for_agent removed - use create_flag instead which is now unified
-
-
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] == "--help":
         print("=" * 70)
@@ -1034,7 +805,6 @@ if __name__ == "__main__":
         print("OTHER COMMANDS")
         print("=" * 70)
         print("\nCore: init, create-agent, update-memory, get-memory, query, execute")
-        print("FLAGS: create-flag, get-pending-flags, get-workable-flags, get-agent-flags, complete-flag")
         print("Agents: search-agents, update-health, get-health, add-interaction")
         print("Jobs: cleanup-jobs")
         sys.exit(1)
@@ -1108,34 +878,7 @@ if __name__ == "__main__":
                 print(json.dumps({"error": f"Invalid JSON params: {e}"}))
                 sys.exit(1)
             print(execute(sql, params))
-        
-        elif command == "create-flag":
-            # Parse arguments for the new flag structure
-            import argparse
-            parser = argparse.ArgumentParser()
-            parser.add_argument('command')
-            parser.add_argument('--flag_type', required=True)
-            parser.add_argument('--source_agent', required=True)
-            parser.add_argument('--target_agent', required=True)
-            parser.add_argument('--change_description', required=True)
-            parser.add_argument('--action_required', required=True)
-            parser.add_argument('--impact_level', default='medium')
-            parser.add_argument('--related_files', default=None)
-            parser.add_argument('--code_location', default=None)
-            parser.add_argument('--example_usage', default=None)
-            
-            args = parser.parse_args(sys.argv[1:])
-            print(create_flag(
-                args.flag_type, args.source_agent, args.target_agent,
-                args.change_description, args.action_required,
-                args.impact_level, args.related_files, args.code_location,
-                args.example_usage
-            ))
-        
-        elif command == "get-pending-flags":
-            target_agent: Optional[str] = sys.argv[2] if len(sys.argv) > 2 else None
-            print(get_pending_flags(target_agent))
-        
+
         elif command == "update-health":
             # Parse arguments for health update
             import argparse
@@ -1170,7 +913,7 @@ if __name__ == "__main__":
         elif command == "add-interaction":
             if len(sys.argv) < 5:
                 print("Usage: python agent_db.py add-interaction [agent_name] [type] [request] [response]")
-                print("Optional: --files [files] --flags_created [ids] --flags_processed [ids] --delegated_to [agents] --outcome [outcome]")
+                print("Optional: --files [files] --delegated_to [agents] --outcome [outcome]")
                 sys.exit(1)
             
             agent_name = sys.argv[2]
@@ -1180,8 +923,6 @@ if __name__ == "__main__":
             
             # Parse optional arguments
             files_touched = None
-            flags_created = None
-            flags_processed = None
             delegated_to = None
             outcome = 'success'
             
@@ -1189,12 +930,6 @@ if __name__ == "__main__":
             while i < len(sys.argv):
                 if sys.argv[i] == '--files' and i + 1 < len(sys.argv):
                     files_touched = sys.argv[i + 1]
-                    i += 2
-                elif sys.argv[i] == '--flags_created' and i + 1 < len(sys.argv):
-                    flags_created = sys.argv[i + 1]
-                    i += 2
-                elif sys.argv[i] == '--flags_processed' and i + 1 < len(sys.argv):
-                    flags_processed = sys.argv[i + 1]
                     i += 2
                 elif sys.argv[i] == '--delegated_to' and i + 1 < len(sys.argv):
                     delegated_to = sys.argv[i + 1]
@@ -1207,55 +942,11 @@ if __name__ == "__main__":
             
             print(add_interaction(
                 agent_name, interaction_type, request, response,
-                files_touched, flags_created, flags_processed,
+                files_touched,
                 delegated_to, outcome
             ))
         
-        # NEW FLAGS SYSTEM COMMANDS
-        elif command == "get-workable-flags":
-            print(get_workable_flags_summary())
-        
-        elif command == "get-agent-flags":
-            if len(sys.argv) < 3:
-                print("Usage: python agent_db.py get-agent-flags [@agent-name]")
-                sys.exit(1)
-            target_agent_name = sys.argv[2]
-            print(get_agent_flags(target_agent_name))
-        
-        elif command == "complete-flag":
-            if len(sys.argv) < 3:
-                print("Usage: python agent_db.py complete-flag [flag_id] [optional: agent_name]")
-                sys.exit(1)
-            try:
-                flag_id = int(sys.argv[2])
-            except ValueError:
-                print(json.dumps({"error": "flag_id must be an integer"}))
-                sys.exit(1)
-            completing_agent = sys.argv[3] if len(sys.argv) > 3 else None
-            print(complete_flag(flag_id, completing_agent))
-        
-        elif command == "lock-flag":
-            if len(sys.argv) < 3:
-                print("Usage: python agent_db.py lock-flag [flag_id]")
-                sys.exit(1)
-            try:
-                flag_id = int(sys.argv[2])
-            except ValueError:
-                print(json.dumps({"error": "flag_id must be an integer"}))
-                sys.exit(1)
-            print(lock_flag(flag_id))
-        
-        elif command == "unlock-flag":
-            if len(sys.argv) < 3:
-                print("Usage: python agent_db.py unlock-flag [flag_id]")
-                sys.exit(1)
-            try:
-                flag_id = int(sys.argv[2])
-            except ValueError:
-                print(json.dumps({"error": "flag_id must be an integer"}))
-                sys.exit(1)
-            print(unlock_flag(flag_id))
-        
+        # SEARCH AGENTS COMMAND
         elif command == "search-agents":
             if len(sys.argv) < 3:
                 print("Usage: python agent_db.py search-agents [search_query] [limit]")
@@ -1367,39 +1058,11 @@ if __name__ == "__main__":
             
             job_id = sys.argv[2]
             print(activate_job(job_id))
-        
-        elif command == "create-flag-for-agent":
-            import argparse
-            parser = argparse.ArgumentParser()
-            parser.add_argument('command')
-            parser.add_argument('--flag_type', required=True)
-            parser.add_argument('--source_agent', required=True)
-            parser.add_argument('--target_agent', required=True)
-            parser.add_argument('--change_description', required=True)
-            parser.add_argument('--action_required', required=True)
-            parser.add_argument('--impact_level', default='medium')
-            parser.add_argument('--related_files', default=None)
-            parser.add_argument('--code_location', default=None)
-            parser.add_argument('--example_usage', default=None)
-            parser.add_argument('--context', default=None)
-            parser.add_argument('--chain_origin_id', type=int, default=None)
-            
-            args = parser.parse_args(sys.argv[1:])
-            context = json.loads(args.context) if args.context else None
-            related_files = args.related_files.split(',') if args.related_files else None
-            
-            # Redirect to create_flag which is the unified function
-            print(create_flag(
-                args.flag_type, args.source_agent, args.target_agent,
-                args.change_description, args.action_required, args.impact_level,
-                related_files, args.code_location, args.example_usage, 
-                context, args.chain_origin_id
-            ))
-        
+
         else:
             print(f"Unknown command: {command}")
-            print("Commands: init, create-agent, update-memory, get-memory, query, execute, create-flag, get-pending-flags, update-health, get-health")
-            print("FLAGS Commands: get-workable-flags, get-agent-flags, complete-flag, lock-flag, unlock-flag, search-agents")
+            print("Commands: init, create-agent, update-memory, get-memory, query, execute, update-health, get-health")
+            print("Other Commands: search-agents")
             sys.exit(1)
             
     except Exception as e:

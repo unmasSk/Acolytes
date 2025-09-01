@@ -124,7 +124,7 @@ Keep our quality tracking:
 ````bash
 uv run python ~/.claude/scripts/save_session.py \
   -primary_request "Full detailed capture of user's requests and evolution" \
-  -technical_concepts "Python 3.11, SQLite, MCP servers, Click CLI, FLAGS system" \
+  -technical_concepts "Python 3.11, SQLite, MCP servers, Click CLI" \
   -files_and_code "file1.py|Important because X|Added function Y|```python\ncode here\n```||file2.md|Documentation|Updated section Z|```markdown\ncontent\n```" \
   -errors_and_fixes "Error: No active session|Fixed by creating session with INSERT|User said 'ok create it first'" \
   -problem_solving "Identified session management issue. Tried reading from DB. Found no active session. Created new one." \

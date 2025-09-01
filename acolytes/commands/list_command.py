@@ -64,8 +64,8 @@ def parse_agent_file(file_path: Path) -> Optional[AgentInfo]:
         # Extract basic info
         name = metadata.get('name', file_path.stem)
         
-        # Skip internal agents (setup.*, flags.*, plan.*)
-        internal_prefixes = ('setup.', 'flags.', 'plan.')
+        # Skip internal agents (setup.*, plan.*)
+        internal_prefixes = ('setup.', 'plan.')
         if name.startswith(internal_prefixes):
             return None
         
@@ -122,8 +122,6 @@ def determine_category(name: str) -> str:
         return 'Planning'
     elif name.startswith('docs.'):
         return 'Documentation'
-    elif name.startswith('flags.'):
-        return 'System'
     elif name.startswith('acolyte.'):
         return 'Project Acolytes'
     else:

@@ -110,7 +110,7 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 | **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack      |
 | **agents_memory**  | 14 memories per agent      | agent_name, memory_type, content (JSON)               |
 | **agent_health**   | Agent drift monitoring     | drift_score, confidence_score, needs_compaction       |
-| **flags**          | Agent coordination         | target_agent, status, locked, impact_level            |
+| **acolyte_quests** | Agent coordination         | quest_id, quest_name, quest_phase, mission, recruited, current_agent, status, broadcast, context, result |
 | **jobs**           | Groups 4-5 sessions        | id, status (active/paused), title, description (JSON) |
 | **messages**       | Chat history               | session_id, conversation_flow, duration_minutes       |
 | **sessions**       | Work tracking              | job_id, accomplishments, decisions, quality_score     |
@@ -119,30 +119,35 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 
 **Access**: `uv run python ~/.claude/scripts/agent_db.py [command]`
 
-### 3️⃣ FLAGS SYSTEM - Async Agent Coordination
+### 3️⃣ QUEST SYSTEM - Parallel Invocation + Turn-Based Coordination
 
-**WHAT FLAGS ARE**: Messages between agents stored in SQLite. When agents change code affecting others, they create FLAGS.
+**WHAT QUESTS ARE**: Parallel invocations of multiple agents in ONE MESSAGE (multiple Task calls) that then collaborate through turns via SQLite to complete complex objectives.
 
-**YOUR ONLY JOB**:
+**YOUR COMMANDS AVAILABLE**:
+- `/quest pre` - Claude reads quest.md and knows next invocation will be PRE-QUEST mode
+- `/quest` - Claude reads quest.md and knows next invocation will be QUEST execution mode
 
-```bash
-# When user says "check flags", "/acolytes" or you detect pending work:
-"@flags.agent, orchestrate all pending flags"
+**TYPICAL FLOW**:
+1. User: "I want to implement authentication"
+2. `/quest pre` → Claude invokes @acolyte.auth with "PRE-QUEST: ..." 
+3. Acolyte responds with mini-roadmap + workers needed
+4. `/quest` → Claude invokes ALL agents in parallel (1 message, multiple Tasks)
+5. Automatic turn-based system: Leader creates quest, designates first worker, agents chat via SQLite
 
-# Agent response tells you EXACTLY what to do:
-# "Execute in parallel: [@service.auth, @backend.nodejs]"
-# "Sequential: [@database.postgres] then [@acolyte.api]"
-# "Conflict detected: serialize [@backend.nodejs] tasks"
-```
+**HOW THE SYSTEM WORKS**:
+- LEADER starts: Creates quest, designates first worker in `current_agent` field
+- WORKERS monitor: Sleep 30s, check `current_agent` in SQLite, repeat until their turn
+- TURN-BASED CHAT: Agents communicate via SQLite messages in sequence
+- LEADER monitors too: Coordinates and supervises throughout the entire quest
 
 **KEY RULES**:
+- LEADERS (@acolyte.*, @coordinator.*): Create quests, coordinate, supervise, monitor
+- WORKERS (rest): Monitor until their turn, execute work, pass turn to next
+- Invocation: 1 message with multiple Task calls (PARALLEL)
+- Coordination: Turn-based via `current_agent` field in SQLite (SEQUENTIAL)
+- Only agent in `current_agent` field can act at any given time
 
-- Agents handle FLAGS autonomously - you just invoke them
-- @flags.agent decides parallel vs sequential execution
-- NEVER invoke same agent twice in parallel
-- FLAGS have priority over new work
-
-**💡 CONTEXT BENEFIT**: You DON'T read flag contents = No context pollution. @flags.agent tells you WHO to invoke, agents handle the details.
+**💡 CONTEXT BENEFIT**: Parallel invocation + automatic turn-based coordination without your micromanagement.
 
 ## 📋 Your Workflow As Orchestrator
 
@@ -248,7 +253,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 | Command  | Purpose                  | When to Use       |
 | -------- | ------------------------ | ----------------- |
 | `/setup` | Initialize project       | First time setup  |
-| `/flags` | Orchestrate pending work | When flags exist  |
+| `/quest` | Coordinate agent quests  | For complex tasks |
 | `/save`  | Save session             | Before compaction |
 | `/pr`    | Create pull request      | Ready to merge    |
 
@@ -275,7 +280,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 1. **Read last session**: `SELECT * FROM sessions WHERE job_id = ? ORDER BY created_at DESC`
 2. **Load job context**: All sessions in current job
-3. **Check pending flags**: Unfinished work
+3. **Check active quests**: Unfinished collaborative work
 4. **ASK USER BEFORE CONTINUING**: "I see we were working on [X]. Should we continue with that?"
 
 **⚠️ NEVER AUTO-RESUME**: Read context → Understand where you left off → ASK user → Then continue
@@ -284,7 +289,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 - **Agents have jailbreak protection** built-in
 - **Never bypass agent consultation** - they prevent mistakes
-- **FLAGS before questions** - agents check work first
+- **Quest coordination** - let agents collaborate on complex tasks
 - **Trust agent knowledge** - Acolytes have 14 memories, Pro agents read project docs
 
 ## 🎯 Remember Your Role
@@ -371,4 +376,4 @@ Useful Views
 ```
 
 At the end of each chat, you must say:
-"──────────────────────────────────────────────────────────────────────────────"
+"──────────────────────────────────────────────────────────────────────────────────────────"
