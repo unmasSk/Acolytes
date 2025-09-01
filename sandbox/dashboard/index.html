@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acolytes Dashboard - MVP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loading {
+            animation: pulse 2s infinite;
+        }
+        .error {
+            animation: shake 0.5s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .status-dot {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Acolytes Dashboard</h1>
+            <p class="text-gray-600">MVP - Real-time monitoring and control panel</p>
+            <div class="flex items-center mt-4">
+                <div id="connection-status" class="flex items-center">
+                    <div class="status-dot w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                    <span class="text-sm text-gray-600">Conectado</span>
+                </div>
+                <div class="ml-4 text-sm text-gray-500">
+                    Última actualización: <span id="last-update"></span>
+                </div>
+                <div class="ml-4 text-sm text-gray-500">
+                    Próxima actualización: <span id="next-refresh">5s</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="mb-6">
+            <div class="border-b border-gray-200">
+                <nav class="-mb-px flex space-x-8">
+                    <div class="tab-button border-b-2 border-blue-500 text-blue-600 py-2 px-1 cursor-pointer font-medium text-sm" data-tab="overview">
+                        Vista General
+                    </div>
+                    <div class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 cursor-pointer font-medium text-sm" data-tab="agents">
+                        Agentes
+                    </div>
+                    <div class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 cursor-pointer font-medium text-sm" data-tab="quests">
+                        Quests
+                    </div>
+                    <div class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 cursor-pointer font-medium text-sm" data-tab="flags">
+                        FLAGS
+                    </div>
+                    <div class="tab-button border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-2 px-1 cursor-pointer font-medium text-sm" data-tab="chat">
+                        Agent Chat
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content">
+            <!-- Overview Tab -->
+            <div id="overview" class="tab-content">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- System Stats -->
+                    <div id="stats-card" class="card bg-white rounded-lg shadow-lg p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-gray-800">Estadísticas del Sistema</h2>
+                            <div id="stats-loading" class="loading w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin hidden"></div>
+                        </div>
+                        <div id="stats-content">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center p-4 bg-blue-50 rounded">
+                                    <div class="text-2xl font-bold text-blue-600" id="total-agents">-</div>
+                                    <div class="text-sm text-gray-600">Agentes Totales</div>
+                                </div>
+                                <div class="text-center p-4 bg-green-50 rounded">
+                                    <div class="text-2xl font-bold text-green-600" id="active-jobs">-</div>
+                                    <div class="text-sm text-gray-600">Jobs Activos</div>
+                                </div>
+                                <div class="text-center p-4 bg-purple-50 rounded">
+                                    <div class="text-2xl font-bold text-purple-600" id="total-sessions">-</div>
+                                    <div class="text-sm text-gray-600">Sesiones Totales</div>
+                                </div>
+                                <div class="text-center p-4 bg-orange-50 rounded">
+                                    <div class="text-2xl font-bold text-orange-600" id="system-health">-</div>
+                                    <div class="text-sm text-gray-600">Salud del Sistema</div>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-gray-50 rounded text-sm text-gray-600">
+                                <strong>Última actividad:</strong> <span id="last-activity">-</span>
+                            </div>
+                        </div>
+                        <div id="stats-error" class="error hidden text-red-600 text-center p-4">
+                            <p>❌ Error cargando estadísticas</p>
+                        </div>
+                    </div>
+
+                    <!-- Overview Quests Summary -->
+                    <div class="card bg-white rounded-lg shadow-lg p-6">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Resumen de Quests</h2>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="text-center p-3 bg-yellow-50 rounded">
+                                <div class="text-xl font-bold text-yellow-600" id="overview-active-quests">-</div>
+                                <div class="text-xs text-gray-600">Activos</div>
+                            </div>
+                            <div class="text-center p-3 bg-blue-50 rounded">
+                                <div class="text-xl font-bold text-blue-600" id="overview-waiting-quests">-</div>
+                                <div class="text-xs text-gray-600">Esperando</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 rounded">
+                                <div class="text-xl font-bold text-green-600" id="overview-completed-quests">-</div>
+                                <div class="text-xs text-gray-600">Completados</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onclick="dashboard.switchTab('quests')">
+                                Ver Detalles de Quests
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Tab -->
+            <div id="agents" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Agentes Activos</h2>
+                        <div id="agents-loading" class="loading w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin hidden"></div>
+                    </div>
+                    <div id="agents-content">
+                        <div id="agents-list" class="space-y-2 max-h-80 overflow-y-auto">
+                            <div class="text-center text-gray-500 py-4">Cargando agentes...</div>
+                        </div>
+                    </div>
+                    <div id="agents-error" class="error hidden text-red-600 text-center p-4">
+                        <p>❌ Error cargando agentes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quests Tab -->
+            <div id="quests" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Estado de Quests</h2>
+                        <div id="quests-loading" class="loading w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin hidden"></div>
+                    </div>
+                    <div id="quests-content">
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="text-center p-3 bg-yellow-50 rounded">
+                                <div class="text-xl font-bold text-yellow-600" id="active-quests">-</div>
+                                <div class="text-xs text-gray-600">Activos</div>
+                            </div>
+                            <div class="text-center p-3 bg-blue-50 rounded">
+                                <div class="text-xl font-bold text-blue-600" id="waiting-quests">-</div>
+                                <div class="text-xs text-gray-600">Esperando</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 rounded">
+                                <div class="text-xl font-bold text-green-600" id="completed-quests">-</div>
+                                <div class="text-xs text-gray-600">Completados</div>
+                            </div>
+                        </div>
+                        <div id="quests-list" class="space-y-2 max-h-60 overflow-y-auto">
+                            <div class="text-center text-gray-500 py-4">No hay quests en ejecución</div>
+                        </div>
+                    </div>
+                    <div id="quests-error" class="error hidden text-red-600 text-center p-4">
+                        <p>❌ Error cargando quests</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flags Tab -->
+            <div id="flags" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Flags Pendientes</h2>
+                        <div id="flags-loading" class="loading w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin hidden"></div>
+                    </div>
+                    <div id="flags-content">
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="text-center p-3 bg-red-50 rounded">
+                                <div class="text-xl font-bold text-red-600" id="pending-flags">-</div>
+                                <div class="text-xs text-gray-600">Pendientes</div>
+                            </div>
+                            <div class="text-center p-3 bg-yellow-50 rounded">
+                                <div class="text-xl font-bold text-yellow-600" id="total-flags">-</div>
+                                <div class="text-xs text-gray-600">Totales</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 rounded">
+                                <div class="text-xl font-bold text-green-600" id="resolved-flags">-</div>
+                                <div class="text-xs text-gray-600">Resueltos</div>
+                            </div>
+                        </div>
+                        <div id="flags-list" class="space-y-2 max-h-60 overflow-y-auto">
+                            <div class="text-center text-gray-500 py-4">No hay flags pendientes</div>
+                        </div>
+                        <div id="flags-note" class="mt-4 p-3 bg-yellow-50 rounded text-sm text-yellow-700">
+                            <strong>Nota:</strong> Sistema FLAGS aún no implementado en la base de datos
+                        </div>
+                    </div>
+                    <div id="flags-error" class="error hidden text-red-600 text-center p-4">
+                        <p>❌ Error cargando flags</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Chat Tab -->
+            <div id="chat" class="tab-content hidden">
+                <div class="bg-white rounded-lg shadow-lg p-6 h-96 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800">Agent Chat</h2>
+                        <div id="chat-loading" class="loading w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin hidden"></div>
+                    </div>
+                    
+                    <!-- Quest Context -->
+                    <div id="chat-quest-context" class="mb-4 p-3 bg-blue-50 rounded text-sm hidden">
+                        <strong>Quest activo:</strong> <span id="current-quest-name">-</span>
+                    </div>
+                    
+                    <!-- Messages Container -->
+                    <div id="chat-messages" class="flex-1 overflow-y-auto border rounded p-4 mb-4 space-y-2 bg-gray-50">
+                        <div class="text-center text-gray-500 py-4">No hay mensajes aún</div>
+                    </div>
+                    
+                    <!-- Input Area -->
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex space-x-2">
+                            <input 
+                                type="text" 
+                                id="chat-agent-name" 
+                                placeholder="Nombre del agente" 
+                                class="px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0 w-48"
+                            />
+                            <textarea 
+                                id="chat-message" 
+                                placeholder="Escribe un mensaje..." 
+                                rows="2"
+                                class="flex-1 px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            ></textarea>
+                            <button 
+                                id="chat-send" 
+                                class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
+                            >
+                                Enviar
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            Mensajes se actualizan automáticamente cada 5 segundos
+                        </div>
+                    </div>
+                    
+                    <div id="chat-error" class="error hidden text-red-600 text-center p-4 mt-4">
+                        <p>❌ Error en el chat</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 text-center text-sm text-gray-500">
+            <p>Acolytes Dashboard MVP - Actualización automática cada 5 segundos</p>
+            <p class="mt-1">API Server: <span class="text-green-600 font-mono">http://localhost:5000</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard Controller
+        class AcolytesDashboard {
+            constructor() {
+                this.apiBase = 'http://localhost:5000/api';
+                this.refreshInterval = 5000; // 5 seconds
+                this.countdownInterval = null;
+                this.dataRefreshInterval = null;
+                this.isConnected = true;
+                this.currentTab = 'overview';
+                this.lastChatUpdate = null;
+                
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 Initializing Acolytes Dashboard...');
+                this.initTabs();
+                this.initChatListeners();
+                this.loadAllData();
+                this.startAutoRefresh();
+                this.startCountdown();
+                this.updateTimestamp();
+            }
+
+            initTabs() {
+                // Add click listeners to tab buttons
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const tabName = e.target.getAttribute('data-tab');
+                        this.switchTab(tabName);
+                    });
+                });
+            }
+
+            switchTab(tabName) {
+                // Update active tab button
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    if (button.getAttribute('data-tab') === tabName) {
+                        button.classList.remove('border-transparent', 'text-gray-500');
+                        button.classList.add('border-blue-500', 'text-blue-600');
+                    } else {
+                        button.classList.remove('border-blue-500', 'text-blue-600');
+                        button.classList.add('border-transparent', 'text-gray-500');
+                    }
+                });
+
+                // Show/hide tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    if (content.id === tabName) {
+                        content.classList.remove('hidden');
+                    } else {
+                        content.classList.add('hidden');
+                    }
+                });
+
+                this.currentTab = tabName;
+
+                // Load specific tab data if needed
+                if (tabName === 'chat') {
+                    this.loadChatMessages();
+                    this.loadChatQuests();
+                }
+            }
+
+            initChatListeners() {
+                const sendButton = document.getElementById('chat-send');
+                const messageInput = document.getElementById('chat-message');
+                const agentNameInput = document.getElementById('chat-agent-name');
+
+                sendButton.addEventListener('click', () => this.sendChatMessage());
+                
+                messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendChatMessage();
+                    }
+                });
+
+                // Set default agent name
+                agentNameInput.value = 'frontend.vue';
+            }
+
+            async loadAllData() {
+                console.log('📊 Loading all dashboard data...');
+                const promises = [
+                    this.loadStats(),
+                    this.loadAgents(),
+                    this.loadQuests(),
+                    this.loadFlags()
+                ];
+
+                // Load chat if on chat tab
+                if (this.currentTab === 'chat') {
+                    promises.push(this.loadChatMessages());
+                    promises.push(this.loadChatQuests());
+                }
+
+                await Promise.all(promises);
+                this.updateTimestamp();
+            }
+
+            async loadStats() {
+                const loading = document.getElementById('stats-loading');
+                const content = document.getElementById('stats-content');
+                const error = document.getElementById('stats-error');
+                
+                try {
+                    loading.classList.remove('hidden');
+                    content.classList.remove('hidden');
+                    error.classList.add('hidden');
+
+                    const response = await fetch(`${this.apiBase}/stats`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    
+                    document.getElementById('total-agents').textContent = data.total_agents || 0;
+                    document.getElementById('active-jobs').textContent = data.active_jobs || 0;
+                    document.getElementById('total-sessions').textContent = data.total_sessions || 0;
+                    document.getElementById('system-health').textContent = data.system_health || 'unknown';
+                    document.getElementById('last-activity').textContent = data.last_activity || 'N/A';
+                    
+                    // Health indicator color
+                    const healthEl = document.getElementById('system-health');
+                    if (data.system_health === 'healthy') {
+                        healthEl.className = 'text-2xl font-bold text-green-600';
+                    } else {
+                        healthEl.className = 'text-2xl font-bold text-red-600';
+                    }
+                    
+                    this.setConnectionStatus(true);
+                    
+                } catch (err) {
+                    console.error('❌ Error loading stats:', err);
+                    content.classList.add('hidden');
+                    error.classList.remove('hidden');
+                    this.setConnectionStatus(false);
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async loadAgents() {
+                const loading = document.getElementById('agents-loading');
+                const content = document.getElementById('agents-content');
+                const error = document.getElementById('agents-error');
+                const list = document.getElementById('agents-list');
+                
+                try {
+                    loading.classList.remove('hidden');
+                    content.classList.remove('hidden');
+                    error.classList.add('hidden');
+
+                    const response = await fetch(`${this.apiBase}/agents`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const agents = data.agents || [];
+                    
+                    if (agents.length === 0) {
+                        list.innerHTML = '<div class="text-center text-gray-500 py-4">No hay agentes disponibles</div>';
+                        return;
+                    }
+                    
+                    list.innerHTML = agents.slice(0, 10).map(agent => `
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded hover:bg-gray-100">
+                            <div>
+                                <div class="font-medium text-gray-800">${agent.name || 'N/A'}</div>
+                                <div class="text-sm text-gray-600">
+                                    ${agent.type || 'unknown'} • ${agent.module || 'no-module'}
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                <span class="text-xs text-gray-500">activo</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                    if (agents.length > 10) {
+                        list.innerHTML += `
+                            <div class="text-center text-sm text-gray-500 py-2">
+                                ... y ${agents.length - 10} agentes más
+                            </div>
+                        `;
+                    }
+                    
+                } catch (err) {
+                    console.error('❌ Error loading agents:', err);
+                    content.classList.add('hidden');
+                    error.classList.remove('hidden');
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async loadQuests() {
+                const loading = document.getElementById('quests-loading');
+                const content = document.getElementById('quests-content');
+                const error = document.getElementById('quests-error');
+                const list = document.getElementById('quests-list');
+                
+                try {
+                    loading.classList.remove('hidden');
+                    content.classList.remove('hidden');
+                    error.classList.add('hidden');
+
+                    const response = await fetch(`${this.apiBase}/quests`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const quests = data.quests || [];
+                    const summary = data.summary || {};
+                    
+                    // Update counters
+                    document.getElementById('active-quests').textContent = summary.by_status?.active || 0;
+                    document.getElementById('waiting-quests').textContent = summary.by_status?.waiting || 0;
+                    document.getElementById('completed-quests').textContent = summary.by_status?.completed || 0;
+                    
+                    // Update overview counters too
+                    const overviewActiveEl = document.getElementById('overview-active-quests');
+                    const overviewWaitingEl = document.getElementById('overview-waiting-quests');
+                    const overviewCompletedEl = document.getElementById('overview-completed-quests');
+                    if (overviewActiveEl) overviewActiveEl.textContent = summary.by_status?.active || 0;
+                    if (overviewWaitingEl) overviewWaitingEl.textContent = summary.by_status?.waiting || 0;
+                    if (overviewCompletedEl) overviewCompletedEl.textContent = summary.by_status?.completed || 0;
+                    
+                    if (quests.length === 0) {
+                        list.innerHTML = '<div class="text-center text-gray-500 py-4">No hay quests en ejecución</div>';
+                        return;
+                    }
+                    
+                    list.innerHTML = quests.map(quest => {
+                        const statusColor = {
+                            'active': 'bg-green-100 text-green-800',
+                            'waiting': 'bg-yellow-100 text-yellow-800',
+                            'completed': 'bg-blue-100 text-blue-800'
+                        }[quest.status] || 'bg-gray-100 text-gray-800';
+                        
+                        return `
+                            <div class="p-3 bg-gray-50 rounded hover:bg-gray-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="font-medium text-gray-800">${quest.name || 'Quest sin nombre'}</div>
+                                    <span class="px-2 py-1 text-xs rounded ${statusColor}">
+                                        ${quest.status || 'unknown'}
+                                    </span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    Agente: ${quest.current_agent || 'N/A'}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                } catch (err) {
+                    console.error('❌ Error loading quests:', err);
+                    content.classList.add('hidden');
+                    error.classList.remove('hidden');
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async loadFlags() {
+                const loading = document.getElementById('flags-loading');
+                const content = document.getElementById('flags-content');
+                const error = document.getElementById('flags-error');
+                const list = document.getElementById('flags-list');
+                
+                try {
+                    loading.classList.remove('hidden');
+                    content.classList.remove('hidden');
+                    error.classList.add('hidden');
+
+                    const response = await fetch(`${this.apiBase}/flags`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const flags = data.flags || [];
+                    const summary = data.summary || {};
+                    
+                    // Update counters
+                    document.getElementById('pending-flags').textContent = summary.pending || 0;
+                    document.getElementById('total-flags').textContent = summary.total || 0;
+                    document.getElementById('resolved-flags').textContent = summary.resolved || 0;
+                    
+                    if (flags.length === 0) {
+                        list.innerHTML = '<div class="text-center text-gray-500 py-4">No hay flags pendientes</div>';
+                        return;
+                    }
+                    
+                    list.innerHTML = flags.map(flag => `
+                        <div class="p-3 bg-gray-50 rounded hover:bg-gray-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="font-medium text-gray-800">${flag.title || 'Flag sin título'}</div>
+                                <span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded">
+                                    ${flag.status || 'pending'}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                ${flag.description || 'Sin descripción'}
+                            </div>
+                        </div>
+                    `).join('');
+                    
+                } catch (err) {
+                    console.error('❌ Error loading flags:', err);
+                    content.classList.add('hidden');
+                    error.classList.remove('hidden');
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async loadChatMessages() {
+                const loading = document.getElementById('chat-loading');
+                const messagesContainer = document.getElementById('chat-messages');
+                const error = document.getElementById('chat-error');
+                
+                try {
+                    loading.classList.remove('hidden');
+                    error.classList.add('hidden');
+
+                    const response = await fetch(`${this.apiBase}/chat/messages?limit=50`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    
+                    const data = await response.json();
+                    const messages = data.messages || [];
+                    
+                    if (messages.length === 0) {
+                        messagesContainer.innerHTML = '<div class="text-center text-gray-500 py-4">No hay mensajes aún</div>';
+                        return;
+                    }
+                    
+                    messagesContainer.innerHTML = messages.map(msg => {
+                        const date = new Date(msg.timestamp * 1000);
+                        const timeStr = date.toLocaleTimeString('es-ES');
+                        const dateStr = date.toLocaleDateString('es-ES');
+                        
+                        return `
+                            <div class="p-3 rounded-lg ${msg.agent_name === 'frontend.vue' ? 'bg-blue-100 ml-8' : 'bg-white mr-8'} shadow-sm">
+                                <div class="flex items-center justify-between mb-1">
+                                    <span class="font-semibold text-sm text-gray-700">${msg.agent_name}</span>
+                                    <span class="text-xs text-gray-500">${timeStr}</span>
+                                </div>
+                                <div class="text-gray-800 whitespace-pre-wrap">${msg.message}</div>
+                                ${msg.quest_id ? `<div class="text-xs text-blue-600 mt-1">Quest: ${msg.quest_id}</div>` : ''}
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // Auto scroll to bottom
+                    this.scrollChatToBottom();
+                    
+                } catch (err) {
+                    console.error('❌ Error loading chat messages:', err);
+                    error.classList.remove('hidden');
+                } finally {
+                    loading.classList.add('hidden');
+                }
+            }
+
+            async loadChatQuests() {
+                try {
+                    const response = await fetch(`${this.apiBase}/chat/quests`);
+                    if (!response.ok) return; // Silent fail for quest context
+                    
+                    const data = await response.json();
+                    const questContext = document.getElementById('chat-quest-context');
+                    const questNameEl = document.getElementById('current-quest-name');
+                    
+                    if (data.active_quest) {
+                        questNameEl.textContent = data.active_quest.name || 'Sin nombre';
+                        questContext.classList.remove('hidden');
+                    } else {
+                        questContext.classList.add('hidden');
+                    }
+                } catch (err) {
+                    console.error('ℹ️ No quest context available:', err);
+                }
+            }
+
+            async sendChatMessage() {
+                const agentNameInput = document.getElementById('chat-agent-name');
+                const messageInput = document.getElementById('chat-message');
+                const sendButton = document.getElementById('chat-send');
+                
+                const agentName = agentNameInput.value.trim();
+                const message = messageInput.value.trim();
+                
+                if (!agentName || !message) {
+                    alert('Por favor ingresa el nombre del agente y un mensaje');
+                    return;
+                }
+                
+                try {
+                    sendButton.disabled = true;
+                    sendButton.textContent = 'Enviando...';
+                    
+                    const response = await fetch(`${this.apiBase}/chat/broadcast`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            agent_name: agentName,
+                            message: message,
+                            quest_id: '' // Could be enhanced to use current quest
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('✅ Message sent:', result);
+                    
+                    // Clear message input
+                    messageInput.value = '';
+                    
+                    // Reload messages immediately
+                    await this.loadChatMessages();
+                    
+                } catch (err) {
+                    console.error('❌ Error sending message:', err);
+                    alert('Error enviando mensaje: ' + err.message);
+                } finally {
+                    sendButton.disabled = false;
+                    sendButton.textContent = 'Enviar';
+                    messageInput.focus();
+                }
+            }
+
+            scrollChatToBottom() {
+                const messagesContainer = document.getElementById('chat-messages');
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+
+            setConnectionStatus(connected) {
+                this.isConnected = connected;
+                const statusEl = document.getElementById('connection-status');
+                
+                if (connected) {
+                    statusEl.innerHTML = `
+                        <div class="status-dot w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                        <span class="text-sm text-gray-600">Conectado</span>
+                    `;
+                } else {
+                    statusEl.innerHTML = `
+                        <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+                        <span class="text-sm text-red-600">Desconectado</span>
+                    `;
+                }
+            }
+
+            updateTimestamp() {
+                const now = new Date().toLocaleTimeString('es-ES');
+                document.getElementById('last-update').textContent = now;
+            }
+
+            startAutoRefresh() {
+                this.dataRefreshInterval = setInterval(() => {
+                    console.log('🔄 Auto-refreshing dashboard data...');
+                    this.loadAllData();
+                }, this.refreshInterval);
+            }
+
+            startCountdown() {
+                let seconds = this.refreshInterval / 1000;
+                
+                const updateCountdown = () => {
+                    document.getElementById('next-refresh').textContent = `${seconds}s`;
+                    seconds--;
+                    
+                    if (seconds < 0) {
+                        seconds = this.refreshInterval / 1000;
+                    }
+                };
+                
+                this.countdownInterval = setInterval(updateCountdown, 1000);
+            }
+
+            destroy() {
+                if (this.dataRefreshInterval) clearInterval(this.dataRefreshInterval);
+                if (this.countdownInterval) clearInterval(this.countdownInterval);
+            }
+        }
+
+        // Initialize dashboard when page loads
+        let dashboard;
+        document.addEventListener('DOMContentLoaded', () => {
+            dashboard = new AcolytesDashboard();
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (dashboard) dashboard.destroy();
+        });
+
+        // Handle network errors gracefully
+        window.addEventListener('online', () => {
+            console.log('🌐 Connection restored');
+            if (dashboard) dashboard.loadAllData();
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('📵 Connection lost');
+            if (dashboard) dashboard.setConnectionStatus(false);
+        });
+    </script>
+</body>
+</html>

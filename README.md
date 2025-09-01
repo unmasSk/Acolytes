@@ -1,5 +1,5 @@
 <div align="center">
-<img src="acolytes/data/resources/assets/logo.png" alt="Acolytes for Claude Code Logo" width="600">
+<img src="acolytes/data/resources/assets/logo.jpg" alt="Acolytes for Claude Code Logo" width="600">
 
   <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
   <h1 style="font-size: 2.5em; margin-top: 0; font-weight: bold;">

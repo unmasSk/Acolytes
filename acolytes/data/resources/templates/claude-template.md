@@ -183,6 +183,28 @@ Task("@acolyte.auth", "check security")
 Task("@acolyte.database", "review schema")
 ```
 
+### 💡 TIP: AUTOMATION WITH SCRIPTS
+
+**When you detect repetitive tasks that could be automated:**
+
+- **ASK FIRST**: "I can automate this with a Python script. Would you like me to?"
+- **TEST BEFORE FULL EXECUTION**: Always test scripts on ONE item first
+- **SHOW PROGRESS**: Create scripts that show what they're doing
+- **BE CAREFUL**: Never modify files without testing first
+
+**Example scenarios:**
+- Cleaning multiple files (removing characters, formatting)
+- Batch renaming or reorganizing files
+- Searching and replacing patterns across many files
+- Generating repetitive code or configurations
+- Analyzing multiple files for patterns or issues
+
+**WORKFLOW**:
+1. Detect repetitive task → "I notice this is repetitive. I can create a script to handle all files at once."
+2. Create test script → Test on ONE file first
+3. Verify results → "The test worked correctly. Should I apply it to all files?"
+4. Execute on all → Only after user confirmation
+
 ## 🤖 Agent Routing System
 
 ### 🌟 FUNDAMENTAL TRUTH: THERE'S AN AGENT FOR EVERYTHING
@@ -307,43 +329,66 @@ You are the **conductor of an orchestra**:
 
 ```sql
 -- jobs: Work organization and context management
+-- jobs: Work organization (groups 4-5 sessions)
 CREATE TABLE jobs (
-    id TEXT PRIMARY KEY DEFAULT ('job_' || lower(hex(randomblob(5)))),
-    title TEXT NOT NULL,
-    description TEXT,
+    id TEXT PRIMARY KEY,  -- "job_a1b2c3d4e5f6"
+    title TEXT,
+    description JSON NOT NULL,  -- {"summary": "...", "goals": [...], "scope": "...", "priority": "high|medium|low"}
     status TEXT DEFAULT 'active' CHECK(status IN ('active', 'paused', 'completed')),
-    priority INTEGER DEFAULT 5 CHECK(priority BETWEEN 1 AND 10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    parent_job_id TEXT,
+    created_at TEXT NOT NULL,
+    paused_at TEXT,
+    resumed_at TEXT,
+    completed_at TEXT,
+    pause_reason TEXT
+);
+
+-- sessions: Work sessions within jobs (21 columns for complete tracking)
+CREATE TABLE sessions (
+    id TEXT PRIMARY KEY,
+    job_id TEXT NOT NULL REFERENCES jobs(id),
+    claude_session_id TEXT,
+    -- Core tracking fields
+    primary_request TEXT,
+    technical_concepts JSON,
+    files_and_code JSON,
+    errors_and_fixes JSON,
+    problem_solving TEXT,
+    user_messages JSON,
+    pending_tasks JSON,
+    current_work TEXT,
+    next_step TEXT,
+    -- Metrics
+    accomplishments JSON,
+    bugs_fixed JSON,
+    decisions JSON,
+    breakthrough_moment TEXT,
+    conversation_flow TEXT,
+    quality_score INTEGER,
+    created_at TEXT NOT NULL,
+    ended_at TEXT,
     metadata JSON
 );
 
--- sessions: Work sessions within jobs
-CREATE TABLE sessions (
-    id TEXT PRIMARY KEY DEFAULT ('session_' || lower(hex(randomblob(5)))),
-    job_id TEXT REFERENCES jobs(id),
-    claude_session_id TEXT,
-    accomplishments TEXT,
-    decisions TEXT,
-    bugs_fixed TEXT,
-    errors_encountered TEXT,
-    breakthrough_moment TEXT,
-    next_session_priority TEXT,
-    quality_score INTEGER CHECK(quality_score BETWEEN 1 AND 10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ended_at TIMESTAMP
-);
-
--- messages: Conversation history
+-- messages: Complete conversation analysis
 CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT REFERENCES sessions(id),
-    role TEXT NOT NULL CHECK(role IN ('user', 'assistant', 'system')),
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    metadata JSON
+    session_id TEXT NOT NULL UNIQUE REFERENCES sessions(id),
+    total_messages INTEGER,
+    user_messages INTEGER,
+    assistant_messages INTEGER,
+    first_timestamp TEXT,
+    last_timestamp TEXT,
+    duration_minutes INTEGER,
+    -- Content analysis
+    commands_used TEXT,  -- JSON array
+    agents_mentioned TEXT,  -- JSON array
+    errors_count INTEGER,
+    code_blocks_count INTEGER,
+    frustration_level INTEGER,  -- 0-10 scale
+    keywords TEXT,  -- JSON array
+    -- Full backup
+    conversation JSON,  -- Complete conversation
+    created_at TEXT NOT NULL
 );
 
 -- IMPORTANT: JSON Column Type in SQLite

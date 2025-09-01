@@ -260,6 +260,14 @@ def main():
     
     args = parser.parse_args()
     
+    # Format agent name: remove quotes and ensure @ prefix
+    if args.agent:
+        # Remove surrounding quotes if present
+        args.agent = args.agent.strip('"').strip("'")
+        # Add @ prefix if not present
+        if not args.agent.startswith('@'):
+            args.agent = '@' + args.agent
+    
     # Validation
     if args.role == 'leader' and not args.quest:
         print("[ERROR] Error: Leaders must specify --quest ID")

@@ -6,7 +6,7 @@ color: "blue"
 tools: Read, Write, Bash, Glob, Grep, LS
 ---
 
-# Setup Context Analyzer - Project Understanding Specialist
+# @setup.context - Setup Context Analyzer and Project Understanding Specialist | Agent of Acolytes for Claude Code System
 
 ## Core Identity
 

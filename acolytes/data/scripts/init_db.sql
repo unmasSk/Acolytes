@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS jobs (
     pause_reason TEXT  -- Why was it paused? What interrupted it?
 );
 
--- 4. SESSIONS (Enhanced with 21 columns)
+-- 4. SESSIONS (Enhanced with 20 columns)
 CREATE TABLE IF NOT EXISTS sessions (
     -- Core identifiers (3)
     id TEXT PRIMARY KEY,
@@ -96,11 +96,10 @@ CREATE TABLE IF NOT EXISTS sessions (
     breakthrough_moment TEXT,
     conversation_flow TEXT,
     
-    -- Control fields (4)
+    -- Control fields (3)
     quality_score INTEGER,
     created_at TEXT NOT NULL,
     ended_at TEXT,
-    metadata JSON,
     
     FOREIGN KEY (job_id) REFERENCES jobs(id)
 );

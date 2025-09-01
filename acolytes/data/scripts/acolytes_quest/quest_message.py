@@ -81,7 +81,7 @@ def main():
             print(f"[MSG] Quest {args.quest} - turn passed to {args.to}")
             print(f"[NOTE] Message: {args.msg[:100]}...")
         else:
-            print(f"[ERROR] Failed to send message")
+            print(f"[ERROR] Failed to send message. Enter in MONITOR MODE")
             sys.exit(1)
             
     except Exception as e:

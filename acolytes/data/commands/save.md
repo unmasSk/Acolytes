@@ -10,7 +10,7 @@ Saves comprehensive session data to SQLite database with full technical context,
 
 **CRITICAL**: During /save execution, Claude must:
 
-- Show ONLY: "============================ 💾 Saving Enhanced Session... ============================" at the start
+- Show ONLY: "=============================== 💾 Saving Enhanced Session... ===============================" at the start
 - Execute ALL commands silently (no additional commentary)
 - Show ONLY the final result summary
 - NEVER add extra text between tool executions
@@ -26,7 +26,7 @@ mcp__code-index__set_project_path(current_project_path)
 This ensures the code index is up-to-date for the next session (takes ~1 second).
 The reindexing removes deleted files and adds new ones automatically.
 
-## WHAT CLAUDE MUST ANALYZE - ENHANCED FIELDS
+## WHAT CLAUDE MUST ANALYZE -ENHANCED FIELDS
 
 ### 🎯 PRIMARY_REQUEST_AND_INTENT (Required)
 
@@ -171,9 +171,9 @@ uv run python ~/.claude/scripts/save_session.py \
 After successful save, present results:
 
 ```markdown
-==============================================================================
+====================================================================================
 
-# 📊 Enhanced Session Saved Successfully
+# 📊 Session Saved Successfully
 
 ## Session Information
 
@@ -226,13 +226,7 @@ After successful save, present results:
 
 All code snippets, user messages, and technical details saved for perfect session continuity.
 
-### 🔄 Next Session
-
-When you return, say **"Continue job {job_id}"** to load complete context including code and user intent.
-
-_Session closed at {timestamp}_ ✨
-
-==============================================================================
+====================================================================================
 ```
 
 ## ❌ INVALID FORMATS (Will Be Rejected)

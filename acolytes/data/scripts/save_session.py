@@ -319,10 +319,15 @@ def save_to_database_enhanced(session_data, parsed_args):
                 dir_hash = hashlib.sha256(current_dir.encode()).hexdigest()[:16]
                 sanitized_dir = f"project-{dir_hash}"
             
-            # Projects directory is also in PROJECT, not global
-            # Get project root from database path
-            project_root = get_project_db_path().parent.parent
-            claude_projects_dir = project_root / "projects" / sanitized_dir
+            # Projects directory is in GLOBAL Claude directory
+            # Check environment variable first, then fallback to ~/.claude
+            claude_base = os.environ.get('CLAUDE_HOME')
+            if not claude_base:
+                claude_base = Path.home() / ".claude"
+            else:
+                claude_base = Path(claude_base)
+            
+            claude_projects_dir = claude_base / "projects" / sanitized_dir
             
             if claude_projects_dir.exists():
                 jsonl_files = list(claude_projects_dir.glob("*.jsonl"))
@@ -342,28 +347,14 @@ def save_to_database_enhanced(session_data, parsed_args):
         
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        # For now, store enhanced fields in JSON in existing columns
-        # Future: Add new columns to database schema
-        enhanced_data = {
-            "primary_request": primary_request,
-            "technical_concepts": technical_concepts,
-            "files_and_code": files_and_code,
-            "errors_and_fixes": errors_and_fixes,
-            "problem_solving": problem_solving,
-            "user_messages": user_messages,
-            "pending_tasks": pending_tasks,
-            "current_work": current_work,
-            "next_step": next_step
-        }
-        
-        # Update session with ACTUAL data, not enhanced_data
+        # Update session with all fields
         cursor.execute("""
             UPDATE sessions SET
                 primary_request = ?, technical_concepts = ?, files_and_code = ?,
                 errors_and_fixes = ?, problem_solving = ?, user_messages = ?,
                 pending_tasks = ?, current_work = ?, next_step = ?,
                 accomplishments = ?, decisions = ?, bugs_fixed = ?, 
-                errors_encountered = ?, breakthrough_moment = ?, next_session_priority = ?, 
+                breakthrough_moment = ?, 
                 quality_score = ?, ended_at = ?, conversation_flow = ?
             WHERE id = ?
         """, (
@@ -379,12 +370,10 @@ def save_to_database_enhanced(session_data, parsed_args):
             json.dumps(accomplishments),  # REAL accomplishments
             json.dumps(decisions),
             json.dumps(bugs_fixed),
-            json.dumps([e.get('error', '') for e in errors_and_fixes] if errors_and_fixes else []),
             breakthrough,
-            next_step,
             quality_score,
             timestamp,
-            conversation_flow or problem_solving,
+            conversation_flow or problem_solving,  # Use problem_solving as fallback if no conversation_flow
             session_data['session_id']
         ))
         

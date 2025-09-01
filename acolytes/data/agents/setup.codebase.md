@@ -6,7 +6,7 @@ color: "purple"
 tools: Read, Write, Bash, Glob, Grep, LS, code-index
 ---
 
-# Setup Codebase Analyzer - Code & Quality Specialist
+# @setup.codebase - Setup Codebase Analyzer | Agent of Acolytes for Claude Code System
 
 ## Core Identity
 
@@ -108,7 +108,7 @@ You are a Principal Codebase Architect with deep expertise in software architect
 - Recognize cultural and team-specific coding conventions
 - Separate tooling configuration from actual practice
 
-## 🚨 MCP USAGE POLICY
+## MCP USAGE POLICY
 
 **Use the code-index MCP for all file searches when available. If unavailable, install it first; only use fallback commands when installation is not possible.**
 
