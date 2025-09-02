@@ -375,7 +375,7 @@ CREATE INDEX IF NOT EXISTS idx_acolyte_status_time ON acolyte_status_changes(cha
 -- ============================================================================
 -- AGENT DATA INSERT
 -- ============================================================================
--- 52 AGENTS INSERT statements generated from agent-routing-catalog.md (excluded setup and plan agents)
+-- 53 AGENTS INSERT statements generated from agent-routing-catalog.md (excluded setup and plan agents)
 -- Following the exact format from coordinator.backend example
 -- Generated automatically with proper JSON formatting
 
@@ -515,6 +515,15 @@ VALUES
     '["Embedded application database implementation", "edge computing deployment", "mobile app local storage", "serverless database integration", "offline-first application development", "local-first sync implementation", "lightweight database deployment", "IoT device data storage", "WebAssembly database integration", "backup and replication setup", "performance optimization for resource-constrained environments", "full-text search implementation"]',
     '["SQLite", "embedded", "edge-computing", "mobile", "WAL", "FTS5", "JSON", "Core-ML", "Litestream", "WASM", "local-first", "offline", "serverless", "lightweight", "mobile-optimization", "edge-deployment", "backup-strategies", "performance-optimization", "full-text-search", "WebAssembly", "IoT"]',
     '["@frontend.mobile [optional]", "@backend.serverless [optional]", "@ops.monitoring [optional,seq:2]"]'
+  ),
+  (
+    '@database.timescale',
+    'database',
+    '["TimescaleDB specialist for time-series data and real-time analytics at massive scale"]',
+    '["TimescaleDB 2.14+ with hypertables", "continuous aggregates", "compression policies", "data retention", "chunk management", "real-time analytics", "PostgreSQL extensions", "time-series optimization", "IoT data processing", "financial tick data", "monitoring metrics", "distributed hypertables", "multi-node scaling", "columnar compression", "hyperfunctions", "toolkit functions"]',
+    '["Time-series database implementation", "real-time analytics systems", "IoT data ingestion and processing", "financial market data storage", "monitoring and observability platforms", "continuous aggregate optimization", "data retention policy design", "compression strategy implementation", "distributed time-series scaling", "real-time dashboards", "historical data analysis", "performance optimization for time-series workloads"]',
+    '["TimescaleDB", "time-series", "hypertables", "continuous-aggregates", "compression", "data-retention", "real-time-analytics", "PostgreSQL", "IoT", "financial-data", "monitoring-metrics", "distributed", "columnar", "hyperfunctions", "streaming", "tick-data", "TSDB", "analytics", "observability"]',
+    '["@database.postgres [required]", "@service.data [optional]", "@ops.monitoring [optional,seq:2]", "@coordinator.database [optional,seq:3]"]'
   ),
   (
     '@database.vectorial',
@@ -677,6 +686,15 @@ VALUES
     '["Search functionality implementation", "data streaming architecture", "message queuing systems", "data pipeline orchestration", "real-time data processing", "ETL/ELT workflow development", "event-driven architecture implementation", "data mesh strategy execution", "search infrastructure deployment", "streaming analytics platform development", "data quality monitoring", "pipeline observability setup"]',
     '["data-processing", "Elasticsearch", "OpenSearch", "Kafka", "Airflow", "RabbitMQ", "ETL", "ELT", "data-pipelines", "streaming", "event-driven", "search", "data-mesh", "analytics", "stream-processing", "data-quality", "data-observability", "CDC", "schema-evolution", "real-time-processing", "workflow-orchestration"]',
     '["@database.postgres [optional]", "@database.mongodb [optional]", "@backend.python [optional,seq:2]", "@ops.monitoring [optional,seq:3]"]'
+  ),
+  (
+    '@service.crypto',
+    'service',
+    '["Cryptocurrency and blockchain expert specializing in trading, DeFi protocols, NFT ecosystems, and Web3 security"]',
+    '["Solidity ecosystem (OpenZeppelin contracts, Hardhat development, Foundry testing, Remix IDE, upgradeable proxy patterns)", "Rust blockchain development (Anchor Framework for Solana, Substrate for Polkadot, Near Protocol SDK, CosmWasm for Cosmos)", "JavaScript/TypeScript Web3 (Ethers.js v6, Web3.js, Wagmi v2, RainbowKit wallet integration, Viem type-safe client)", "Python crypto development (Web3.py Ethereum Python, Brownie contract testing, CCXT exchange APIs, Pandas/NumPy data analysis)", "DeFi platforms (Uniswap V4, Aave V3, Compound III, MakerDAO, Curve Finance, Balancer V3)", "Layer 2 scaling (Arbitrum, Polygon zkEVM, Optimism, zkSync Era, Starknet, Linea)", "on-chain analytics (Glassnode Studio, CryptoQuant, Dune Analytics, The Graph, DeFiLlama)", "security tools (Slither static analysis, MythX scanning, Certora formal verification, Forta monitoring)", "wallet integration (MetaMask SDK, WalletConnect V2, Safe SDK, Account Abstraction)", "cross-chain infrastructure (LayerZero, Wormhole, Axelar, Chainlink CCIP, IBC Protocol)"]',
+    '["Cryptocurrency trading with technical analysis", "DeFi protocol development and deployment", "smart contract security auditing", "NFT marketplace development", "Web3 infrastructure design", "tokenomics and DAO governance", "cross-chain bridge development", "on-chain analytics and market intelligence", "crypto wallet integration", "blockchain project due diligence", "MEV protection implementation", "yield farming optimization"]',
+    '["crypto", "blockchain", "Web3", "DeFi", "NFT", "smart-contracts", "Solidity", "Ethereum", "Bitcoin", "Layer2", "tokenomics", "DAO", "yield-farming", "liquidity-pools", "AMM", "MEV", "cross-chain", "bridges", "wallet-integration", "on-chain-analytics", "security-audit", "formal-verification", "crypto-trading", "staking"]',
+    '["@database.pgvector [optional]", "@service.auth [optional]", "@backend.nodejs [optional,seq:2]", "@frontend.react [optional,seq:3]"]'
   ),
   (
     '@service.integrations',
@@ -859,4 +877,4 @@ VALUES
     '["@backend.api [optional]", "@frontend.react [optional]", "@frontend.vue [optional]", "@frontend.angular [optional]", "@ops.git [optional,seq:2]", "@service.integrations [optional,seq:3]"]'
   );
 
--- Generated 52 INSERT statements for 52 agents
+-- Generated 52 INSERT statements for 53 agents

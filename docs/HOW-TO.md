@@ -37,7 +37,7 @@ This guide assumes you've completed the [Installation](INSTALL.md). Now learn ho
 
 ### **🤖 Agent Routing System**
 
-Claude has access to **53 specialized agents + 5 setup agents** through an intelligent routing system. When you make requests, Claude automatically selects the right agents based on:
+Claude has access to **55 specialized agents + 5 setup agents** through an intelligent routing system. When you make requests, Claude automatically selects the right agents based on:
 
 #### **🔍 Agent Discovery Commands**
 ```bash

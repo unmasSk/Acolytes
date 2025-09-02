@@ -1,4 +1,4 @@
-# Changelog
+# Changelog - Acolytes v2.0.0
 
 All notable changes to the Acolytes for Claude Code project will be documented in this file.
 
@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **@service.crypto**: New cryptocurrency and blockchain expert agent specializing in Web3, DeFi, NFTs, and smart contracts
+- **@database.timescale**: New TimescaleDB specialist for time-series data and real-time analytics at massive scale
 - **🎭 QUEST SYSTEM**: World's first stateful multi-agent coordination system with real-time communication
 - **Turn-based orchestration**: Perfect conflict-free coordination between up to 10 specialists working in parallel
 - **Agent chat system**: Real-time communication protocol via persistent SQLite database
@@ -25,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **BREAKING**: Migrated from FLAGS system to Quest System (complete architecture change)
-- **Agent templates**: Refactored all 58 agent templates removing FLAGS references, adding Quest capabilities
+- **Agent templates**: Refactored all 60 agent templates removing FLAGS references, adding Quest capabilities
 - **Database cleanup**: Massive improvements to save system and session management
 - **Documentation**: Updated all documentation to reflect Quest System integration
 - **README.md**: Complete rewrite showcasing Quest System as core revolutionary feature

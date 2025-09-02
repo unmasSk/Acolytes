@@ -11,6 +11,8 @@ from colorama import init, Fore, Style
 # Initialize colorama for cross-platform colors
 init()
 
+# Version 2.0.0
+
 from .commands import (
     init_command,
     update_command, 

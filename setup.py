@@ -3,6 +3,7 @@ import os
 from importlib.metadata import version, PackageNotFoundError
 
 # Read README for long description
+# Updated for Acolytes v2.0.0 with 60+ agents
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 

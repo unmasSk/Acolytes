@@ -4,18 +4,20 @@
 # dependencies = []
 # ///
 
+import argparse
 import json
 import os
 import sys
 import subprocess
 import platform
+import time
 from pathlib import Path
 
 def play_stop_sound():
     """Play work complete sound at 20% volume when session stops"""
     try:
         # Path to work complete sound
-        sound_file = Path('.claude/resources/sfx/work-complete.wav')
+        sound_file = Path('~/.claude/resources/sfx/ready-ogre.wav')
         
         if sound_file.exists():
             system = platform.system()
@@ -137,6 +139,15 @@ def generate_markdown_transcript(conversation_file, session_id):
                 md_content.append("")
                 md_content.append("---")
                 md_content.append("")
+                
+            elif msg_type == "code_change":
+                # Handle code changes with special formatting
+                md_content.append(f"### 📝 Code Change{time_part}")
+                md_content.append("")
+                md_content.append(content)
+                md_content.append("")
+                md_content.append("---")
+                md_content.append("")
         
         # Write markdown file
         md_file = conversation_file.parent / f"{session_id}.md"
@@ -163,6 +174,11 @@ def ensure_session_log_dir(project_root=None):
 
 def main():
     try:
+        # Parse command line arguments
+        parser = argparse.ArgumentParser()
+        parser.add_argument("--sound", action="store_true", help="Play sound when stopping")
+        args = parser.parse_args()
+        
         # Read JSON input from stdin
         stdin_content = sys.stdin.read().strip()
         input_data = json.loads(stdin_content)
@@ -204,8 +220,10 @@ def main():
                     with open(transcript_path, "r", encoding="utf-8") as f:
                         lines = f.readlines()
                     
-                    # Find the last assistant message
+                    # Find the last assistant message (skip divider lines)
                     last_claude_response = None
+                    divider_line = "─" * 85  # The standard divider
+                    
                     for line in reversed(lines):
                         line = line.strip()
                         if line:
@@ -216,7 +234,8 @@ def main():
                                     content = message.get("content", [])
                                     if content and len(content) > 0:
                                         text_content = content[0].get("text", "") if content[0].get("type") == "text" else ""
-                                        if text_content:
+                                        # Skip if it's just the divider line
+                                        if text_content and text_content.strip() != divider_line:
                                             last_claude_response = {
                                                 "session_id": our_session_id,
                                                 "timestamp": data.get("timestamp"),
@@ -224,7 +243,7 @@ def main():
                                                 "type": "assistant",
                                                 "uuid": data.get("uuid")
                                             }
-                                    break
+                                            break
                             except json.JSONDecodeError:
                                 continue
                     
@@ -244,9 +263,28 @@ def main():
                         # Add new response
                         responses.append(last_claude_response)
                         
-                        # Write back
-                        with open(response_file, "w", encoding="utf-8") as f:
-                            json.dump(responses, f, indent=2, ensure_ascii=False)
+                        # Write back with lock
+                        lock_file = log_dir / f"{our_session_id}.lock"
+                        max_retries = 50
+                        for retry in range(max_retries):
+                            if not lock_file.exists():
+                                try:
+                                    lock_file.touch(exist_ok=False)
+                                    break
+                                except FileExistsError:
+                                    pass
+                            time.sleep(0.1)
+                        else:
+                            sys.exit(0)  # Timeout
+                        
+                        try:
+                            temp_file = response_file.with_suffix('.tmp')
+                            with open(temp_file, "w", encoding="utf-8") as f:
+                                json.dump(responses, f, indent=2, ensure_ascii=False)
+                            temp_file.replace(response_file)
+                        finally:
+                            if lock_file.exists():
+                                lock_file.unlink()
                         
                         # Generate markdown transcript
                         generate_markdown_transcript(response_file, our_session_id)
@@ -254,8 +292,9 @@ def main():
                 except Exception as e:
                     print(f"Response extraction error: {e}", file=sys.stderr)
 
-        # Play work complete sound before exiting
-        play_stop_sound()
+        # Play work complete sound before exiting (only if --sound flag is provided)
+        if args.sound:
+            play_stop_sound()
         
         sys.exit(0)
 

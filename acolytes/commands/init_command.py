@@ -293,24 +293,33 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                 }
             ],
             "PostToolUse": [
+            {
+                "matcher": "",
+                "hooks": [
                 {
-                    "matcher": "",
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py"
-                        }
-                    ]
-                },
-                {
-                    "matcher": "TodoWrite",
-                    "hooks": [
-                        {
-                            "type": "command",
-                            "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py --todowrite"
-                        }
-                    ]
+                    "type": "command",
+                    "command": "uv run python C:/Users/bextia/.claude/hooks/post_tool_use.py"
                 }
+                ]
+            },
+            {
+                "matcher": "TodoWrite",
+                "hooks": [
+                {
+                    "type": "command",
+                    "command": "uv run python C:/Users/bextia/.claude/hooks/post_tool_use.py --todowrite"
+                }
+                ]
+            },
+            {
+                "matcher": "Edit|Write|MultiEdit|Update",
+                "hooks": [
+                {
+                    "type": "command",
+                    "command": "uv run python C:/Users/bextia/.claude/hooks/capture_code_changes.py"
+                }
+                ]
+            }
             ],
             "PreCompact": [
                 {
@@ -351,7 +360,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} {script_prefix}/hooks/stop.py"
+                            "command": f"{base_cmd} {script_prefix}/hooks/stop.py --sound"
                         }
                     ]
                 }
@@ -362,7 +371,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                     "hooks": [
                         {
                             "type": "command",
-                            "command": f"{base_cmd} {script_prefix}/hooks/subagent_stop.py --chat"
+                            "command": f"{base_cmd} {script_prefix}/hooks/subagent_stop.py --sound"
                         }
                     ]
                 }
