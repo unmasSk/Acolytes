@@ -7,52 +7,52 @@
   </h1>
   
   <p align="center" style="font-size: 1.1em; max-width: 800px; margin: 20px auto;">
-    Transform Claude Code into an <strong>intelligent project orchestrator</strong> with 59 specialized agents + project-specific Acolytes. Features enterprise-grade <strong>FLAGS coordination system</strong> for seamless cross-agent communication and persistent SQLite memory for cumulative learning.
+    Transform Claude Code into an <strong>intelligent project orchestrator</strong> with 53 specialized agents + 5 setup agents + project-specific Acolytes. Features revolutionary <strong>Acolytes Quest System</strong> for unprecedented multi-agent coordination and persistent SQLite memory for cumulative learning.
   </p>
 </div>
 
 [![PyPI version](https://img.shields.io/pypi/v/acolytes)](https://pypi.org/project/acolytes/)
-[![Agents](https://img.shields.io/badge/Global%20Agents-59-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![FLAGS](https://img.shields.io/badge/FLAGS%20System-Coordination-red)](./acolytes/data/resources/rules/flags-protocol.md)
-[![Memory](https://img.shields.io/badge/SQLite%20Memory-11%20Tables-green)](./acolytes/data/scripts/init_db.sql)
-[![Hooks](https://img.shields.io/badge/Active%20Hooks-7-yellow)](./acolytes/data/hooks)
+[![Agents](https://img.shields.io/badge/Specialized%20Agents-53-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![Quest](https://img.shields.io/badge/Quest%20System-Revolutionary-red)](./docs/QUEST.md)
+[![Memory](https://img.shields.io/badge/SQLite%20Memory-8%20Tables-green)](./acolytes/data/scripts/init_db.sql)
+[![Hooks](https://img.shields.io/badge/Active%20Hooks-8-yellow)](./acolytes/data/hooks)
 [![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/Acolytes)
 
-## 🧠 What Makes Acolytes for Claude Code REVOLUTIONARY?
+## 🌍 FIRST IN THE WORLD TO ACHIEVE THIS
 
-### 🚀 BREAKTHROUGH: Enterprise FLAGS Coordination System
+### 🚀 BREAKTHROUGH: Acolytes Quest System
 
-**READY**: Acolytes for Claude Code features a sophisticated cross-agent communication protocol that enables seamless coordination between 59 agents. The FLAGS system operates through SQLite database, ensuring no information loss and perfect task handoffs.
+**NEVER BEFORE ACHIEVED**: Acolytes for Claude Code features the world's first stateful multi-agent coordination system that enables real-time communication and collaboration between 53 specialized agents + 5 setup agents. The Quest system operates through persistent SQLite database, ensuring no information loss and perfect autonomous coordination.
 
-#### **FLAGS System Success Stories**
+#### **Quest System Success Stories**
 
-- ✅ **Zero Information Loss**: Perfect context preservation between agent handoffs
-- ✅ **Automatic Coordination**: Agents create FLAGS when they detect cross-domain issues
-- ✅ **Lock/Unlock Workflows**: Bidirectional communication for complex problem solving
-- ✅ **Enterprise Reliability**: Production-tested coordination with audit trails
+- ✅ **Real-time Agent Communication**: Agents communicate through persistent SQLite database
+- ✅ **Autonomous Coordination**: Turn-based system prevents conflicts and ensures perfect handoffs
+- ✅ **Stateful Memory**: Project Acolytes maintain 14 types of persistent memory
+- ✅ **Enterprise Reliability**: Production-tested coordination with complete audit trails
 
-#### **FLAGS Workflow Example** (Fully Automated)
+#### **Quest System Workflow Example** (Fully Automated)
 
 ```
-USER> "Add OAuth to my API endpoints"
+USER> "/prequest implement OAuth authentication"
   ↓
-Claude → 📞 @service.auth (OAuth implementation) [AUTO-ROUTED]
+Claude → 🎭 @coordinator.backend creates Quest #1847
   ↓
-@service.auth → 🚩 FLAG: "Need users table schema update" [AUTO-DETECTED]
+📞 @service.auth: "Building OAuth flow... need users schema"
   ↓
-Claude → 📞 @database.postgres (schema migration) [AUTO-COORDINATED]
+📞 @database.postgres: "Creating oauth_provider, refresh_token columns"
   ↓
-@database.postgres → ✅ Adds oauth_provider, refresh_token columns [AUTO-EXECUTED]
+🎭 @coordinator.backend: "Schema ready, continue OAuth implementation"
   ↓
-@service.auth → 🔓 FLAG resolved → ✅ Implements OAuth flow [AUTO-COMPLETED]
+📞 @service.auth: "OAuth flow complete with Google & GitHub"
   ↓
-Claude → 🎯 "OAuth implemented with Google & GitHub providers"
+Claude → 🎯 "Quest completed: OAuth system ready"
 ```
 
 **🤖 Everything happens automatically - no manual coordination needed!**
 
 ### 🏗️ Advanced Multi-Agent Architecture
 
-#### **[59 Global Agents](./acolytes/data/resources/rules/agent-routing-catalog.md)**
+#### **[58 Global Agents](./acolytes/data/resources/rules/agent-routing-catalog.md)**
 
 - **Backend**: API, Go, Java, Laravel, Node.js, Python, Rust, Serverless
 - **Frontend**: Angular, React, Vue, Mobile
@@ -64,7 +64,7 @@ Claude → 🎯 "OAuth implemented with Google & GitHub providers"
 - **Analysis**: Data Analysis, Strategic Planning, Compliance, Security Audit
 - **Documentation**: Specialist
 - **Testing**: Quality Assurance
-- **System**: Setup (5 agents), FLAGS, Planning
+- **System**: Setup (5 agents), Planning
 
 #### **Acolytes** (Auto-Created per Project)
 
@@ -81,6 +81,19 @@ Claude → 🎯 "OAuth implemented with Google & GitHub providers"
 - **Auth vs Security**: OAuth/JWT → `@service.auth`, Architecture/compliance → `@coordinator.security`
 - **Multi-Agent Workflows**: Sequential, parallel, and coordinated execution patterns
 
+## 📖 **IMPORTANT: READ DOCUMENTATION FIRST**
+
+**🚨 CRITICAL**: Before using Acolytes, you MUST read the complete documentation:
+
+- **[📋 INSTALLATION.md](./docs/INSTALLATION.md)** - Complete setup guide with proper command sequences
+- **[📖 HOW-TO.md](./docs/HOW-TO.md)** - How to use the Quest system and communicate with agents  
+- **[💾 SAVE.md](./docs/SAVE.md)** - Memory system and session persistence
+- **[🚀 QUEST.md](./docs/QUEST.md)** - Understanding the revolutionary Quest coordination
+
+**These guides contain essential information for proper usage. Do not skip them.**
+
+---
+
 ## ⚡ Quick Start
 
 ### Installation
@@ -92,7 +105,7 @@ Claude → 🎯 "OAuth implemented with Google & GitHub providers"
 pip install acolytes
 
 # Initialize Acolytes system (copies all files to ~/.claude)
-acolytes init
+acolytes --init
 
 # Navigate to YOUR project
 cd /path/to/your/project
@@ -115,7 +128,7 @@ cd Acolytes
 pip install -e .
 
 # Initialize Acolytes system
-acolytes init
+acolytes --init
 
 # Navigate to YOUR project
 cd /path/to/your/project
@@ -130,12 +143,12 @@ claude --dangerously-skip-permissions -c
 ### Available Commands
 
 | Command     | Description                                                                | Agent Integration                  |
-| ----------- | -------------------------------------------------------------------------- | ---------------------------------- | --------------------------- |
+| ----------- | -------------------------------------------------------------------------- | ---------------------------------- |
 | `/setup`    | Integrates Acolytes into your project (new or existing) - 6-phase analysis | 5 setup agents + Acolytes creation |
 | `/commit`   | Smart commits with auto-versioning, changelog, and git tagging             | `@docs.specialist` + bump2version  |
 | `/pr`       | Create pull request with comprehensive analysis                            | `@ops.git` + review agents         |
-| `/acolytes` | Process pending FLAGS from agents                                          | `@flags.agent` coordinator         |
-| `/save`     | Save current session to SQLite database                                    | Session persistence                | ### How Claude Orchestrates |
+| `/acolytes` | Process agent coordination (IN DEVELOPMENT)                                | Quest system coordinator           |
+| `/save`     | Save current session to SQLite database                                    | Session persistence                |
 
 **Claude auto-selects the right agent based on context:**
 
@@ -153,48 +166,40 @@ claude --dangerously-skip-permissions -c
 ```
 Main Claude Session (Orchestrator)
     │
-    ├── 🌍 GLOBAL AGENTS (59) - ~/.claude/agents/
+    ├── 🌍 GLOBAL AGENTS (58) - ~/.claude/agents/
     │   ├── 💻 Backend & Frontend Engineers
     │   ├── 🎛️ Coordinators: Strategic architects for complex decisions
     │   ├── 💾 Database Experts: All major databases + vector stores
     │   ├── ⚙️ DevOps & Operations: CI/CD, monitoring, performance
     │   ├── 💼 Business Systems: Payments, billing, subscriptions
     │   ├── 🔍 Analysis & Audit: Security, compliance, data analysis
-    │   └── 🔧 System Agents: Setup, FLAGS coordination, planning
+    │   └── 🔧 System Agents: Setup, planning
     │
     ├── 🏠 PROJECT ACOLYTES - project/.claude/agents/
     │   ├── acolyte.auth (YOUR authentication module)
     │   ├── acolyte.api (YOUR API endpoints)
     │   └── [Auto-created for each detected module]
     │
-    ├── 🚩 FLAGS COORDINATION SYSTEM
-    │   ├── Cross-agent communication via SQLite
-    │   ├── Lock/unlock workflows for dependencies
-    │   ├── Automatic context preservation
-    │   └── Zero information loss between handoffs
-    │
     └── 🗄️ PERSISTENT MEMORY (SQLite + MCP)
         ├── Session Memory: Jobs system groups Claude sessions
-        ├── Agent Memory: 14 types per agent/module
-        ├── FLAGS: Pending tasks survive between sessions
+        ├── Acolyte Memory: 14 types per project Acolyte
         └── Full audit trail of all operations
 ```
 
 ## 🗄️ Persistent Memory System
 
-### SQLite Database (11 Tables)
+### SQLite Database (8 Active Tables)
 
-1. **`agents_catalog`** - Directory of all 59 agents with routing rules
-2. **`agent_memory`** - Deep knowledge storage for each agent/module
-3. **`acolytes`** - Project-specific agents created during setup
-4. **`flags`** - Cross-agent coordination tasks and dependencies
-5. **`sessions`** - Conversation history with context preservation
-6. **`jobs`** - Groups related work across multiple sessions
-7. **`messages`** - Individual message tracking with metadata
-8. **`tool_logs`** - Execution history for optimization
-9. **`todos`** - Task management synced with Claude
-10. **`accomplishments`** - Session achievements and milestones
-11. **`error_logs`** - Error tracking for debugging
+1. **`agents_catalog`** - Directory of all 58 agents with routing rules
+2. **`agents_memory`** - Deep knowledge storage for each agent/module  
+3. **`sessions`** - Conversation history with context preservation
+4. **`messages`** - Individual message tracking with metadata
+5. **`tool_logs`** - Execution history for optimization
+6. **`todos`** - Task management synced with Claude
+7. **`acolyte_quests`** - Quest coordination data
+8. **`acolyte_status_changes`** - Agent status and communication logs
+
+**In Development:** `agent_health` - Agent monitoring and performance metrics
 
 ### 14 Agent Memory Types
 
@@ -250,23 +255,9 @@ Claude automatically orchestrates:
 4. `@backend.nodejs` → Integrates middleware and endpoints
 5. `@frontend.react` → Builds login components with provider buttons
 
-**Result:** Complete OAuth system in one request, all coordinated via FLAGS
+**Result:** Complete OAuth system in one request, all coordinated automatically
 
-### Example 2: Performance Crisis (FLAGS in Action)
-
-```
-USER> "The API is timing out on user searches"
-```
-
-Automatic FLAGS workflow:
-
-1. Claude → `@acolyte.api` analyzes endpoints
-2. `@acolyte.api` → 🚩 FLAG: "Missing database indexes on search columns"
-3. Claude → `@database.postgres` processes FLAG
-4. `@database.postgres` → Adds indexes, detects another issue
-5. `@database.postgres` → 🚩 FLAG: "Redis cache not configured for search"
-6. Claude → `@database.redis` implements caching
-7. **Result:** 2.3s → 87ms response time (26x faster)
+### Example 2: Performance Optimization
 
 ### Example 3: Complex Migration (Multi-Agent Coordination)
 
@@ -278,7 +269,7 @@ Coordinated execution:
 
 1. `@coordinator.migration` → Creates migration strategy
 2. `@database.mongodb` + `@database.postgres` → Schema mapping
-3. FLAGS created for data type mismatches
+3. Data type mapping coordinated automatically
 4. `@backend.nodejs` → Updates all queries and models
 5. `@ops.monitoring` → Sets up migration monitoring
 6. Rollback plan stored in SQLite for safety
@@ -289,89 +280,96 @@ All decisions preserved in Jobs system for future reference
 
 **Current Version: v1.0.7** ✨ → **Target Version: v2.0.0** 🚀
 
-### 🎯 7-Phase Evolution (6 Months)
+### 🎯 8-Phase Evolution (10 Months)
 
 <table align="center">
 <tr>
-<td align="center" width="14%">
-<strong>📊 Phase 1</strong><br>
-<small><strong>v1.1.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>🎭 Phase 1</strong><br>
+<small><strong>v2.0.0</strong></small><br>
+<small>8 weeks</small><br><br>
+<strong>Quest System Revolution</strong><br>
+<small>Multi-agent coordination, stateful communication, turn-based orchestration</small>
+</td>
+<td align="center" width="12.5%">
+<strong>📊 Phase 2</strong><br>
+<small><strong>v2.1.0</strong></small><br>
 <small>2 weeks</small><br><br>
 <strong>Dashboard & Control Center</strong><br>
-<small>Real-time agent monitoring, FLAGS visualization, performance metrics</small>
+<small>Real-time agent monitoring, Quest visualization, performance metrics</small>
 </td>
-<td align="center" width="14%">
-<strong>📋 Phase 2</strong><br>
-<small><strong>v1.2.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>📋 Phase 3</strong><br>
+<small><strong>v2.2.0</strong></small><br>
 <small>3 weeks</small><br><br>
 <strong>Templates & Patterns</strong><br>
 <small>8 specialized templates: E-commerce, SaaS, API, Mobile, ML, CMS</small>
 </td>
-<td align="center" width="14%">
-<strong>📦 Phase 3</strong><br>
-<small><strong>v1.3.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>📦 Phase 4</strong><br>
+<small><strong>v2.3.0</strong></small><br>
 <small>2 weeks</small><br><br>
 <strong>Export/Import & Portability</strong><br>
 <small>Configuration portability, backup/restore, team sharing</small>
 </td>
-<td align="center" width="14%">
-<strong>🔄 Phase 4</strong><br>
-<small><strong>v1.4.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>🔄 Phase 5</strong><br>
+<small><strong>v2.4.0</strong></small><br>
 <small>2 weeks</small><br><br>
 <strong>Auto-Update & Intelligence</strong><br>
 <small>Zero-downtime updates, smart rollouts, community agents</small>
 </td>
-<td align="center" width="14%">
-<strong>🧠 Phase 5</strong><br>
-<small><strong>v1.5.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>🧠 Phase 6</strong><br>
+<small><strong>v2.5.0</strong></small><br>
 <small>3 weeks</small><br><br>
 <strong>Knowledge Management</strong><br>
 <small>Cross-project learning, pattern recognition, collective intelligence</small>
 </td>
-<td align="center" width="14%">
-<strong>🏢 Phase 6</strong><br>
-<small><strong>v1.6.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>🏢 Phase 7</strong><br>
+<small><strong>v2.6.0</strong></small><br>
 <small>4 weeks</small><br><br>
 <strong>Enterprise Features</strong><br>
 <small>Code review automation, notifications, achievements, RBAC</small>
 </td>
-<td align="center" width="14%">
-<strong>🌟 Phase 7</strong><br>
-<small><strong>v2.0.0</strong></small><br>
+<td align="center" width="12.5%">
+<strong>🌟 Phase 8</strong><br>
+<small><strong>v3.0.0</strong></small><br>
 <small>4 weeks</small><br><br>
-<strong>Next-Gen Revolution</strong><br>
-<small>Semantic routing, enhanced parallel spawning, universal MCP</small>
+<strong>Universal AI Platform</strong><br>
+<small>Semantic routing, enhanced parallel spawning, universal MCP, multi-LLM support</small>
 </td>
 </tr>
 </table>
 
 ### 🎯 What's Coming Next
 
-**🔥 Priority 1 - Dashboard Revolution (v1.1.0)**
+**🔥 Priority 1 - Dashboard Revolution (v2.1.0)**
 
 ```bash
 /acolytes --dashboard  # Real-time command center with live agent monitoring
 ```
 
 - 📈 **Real-time metrics** - Performance, success rates, agent health
-- 🚩 **FLAGS visualization** - Live coordination system monitoring
-- 🎯 **Agent status grid** - All 59 agents at a glance
+- 🎯 **Quest visualization** - Live coordination system monitoring
+- 🎯 **Agent status grid** - All 58 agents at a glance
 - ⚡ **<500ms rendering** - Lightning-fast dashboard experience
 
 **🚀 The V2.0.0 Vision:**
 
-- **Universal MCP compatibility** - Works with any MCP client
-- **Enterprise-grade reliability** - Production-ready for teams
-- **Autonomous parallel coordination** - 15+ Claude instances working together
-- **Collective intelligence** - Cross-project learning and knowledge sharing
+- **Stateful multi-agent orchestration** - First-ever persistent agent coordination
+- **Zero context loss** - Perfect memory continuity across sessions  
+- **Turn-based communication** - Conflict-free agent collaboration
+- **Autonomous task completion** - Agents work together without human intervention
 
-> _"From Revolutionary v1.0.6 to Legendary v2.0.0 - The Future of AI Development"_
+> _"From Revolutionary v1.0.7 to Legendary v2.0.0 - The Quest System Era"_
 
 ## 🌟 Why Acolytes for Claude Code is Revolutionary
 
-### **Enterprise FLAGS Coordination System**
+### **Enterprise-Grade Multi-Agent Coordination**
 
-No other system provides seamless cross-agent coordination through a sophisticated FLAGS protocol stored in SQLite. This enables zero information loss during agent handoffs and perfect task continuity.
+No other system provides seamless cross-agent coordination through persistent SQLite database communication. This enables zero information loss during agent handoffs and perfect task continuity.
 
 ### **Enterprise-Grade Architecture**
 
@@ -385,13 +383,13 @@ With commands like /todo, /acolytes, /save, and /mcp, Acolytes for Claude Code p
 
 | Feature              | Standard Claude Code  | Acolytes for Claude Code                        |
 | -------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**           | Single AI assistant   | **59 specialized agents + project Acolytes**    |
+| **Agents**           | Single AI assistant   | **58 agents (53 specialized + 5 setup) + project Acolytes**    |
 | **Memory**           | Session-only context  | **Persistent SQLite + cross-session Jobs**      |
-| **Coordination**     | Manual task switching | **Automatic FLAGS system with handoffs**        |
+| **Coordination**     | Manual task switching | **Automatic Quest system with handoffs**        |
 | **Agent Selection**  | User must specify     | **Auto-routing based on context**               |
 | **Setup**            | Manual configuration  | **Auto-detection + 6-phase analysis**           |
 | **Project Learning** | Starts from zero      | **Builds cumulative module knowledge**          |
-| **Error Recovery**   | Manual intervention   | **Auto-FLAGS creation for cross-domain issues** |
+| **Error Recovery**   | Manual intervention   | **Automatic cross-agent coordination** |
 
 ## 🐛 Issues & Bug Reports
 
@@ -405,8 +403,7 @@ Your feedback helps improve Acolytes for everyone!
 
 ### **Core System**
 
-- **[Agent Catalog](./acolytes/data/resources/rules/agent-routing-catalog.md)** - All 59 agents with capabilities
-- **[FLAGS Protocol](./acolytes/data/resources/rules/flags-protocol.md)** - Cross-agent coordination system
+- **[Agent Catalog](./acolytes/data/resources/rules/agent-routing-catalog.md)** - All 58 agents with capabilities
 - **[Agent Routing Rules](./acolytes/data/resources/rules/agent-routing-rules.md)** - 17-rule disambiguation system
 
 ### **Commands**
@@ -414,7 +411,7 @@ Your feedback helps improve Acolytes for everyone!
 - **[Setup Command](./acolytes/data/commands/setup.md)** - 6-phase project initialization
 - **[Commit Command](./acolytes/data/commands/commit.md)** - Smart commits with auto-versioning
 - **[PR Command](./acolytes/data/commands/pr.md)** - Pull request automation
-- **[FLAGS Command](./acolytes/data/commands/acolytes.md)** - Process coordination tasks
+- **[Acolytes Command](./acolytes/data/commands/acolytes.md)** - Process coordination tasks (IN DEVELOPMENT)
 - **[Save Command](./acolytes/data/commands/save.md)** - Session persistence
 
 ### **Templates & Resources**
@@ -435,19 +432,19 @@ Your feedback helps improve Acolytes for everyone!
 ⚡ 26x faster API optimization (2.3s → 87ms)
 🔍 50x faster code search with MCP code-index
 🎯 Always up-to-date agents with Context7
-🧠 14 memory types per module (never forget anything)
-🤝 59 specialists working in parallel
+🧠 14 memory types per project Acolyte (never forget anything)
+🤝 Up to 10 specialists working in parallel
 ♾️ Infinite context through Jobs system
-🚩 Zero coordination overhead with FLAGS
+🚩 Zero coordination overhead with Quest System
 ```
 
 ### **🌟 Game-Changing Innovations**
 
 **You used to:** Write prompts, copy code, lose context, start over  
-**Now you:** Give one command, watch 59 agents orchestrate the solution
+**Now you:** Give one command, watch up to 10 specialists orchestrate the solution
 
 **You used to:** Manually coordinate between frontend and backend  
-**Now:** FLAGS automatically handle cross-domain dependencies
+**Now:** Quest System automatically handles cross-domain coordination
 
 **You used to:** Explain your project every new session  
 **Now:** Your project has a living, growing memory
@@ -456,7 +453,7 @@ Your feedback helps improve Acolytes for everyone!
 
 > _"It's like having a senior dev team that never sleeps, never forgets, and never needs explanations twice."_
 
-> _"FLAGS changed everything. My agents solve problems I didn't even know existed."_
+> _"Quest System changed everything. My agents coordinate like never before."_
 
 > _"First time I've seen AI actually understand my entire codebase."_
 
@@ -469,7 +466,7 @@ Free for commercial and personal use.
 ## ⭐ The Future is Here
 
 ```
-🎯 One request. 59 specialists. Zero coordination overhead.
+🎯 One request. Up to 10 specialists coordinated. Zero overhead.
 ```
 
 Imagine typing **"implement authentication"** and watching as:
@@ -478,7 +475,7 @@ Imagine typing **"implement authentication"** and watching as:
 - 🗄️ Database experts create the schema
 - ⚙️ Backend engineers write the logic
 - 🎨 Frontend developers build the UI
-- 🚩 All coordinating through FLAGS, automatically
+- 🚩 All coordinating through Quest System, automatically
 
 **❌ No more context switching.**  
 **❌ No more manual handoffs.**  
