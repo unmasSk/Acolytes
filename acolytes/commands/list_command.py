@@ -42,7 +42,19 @@ def get_agents_directory() -> Path:
     return Path.home() / ".claude" / "agents"
 
 def parse_agent_file(file_path: Path) -> Optional[AgentInfo]:
-    """Parse an agent markdown file to extract metadata."""
+    """
+    Parse a Markdown agent file and return its metadata as an AgentInfo, or None if the file should be ignored or cannot be parsed.
+    
+    Reads the file at file_path, extracts optional YAML front matter (if present) and uses it to populate fields such as name, description, tools, model, and color. Files whose agent name starts with "setup." or "plan." are treated as internal and skipped (function returns None). If the YAML front matter does not provide a name, the file stem is used. Names prefixed with "acolyte." set the returned AgentInfo.is_acolyte flag.
+    
+    On parse errors or other exceptions the function prints a warning and returns None.
+    
+    Parameters:
+        file_path (Path): Path to the agent Markdown file.
+    
+    Returns:
+        Optional[AgentInfo]: An AgentInfo populated from the file, or None if the file is internal, unparseable, or an error occurred.
+    """
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -95,7 +107,19 @@ def parse_agent_file(file_path: Path) -> Optional[AgentInfo]:
         return None
 
 def determine_category(name: str) -> str:
-    """Determine agent category based on name prefix."""
+    """
+    Return a human-readable category label inferred from an agent filename prefix.
+    
+    Checks the agent name for known prefixes (for example, "backend.", "frontend.", "database.", "acolyte.", etc.)
+    and maps the first matching prefix to a category string. If no known prefix matches, returns "Other".
+    
+    Parameters:
+        name (str): Agent name or filename stem to classify (e.g., "backend.auth", "acolyte.helper").
+    
+    Returns:
+        str: Category label corresponding to the recognized prefix (e.g., "Backend", "Frontend", "Project Acolytes"),
+             or "Other" when the name does not match any known category.
+    """
     if name.startswith('backend.'):
         return 'Backend'
     elif name.startswith('frontend.'):
