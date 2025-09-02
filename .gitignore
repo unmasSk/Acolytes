@@ -81,3 +81,4 @@ node_modules/
 *.bak
 *_backup
 *_bak
+sandbox/
