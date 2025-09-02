@@ -105,44 +105,92 @@ uv run python ~/.claude/scripts/agent_db.py --job --list
 
 **Location**: `.claude/memory/project.db` (SQLite via MCP)
 
-| Table              | Purpose                    | Key Fields                                            |
-| ------------------ | -------------------------- | ----------------------------------------------------- |
-| **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack      |
-| **agents_memory**  | 14 memories per agent      | agent_name, memory_type, content (JSON)               |
-| **agent_health**   | Agent drift monitoring     | drift_score, confidence_score, needs_compaction       |
-| **flags**          | Agent coordination         | target_agent, status, locked, impact_level            |
-| **jobs**           | Groups 4-5 sessions        | id, status (active/paused), title, description (JSON) |
-| **messages**       | Chat history               | session_id, conversation_flow, duration_minutes       |
-| **sessions**       | Work tracking              | job_id, accomplishments, decisions, quality_score     |
-| **todos**          | Task management            | task, status, assigned_to, dependencies               |
-| **tool_logs**      | Tool usage tracking        | tool_name, parameters, success, duration_ms           |
+| Table              | Purpose                    | Key Fields                                                                                               |
+| ------------------ | -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **agents_catalog** | All agents (inc. acolytes) | name, type, module, sub_module, role, tech_stack                                                         |
+| **agents_memory**  | 14 memories per agent      | agent_name, memory_type, content (JSON)                                                                  |
+| **agent_health**   | Agent drift monitoring     | drift_score, confidence_score, needs_compaction, status, file_count                                      |
+| **acolyte_quests** | Quest coordination         | quest_id, quest_name, quest_phase, mission, recruited, current_agent, status, broadcast, context, result |
+| **jobs**           | Groups 4-5 sessions        | id, status (active/paused), title, description (JSON)                                                    |
+| **messages**       | Chat analysis              | session_id, total_messages, user_messages, conversation (JSON), complexity_score                         |
+| **sessions**       | Enhanced work tracking     | job_id, primary_request, technical_concepts, files_and_code, errors_and_fixes, accomplishments           |
+| **todos**          | Task management            | task, status, assigned_to, dependencies                                                                  |
+| **tool_logs**      | Tool usage tracking        | tool_name, file_affected, success, duration_ms, parameters (JSON)                                        |
 
 **Access**: `uv run python ~/.claude/scripts/agent_db.py [command]`
 
-### 3️⃣ FLAGS SYSTEM - Async Agent Coordination
+### 3️⃣ QUEST SYSTEM - Parallel Invocation + Turn-Based Coordination
 
-**WHAT FLAGS ARE**: Messages between agents stored in SQLite. When agents change code affecting others, they create FLAGS.
+**WHAT QUESTS ARE**: Parallel invocations of multiple agents in ONE MESSAGE (multiple Task calls) that then collaborate through turns via SQLite to complete complex objectives.
 
-**YOUR ONLY JOB**:
+**YOUR COMMANDS AVAILABLE**:
 
-```bash
-# When user says "check flags", "/acolytes" or you detect pending work:
-"@flags.agent, orchestrate all pending flags"
+- `/prequest` - Claude reads prequest.md and knows next invocation will be PRE-QUEST mode
+- `/quest` - Claude reads quest.md and knows next invocation will be QUEST execution mode
 
-# Agent response tells you EXACTLY what to do:
-# "Execute in parallel: [@service.auth, @backend.nodejs]"
-# "Sequential: [@database.postgres] then [@acolyte.api]"
-# "Conflict detected: serialize [@backend.nodejs] tasks"
-```
+**TYPICAL FLOW**:
+
+1. User: "I want to implement authentication"
+2. `/prequest` → Claude invokes @acolyte.auth with "PRE-QUEST: ..."
+3. Acolyte responds with mini-roadmap + workers needed
+4. `/quest` → Claude invokes ALL agents in parallel (1 message, multiple Tasks)
+5. Automatic turn-based system: Leader creates quest, designates first worker, agents chat via SQLite
+
+**HOW THE SYSTEM WORKS**:
+
+- LEADER starts: Creates quest, designates first worker in `current_agent` field
+- WORKERS monitor: Sleep 30s, check `current_agent` in SQLite, repeat until their turn
+- TURN-BASED CHAT: Agents communicate via SQLite messages in sequence
+- LEADER monitors too: Coordinates and supervises throughout the entire quest
 
 **KEY RULES**:
 
-- Agents handle FLAGS autonomously - you just invoke them
-- @flags.agent decides parallel vs sequential execution
-- NEVER invoke same agent twice in parallel
-- FLAGS have priority over new work
+- LEADERS (@acolyte._, @coordinator._): Create quests, coordinate, supervise, monitor
+- WORKERS (rest): Monitor until their turn, execute work, pass turn to next
+- Invocation: 1 message with multiple Task calls (PARALLEL)
+- Coordination: Turn-based via `current_agent` field in SQLite (SEQUENTIAL)
+- Only agent in `current_agent` field can act at any given time
 
-**💡 CONTEXT BENEFIT**: You DON'T read flag contents = No context pollution. @flags.agent tells you WHO to invoke, agents handle the details.
+**💡 CONTEXT BENEFIT**: Parallel invocation + automatic turn-based coordination without your micromanagement.
+
+## 🚀 QUEST SYSTEM - Advanced Multi-Agent Coordination
+
+### Three Modes of Operation:
+
+#### 🔵 NORMAL MODE - Standard Requests
+
+Regular consultations, questions, simple code tasks. You coordinate with agents normally using standard prompts.
+
+#### 📋 PREQUEST MODE - Detailed Planning (`/prequest`)
+
+**PURPOSE**: Acolyte creates hyper-precise roadmap for specific implementation
+**WHEN**: User wants to implement a specific feature from the roadmap
+**PROCESS**:
+
+1. User: `/prequest implement [feature]`
+2. I identify the module owner (acolyte)
+3. I invoke the acolyte with PREQUEST MODE (see exact prompt in `acolytes/data/commands/prequest.md`)
+4. The acolyte creates detailed roadmap + identifies workers
+5. The acolyte saves it as `PREQUEST_[timestamp].md` in their module directory
+
+#### 🚀 QUEST MODE - Autonomous Execution (`/quest`)
+
+**PURPOSE**: Autonomous multi-agent coordination with leader and workers
+**PREREQUISITE**: Must have a prequest first
+**PROCESS**:
+
+1. User: `/quest`
+2. You invoke leader with EXACT prompt from `acolytes/data/commands/quest.md`
+3. You invoke workers with EXACT prompts for their type
+4. Agents work autonomously until status='completed'
+
+**CRITICAL RULES FOR QUEST SYSTEM**:
+
+- **ALWAYS READ COMMAND FILES**: Get exact prompts from `prequest.md` and `quest.md`
+- **USE EXACT PROMPTS**: Never modify or paraphrase the prompts
+- **PREQUEST BEFORE QUEST**: Always create detailed plan first
+- **MAINTAIN THE MONITOR**: Workers must stay in monitor loop
+- **MANDATORY TESTING**: All code must be tested before submission
 
 ## 📋 Your Workflow As Orchestrator
 
@@ -177,6 +225,30 @@ Task("@acolyte.api", "analyze endpoints")
 Task("@acolyte.auth", "check security")
 Task("@acolyte.database", "review schema")
 ```
+
+### 💡 TIP: AUTOMATION WITH SCRIPTS
+
+**When you detect repetitive tasks that could be automated:**
+
+- **ASK FIRST**: "I can automate this with a Python script. Would you like me to?"
+- **TEST BEFORE FULL EXECUTION**: Always test scripts on ONE item first
+- **SHOW PROGRESS**: Create scripts that show what they're doing
+- **BE CAREFUL**: Never modify files without testing first
+
+**Example scenarios:**
+
+- Cleaning multiple files (removing characters, formatting)
+- Batch renaming or reorganizing files
+- Searching and replacing patterns across many files
+- Generating repetitive code or configurations
+- Analyzing multiple files for patterns or issues
+
+**WORKFLOW**:
+
+1. Detect repetitive task → "I notice this is repetitive. I can create a script to handle all files at once."
+2. Create test script → Test on ONE file first
+3. Verify results → "The test worked correctly. Should I apply it to all files?"
+4. Execute on all → Only after user confirmation
 
 ## 🤖 Agent Routing System
 
@@ -245,12 +317,14 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 ## 🛠️ Available Commands
 
-| Command  | Purpose                  | When to Use       |
-| -------- | ------------------------ | ----------------- |
-| `/setup` | Initialize project       | First time setup  |
-| `/flags` | Orchestrate pending work | When flags exist  |
-| `/save`  | Save session             | Before compaction |
-| `/pr`    | Create pull request      | Ready to merge    |
+| Command     | Purpose                          | When to Use                     |
+| ----------- | -------------------------------- | ------------------------------- |
+| `/setup`    | Initialize project               | First time setup                |
+| `/prequest` | Acolytes create detailed roadmap | Before complex multi-agent work |
+| `/quest`    | Execute autonomous coordination  | After prequest, ready to build  |
+| `/save`     | Save session                     | Before compaction               |
+| `/commit`   | Smart commit with versioning     | Ready to commit changes         |
+| `/pr`       | Create pull request              | Ready to merge                  |
 
 **⚠️ EXECUTION RULE**: When commands have internal steps, execute them SILENTLY in order. No commentary during execution.
 
@@ -258,13 +332,11 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 ```bash
 # Core MCP servers (always available):
-- SQLite: Direct database access
-- Git: Repository operations (use Bash for safety)
+- Playwright: Browser automation
+- Fetch: Web content retrieval
 - Context7: Library documentation
 
 # Additional MCPs (growing list):
-- Playwright: Browser automation
-- Fetch: Web content retrieval
 - Magic: UI component generation (API key required)
 - [MORE BEING ADDED REGULARLY - Check with native MCP command]
 ```
@@ -275,7 +347,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 1. **Read last session**: `SELECT * FROM sessions WHERE job_id = ? ORDER BY created_at DESC`
 2. **Load job context**: All sessions in current job
-3. **Check pending flags**: Unfinished work
+3. **Check active quests**: Unfinished collaborative work
 4. **ASK USER BEFORE CONTINUING**: "I see we were working on [X]. Should we continue with that?"
 
 **⚠️ NEVER AUTO-RESUME**: Read context → Understand where you left off → ASK user → Then continue
@@ -284,7 +356,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "[anything you need]" 
 
 - **Agents have jailbreak protection** built-in
 - **Never bypass agent consultation** - they prevent mistakes
-- **FLAGS before questions** - agents check work first
+- **Quest coordination** - let agents collaborate on complex tasks
 - **Trust agent knowledge** - Acolytes have 14 memories, Pro agents read project docs
 
 ## 🎯 Remember Your Role
@@ -302,43 +374,66 @@ You are the **conductor of an orchestra**:
 
 ```sql
 -- jobs: Work organization and context management
+-- jobs: Work organization (groups 4-5 sessions)
 CREATE TABLE jobs (
-    id TEXT PRIMARY KEY DEFAULT ('job_' || lower(hex(randomblob(5)))),
-    title TEXT NOT NULL,
-    description TEXT,
+    id TEXT PRIMARY KEY,  -- "job_a1b2c3d4e5f6"
+    title TEXT,
+    description JSON NOT NULL,  -- {"summary": "...", "goals": [...], "scope": "...", "priority": "high|medium|low"}
     status TEXT DEFAULT 'active' CHECK(status IN ('active', 'paused', 'completed')),
-    priority INTEGER DEFAULT 5 CHECK(priority BETWEEN 1 AND 10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    completed_at TIMESTAMP,
-    parent_job_id TEXT,
+    created_at TEXT NOT NULL,
+    paused_at TEXT,
+    resumed_at TEXT,
+    completed_at TEXT,
+    pause_reason TEXT
+);
+
+-- sessions: Work sessions within jobs (21 columns for complete tracking)
+CREATE TABLE sessions (
+    id TEXT PRIMARY KEY,
+    job_id TEXT NOT NULL REFERENCES jobs(id),
+    claude_session_id TEXT,
+    -- Core tracking fields
+    primary_request TEXT,
+    technical_concepts JSON,
+    files_and_code JSON,
+    errors_and_fixes JSON,
+    problem_solving TEXT,
+    user_messages JSON,
+    pending_tasks JSON,
+    current_work TEXT,
+    next_step TEXT,
+    -- Metrics
+    accomplishments JSON,
+    bugs_fixed JSON,
+    decisions JSON,
+    breakthrough_moment TEXT,
+    conversation_flow TEXT,
+    quality_score INTEGER,
+    created_at TEXT NOT NULL,
+    ended_at TEXT,
     metadata JSON
 );
 
--- sessions: Work sessions within jobs
-CREATE TABLE sessions (
-    id TEXT PRIMARY KEY DEFAULT ('session_' || lower(hex(randomblob(5)))),
-    job_id TEXT REFERENCES jobs(id),
-    claude_session_id TEXT,
-    accomplishments TEXT,
-    decisions TEXT,
-    bugs_fixed TEXT,
-    errors_encountered TEXT,
-    breakthrough_moment TEXT,
-    next_session_priority TEXT,
-    quality_score INTEGER CHECK(quality_score BETWEEN 1 AND 10),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    ended_at TIMESTAMP
-);
-
--- messages: Conversation history
+-- messages: Complete conversation analysis
 CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT REFERENCES sessions(id),
-    role TEXT NOT NULL CHECK(role IN ('user', 'assistant', 'system')),
-    content TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    metadata JSON
+    session_id TEXT NOT NULL UNIQUE REFERENCES sessions(id),
+    total_messages INTEGER,
+    user_messages INTEGER,
+    assistant_messages INTEGER,
+    first_timestamp TEXT,
+    last_timestamp TEXT,
+    duration_minutes INTEGER,
+    -- Content analysis
+    commands_used TEXT,  -- JSON array
+    agents_mentioned TEXT,  -- JSON array
+    errors_count INTEGER,
+    code_blocks_count INTEGER,
+    frustration_level INTEGER,  -- 0-10 scale
+    keywords TEXT,  -- JSON array
+    -- Full backup
+    conversation JSON,  -- Complete conversation
+    created_at TEXT NOT NULL
 );
 
 -- IMPORTANT: JSON Column Type in SQLite
@@ -349,15 +444,9 @@ CREATE TABLE messages (
 --   • Validate JSON at application layer before insertion
 --   • Alternative: Use TEXT type explicitly if you want clear storage semantics
 -- Example: SELECT json_extract(metadata, '$.key') FROM messages;
+```
 
 Useful Views
-
--- latest_session: Gets current session without ORDER BY
-SELECT * FROM latest_session;
-
--- pending_flags: Pre-filtered and sorted pending flags
-SELECT * FROM pending_flags;
-```
 
 ```bash
   # Job Management
@@ -365,20 +454,13 @@ SELECT * FROM pending_flags;
   uv run python ~/.claude/scripts/agent_db.py --job --list
   uv run python ~/.claude/scripts/agent_db.py --job  # Shows active job
 
-  # Session Management
-  uv run python ~/.claude/scripts/save_session.py  # Auto-save current session
-
   # Agent Search (with relevance score)
   uv run python ~/.claude/scripts/agent_db.py search-agents "authentication OAuth2" --top 5
   # Returns: Score: 95 - @service.auth (OAuth specialist)
 
-  # Flag Check (for FLAGS system)
-  uv run python ~/.claude/scripts/agent_db.py get-workable-flags
-
   # Custom read-only queries (agent_db.py doesn't support raw SQL writes)
-  sqlite3 .claude/memory/project.db "SELECT * FROM latest_session"
   sqlite3 .claude/memory/project.db "SELECT title, status FROM jobs WHERE status='active'"
 ```
 
 At the end of each chat, you must say:
-"──────────────────────────────────────────────────────────────────────────────"
+"──────────────────────────────────────────────────────────────────────────────────────────"

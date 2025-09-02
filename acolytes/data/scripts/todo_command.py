@@ -504,68 +504,6 @@ def list_todos(filter_type='pending'):
     
     conn.close()
 
-def create_from_flags():
-    """Create TODOs from critical FLAGS automatically"""
-    print("[FLAGS] Creating TODOs from critical FLAGS...")
-    
-    conn = sqlite3.connect(str(DB_PATH))
-    cursor = conn.cursor()
-    
-    # Find critical/high impact flags without TODOs
-    cursor.execute("""
-        SELECT id, flag_type, source_module, affected_modules, 
-               change_description, action_required, impact_level
-        FROM flags 
-        WHERE status = 'pending'
-        AND impact_level IN ('critical', 'high')
-    """)
-    
-    flags = cursor.fetchall()
-    created = 0
-    
-    for flag_id, flag_type, source_module, affected_modules, change_desc, action_req, impact in flags:
-        # Create detailed task
-        task = f"[FLAG #{flag_id}] {action_req}"
-        priority = 'critical' if impact == 'critical' else 'high'
-        category = 'maintenance' if flag_type == 'breaking_change' else 'refactor'
-        
-        # Parse affected modules
-        modules = affected_modules.split(',') if affected_modules else []
-        assigned_to = modules[0].strip() if modules else source_module
-        
-        cursor.execute("""
-            INSERT INTO todos (
-                task, priority, status, created_at, 
-                category, module, assigned_to, 
-                auto_created, created_by, ai_suggested,
-                context
-            ) VALUES (?, ?, 'pending', ?, ?, ?, ?, 1, 'system', 1, ?)
-        """, (
-            task, priority, get_timestamp(),
-            category, source_module, assigned_to,
-            json.dumps({
-                'flag_id': flag_id,
-                'flag_type': flag_type,
-                'change_description': change_desc
-            })
-        ))
-        
-        # Update flag status
-        cursor.execute(
-            "UPDATE flags SET status = 'todo_created' WHERE id = ?",
-            (flag_id,)
-        )
-        
-        created += 1
-        print(f"  [CREATED] TODO for FLAG #{flag_id}: {action_req[:50]}...")
-    
-    conn.commit()
-    conn.close()
-    
-    if created:
-        print(f"\n[DONE] Created {created} TODOs from critical FLAGS")
-    else:
-        print("No critical FLAGS requiring TODOs")
 
 def session_end_todos():
     """Auto-create TODOs at session end based on analysis"""

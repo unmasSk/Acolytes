@@ -48,7 +48,7 @@ def backup_database():
     """Create database backup with timestamp and maintain max 10 files"""
     try:
         # Use explicit path construction to avoid any scope issues
-        db_path = PathLib(".claude/memory/project.db")
+        db_path = PathLib("sandbox/project.db")
         if not db_path.exists():
             return
         
@@ -88,7 +88,7 @@ def find_active_session():
         # Backup database first
         backup_database()
         
-        db_path = PathLib(".claude/memory/project.db")
+        db_path = PathLib("sandbox/project.db")
         if not db_path.exists():
             return None, "Database not found"
             
@@ -202,7 +202,7 @@ def load_job_context_from_db(session_info):
     This provides Claude with context about what was done and which files were modified.
     """
     try:
-        db_path = PathLib(".claude/memory/project.db")
+        db_path = PathLib("sandbox/project.db")
         if not db_path.exists():
             return None
             
@@ -226,7 +226,7 @@ def load_job_context_from_db(session_info):
         
         # Get last completed session from this job for priority
         cursor.execute("""
-            SELECT id, next_session_priority, breakthrough_moment, 
+            SELECT id, next_step, breakthrough_moment, 
                    accomplishments, ended_at
             FROM sessions 
             WHERE job_id = ? AND ended_at IS NOT NULL
@@ -249,10 +249,10 @@ def load_job_context_from_db(session_info):
                 except (json.JSONDecodeError, TypeError):
                     pass
             
-            if last_session['next_session_priority']:
-                # Replace underscores in priority text
-                safe_priority = last_session['next_session_priority'].replace('_', '＿')
-                context_parts.append(f"🎯 Priority: {safe_priority}")
+            if last_session['next_step']:
+                # Replace underscores in next step text
+                safe_priority = last_session['next_step'].replace('_', '＿')
+                context_parts.append(f"🎯 Next step: {safe_priority}")
             
             if last_session['breakthrough_moment']:
                 # Replace underscores in breakthrough text

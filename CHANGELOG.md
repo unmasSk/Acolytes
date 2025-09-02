@@ -5,7 +5,55 @@ All notable changes to the Acolytes for Claude Code project will be documented i
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] - 2025-08-28
+## [2.0.0] - 2025-09-02
+
+### 🎭 MAJOR - QUEST SYSTEM REVOLUTION
+
+**BREAKING CHANGE**: Complete system migration from FLAGS to revolutionary Quest System with stateful multi-agent coordination.
+
+### Added
+
+- **🎭 QUEST SYSTEM**: World's first stateful multi-agent coordination system with real-time communication
+- **Turn-based orchestration**: Perfect conflict-free coordination between up to 10 specialists working in parallel
+- **Agent chat system**: Real-time communication protocol via persistent SQLite database
+- **Stateful memory**: Project Acolytes maintain 14 types of persistent memory across sessions
+- **Quest coordination**: `/prequest` and `/quest` commands for autonomous multi-agent task execution
+- **Quest monitoring loops**: Agents stay "alive" and monitor for coordination tasks
+- **Agent personality tests**: Enhanced agent specialization and communication patterns
+- **Round table conversations**: Multi-agent decision-making and coordination protocols
+
+### Changed
+
+- **BREAKING**: Migrated from FLAGS system to Quest System (complete architecture change)
+- **Agent templates**: Refactored all 58 agent templates removing FLAGS references, adding Quest capabilities
+- **Database cleanup**: Massive improvements to save system and session management
+- **Documentation**: Updated all documentation to reflect Quest System integration
+- **README.md**: Complete rewrite showcasing Quest System as core revolutionary feature
+- **Agent coordination**: From manual FLAGS processing to autonomous Quest orchestration
+
+### Removed
+
+- **FLAGS system**: Completely deprecated in favor of Quest System
+- **Sandbox directory**: Cleaned up development artifacts and temporary files
+- **Legacy coordination**: Removed all FLAGS-based coordination protocols
+
+### Technical Details
+
+- Quest System operates through persistent SQLite database ensuring zero information loss
+- Up to 10 specialists can coordinate simultaneously in a single Quest
+- Turn-based system prevents conflicts and ensures perfect handoffs
+- Each Quest maintains complete audit trail and coordination history
+- Agents communicate through structured messages and status updates
+
+### Migration Impact
+
+This is a **MAJOR version bump** due to:
+- Complete architecture change from FLAGS to Quest System
+- Breaking changes in agent coordination protocols
+- New command structure (`/prequest` + `/quest` workflow)
+- Different agent communication patterns
+
+## [1.0.8] - 2025-09-01
 
 ### Changed
 

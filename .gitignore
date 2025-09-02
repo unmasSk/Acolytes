@@ -4,7 +4,7 @@
 .git*
 */.git/
 **/.git/
-
+.venv/
 # Environment variables - NEVER commit these!
 .env
 .env.local
@@ -36,6 +36,9 @@ dist/
 build/
 *.egg-info/
 acolytes.egg-info/
+
+# Virtual environments
+sandbox/.venv/
 
 # Audio files (SFX directory)
 .claude/resources/sfx/
@@ -78,3 +81,4 @@ node_modules/
 *.bak
 *_backup
 *_bak
+sandbox/

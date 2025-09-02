@@ -526,28 +526,6 @@ NEXT_STEPS:
 │       └── project.db              # SQLite with agent memories, jobs, setup data
 ```
 
-## 🚩 **FLAGS Protocol**
-
-**How FLAGS work for Claude**:
-
-1. **User asks to see flags**: Claude runs `python ~/.claude/scripts/agent_db.py get-workable-flags` and shows pending flags
-2. **User types /acolytes**: Claude invokes `@flags.agent` to orchestrate all pending flags
-3. **@flags.agent responds**: Tells Claude EXACTLY how to invoke agents (parallel or sequential)
-4. **Claude follows instructions**: Invokes agents as directed, with simple prompt "process your pending flags"
-
-**Example flow**:
-
-```
-User: /acolytes
-Claude: "@flags.agent, orchestrate all pending flags"
-@flags.agent: "Execute in parallel: [@service.auth, @backend.nodejs]"
-Claude: [Invokes both agents in ONE message with Task calls]
-```
-
-**IMPORTANT**: Claude never reads flag content or decides execution order - @flags.agent handles all orchestration
-
----
-
 ## 📊 **NEW VS EXISTING PROJECT COMPARISON**
 
 | Phase | Existing Project             | New Project                             |

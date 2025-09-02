@@ -63,6 +63,46 @@ def get_our_session_id(project_cwd):
     return our_session_id
 
 
+def check_incomplete_quests(project_cwd, subagent_name):
+    """Check if there are incomplete quests for this subagent."""
+    if project_cwd:
+        db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+    else:
+        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+    
+    if not db_path.exists():
+        return False  # No DB, allow stop
+    
+    try:
+        conn = sqlite3.connect(str(db_path))
+        cursor = conn.cursor()
+        
+        # Check if acolyte_quests table exists
+        cursor.execute("""
+            SELECT name FROM sqlite_master 
+            WHERE type='table' AND name='acolyte_quests'
+        """)
+        if not cursor.fetchone():
+            conn.close()
+            return False  # No quest table, allow stop
+        
+        # Check for incomplete quests assigned to this worker
+        cursor.execute("""
+            SELECT COUNT(*) FROM acolyte_quests 
+            WHERE current_agent = ? 
+            AND status IN ('working', 'pending')
+        """, (subagent_name,))
+        
+        incomplete_count = cursor.fetchone()[0]
+        conn.close()
+        
+        return incomplete_count > 0
+        
+    except (sqlite3.Error, OSError, IOError) as e:
+        print(f"Error checking quests: {e}", file=sys.stderr)
+        return False  # On error, allow stop
+
+
 def log_subagent_completion(input_data, session_id):
     """Log subagent completion details to acolytes directory."""
     try:
@@ -192,10 +232,12 @@ def log_subagent_completion(input_data, session_id):
         # Atomic replace - either succeeds completely or fails completely
         os.replace(tmp_name, str(log_file))
             
-        print(f"Subagent logged: {subagent_name} - {completion_status}")
+        print(f"Subagent logged: {subagent_name} - {completion_status}", file=sys.stderr)
+        return subagent_name
             
     except Exception as e:
         print(f"Subagent logging error: {e}", file=sys.stderr)
+        return "unknown"
 
 
 def main():
@@ -204,6 +246,9 @@ def main():
         parser = argparse.ArgumentParser()
         parser.add_argument(
             "--chat", action="store_true", help="Copy to acolytes log"
+        )
+        parser.add_argument(
+            "--control", action="store_true", help="Enable quest control mechanism"
         )
         args = parser.parse_args()
 
@@ -218,12 +263,35 @@ def main():
 
         # Extract required fields
         claude_session_id = input_data.get("session_id", "")
+        project_cwd = input_data.get("cwd", "")
+        subagent_name = "unknown"
         
         # Always log if --chat flag is provided (our default behavior)
         if args.chat:
-            log_subagent_completion(input_data, claude_session_id)
+            subagent_name = log_subagent_completion(input_data, claude_session_id)
         
-        # Success
+        # Check for incomplete quests if control is enabled
+        if args.control and subagent_name != "unknown":
+            if check_incomplete_quests(project_cwd, subagent_name):
+                # Block the stop - worker must continue
+                output = {
+                    "continue": True,
+                    "decision": "block",
+                    "reason": f"Quest not completed - {subagent_name} must continue working",
+                    "suppress_output": False
+                }
+                print(json.dumps(output))
+                sys.exit(2)  # Exit code 2 to signal blocking
+            else:
+                # Allow stop - quests completed or no quests
+                output = {
+                    "continue": True,
+                    "suppress_output": False
+                }
+                print(json.dumps(output))
+                sys.exit(0)
+        
+        # Default behavior - no control output
         sys.exit(0)
         
     except json.JSONDecodeError:
