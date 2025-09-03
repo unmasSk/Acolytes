@@ -11,6 +11,7 @@ import json
 import sys
 import sqlite3
 import os
+import time
 from pathlib import Path
 from datetime import datetime
 
@@ -73,6 +74,15 @@ def generate_markdown_transcript(conversation_file, session_id):
                 
             elif msg_type == "assistant":
                 md_content.append(f"### <span style=\"color: #d2691e; text-transform: uppercase;\">🤖 Claude</span>{time_part}")
+                md_content.append("")
+                md_content.append(content)
+                md_content.append("")
+                md_content.append("---")
+                md_content.append("")
+                
+            elif msg_type == "code_change":
+                # Handle code changes with special formatting
+                md_content.append(f"### 📝 Code Change{time_part}")
                 md_content.append("")
                 md_content.append(content)
                 md_content.append("")
@@ -171,9 +181,28 @@ def log_user_prompt(session_id, input_data):
         # Add user message
         conversation.append(user_message)
         
-        # Write back
-        with open(conversation_file, "w", encoding="utf-8") as f:
-            json.dump(conversation, f, indent=2, ensure_ascii=False)
+        # Write back with lock
+        lock_file = log_dir / f"{our_session_id}.lock"
+        max_retries = 50
+        for retry in range(max_retries):
+            if not lock_file.exists():
+                try:
+                    lock_file.touch(exist_ok=False)
+                    break
+                except FileExistsError:
+                    pass
+            time.sleep(0.1)
+        else:
+            return  # Timeout
+        
+        try:
+            temp_file = conversation_file.with_suffix('.tmp')
+            with open(temp_file, "w", encoding="utf-8") as f:
+                json.dump(conversation, f, indent=2, ensure_ascii=False)
+            temp_file.replace(conversation_file)
+        finally:
+            if lock_file.exists():
+                lock_file.unlink()
         
         # Generate markdown transcript
         generate_markdown_transcript(conversation_file, our_session_id)

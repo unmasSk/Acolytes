@@ -1,4 +1,5 @@
 ---
+command: prequest
 description: ♾️  PreQuest - Create detailed roadmap for specific module implementation with worker agents
 ---
 
@@ -45,10 +46,17 @@ This corresponds to point [X.Y] from the main roadmap.
 
 Requirements:
 1. Break down into specific, executable steps
-2. Identify ALL worker agents needed (backend, frontend, database, etc.)
-3. Define clear success criteria for each step
-4. Specify testing requirements
-5. Save as PREQUEST_[timestamp].md in your module directory
+2. 🚨 If task has MULTIPLE PHASES → Divide into Phase 1, Phase 2, etc.
+3. For EACH phase, identify needed workers SEPARATELY
+4. BEFORE naming workers, use this command to find the right specialists:
+   ```bash
+   uv run python ~/.claude/scripts/agent_db.py search-agents "[capability needed]" 5
+   ```
+   Example: search-agents "time-series database" → finds @database.timescale
+5. Include external consultants if needed (e.g., @coordinator.* for strategic decisions)
+6. Define clear success criteria for each step
+7. Specify testing requirements
+8. Save as PREQUEST_[timestamp].md in your module directory
 
 Return:
 - Roadmap file path

@@ -1,4 +1,4 @@
-# Acolytes for Claude Code Agents Catalog & Routing Rules (58 agents)
+# Acolytes for Claude Code Agents Catalog & Routing Rules (59 agents)
 
 ---
 
@@ -198,6 +198,16 @@ Analyzes deployment infrastructure and DevOps configuration
 
 ---
 
+### **@database.timescale** `1,681 lines`
+
+**♾️ ROLE ---** TimescaleDB specialist for time-series data and real-time analytics at massive scale
+**♾️ TECH STACK ---** TimescaleDB 2.14+ with hypertables, continuous aggregates, compression policies, data retention, chunk management, real-time analytics, PostgreSQL extensions, time-series optimization, IoT data processing, financial tick data, monitoring metrics, distributed hypertables, multi-node scaling, columnar compression, hyperfunctions, toolkit functions
+**♾️ SCENARIOS ---** Time-series database implementation, real-time analytics systems, IoT data ingestion and processing, financial market data storage, monitoring and observability platforms, continuous aggregate optimization, data retention policy design, compression strategy implementation, distributed time-series scaling, real-time dashboards, historical data analysis, performance optimization for time-series workloads
+**♾️ TAGS ---** TimescaleDB, time-series, hypertables, continuous-aggregates, compression, data-retention, real-time-analytics, PostgreSQL, IoT, financial-data, monitoring-metrics, distributed, columnar, hyperfunctions, streaming, tick-data, TSDB, analytics, observability
+**♾️ CONNECTIONS ---** @database.postgres [required], @service.data [optional], @ops.monitoring [optional,seq:2], @coordinator.database [optional,seq:3]
+
+---
+
 # 💻 Software Development (Frontend)
 
 ### **@frontend.angular** `1,404 lines`
@@ -371,6 +381,16 @@ Analyzes deployment infrastructure and DevOps configuration
 **♾️ SCENARIOS ---** External API consumption and integration, third-party SDK implementation, service orchestration and coordination, automation workflow development, API integration architecture, webhook handling and processing, data synchronization between systems, external service coordination, integration testing and monitoring, multi-service authentication, API gateway integration
 **♾️ TAGS ---** integration, API-integration, third-party, SDK, REST-API, webhook, data-synchronization, external-services, orchestration, automation, rate-limiting, API-consumption, circuit-breaker, service-mesh, web-scraping, Playwright, Selenium, OAuth-client, service-orchestration, fault-tolerance
 **♾️ CONNECTIONS ---** @service.auth [optional], @backend.nodejs [optional], @backend.python [optional], @service.communication [optional,seq:2]
+
+---
+
+### **@service.crypto** `1,253 lines`
+
+**♾️ ROLE ---** Cryptocurrency and blockchain expert specializing in trading, DeFi protocols, NFT ecosystems, and Web3 security
+**♾️ TECH STACK ---** Solidity ecosystem (OpenZeppelin contracts, Hardhat development, Foundry testing, Remix IDE, upgradeable proxy patterns), Rust blockchain development (Anchor Framework for Solana, Substrate for Polkadot, Near Protocol SDK, CosmWasm for Cosmos), JavaScript/TypeScript Web3 (Ethers.js v6, Web3.js, Wagmi v2, RainbowKit wallet integration, Viem type-safe client), Python crypto development (Web3.py Ethereum Python, Brownie contract testing, CCXT exchange APIs, Pandas/NumPy data analysis), DeFi platforms (Uniswap V4, Aave V3, Compound III, MakerDAO, Curve Finance, Balancer V3), Layer 2 scaling (Arbitrum, Polygon zkEVM, Optimism, zkSync Era, Starknet, Linea), on-chain analytics (Glassnode Studio, CryptoQuant, Dune Analytics, The Graph, DeFiLlama), security tools (Slither static analysis, MythX scanning, Certora formal verification, Forta monitoring), wallet integration (MetaMask SDK, WalletConnect V2, Safe SDK, Account Abstraction), cross-chain infrastructure (LayerZero, Wormhole, Axelar, Chainlink CCIP, IBC Protocol)
+**♾️ SCENARIOS ---** Cryptocurrency trading with technical analysis, DeFi protocol development and deployment, smart contract security auditing, NFT marketplace development, Web3 infrastructure design, tokenomics and DAO governance, cross-chain bridge development, on-chain analytics and market intelligence, crypto wallet integration, blockchain project due diligence, MEV protection implementation, yield farming optimization
+**♾️ TAGS ---** crypto, blockchain, Web3, DeFi, NFT, smart-contracts, Solidity, Ethereum, Bitcoin, Layer2, tokenomics, DAO, yield-farming, liquidity-pools, AMM, MEV, cross-chain, bridges, wallet-integration, on-chain-analytics, security-audit, formal-verification, crypto-trading, staking
+**♾️ CONNECTIONS ---** @database.pgvector [optional], @service.auth [optional], @backend.nodejs [optional,seq:2], @frontend.react [optional,seq:3]
 
 ---
 

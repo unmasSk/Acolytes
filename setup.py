@@ -3,6 +3,7 @@ import os
 from importlib.metadata import version, PackageNotFoundError
 
 # Read README for long description
+# Updated for Acolytes v2.0.0 with 60+ agents
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
@@ -24,7 +25,7 @@ setup(
     version=pkg_version,
     author="unmasSk",
     author_email="",
-    description="Acolytes for Claude Code - Multi-agent system with 57+ specialized AI assistants",
+    description="Acolytes for Claude Code - Multi-agent system with 60+ specialized AI assistants",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/unmasSk/acolytes",

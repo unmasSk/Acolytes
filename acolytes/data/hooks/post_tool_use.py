@@ -208,7 +208,7 @@ def handle_todo_sync(tool_data):
                 })
                 
                 cursor.execute("""
-                    INSERT INTO todos (task, status, created_at, session_id, metadata)
+                    INSERT INTO todos (task, status, created_at, session_id, context)
                     VALUES (?, ?, ?, ?, ?)
                 """, (
                     task,

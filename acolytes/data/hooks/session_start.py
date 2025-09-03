@@ -499,6 +499,16 @@ def main():
             context_parts.append("=" * 50)
             context_parts.append(dev_context)
         
+        # Add MANDATORY instruction for Claude to read last sessions
+        context_parts.append("=" * 50)
+        context_parts.append("🔴 MANDATORY: Read the last 2 sessions from current job for complete context:")
+        if session_info and 'job_id' in session_info:
+            context_parts.append(f"sqlite3 .claude/memory/project.db \"SELECT * FROM sessions WHERE job_id = '{session_info['job_id']}' ORDER BY created_at DESC LIMIT 2\"")
+        else:
+            # Fallback to get sessions from active job
+            context_parts.append("sqlite3 .claude/memory/project.db \"SELECT * FROM sessions WHERE job_id = (SELECT id FROM jobs WHERE status = 'active') ORDER BY created_at DESC LIMIT 2\"")
+        context_parts.append("This ensures you understand recent work and decisions before proceeding.")
+        
         # If we have any context, output it
         if context_parts:
             output = {

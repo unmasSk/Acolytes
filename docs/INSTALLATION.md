@@ -1,7 +1,7 @@
 # 🚀 Acolytes Installation Guide
 ## **Complete Setup for the World's First Multi-Agent Coordination System**
 
-> **One-time setup** to unlock the power of 53 specialized agents + 5 setup agents
+> **One-time setup** to unlock the power of 55 specialized agents + 5 setup agents
 
 ---
 
@@ -51,7 +51,7 @@ acolytes --doctor
 ✅ Claude Code configuration valid
 ✅ SQLite database accessible
 ✅ MCP connections active
-✅ All 53 specialized + 5 setup agents available
+✅ All 55 specialized + 5 setup agents available
 ✅ Quest system operational
 ```
 
@@ -394,7 +394,7 @@ After installation, you should have:
    # Should begin setup process
    ```
 
-4. **All 53 specialized + 5 setup agents available:**
+4. **All 55 specialized + 5 setup agents available:**
    ```bash
    acolytes --list
    # Should show full agent catalog

@@ -1,18 +1,18 @@
 <div align="center">
 <img src="acolytes/data/resources/assets/logo.jpg" alt="Acolytes for Claude Code Logo" width="600">
 
-  <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System <span style="font-size: 0.65em;">with</span></h3>
+  <h3 style="font-size: 1.3em; margin-bottom: 0; text-transform: uppercase;">Revolutionary Multi-Agent System v2.0.0 <span style="font-size: 0.65em;">with</span></h3>
   <h1 style="font-size: 2.5em; margin-top: 0; font-weight: bold;">
     ♾️ <span style="color: #568ee2;">NEURAL</span> <span style="color: #6B7FDB;">MEMORY</span> <span style="color: #8B5CF6;">NETWORK</span>
   </h1>
   
   <p align="center" style="font-size: 1.1em; max-width: 800px; margin: 20px auto;">
-    Transform Claude Code into an <strong>intelligent project orchestrator</strong> with 53 specialized agents + 5 setup agents + project-specific Acolytes. Features revolutionary <strong>Acolytes Quest System</strong> for unprecedented multi-agent coordination and persistent SQLite memory for cumulative learning.
+    Transform Claude Code into an <strong>intelligent project orchestrator</strong> with 60 specialized agents + 5 setup agents + project-specific Acolytes. Features revolutionary <strong>Acolytes Quest System</strong> for unprecedented multi-agent coordination and persistent SQLite memory for cumulative learning.
   </p>
 </div>
 
 [![PyPI version](https://img.shields.io/pypi/v/acolytes)](https://pypi.org/project/acolytes/)
-[![Agents](https://img.shields.io/badge/Specialized%20Agents-53-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![Quest](https://img.shields.io/badge/Quest%20System-Revolutionary-red)](./docs/QUEST.md)
+[![Agents](https://img.shields.io/badge/Specialized%20Agents-60-blue)](./acolytes/data/resources/rules/agent-routing-catalog.md) [![Quest](https://img.shields.io/badge/Quest%20System-Revolutionary-red)](./docs/QUEST.md)
 [![Memory](https://img.shields.io/badge/SQLite%20Memory-8%20Tables-green)](./acolytes/data/scripts/init_db.sql)
 [![Hooks](https://img.shields.io/badge/Active%20Hooks-8-yellow)](./acolytes/data/hooks)
 [![Status](https://img.shields.io/badge/Status-Revolutionary-brightgreen)](https://github.com/unmasSk/Acolytes)
@@ -21,7 +21,7 @@
 
 ### 🚀 BREAKTHROUGH: Acolytes Quest System
 
-**NEVER BEFORE ACHIEVED**: Acolytes for Claude Code features the world's first stateful multi-agent coordination system that enables real-time communication and collaboration between 53 specialized agents + 5 setup agents. The Quest system operates through persistent SQLite database, ensuring no information loss and perfect autonomous coordination.
+**NEVER BEFORE ACHIEVED**: Acolytes for Claude Code features the world's first stateful multi-agent coordination system that enables real-time communication and collaboration between 55 specialized agents + 5 setup agents. The Quest system operates through persistent SQLite database, ensuring no information loss and perfect autonomous coordination.
 
 #### **Quest System Success Stories**
 
@@ -190,7 +190,7 @@ Main Claude Session (Orchestrator)
 
 ### SQLite Database (8 Active Tables)
 
-1. **`agents_catalog`** - Directory of all 58 agents with routing rules
+1. **`agents_catalog`** - Directory of all 60 agents with routing rules
 2. **`agents_memory`** - Deep knowledge storage for each agent/module  
 3. **`sessions`** - Conversation history with context preservation
 4. **`messages`** - Individual message tracking with metadata
@@ -353,7 +353,7 @@ All decisions preserved in Jobs system for future reference
 
 - 📈 **Real-time metrics** - Performance, success rates, agent health
 - 🎯 **Quest visualization** - Live coordination system monitoring
-- 🎯 **Agent status grid** - All 58 agents at a glance
+- 🎯 **Agent status grid** - All 60 agents at a glance
 - ⚡ **<500ms rendering** - Lightning-fast dashboard experience
 
 **🚀 The V2.0.0 Vision:**
@@ -383,7 +383,7 @@ With commands like /todo, /acolytes, /save, and /mcp, Acolytes for Claude Code p
 
 | Feature              | Standard Claude Code  | Acolytes for Claude Code                        |
 | -------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**           | Single AI assistant   | **58 agents (53 specialized + 5 setup) + project Acolytes**    |
+| **Agents**           | Single AI assistant   | **60 agents (55 specialized + 5 setup) + project Acolytes**    |
 | **Memory**           | Session-only context  | **Persistent SQLite + cross-session Jobs**      |
 | **Coordination**     | Manual task switching | **Automatic Quest system with handoffs**        |
 | **Agent Selection**  | User must specify     | **Auto-routing based on context**               |
@@ -403,7 +403,7 @@ Your feedback helps improve Acolytes for everyone!
 
 ### **Core System**
 
-- **[Agent Catalog](./acolytes/data/resources/rules/agent-routing-catalog.md)** - All 58 agents with capabilities
+- **[Agent Catalog](./acolytes/data/resources/rules/agent-routing-catalog.md)** - All 60 agents with capabilities
 - **[Agent Routing Rules](./acolytes/data/resources/rules/agent-routing-rules.md)** - 17-rule disambiguation system
 
 ### **Commands**

@@ -1,6 +1,7 @@
 """
 Acolytes for Claude Code
-Multi-agent system with 57+ specialized AI assistants
+Multi-agent system with 60+ specialized AI assistants
+Revolutionary orchestration platform for development
 """
 
 from importlib.metadata import version, PackageNotFoundError

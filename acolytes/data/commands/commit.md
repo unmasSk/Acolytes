@@ -13,8 +13,8 @@ When you run `/commit`, the following happens automatically:
 
 1. **Pre-Analysis**: Verify repository status and analyze all changes
 2. **Smart Commit**: Create commit with emoji and conventional format
-3. **Auto-Changelog**: Invoke @docs.specialist to update CHANGELOG.md
-4. **Version Detection**: Determine version bump type from commit
+3. **Version Detection**: Determine version bump type from commit
+4. **Auto-Changelog**: Invoke @docs.specialist to update CHANGELOG.md with correct version
 5. **Version Update**: Execute bump2version to update all version files
 6. **Tag Creation**: Create annotated git tag (e.g., v1.0.1)
 
