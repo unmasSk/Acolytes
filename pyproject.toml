@@ -51,3 +51,9 @@ acolytes = "acolytes.cli:main"
 Homepage = "https://github.com/unmasSk/acolytes"
 Repository = "https://github.com/unmasSk/acolytes"
 Issues = "https://github.com/unmasSk/acolytes/issues"
+
+[dependency-groups]
+dev = [
+    "build>=1.2.2.post1",
+    "twine>=6.1.0",
+]
