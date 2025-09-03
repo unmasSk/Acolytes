@@ -22,7 +22,6 @@ def run() -> None:
     
     # Define paths
     claude_dir = Path.home() / ".claude"
-    agents_dir = claude_dir / "agents"
     backup_dir = claude_dir / "backups"
     
     # Ensure directories exist
@@ -35,13 +34,13 @@ def run() -> None:
         temp_dir = download_latest_version()
         
         # Step 2: Create backup
-        print("💾 Creating backup of current agents...")
-        backup_path = create_backup(agents_dir, backup_dir)
+        print("💾 Creating backup of current system...")
+        backup_path = create_backup(claude_dir, backup_dir)
         print(f"✅ Backup created at: {backup_path}")
         
         # Step 3: Compare and update files
         print("🔍 Analyzing changes...")
-        changes = compare_and_update_files(temp_dir, agents_dir)
+        changes = compare_and_update_files(temp_dir, claude_dir)
         
         # Step 4: Show changelog
         show_changelog(changes)
@@ -113,15 +112,25 @@ def download_latest_version() -> Path:
         raise e
 
 
-def create_backup(agents_dir: Path, backup_dir: Path) -> Path:
-    """Create backup of current agents directory."""
+def create_backup(claude_dir: Path, backup_dir: Path) -> Path:
+    """Create backup of current claude directory."""
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_path = backup_dir / f"agents_{timestamp}"
+    backup_path = backup_dir / f"claude_system_{timestamp}"
     
-    if agents_dir.exists():
-        shutil.copytree(agents_dir, backup_path)
+    if claude_dir.exists():
+        # Create backup directory
+        backup_path.mkdir(exist_ok=True)
+        
+        # Backup specific directories
+        directories_to_backup = ['agents', 'commands', 'scripts', 'hooks', 'resources']
+        
+        for dir_name in directories_to_backup:
+            source_dir = claude_dir / dir_name
+            if source_dir.exists():
+                target_dir = backup_path / dir_name
+                shutil.copytree(source_dir, target_dir)
     else:
-        # Create empty backup directory if no agents exist
+        # Create empty backup directory if no claude dir exists
         backup_path.mkdir(exist_ok=True)
     
     return backup_path
@@ -144,8 +153,8 @@ def is_local_acolyte_file(filename: str) -> bool:
     return filename.startswith("acolyte.") and filename.endswith(".md")
 
 
-def compare_and_update_files(source_dir: Path, target_dir: Path) -> Dict[str, Set[str]]:
-    """Compare files and update only changed ones."""
+def compare_and_update_files(source_dir: Path, claude_dir: Path) -> Dict[str, Set[str]]:
+    """Overwrite all data files from source."""
     changes = {
         "updated": set(),
         "added": set(),
@@ -153,48 +162,52 @@ def compare_and_update_files(source_dir: Path, target_dir: Path) -> Dict[str, Se
         "unchanged": set()
     }
     
-    # Find source agents directory
-    source_agents_dir = None
+    # Find source data directory
+    source_data_dir = None
     for root, dirs, files in os.walk(source_dir):
-        if "agents" in dirs:
-            source_agents_dir = Path(root) / "agents"
+        if "data" in dirs:
+            source_data_dir = Path(root) / "data"
             break
     
-    if not source_agents_dir or not source_agents_dir.exists():
-        # Try .claude/agents path
-        source_agents_dir = source_dir / ".claude" / "agents"
-        if not source_agents_dir.exists():
-            raise FileNotFoundError("Could not find agents directory in downloaded archive")
+    if not source_data_dir or not source_data_dir.exists():
+        # Try acolytes/data path
+        source_data_dir = source_dir / "acolytes" / "data"
+        if not source_data_dir.exists():
+            raise FileNotFoundError("Could not find data directory in downloaded archive")
     
-    # Ensure target directory exists
-    target_dir.mkdir(exist_ok=True)
+    # Directories to update
+    directories_to_update = ['agents', 'commands', 'scripts', 'hooks', 'resources']
     
-    # Process each file in source
-    for source_file in source_agents_dir.glob("*.md"):
-        filename = source_file.name
-        target_file = target_dir / filename
+    for dir_name in directories_to_update:
+        source_subdir = source_data_dir / dir_name
+        target_subdir = claude_dir / dir_name
         
-        # Skip local acolyte files
-        if is_local_acolyte_file(filename):
-            changes["skipped"].add(filename)
-            continue
-        
-        # Calculate hashes
-        source_hash = calculate_file_hash(source_file)
-        target_hash = calculate_file_hash(target_file) if target_file.exists() else ""
-        
-        # Compare and update if needed
-        if not target_file.exists():
-            # New file
-            shutil.copy2(source_file, target_file)
-            changes["added"].add(filename)
-        elif source_hash != target_hash:
-            # File changed
-            shutil.copy2(source_file, target_file)
-            changes["updated"].add(filename)
-        else:
-            # File unchanged
-            changes["unchanged"].add(filename)
+        if source_subdir.exists():
+            # Ensure target directory exists
+            target_subdir.mkdir(parents=True, exist_ok=True)
+            
+            # Process all files in this directory
+            for source_file in source_subdir.rglob('*'):
+                if source_file.is_file():
+                    # Calculate relative path
+                    rel_path = source_file.relative_to(source_subdir)
+                    target_file = target_subdir / rel_path
+                    
+                    # Skip local acolyte files only in agents directory
+                    if dir_name == "agents" and is_local_acolyte_file(source_file.name):
+                        changes["skipped"].add(f"{dir_name}/{source_file.name}")
+                        continue
+                    
+                    # Create parent directories if needed
+                    target_file.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    # Always overwrite
+                    if target_file.exists():
+                        shutil.copy2(source_file, target_file)
+                        changes["updated"].add(f"{dir_name}/{rel_path}")
+                    else:
+                        shutil.copy2(source_file, target_file)
+                        changes["added"].add(f"{dir_name}/{rel_path}")
     
     return changes
 
