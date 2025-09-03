@@ -1,9 +1,44 @@
-# Changelog - Acolytes v2.0.0
+# Changelog - Acolytes v2.1.0
 
 All notable changes to the Acolytes for Claude Code project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.1.0] - 2025-09-03
+
+### ✨ MINOR - Enhanced Agent Ecosystem & System Improvements
+
+**New Features**: Enhanced agent capabilities, improved QUEST system protocols, and advanced code tracking functionality.
+
+### Added
+
+- **@database.timescale**: New TimescaleDB database specialist agent for time-series data management and real-time analytics at massive scale
+- **@service.crypto**: New cryptocurrency and blockchain services agent specializing in Web3, DeFi, NFTs, and smart contract development
+- **Code Capture System**: Advanced code change tracking system (`capture_code_changes.py`) for monitoring and documenting code modifications
+- **Clean Command**: New system cleanup functionality for maintenance and optimization operations
+- **Enhanced Database Schema**: Updated database structure to support new agent capabilities and improved data organization
+
+### Changed
+
+- **QUEST System Enhancements**: Improved protocols and coordination mechanisms for better multi-agent collaboration
+- **Hook System Optimization**: Enhanced hook functionality with better performance and reliability
+- **Documentation Updates**: Comprehensive updates to reflect new features and system improvements
+- **Version Management**: Improved version tracking and release management processes
+
+### Enhanced
+
+- **Agent Communication**: Better inter-agent coordination through enhanced QUEST protocols
+- **System Performance**: Optimized operations for faster response times and improved reliability
+- **Code Tracking**: Advanced monitoring capabilities for development workflow optimization
+- **Database Operations**: Enhanced TimescaleDB integration for time-series data handling
+
+### Technical Details
+
+- New agents expand specialized expertise in database management and blockchain technologies
+- Code capture system provides detailed tracking of development changes and patterns
+- Enhanced QUEST protocols improve multi-agent task coordination and execution
+- Database schema updates support expanded agent capabilities and improved data structures
 
 ## [2.0.0] - 2025-09-02
 
@@ -211,7 +246,7 @@ Note: Always quote paths to handle spaces in usernames or directories. The 'pyth
 - Added sequential-thinking tool to 40+ reasoning agents (coordinators, auditors, analysts) for enhanced decision-making capabilities
 - Configured specialized MCPs: 21st-dev_magic for frontend agents (React/Vue/Angular), chrome-devtools/playwright/puppeteer for testing agents
 - Restricted Edit/MultiEdit tools from 15 orchestration-only coordinator agents to prevent direct code manipulation
-- Standardized tool configuration patterns across 57 global agents and dynamic module acolytes
+- Standardized tool configuration patterns across 60 global agents and dynamic module acolytes
 
 ### Enhanced
 
@@ -245,7 +280,7 @@ Note: Always quote paths to handle spaces in usernames or directories. The 'pyth
 ### Added
 
 - Merged 15+ remote documentation files (.claude/project/vision.md, architecture.md, technical-decisions.md) while preserving local agent updates
-- Enhanced documentation coverage with complete project context files for all 57 global agents
+- Enhanced documentation coverage with complete project context files for all 60 global agents
 - Added comprehensive team preferences and coding standards documentation
 
 ### Fixed
@@ -258,7 +293,7 @@ Note: Always quote paths to handle spaces in usernames or directories. The 'pyth
 
 ### Added
 
-- Mandatory project context reading step added to all 57 global agent workflows and dynamic module acolytes
+- Mandatory project context reading step added to all 60 global agent workflows and dynamic module acolytes
 - Agent initialization now reads .claude/project/ documents: vision.md, architecture.md, technical-decisions.md, team-preferences.md, project-context.md
 - Complete project understanding integration before agent task execution
 

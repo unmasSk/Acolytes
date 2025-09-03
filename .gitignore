@@ -30,6 +30,7 @@ mypy.ini
 *.pyc
 __pycache__/
 .bumpversion.cfg
+.serena
 
 # Python build artifacts
 dist/
