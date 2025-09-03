@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 def run() -> None:
     """Update Acolytes system."""
-    print("🔄 Checking for updates...")
+    print("[INFO] Checking for updates...")
     
     # Define paths
     claude_dir = Path.home() / ".claude"
@@ -30,16 +30,16 @@ def run() -> None:
     
     try:
         # Step 1: Download latest version
-        print("📥 Downloading latest version from GitHub...")
+        print("[INFO] Downloading latest version from GitHub...")
         temp_dir = download_latest_version()
         
         # Step 2: Create backup
-        print("💾 Creating backup of current system...")
+        print("[INFO] Creating backup of current system...")
         backup_path = create_backup(claude_dir, backup_dir)
-        print(f"✅ Backup created at: {backup_path}")
+        print(f"[OK] Backup created at: {backup_path}")
         
         # Step 3: Compare and update files
-        print("🔍 Analyzing changes...")
+        print("[INFO] Analyzing changes...")
         changes = compare_and_update_files(temp_dir, claude_dir)
         
         # Step 4: Show changelog
@@ -49,12 +49,12 @@ def run() -> None:
         shutil.rmtree(temp_dir)
         
         if changes["updated"] or changes["added"]:
-            print("✅ Update completed successfully!")
+            print("[OK] Update completed successfully!")
         else:
-            print("✅ System is already up to date!")
+            print("[OK] System is already up to date!")
             
     except Exception as e:
-        print(f"❌ Update failed: {str(e)}")
+        print(f"[ERROR] Update failed: {str(e)}")
         raise
 
 
@@ -86,7 +86,7 @@ def download_latest_version() -> Path:
                     pbar.update(len(chunk))
         
         # Extract zip file
-        print("📦 Extracting archive...")
+        print("[INFO] Extracting archive...")
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(temp_dir)
         
@@ -214,29 +214,29 @@ def compare_and_update_files(source_dir: Path, claude_dir: Path) -> Dict[str, Se
 
 def show_changelog(changes: Dict[str, Set[str]]) -> None:
     """Display changelog of updates."""
-    print("\n📋 Update Summary:")
+    print("\n[SUMMARY] Update Summary:")
     print("=" * 50)
     
     if changes["added"]:
-        print(f"🆕 Added ({len(changes['added'])} files):")
+        print(f"[NEW] Added ({len(changes['added'])} files):")
         for filename in sorted(changes["added"]):
             print(f"   + {filename}")
         print()
     
     if changes["updated"]:
-        print(f"🔄 Updated ({len(changes['updated'])} files):")
+        print(f"[UPDATED] Updated ({len(changes['updated'])} files):")
         for filename in sorted(changes["updated"]):
             print(f"   ~ {filename}")
         print()
     
     if changes["skipped"]:
-        print(f"⏭️  Skipped local acolytes ({len(changes['skipped'])} files):")
+        print(f"Skipped local acolytes ({len(changes['skipped'])} files):")
         for filename in sorted(changes["skipped"]):
             print(f"   - {filename}")
         print()
     
     if changes["unchanged"]:
-        print(f"✅ Unchanged ({len(changes['unchanged'])} files):")
+        print(f"[OK] Unchanged ({len(changes['unchanged'])} files):")
         for filename in sorted(changes["unchanged"]):
             print(f"   = {filename}")
         print()
@@ -244,9 +244,9 @@ def show_changelog(changes: Dict[str, Set[str]]) -> None:
     total_processed = len(changes["added"]) + len(changes["updated"]) + len(changes["unchanged"])
     total_skipped = len(changes["skipped"])
     
-    print(f"📊 Total: {total_processed} processed, {total_skipped} skipped")
+    print(f"Total: {total_processed} processed, {total_skipped} skipped")
     
     if changes["updated"] or changes["added"]:
-        print("\n🎉 Update successful! Your agents have been updated to the latest version.")
+        print("\nUpdate successful! Your agents have been updated to the latest version.")
     else:
-        print("\n✨ All agents are already up to date!")
+        print("\nAll agents are already up to date!")

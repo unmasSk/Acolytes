@@ -23,7 +23,7 @@ except ImportError:
 
 def run() -> None:
     """Initialize Acolytes system."""
-    print("🚀 Initializing Acolytes system...")
+    print("Initializing Acolytes system...")
     
     try:
         # Step 1: Install uv if not present
@@ -41,24 +41,24 @@ def run() -> None:
         # Step 5: Show final status
         _show_final_status()
         
-        print("✅ Initialization complete!")
+        print("[OK] Initialization complete!")
         
     except Exception as e:
-        print(f"❌ Initialization failed: {e}")
+        print(f"[ERROR] Initialization failed: {e}")
         sys.exit(1)
 
 
 def _install_uv_if_needed() -> None:
     """Install uv if not present on the system."""
-    print("🔍 Checking for uv installation...")
+    print("Checking for uv installation...")
     
     # Check if uv is already installed
     try:
         subprocess.run(["uv", "--version"], check=True, capture_output=True, text=True)
-        print("✅ uv is already installed")
+        print("[OK] uv is already installed")
         return
     except (subprocess.CalledProcessError, FileNotFoundError):
-        print("📦 uv not found, installing...")
+        print("uv not found, installing...")
     
     system = platform.system().lower()
     
@@ -67,24 +67,24 @@ def _install_uv_if_needed() -> None:
             _install_uv_windows()
         else:
             _install_uv_unix()
-        print("✅ uv installed successfully")
+        print("[OK] uv installed successfully")
     except Exception as e:
-        print(f"⚠️  Warning: Could not install uv automatically: {e}")
-        print("💡 Please install uv manually from https://github.com/astral-sh/uv")
+        print(f"[WARNING] Could not install uv automatically: {e}")
+        print("Please install uv manually from https://github.com/astral-sh/uv")
 
 
 def _install_uv_windows() -> None:
     """Install uv on Windows using winget or PowerShell."""
     # Try winget first
     try:
-        print("🔄 Attempting installation with winget...")
+        print("Attempting installation with winget...")
         subprocess.run(["winget", "install", "astral-sh.uv"], check=True, capture_output=True)
         return
     except (subprocess.CalledProcessError, FileNotFoundError):
         pass
     
     # Fallback to PowerShell installer
-    print("🔄 Attempting installation with PowerShell...")
+    print("Attempting installation with PowerShell...")
     powershell_cmd = [
         "powershell", "-Command",
         "Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression"
@@ -94,7 +94,7 @@ def _install_uv_windows() -> None:
 
 def _install_uv_unix() -> None:
     """Install uv on Linux/Mac using curl."""
-    print("🔄 Installing uv with curl...")
+    print("Installing uv with curl...")
     curl_cmd = [
         "curl", "-LsSf", "https://astral.sh/uv/install.sh"
     ]
@@ -108,7 +108,7 @@ def _install_uv_unix() -> None:
 
 def _copy_data_files() -> None:
     """Copy data files to ~/.claude/ directory."""
-    print("📂 Copying data files to ~/.claude/...")
+    print("Copying data files to ~/.claude/...")
     
     # Get target directory
     claude_dir = Path.home() / ".claude"
@@ -139,7 +139,7 @@ def _copy_data_files() -> None:
         target_dir = claude_dir / dir_name
         
         if source_dir.exists():
-            print(f"  📁 Copying {dir_name}/...")
+            print(f"  [DIR] Copying {dir_name}/...")
             
             # Create target directory
             target_dir.mkdir(parents=True, exist_ok=True)
@@ -147,14 +147,14 @@ def _copy_data_files() -> None:
             # Copy files recursively
             files_copied = _copy_directory_contents(source_dir, target_dir)
             total_files_copied += files_copied
-            print(f"    ✅ {files_copied} files copied")
+            print(f"    [OK] {files_copied} files copied")
         else:
-            print(f"  ⚠️  Directory not found: {source_dir}")
+            print(f"  [WARNING] Directory not found: {source_dir}")
     
     # Note: All agents (including setup.*, flags, plan) are now in the agents directory
     # No need for separate internal agents handling
     
-    print(f"✅ Total files copied: {total_files_copied}")
+    print(f"[OK] Total files copied: {total_files_copied}")
 
 
 def _copy_directory_contents(source: Path, target: Path) -> int:
@@ -179,7 +179,7 @@ def _copy_directory_contents(source: Path, target: Path) -> int:
 
 def _generate_settings_json() -> None:
     """Generate settings.json configuration file."""
-    print("⚙️  Generating settings.json...")
+    print("Generating settings.json...")
     
     claude_dir = Path.home() / ".claude"
     settings_file = claude_dir / "settings.json"
@@ -197,7 +197,7 @@ def _generate_settings_json() -> None:
     with open(settings_file, 'w', encoding='utf-8') as f:
         json.dump(settings, f, indent=2, ensure_ascii=False)
     
-    print(f"✅ Settings saved to {settings_file}")
+    print(f"[OK] Settings saved to {settings_file}")
 
 
 def _detect_python_command() -> str:
@@ -459,7 +459,7 @@ This is the initial session created during project setup.
 
 def _show_final_status() -> None:
     """Show final status and requirements check."""
-    print("\n📋 Final Status Check:")
+    print("\n[STATUS] Final Status Check:")
     
     claude_dir = Path.home() / ".claude"
     
@@ -469,28 +469,28 @@ def _show_final_status() -> None:
         dir_path = claude_dir / dir_name
         if dir_path.exists():
             file_count = len(list(dir_path.rglob('*')))
-            print(f"  ✅ {dir_name}/ ({file_count} files)")
+            print(f"  [OK] {dir_name}/ ({file_count} files)")
         else:
-            print(f"  ❌ {dir_name}/ (missing)")
+            print(f"  [ERROR] {dir_name}/ (missing)")
     
     # Check settings file
     settings_file = claude_dir / "settings.json"
     if settings_file.exists():
-        print("  ✅ settings.json")
+        print("  [OK] settings.json")
     else:
-        print("  ❌ settings.json (missing)")
+        print("  [ERROR] settings.json (missing)")
     
     # Check Python and uv
     python_cmd = _detect_python_command()
     uv_available = _is_uv_available()
     
-    print(f"  ✅ Python: {python_cmd}")
+    print(f"  [OK] Python: {python_cmd}")
     if uv_available:
-        print("  ✅ uv: available")
+        print("  [OK] uv: available")
     else:
-        print("  ⚠️  uv: not available (recommended)")
+        print("  [WARNING] uv: not available (recommended)")
     
-    print("\n💡 Next steps:")
+    print("\nNext steps:")
     print("  1. Go to the path to your project")
     print("  2. Run: claude --dangerously-skip-permissions")
     print("  3. Type: /setup")
