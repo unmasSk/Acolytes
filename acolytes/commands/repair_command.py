@@ -435,13 +435,13 @@ class SystemRepairer:
         
         if self.repairs_made == 0:
             if self.warnings_found == 0:
-                print(f"\n{Colors.GREEN}{Colors.BOLD}✅ System is healthy!{Colors.RESET}")
+                print(f"\n{Colors.GREEN}{Colors.BOLD}[OK] System is healthy!{Colors.RESET}")
                 print(f"{Colors.GREEN}No repairs were necessary.{Colors.RESET}")
             else:
-                print(f"\n{Colors.YELLOW}{Colors.BOLD}⚠️  Minor issues found{Colors.RESET}")
+                print(f"\n{Colors.YELLOW}{Colors.BOLD}[WARNING] Minor issues found{Colors.RESET}")
                 print(f"{Colors.YELLOW}System functional but has warnings.{Colors.RESET}")
         else:
-            print(f"\n{Colors.GREEN}{Colors.BOLD}🔧 Repair completed successfully{Colors.RESET}")
+            print(f"\n{Colors.GREEN}{Colors.BOLD}[FIXED] Repair completed successfully{Colors.RESET}")
             print(f"{Colors.GREEN}System issues have been resolved.{Colors.RESET}")
             
             # Show recommendations
