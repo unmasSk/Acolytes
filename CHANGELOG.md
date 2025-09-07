@@ -1,9 +1,31 @@
-# Changelog - Acolytes v2.0.1
+# Changelog - Acolytes v2.1.2
 
 All notable changes to the Acolytes for Claude Code project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.1.2] - 2025-09-07
+
+### 🔄 PATCH - Version Synchronization & Repository Alignment
+
+**Synchronization Release**: Critical version alignment between repository, PyPI, and local installations to ensure consistent distribution.
+
+### Fixed
+
+- **Version Synchronization**: Resolved version mismatch where PyPI had 2.1.1 but repository was at 2.0.1
+- **Repository Alignment**: Synchronized all version references across project files and distribution channels
+- **Distribution Consistency**: Ensured consistent versioning between local development, remote repository, and PyPI package
+- **Hook System Stability**: Included all hook system improvements from 2.0.1 that weren't properly synchronized to PyPI
+
+### Technical Details
+
+- Repository version bumped from 2.0.1 to 2.1.2 to align with PyPI distribution
+- All hook system fixes from version 2.0.1 are included in this synchronized release
+- Ensures consistent installation experience across all distribution channels
+- Resolves potential confusion between different version numbers in different locations
+
+**Note**: This is a maintenance release focusing solely on version consistency. No new features or breaking changes are introduced.
 
 ## [2.0.1] - 2025-09-07
 

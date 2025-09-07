@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "acolytes"
-version = "2.0.1"
+version = "2.1.2"
 description = "Acolytes for Claude Code - Multi-agent system with 57+ specialized AI assistants"
 readme = "README.md"
 requires-python = ">=3.8"
