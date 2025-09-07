@@ -13,35 +13,47 @@ import platform
 import time
 from pathlib import Path
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 def play_stop_sound():
     """Play work complete sound at 20% volume when session stops"""
     try:
         # Path to work complete sound
-        sound_file = Path('~/.claude/resources/sfx/ready-ogre.wav')
+        sound_file = Path('~/.claude/resources/sfx/ready-ogre.wav').expanduser()
         
         if sound_file.exists():
             system = platform.system()
             
             if system == "Windows":
-                # Play the custom sound file at 20% volume using PowerShell
-                powershell_cmd = f'''
-                Add-Type -AssemblyName presentationCore
-                $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
-                $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
-                $mediaPlayer.Volume = 0.2
-                $mediaPlayer.Play()
-                Start-Sleep -Milliseconds 2000
-                $mediaPlayer.Stop()
-                $mediaPlayer.Close()
-                '''
-                
-                # Execute PowerShell command silently
-                subprocess.run(
-                    ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', powershell_cmd],
-                    capture_output=True,
-                    text=True,
-                    timeout=3
-                )
+                # Use PowerShell Media.SoundPlayer - no windows, volume control
+                try:
+                    ps_script = f'''
+                    Add-Type -AssemblyName PresentationCore
+                    $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
+                    $mediaPlayer.Open([System.Uri]::new("{sound_file}"))
+                    $mediaPlayer.Volume = 0.2
+                    $mediaPlayer.Play()
+                    Start-Sleep -Milliseconds 2000
+                    $mediaPlayer.Stop()
+                    $mediaPlayer.Close()
+                    '''
+                    subprocess.run(
+                        ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_script],
+                        capture_output=True,
+                        creationflags=subprocess.CREATE_NO_WINDOW,
+                        timeout=3
+                    )
+                    return
+                except Exception:
+                    # Fallback to winsound without volume control
+                    try:
+                        import winsound
+                        winsound.PlaySound(str(sound_file), winsound.SND_FILENAME | winsound.SND_NOWAIT)
+                        return
+                    except Exception:
+                        pass
             elif system == "Darwin":  # macOS
                 # Use afplay with reduced volume (0.2 = 20%)
                 subprocess.run(
@@ -68,9 +80,6 @@ def play_stop_sound():
                         )
                     except (FileNotFoundError, subprocess.CalledProcessError):
                         pass  # No audio player available
-            
-            # Print success message
-            print("\n🎵 WORK COMPLETE")
             
     except Exception:
         # Silently fail if sound cannot play
@@ -159,16 +168,16 @@ def generate_markdown_transcript(conversation_file, session_id):
 
 def ensure_session_log_dir(project_root=None):
     """Ensure chat directory exists and return path."""
-    if project_root:
-        base_dir = Path(project_root)
-    else:
-        # Always use project root, not current directory
-        current_dir = Path.cwd()
-        if current_dir.name == 'hooks':
-            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
+    try:
+        # Use centralized db_locator for finding project root
+        project_root_path = get_project_root()
+        chat_dir = project_root_path / '.claude' / 'memory' / 'chat'
+    except SystemExit:
+        # Fallback if no project found
+        if project_root:
+            chat_dir = Path(project_root) / '.claude' / 'memory' / 'chat'
         else:
-            base_dir = current_dir
-    chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+            chat_dir = Path.cwd() / '.claude' / 'memory' / 'chat'
     chat_dir.mkdir(parents=True, exist_ok=True)
     return chat_dir
 
@@ -188,10 +197,15 @@ def main():
 
         # Get OUR session ID from SQLite
         import sqlite3
-        if project_cwd:
-            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
-        else:
-            db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        try:
+            db_path = get_project_db_path()
+        except SystemExit:
+            # Fallback if no project database found
+            if project_cwd:
+                db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+            else:
+                db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
         # Fallback to hardcoded session ID if DB doesn't exist
         our_session_id = "session_ac01e7e4e110"  # Default hardcoded session
         

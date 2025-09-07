@@ -9,8 +9,9 @@ import json
 import sys
 from pathlib import Path
 from datetime import datetime
+from db_locator import get_project_db_path
 
-DB_PATH = Path(__file__).parent.parent / 'memory' / 'project.db'
+DB_PATH = get_project_db_path()
 
 # Size limits in KB for each memory type
 MEMORY_LIMITS = {

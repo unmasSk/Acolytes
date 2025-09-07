@@ -48,7 +48,7 @@ def backup_database():
     """Create database backup with timestamp and maintain max 10 files"""
     try:
         # Use explicit path construction to avoid any scope issues
-        db_path = PathLib("sandbox/project.db")
+        db_path = PathLib(".claude/memory/project.db")
         if not db_path.exists():
             return
         
@@ -88,7 +88,7 @@ def find_active_session():
         # Backup database first
         backup_database()
         
-        db_path = PathLib("sandbox/project.db")
+        db_path = PathLib(".claude/memory/project.db")
         if not db_path.exists():
             return None, "Database not found"
             
@@ -202,7 +202,7 @@ def load_job_context_from_db(session_info):
     This provides Claude with context about what was done and which files were modified.
     """
     try:
-        db_path = PathLib("sandbox/project.db")
+        db_path = PathLib(".claude/memory/project.db")
         if not db_path.exists():
             return None
             

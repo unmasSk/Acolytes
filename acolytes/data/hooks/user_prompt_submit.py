@@ -15,6 +15,10 @@ import time
 from pathlib import Path
 from datetime import datetime
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 
 def generate_markdown_transcript(conversation_file, session_id):
     """Generate a beautiful Markdown transcript from the JSON conversation."""
@@ -124,10 +128,10 @@ def ensure_session_log_dir(project_root=None):
 
 def get_our_session_id(project_cwd):
     """Get our session ID from SQLite database."""
-    if project_cwd:
-        db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
-    else:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+    try:
+        db_path = get_project_db_path()
+    except SystemExit:
+        return None
     
     # Fallback to hardcoded session ID if DB doesn't exist
     our_session_id = "session_ac01e7e4e110"  # Default hardcoded session
@@ -296,6 +300,9 @@ def main():
         # Add context information (optional)
         # You can print additional context that will be added to the prompt
         # Example: print(f"Current time: {datetime.now()}")
+        
+        # Add automatic reminder
+        print("Reminder: If the prompt is ambiguous or unclear, don't execute anything; before acting investigate relevant sources, analyze possible edge cases and confirm you have ≥90% understanding; if you don't reach that level ask me directly until we are aligned.")
         
         # Success - prompt will be processed
         sys.exit(0)

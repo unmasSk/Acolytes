@@ -9,18 +9,19 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 def append_to_log(message, log_type='post_tool_use', project_cwd=''):
     """Append message to hook log file"""
     try:
-        # Use same logic as stop.py for finding log directory
-        if project_cwd:
-            log_dir = Path(project_cwd) / '.claude' / 'memory' / 'logs'
-        else:
-            current_dir = Path.cwd()
-            if current_dir.name == 'hooks':
-                log_dir = current_dir.parent.parent / '.claude' / 'memory' / 'logs'
-            else:
-                log_dir = current_dir / '.claude' / 'memory' / 'logs'
+        # Use centralized db_locator for finding log directory
+        try:
+            project_root = get_project_root()
+            log_dir = project_root / '.claude' / 'memory' / 'logs'
+        except SystemExit:
+            return  # No project found, skip logging
         
         # Create logs directory if it doesn't exist
         log_dir.mkdir(parents=True, exist_ok=True)
@@ -54,16 +55,11 @@ def update_tool_log(tool_data):
         else:
             append_to_log(f"[{session_id}] {tool_name} - OK", 'post_tool_use', project_cwd)
         
-        # Use same logic as stop.py for finding database
-        if project_cwd:
-            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
-        else:
-            # Always use project root, not current directory
-            current_dir = Path.cwd()
-            if current_dir.name == 'hooks':
-                db_path = current_dir.parent.parent / '.claude' / 'memory' / 'project.db'  # Go up from .claude/hooks to project root
-            else:
-                db_path = current_dir / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        try:
+            db_path = get_project_db_path()
+        except SystemExit:
+            return  # No project database found, skip logging
         
         if not db_path.exists():
             return  # Database not initialized yet
@@ -165,16 +161,11 @@ def handle_todo_sync(tool_data):
         # Get project_cwd from tool_data (passed by Claude Code)
         project_cwd = tool_data.get('cwd', '')
         
-        # Use same logic as stop.py for finding database
-        if project_cwd:
-            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
-        else:
-            # Always use project root, not current directory
-            current_dir = Path.cwd()
-            if current_dir.name == 'hooks':
-                db_path = current_dir.parent.parent / '.claude' / 'memory' / 'project.db'  # Go up from .claude/hooks to project root
-            else:
-                db_path = current_dir / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        try:
+            db_path = get_project_db_path()
+        except SystemExit:
+            return  # No project database found, skip todo sync
             
         if not db_path.exists():
             return

@@ -14,10 +14,18 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 
+# Import centralized database locator
+sys.path.append(str(Path(__file__).parent.parent))
+from db_locator import get_project_db_path, get_project_root
+
+# Database and project configuration - using centralized locator
+PROJECT_ROOT = get_project_root()
+DB_PATH = get_project_db_path()
+
 # Setup logging
-# Create logs directory if it doesn't exist
-LOG_DIR = Path('.claude/logs/quests')
+# Create logs directory in project root
 try:
+    LOG_DIR = PROJECT_ROOT / '.claude/logs/quests'
     LOG_DIR.mkdir(parents=True, exist_ok=True)
 except:
     LOG_DIR = Path('.')  # Fallback to current directory
@@ -36,16 +44,6 @@ logging.basicConfig(
     handlers=handlers
 )
 logger = logging.getLogger('AcolyteQuests')
-
-# Database configuration
-# FIXED: Use absolute path to project root database
-import os
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent  # Go up to Acolytes root
-DB_PATH = PROJECT_ROOT / ".claude" / "memory" / "project.db"
-
-# Alternative: Use environment variable if set
-if os.environ.get('ACOLYTES_ROOT'):
-    DB_PATH = Path(os.environ['ACOLYTES_ROOT']) / ".claude" / "memory" / "project.db"
 
 TABLE_NAME = "acolyte_quests"  # FIXED: Hardcoded to prevent SQL injection
 

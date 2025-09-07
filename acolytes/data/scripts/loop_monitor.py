@@ -19,11 +19,12 @@ import sys
 import os
 from datetime import datetime
 from pathlib import Path
+from db_locator import get_project_db_path
 
 
 class LoopMonitor:
-    def __init__(self, db_path=".claude/memory/project.db"):
-        self.db_path = db_path
+    def __init__(self, db_path=None):
+        self.db_path = str(get_project_db_path()) if db_path is None else db_path
         self.refresh_interval = 2  # Actualizar cada 2 segundos
         
     def clear_screen(self):

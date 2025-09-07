@@ -3,8 +3,9 @@ import sqlite3
 import sys
 from pathlib import Path
 from datetime import datetime
+from db_locator import get_project_db_path
 
-DB_PATH = Path(".claude/memory/project.db")
+DB_PATH = get_project_db_path()
 
 def format_timestamp(ts):
     """Format timestamp for display"""

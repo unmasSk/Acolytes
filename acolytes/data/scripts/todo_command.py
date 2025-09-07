@@ -7,9 +7,10 @@ import json
 import re
 from pathlib import Path
 from datetime import datetime, timedelta
+from db_locator import get_project_db_path
 
 # Use the new SQLite backend
-DB_PATH = Path(".claude/memory/project.db")
+DB_PATH = get_project_db_path()
 
 def get_timestamp():
     """Get current timestamp"""

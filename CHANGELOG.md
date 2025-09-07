@@ -1,9 +1,46 @@
-# Changelog - Acolytes v2.1.0
+# Changelog - Acolytes v2.0.1
 
 All notable changes to the Acolytes for Claude Code project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.1] - 2025-09-07
+
+### 🔧 PATCH - Hook System Reliability & Cross-Platform Fixes
+
+**Maintenance Release**: Comprehensive hook system improvements focusing on reliability, user experience, and cross-platform compatibility.
+
+### Fixed
+
+- **Audio Hook System**: Resolved duplicate sound calls and volume control issues in `stop.py` and `subagent_stop.py` hooks
+- **Session Management**: Enhanced `session_start.py` hook with improved database path resolution and emoji support handling
+- **Save System**: Repaired critical `save_session.py` script by adding missing `parse_arguments()` function for proper CLI argument processing
+- **Database Path Resolution**: Implemented centralized database location logic across multiple Python scripts for consistent SQLite access
+- **Cross-Platform Compatibility**: Removed emojis from Python command files to prevent encoding issues on Windows systems
+- **Hook Architecture**: Improved separation between Claude instruction processing and user-visible functionality
+
+### Added
+
+- **Automatic Reminders**: Enhanced `user_prompt_submit.py` hook with intelligent reminder functionality for better user guidance
+- **Quest Protocol Files**: Added new coordination protocol files (`quest-leader-protocol.md`, `quest-worker-protocol.md`) for enhanced multi-agent communication
+- **Database Utilities**: Added `db_locator.py` for centralized database path management across the system
+
+### Enhanced
+
+- **Hook System Reliability**: Improved error handling and execution consistency across all 8 hook files
+- **User Experience**: Better feedback and guidance through enhanced hook functionality and automatic reminders
+- **System Architecture**: Cleaner separation of concerns between system operations and user interface components
+- **Development Workflow**: More robust save/restore functionality with improved session state management
+
+### Technical Details
+
+- Fixed audio hooks to prevent overlapping sound playback and ensure proper volume control
+- Enhanced session initialization with better SQLite database path detection and fallback mechanisms  
+- Improved CLI argument parsing in save system to prevent runtime errors during session preservation
+- Standardized database access patterns across all Python utilities for consistent data operations
+- Removed emoji characters from command-line utilities to ensure compatibility across all terminal environments
+- Added centralized database locator utility to eliminate path resolution inconsistencies
 
 ## [2.1.0] - 2025-09-03
 

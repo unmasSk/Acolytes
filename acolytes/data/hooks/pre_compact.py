@@ -22,6 +22,10 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -32,7 +36,11 @@ except ImportError:
 def check_unsaved_session():
     """Check if current session has been saved"""
     try:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        try:
+            db_path = get_project_db_path()
+        except SystemExit:
+            return True  # No project database found, assume saved
         if not db_path.exists():
             return True  # No DB, assume saved
             
@@ -70,7 +78,12 @@ def check_unsaved_session():
 def check_active_quest():
     """Check if there's an active quest in progress"""
     try:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'acolytes' / 'quest.db'
+        # Use centralized db_locator for finding quest database
+        try:
+            project_root = get_project_root()
+            db_path = project_root / '.claude' / 'memory' / 'acolytes' / 'quest.db'
+        except SystemExit:
+            return False  # No project found, no active quest
         if not db_path.exists():
             return False  # No quest DB, no active quest
             

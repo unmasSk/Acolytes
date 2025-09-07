@@ -17,6 +17,10 @@ import platform
 from pathlib import Path
 from datetime import datetime
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -26,26 +30,31 @@ except ImportError:
 
 def ensure_session_log_dir(project_root=None):
     """Ensure acolytes directory exists and return path."""
-    if project_root:
-        base_dir = Path(project_root)
-    else:
-        # Always use project root, not current directory
-        current_dir = Path.cwd()
-        if current_dir.name == 'hooks':
-            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
+    try:
+        # Use centralized db_locator for finding project root
+        project_root_path = get_project_root()
+        acolytes_dir = project_root_path / '.claude' / 'memory' / 'acolytes'
+    except SystemExit:
+        # Fallback if no project found
+        if project_root:
+            acolytes_dir = Path(project_root) / '.claude' / 'memory' / 'acolytes'
         else:
-            base_dir = current_dir
-    acolytes_dir = base_dir / '.claude' / 'memory' / 'acolytes'
+            acolytes_dir = Path.cwd() / '.claude' / 'memory' / 'acolytes'
     acolytes_dir.mkdir(parents=True, exist_ok=True)
     return acolytes_dir
 
 
 def get_our_session_id(project_cwd):
     """Get our session ID from SQLite database."""
-    if project_cwd:
-        db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
-    else:
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+    # Use centralized db_locator for finding database
+    try:
+        db_path = get_project_db_path()
+    except SystemExit:
+        # Fallback if no project database found
+        if project_cwd:
+            db_path = Path(project_cwd) / '.claude' / 'memory' / 'project.db'
+        else:
+            db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
     
     our_session_id = "unknown"
     
@@ -204,30 +213,39 @@ def play_stop_sound():
     """Play work complete sound at 20% volume when subagent stops"""
     try:
         # Path to work complete sound
-        sound_file = Path('~/.claude/resources/sfx/work-complete.wav')
-        sound_file = sound_file.expanduser()
+        sound_file = Path('~/.claude/resources/sfx/work-complete.wav').expanduser()
         
         if sound_file.exists():
             system = platform.system()
             
             if system == 'Windows':
-                # Play the custom sound file at 20% volume using PowerShell
-                ps_script = f'''
-                Add-Type -AssemblyName PresentationCore
-                $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
-                $mediaPlayer.Open([System.Uri]::new("{sound_file.resolve()}"))
-                $mediaPlayer.Volume = 0.2
-                Start-Sleep -Milliseconds 100
-                $mediaPlayer.Play()
-                Start-Sleep -Seconds 2
-                $mediaPlayer.Stop()
-                $mediaPlayer.Close()
-                '''
-                subprocess.run(
-                    ['powershell', '-NoProfile', '-Command', ps_script],
-                    capture_output=True,
-                    creationflags=subprocess.CREATE_NO_WINDOW if system == 'Windows' else 0
-                )
+                # Use PowerShell Media.SoundPlayer - no windows, volume control
+                try:
+                    ps_script = f'''
+                    Add-Type -AssemblyName PresentationCore
+                    $mediaPlayer = New-Object System.Windows.Media.MediaPlayer
+                    $mediaPlayer.Open([System.Uri]::new("{sound_file}"))
+                    $mediaPlayer.Volume = 0.2
+                    $mediaPlayer.Play()
+                    Start-Sleep -Milliseconds 2000
+                    $mediaPlayer.Stop()
+                    $mediaPlayer.Close()
+                    '''
+                    subprocess.run(
+                        ['powershell', '-NoProfile', '-WindowStyle', 'Hidden', '-Command', ps_script],
+                        capture_output=True,
+                        creationflags=subprocess.CREATE_NO_WINDOW,
+                        timeout=3
+                    )
+                    return
+                except Exception:
+                    # Fallback to winsound without volume control
+                    try:
+                        import winsound
+                        winsound.PlaySound(str(sound_file), winsound.SND_FILENAME | winsound.SND_NOWAIT)
+                        return
+                    except Exception:
+                        pass
             elif system == 'Darwin':
                 # Use afplay with reduced volume (0.2 = 20%)
                 subprocess.run(
@@ -284,6 +302,10 @@ def main():
         # Always log if --chat flag is provided (our default behavior)
         if args.chat:
             log_subagent_completion(input_data, claude_session_id)
+        
+        # Play sound if --sound flag is provided
+        if args.sound:
+            play_stop_sound()
         
         # Success
         sys.exit(0)

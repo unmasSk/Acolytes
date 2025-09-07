@@ -19,24 +19,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from db_locator import get_project_db_path
 
 def get_timestamp():
     """Get current timestamp in local time format"""
     return datetime.now().strftime('%Y-%m-%d %H:%M')
 
-# Try to find project database in current working directory first
-# If not found, fall back to global database
-cwd_db = Path.cwd() / '.claude' / 'memory' / 'project.db'
-global_db = Path.home() / '.claude' / 'memory' / 'project.db'
-
-if cwd_db.exists():
-    DB_PATH = cwd_db
-elif global_db.exists():
-    DB_PATH = global_db
-else:
-    # Create in current directory if neither exists
-    DB_PATH = cwd_db
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+# Use centralized database locator - no fallbacks allowed
+DB_PATH = get_project_db_path()
 MEMORY_TYPES = ['knowledge', 'structure', 'patterns', 'interfaces', 
                 'dependencies', 'schemas', 'quality', 'operations', 
                 'context', 'domain', 'security', 'errors', 
@@ -63,6 +53,7 @@ def execute(sql, params=None):
 
 def init_database():
     """Initialize database with schema from init_db.sql"""
+    # DB_PATH is determined by db_locator, create directory if needed
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     sql_file = Path(__file__).parent / 'init_db.sql'
     

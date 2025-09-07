@@ -12,6 +12,7 @@ import sys
 import subprocess
 from pathlib import Path
 from datetime import datetime
+from db_locator import get_project_db_path
 
 try:
     from dotenv import load_dotenv
@@ -94,7 +95,7 @@ def get_current_job():
     """Get current active job from SQLite"""
     try:
         import sqlite3
-        db_path = Path.cwd() / '.claude' / 'memory' / 'project.db'
+        db_path = get_project_db_path()
         if not db_path.exists():
             return None
         

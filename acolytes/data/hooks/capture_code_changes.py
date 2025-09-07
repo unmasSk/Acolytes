@@ -22,6 +22,10 @@ from pathlib import Path
 from datetime import datetime
 import difflib
 
+# Add path to scripts directory for db_locator
+sys.path.append(str(Path(__file__).parent.parent / 'scripts'))
+from db_locator import get_project_db_path, get_project_root
+
 try:
     from dotenv import load_dotenv
     load_dotenv()
@@ -31,13 +35,12 @@ except ImportError:
 
 def ensure_changes_dir():
     """Ensure code changes directory exists"""
-    # Use same logic as stop.py to find project root
-    current_dir = Path.cwd()
-    if current_dir.name == 'hooks':
-        base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
-    else:
-        base_dir = current_dir
-    changes_dir = base_dir / '.claude' / 'memory' / 'code_changes'
+    # Use centralized db_locator for finding project root
+    try:
+        project_root = get_project_root()
+        changes_dir = project_root / '.claude' / 'memory' / 'code_changes'
+    except SystemExit:
+        return None  # No project found
     changes_dir.mkdir(parents=True, exist_ok=True)
     return changes_dir
 
@@ -78,12 +81,8 @@ def create_diff(before, after, file_path):
 def get_session_id():
     """Get current session ID from database"""
     try:
-        current_dir = Path.cwd()
-        if current_dir.name == 'hooks':
-            base_dir = current_dir.parent.parent
-        else:
-            base_dir = current_dir
-        db_path = base_dir / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        db_path = get_project_db_path()
         
         if db_path.exists():
             conn = sqlite3.connect(str(db_path))
@@ -193,13 +192,12 @@ def save_change_record(tool_data):
             # Get session ID and chat directory
             session_id = get_session_id()
             
-            # Find chat directory (same logic as stop.py)
-            current_dir = Path.cwd()
-            if current_dir.name == 'hooks':
-                base_dir = current_dir.parent.parent
-            else:
-                base_dir = current_dir
-            chat_dir = base_dir / '.claude' / 'memory' / 'chat'
+            # Find chat directory using centralized db_locator
+            try:
+                project_root = get_project_root()
+                chat_dir = project_root / '.claude' / 'memory' / 'chat'
+            except SystemExit:
+                return  # No project found
             chat_dir.mkdir(parents=True, exist_ok=True)
             
             # Build the change message with diff
@@ -268,13 +266,11 @@ def save_change_record(tool_data):
 def save_to_database(change_data):
     """Save change record to SQLite database"""
     try:
-        # Use same logic as stop.py to find project root
-        current_dir = Path.cwd()
-        if current_dir.name == 'hooks':
-            base_dir = current_dir.parent.parent  # Go up from .claude/hooks to project root
-        else:
-            base_dir = current_dir
-        db_path = base_dir / '.claude' / 'memory' / 'project.db'
+        # Use centralized db_locator for finding database
+        try:
+            db_path = get_project_db_path()
+        except SystemExit:
+            return  # No project database found
         if not db_path.exists():
             return
             
