@@ -198,7 +198,7 @@ After completing my codebase analysis, I MUST:
 
 ### Template Usage Instructions
 
-I use `~/.claude/resources/templates/template-architecture.md` to create documentation with these enhanced sections:
+I use `.claude/resources/templates/template-architecture.md` to create documentation with these enhanced sections:
 
 - **Architecture Pattern** - Style, pattern, data flow approach
 - **Project Structure** - Directory organization and module boundaries

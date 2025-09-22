@@ -122,7 +122,7 @@ Keep our quality tracking:
 ## EXACT COMMAND FORMAT
 
 ````bash
-uv run python ~/.claude/scripts/save_session.py \
+uv run python .claude/scripts/save_session.py \
   -primary_request "Full detailed capture of user's requests and evolution" \
   -technical_concepts "Python 3.11, SQLite, MCP servers, Click CLI" \
   -files_and_code "file1.py|Important because X|Added function Y|```python\ncode here\n```||file2.md|Documentation|Updated section Z|```markdown\ncontent\n```" \
@@ -149,10 +149,10 @@ uv run python ~/.claude/scripts/save_session.py \
 ## WORKING EXAMPLE
 
 ````bash
-uv run python ~/.claude/scripts/save_session.py \
+uv run python .claude/scripts/save_session.py \
   -primary_request "User wanted to save lost session data from previous conversation that ended without context. Then study and fix save system issues including session creation, claude_session_id retrieval, datetime parsing, and quality score improvements. User explicitly demanded 'QUE hagas lo que te puto pido' when I misunderstood session relationships." \
   -technical_concepts "SQLite database at .claude/memory/project.db||Dual session system (Claude vs Acolytes)||JSONL transcript files||Quality score weighted algorithm||Python datetime parsing||UUID validation regex" \
-  -files_and_code "save_session.py|Core save script|Fixed datetime parsing and claude_session_id|```python\nfor fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M']:\n    try:\n        start_time = datetime.strptime(session_data['created_at'], fmt)\n        break\n    except ValueError:\n        continue\n```||save.md|Documentation|Updated with examples|```markdown\nuv run python ~/.claude/scripts/save_session.py -session '...' -message '...'\n```" \
+  -files_and_code "save_session.py|Core save script|Fixed datetime parsing and claude_session_id|```python\nfor fmt in ['%Y-%m-%d %H:%M:%S', '%Y-%m-%d %H:%M']:\n    try:\n        start_time = datetime.strptime(session_data['created_at'], fmt)\n        break\n    except ValueError:\n        continue\n```||save.md|Documentation|Updated with examples|```markdown\nuv run python .claude/scripts/save_session.py -session '...' -message '...'\n```" \
   -errors_and_fixes "No active session found|Created session_3b2b00092a6e with INSERT INTO sessions|User: 'ok lo primero es crear una session activa'||unconverted data remains: :05|Added multiple datetime format parsing|Worked immediately||Misunderstood session relationships|User corrected me forcefully about Claude vs Acolytes sessions|User: 'porque co;o esto peleandome contigo'" \
   -problem_solving "Identified 5 critical problems in save system. Created active session to enable saves. Fixed datetime parsing with multiple format support. Corrected claude_session_id to get latest JSONL by timestamp. Improved quality score from simple counting to weighted scoring. Ongoing: messages table schema inconsistency." \
   -user_messages "buenas!||en la ultima session que hay por favor guarda lo que te voy a pegar||porque no ha pillado el claude_session?||que da igual que pille siempre el ultimo que hay||porque co;o esto peleandome contigo, QUE hagas lo que te puto pido||pruebalo||bien ahora el quality score||ok no me gusta tanta puntuacion, pero ok. yo empezaria como base un 4||te voy a pasar un documento, que creo que es mejor que nuestro save ok?" \

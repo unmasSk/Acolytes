@@ -159,15 +159,20 @@ class DoctorChecker:
             self._print_check("Claude CLI", "WARN", "not found or not in PATH")
     
     def check_directory_structure(self) -> None:
-        """Check ~/.claude/ directory structure."""
+        """
+        Check .claude/ directory structure in current project.
+
+        Verifies that the local .claude directory exists and contains
+        all required subdirectories with appropriate content.
+        """
         self._print_header("Directory Structure")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if claude_dir.exists():
-            self._print_check("~/.claude directory", "OK", str(claude_dir))
+            self._print_check(".claude directory", "OK", str(claude_dir))
         else:
-            self._print_check("~/.claude directory", "FAIL", "does not exist")
+            self._print_check(".claude directory", "FAIL", "does not exist")
             return
         
         # Check subdirectories
@@ -183,18 +188,23 @@ class DoctorChecker:
         for dir_name in expected_dirs:
             dir_path = claude_dir / dir_name
             if dir_path.exists():
-                self._print_check(f"~/.claude/{dir_name}", "OK", f"{len(list(dir_path.iterdir()))} items")
+                self._print_check(f".claude/{dir_name}", "OK", f"{len(list(dir_path.iterdir()))} items")
             else:
-                self._print_check(f"~/.claude/{dir_name}", "WARN", "missing")
+                self._print_check(f".claude/{dir_name}", "WARN", "missing")
     
     def count_system_components(self) -> None:
-        """Count agents, hooks, and scripts."""
+        """
+        Count agents, hooks, and scripts in local .claude directory.
+
+        Provides statistics on the number of components installed
+        and verifies presence of essential files.
+        """
         self._print_header("System Components")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if not claude_dir.exists():
-            self._print_check("Component counting", "FAIL", "~/.claude not found")
+            self._print_check("Component counting", "FAIL", ".claude not found")
             return
         
         # Count agents
@@ -241,10 +251,15 @@ class DoctorChecker:
             self._print_check("Script files", "WARN", "scripts directory missing")
     
     def check_settings_file(self) -> None:
-        """Validate settings.json syntax and hook paths."""
+        """
+        Validate settings.json syntax and hook paths in local directory.
+
+        Checks JSON syntax validity and verifies that all configured
+        hook file paths are accessible and correct.
+        """
         self._print_header("Settings Validation")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         settings_file = claude_dir / "settings.json"
         
         if not settings_file.exists():
@@ -316,10 +331,15 @@ class DoctorChecker:
             self._print_check(f"MCP {server}", "INFO", "check manually with Claude CLI")
     
     def check_database_files(self) -> None:
-        """Check for database files and their accessibility."""
+        """
+        Check for database files and their accessibility in local directory.
+
+        Verifies that SQLite database files exist, are readable,
+        and have valid SQLite headers.
+        """
         self._print_header("Database Files")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         memory_dir = claude_dir / "memory"
         
         if memory_dir.exists():

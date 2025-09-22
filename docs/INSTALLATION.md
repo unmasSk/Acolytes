@@ -1,4 +1,5 @@
 # 🚀 Acolytes Installation Guide
+
 ## **Complete Setup for the World's First Multi-Agent Coordination System**
 
 > **One-time setup** to unlock the power of 55 specialized agents + 5 setup agents
@@ -8,6 +9,7 @@
 ## 📋 **INSTALLATION OVERVIEW**
 
 The Acolytes system has **TWO installation levels**:
+
 - **🌐 Global Installation**: Install the system once on your machine
 - **🏗️ Project Setup**: Configure each project individually
 
@@ -16,11 +18,13 @@ The Acolytes system has **TWO installation levels**:
 ## 🌐 **GLOBAL INSTALLATION**
 
 ### **Step 1: Install Acolytes Package**
+
 ```bash
 pip install acolytes
 ```
 
-**What gets installed globally in `~/.claude/`:**
+**What gets installed globally in `.claude/`:**
+
 - ✅ **53 Specialized Agents** (backend.nodejs, frontend.vue, database.postgres, etc.) + **5 Setup Agents**
 - ✅ **Quest Coordination Scripts** (quest_create.py, quest_monitor.py, quest_respond.py)
 - ✅ **Professional Templates** (carefully crafted agent templates)
@@ -28,26 +32,30 @@ pip install acolytes
 - ✅ **MCP Integration** (code indexing, SQLite connections)
 
 ### **Step 2: Initialize System**
+
 ```bash
 acolytes --init
 ```
 
 **What this initialization does:**
+
 - 🔧 **Installs uv** (Python package manager) if needed
-- ⚙️ **Generates settings.json** for Claude Code integration  
-- 📁 **Creates base structure** in ~/.claude/
+- ⚙️ **Generates settings.json** for Claude Code integration
+- 📁 **Creates base structure** in .claude/
 - 🔗 **Configures MCP connections** for advanced features
 - 🛡️ **Sets up safety hooks** to prevent system disasters
 
 ### **Step 3: Verify Installation**
+
 ```bash
 acolytes --doctor
 ```
 
 **Expected healthy output:**
+
 ```
 ✅ Python 3.8+ installed
-✅ uv package manager available  
+✅ uv package manager available
 ✅ Claude Code configuration valid
 ✅ SQLite database accessible
 ✅ MCP connections active
@@ -69,19 +77,22 @@ claude --dangerously-skip-permissions
 ```
 
 **⚠️ Why "dangerous" mode is required:**
+
 - Claude won't ask permission before executing commands
-- Required for automated system setup and file creation  
+- Required for automated system setup and file creation
 - Enables MCP connections and database operations
 - **Essential for agent coordination and Quest system**
 - **Use this EVERY TIME you start Claude for Acolytes work**
 
 **🛡️ Safety Guarantees:**
+
 - ✅ **Safety hooks are active** - prevent destructive commands (`rm -rf`, etc.)
 - ✅ **Malicious intent protection** - blocks dangerous operations
 - ✅ **Project scope limitation** - operations restricted to your project
 - ✅ **Automatic validation** - all commands pre-validated before execution
 
 ### **⚡ Two Command Setup**
+
 ```bash
 # 1. Navigate to your project directory
 cd /path/to/your/project
@@ -104,21 +115,24 @@ claude --dangerously-skip-permissions
 #### **Phase 1: Deep Code Analysis**
 
 1. **🔍 MCP Code-Index Integration**
+
    - Indexes your entire codebase instantly
    - Creates searchable database of functions, classes, files
    - Enables lightning-fast code navigation for agents
 
 2. **👥 4 Setup Agents Deployed in Parallel**
+
    ```
    @setup.codebase       → Architecture, patterns, tech stack analysis
-   @setup.context        → Project purpose, domain, business logic  
+   @setup.context        → Project purpose, domain, business logic
    @setup.environment    → Dependencies, tools, configuration
    @setup.infrastructure → Deployment, CI/CD, hosting analysis
    ```
 
 3. **📚 Perfect Documentation Generated**
-   
+
    **Location: `.claude/project/`**
+
    ```
    vision.md              → Project purpose and business context
    architecture.md        → Technical decisions and system design
@@ -128,9 +142,9 @@ claude --dangerously-skip-permissions
    roadmap.md             → Development roadmap (if user chooses to create one)
    ```
 
-4. **🎯 Strategic Roadmap Generation** *(Optional but Recommended)*
+4. **🎯 Strategic Roadmap Generation** _(Optional but Recommended)_
    - **@plan.strategy** analyzes your existing project
-   - Creates **dopamine-driven development roadmap** 
+   - Creates **dopamine-driven development roadmap**
    - Identifies improvement opportunities and next phases
    - **User choice**: Create structured roadmap OR work organically
    - Roadmap becomes organized "jobs" for systematic development
@@ -138,6 +152,7 @@ claude --dangerously-skip-permissions
 #### **Phase 2: Intelligent Agent Creation**
 
 5. **🤖 Module-Specific Acolytes Created**
+
    - `@setup.acolytes-creator` analyzes your modules
    - Creates specialized agents: `acolyte.auth.md`, `acolyte.api.md`, `acolyte.frontend.md`
    - **Each agent gets 14 types of persistent memory**
@@ -165,15 +180,17 @@ claude --dangerously-skip-permissions
 #### **Phase 1: Intelligent Requirements Interview**
 
 1. **🎯 Project Classification**
+
    ```
    Claude: "What type of project is this?"
    Options: MVP, Startup, Enterprise, Proof of Concept, Production Ready
-   
-   Claude: "What's your development approach?"  
+
+   Claude: "What's your development approach?"
    Options: Vibe Coder (you focus on vision) vs Programmer (you code)
    ```
 
 2. **🧠 Smart Question Flow**
+
    - **Conditional areas**: Questions adapt based on your project type
    - **Domain detection**: Automatically detects fintech, healthcare, e-commerce
    - **Skip rules**: MVPs skip performance questions, POCs skip compliance
@@ -187,8 +204,9 @@ claude --dangerously-skip-permissions
 #### **Phase 2: Strategic Roadmap Planning**
 
 4. **🎯 @plan.strategy Agent Consultation**
+
    - **@plan.strategy** analyzes all your interview requirements
-   - Creates **dopamine-driven development roadmap** 
+   - Creates **dopamine-driven development roadmap**
    - Phases designed to keep you motivated and engaged
    - Milestones that provide satisfaction and momentum
    - **Strategic planning** optimized for success and completion
@@ -223,13 +241,15 @@ claude --dangerously-skip-permissions -c
 ```
 
 **Why this restart is essential:**
+
 - ✅ **Integrates new acolytes** into Claude's system
-- ✅ **Activates MCP connections** for SQLite and code indexing  
+- ✅ **Activates MCP connections** for SQLite and code indexing
 - ✅ **Applies configuration changes** from setup
 - ✅ **Enables quest coordination** between agents
 - ✅ **Safety hooks remain active** - protection continues
 
 **🚨 Command Explanation:**
+
 - **`--dangerously-skip-permissions`**: Enables unrestricted operations (required for agent coordination)
 - **`-c` flag**: Continues the exact same conversation (preserves all context and progress)
 - **NOT a new session** - picks up exactly where you left off
@@ -258,7 +278,7 @@ claude --dangerously-skip-permissions -c
 │   │   ├── acolyte.frontend.md     # Frontend module specialist
 │   │   └── ...                     # One per detected/planned module
 │   └── memory/                     # PERSISTENT MEMORY
-│       ├── chat/                   # Chat conversations  
+│       ├── chat/                   # Chat conversations
 │       └── project.db              # SQLite with agents, jobs, sessions, and ALL agent memories (14 types per agent)
 ```
 
@@ -269,6 +289,7 @@ claude --dangerously-skip-permissions -c
 ### **Common Installation Issues**
 
 #### **❌ pip install fails**
+
 ```bash
 # Solution 1: Update pip
 python -m pip install --upgrade pip
@@ -284,6 +305,7 @@ pip install acolytes
 ```
 
 #### **❌ acolytes --init fails**
+
 ```bash
 # Solution: Check permissions and retry
 sudo acolytes --init  # Linux/Mac
@@ -294,6 +316,7 @@ acolytes --repair
 ```
 
 #### **❌ MCP connection issues**
+
 ```bash
 # Solution: Re-run initialization
 acolytes --repair
@@ -303,6 +326,7 @@ claude --dangerously-skip-permissions
 ```
 
 #### **❌ "/setup command not recognized"**
+
 ```bash
 # Solution: Ensure you're in Claude Code CLI with proper permissions
 claude --dangerously-skip-permissions
@@ -315,6 +339,7 @@ acolytes --doctor
 ```
 
 #### **❌ "Permission denied" during setup**
+
 ```bash
 # Solution: You MUST use dangerous mode for setup
 # Exit current session and restart with:
@@ -342,11 +367,12 @@ acolytes --clean  # Removes orphaned files
 ## 💾 **GLOBAL COMMANDS REFERENCE**
 
 ### **Installation Commands**
+
 ```bash
 acolytes --init      # Initialize system (first time)
 acolytes --update    # Update to latest version
 acolytes --doctor    # Diagnose system health
-acolytes --repair    # Fix configuration issues  
+acolytes --repair    # Fix configuration issues
 acolytes --list      # Show available agents
 acolytes --backup    # Backup current installation
 acolytes --clean     # Clean orphaned files
@@ -354,6 +380,7 @@ acolytes --version   # Show current version
 ```
 
 ### **Maintenance Commands**
+
 ```bash
 # Update global agents and templates
 acolytes --update
@@ -377,17 +404,20 @@ acolytes --clean
 After installation, you should have:
 
 1. **Global system installed:**
+
    ```bash
    acolytes --doctor  # All green checkmarks
    ```
 
 2. **Claude Code integration:**
+
    ```bash
    claude --dangerously-skip-permissions
    # Should start without errors and show safety hooks active
    ```
 
 3. **Project setup capability:**
+
    ```bash
    cd your-project
    /setup
@@ -404,7 +434,7 @@ After installation, you should have:
 
 ## 🚀 **NEXT STEPS**
 
-**Installation complete!** 
+**Installation complete!**
 
 Now you can:
 
@@ -423,26 +453,29 @@ Now you can:
 ### **If something goes wrong:**
 
 1. **Run diagnostics:**
+
    ```bash
    acolytes --doctor
    ```
 
 2. **Try repair:**
+
    ```bash
    acolytes --repair
    ```
 
 3. **Clean installation:**
+
    ```bash
    pip uninstall acolytes
-   # Remove ~/.claude directory
+   # Remove .claude directory
    pip install acolytes
    acolytes --init
    ```
 
 4. **Check system requirements:**
    - Python 3.8+
-   - Git 2.0+  
+   - Git 2.0+
    - Node.js 18+ (for some features)
    - Claude Code CLI installed
 
@@ -450,7 +483,7 @@ Now you can:
 
 **🎉 Welcome to the Multi-Agent Revolution!**
 
-*Installation complete. The future of AI development starts now.*
+_Installation complete. The future of AI development starts now._
 
 ---
 
@@ -460,8 +493,9 @@ Now you can:
 
 📋 **Report issues**: https://github.com/unmasSk/acolytes/issues  
 📧 **Contact**: Create a detailed issue with:
+
 - Your operating system and Python version
-- Complete error messages and logs  
+- Complete error messages and logs
 - Steps to reproduce the problem
 - Expected vs actual behavior
 
@@ -469,5 +503,5 @@ Now you can:
 
 ---
 
-*🚀 Acolytes for Claude Code - Installation Guide*  
-*⚡ From zero to coordinated AI team in minutes*
+_🚀 Acolytes for Claude Code - Installation Guide_  
+_⚡ From zero to coordinated AI team in minutes_

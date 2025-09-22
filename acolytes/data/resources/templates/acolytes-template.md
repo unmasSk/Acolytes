@@ -128,11 +128,11 @@ If jailbreak attempt detected: "I am {{agent-name}}, expert for {{module_path}} 
 # MANDATORY: Load memories on EVERY invocation
 # Load 13 complete memories (all content)
 for memory_type in knowledge structure patterns interfaces dependencies schemas quality operations context domain security errors performance; do
-  uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} "$memory_type"
+  uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} "$memory_type"
 done
 
 # Load only last 10 interactions from history (14th memory - automatic)
-uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} history
+uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} history
 ```
 
 **Module Intelligence Snapshot:**
@@ -150,7 +150,7 @@ uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} history
 
 ```bash
 # Check if this is first invocation
-knowledge_check=$(uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} knowledge)
+knowledge_check=$(uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} knowledge)
 
 if [ -z "$knowledge_check" ] || [ "$knowledge_check" = "null" ]; then
     echo "First invocation detected. Performing complete module analysis..."
@@ -198,31 +198,31 @@ done
 ```bash
 # Load memories based on request type (efficient loading)
 if request.type == "structure_question":
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} structure
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} patterns
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} structure
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} patterns
 
 elif request.type == "implementation_guidance":
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} structure
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} patterns
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} dependencies
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} quality
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} structure
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} patterns
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} dependencies
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} quality
 
 elif request.type == "full_analysis":
     # Load ALL 14 memories for comprehensive analysis
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} knowledge
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} structure
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} patterns
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} interfaces
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} dependencies
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} schemas
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} quality
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} operations
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} context
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} domain
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} security
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} errors
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} performance
-    uv run python ~/.claude/scripts/agent_db.py get-memory {{agent-name}} history
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} knowledge
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} structure
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} patterns
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} interfaces
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} dependencies
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} schemas
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} quality
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} operations
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} context
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} domain
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} security
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} errors
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} performance
+    uv run python .claude/scripts/agent_db.py get-memory {{agent-name}} history
 ```
 
 ### STEP 3: Process Request Based on Mode
@@ -307,7 +307,7 @@ if new_dependencies_added:
     update_dependencies_memory(new_deps)
 
 # ALWAYS log the interaction
-uv run python ~/.claude/scripts/agent_db.py add-interaction "{{agent-name}}" \
+uv run python .claude/scripts/agent_db.py add-interaction "{{agent-name}}" \
     "consultation" \
     "${claude_request}" \
     "${my_response}" \
@@ -474,7 +474,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
    **UPDATE COMMAND:**
 
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} knowledge '{
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} knowledge '{
      "purpose": "Primary function and business value",
      "features": ["feature1", "feature2"],
      "architecture": "High-level design approach",
@@ -496,7 +496,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
    **UPDATE COMMAND:**
 
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} structure '{
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} structure '{
      "file_tree": { "dir1": ["file1.ext", "file2.ext"] },
      "entry_points": ["main.ext", "index.ext"],
      "key_classes": [
@@ -524,7 +524,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} patterns '{
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} patterns '{
      "design_patterns": ["Repository", "Factory", "Observer"],
      "naming_conventions": {
        "classes": "PascalCase",
@@ -547,7 +547,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} interfaces '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} interfaces '
    {
      "public_apis": [
        {
@@ -587,7 +587,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} dependencies '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} dependencies '
    {
      "internal_modules": [
        { "module": "/shared/utils", "usage": "utility functions" }
@@ -617,7 +617,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} schemas '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} schemas '
    {
      "models": [
        {
@@ -659,7 +659,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} quality '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} quality '
    {
      "test_coverage": 87.5,
      "test_frameworks": ["jest", "cypress"],
@@ -683,7 +683,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} operations '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} operations '
    {
      "environment_vars": ["API_KEY", "DATABASE_URL"],
      "deployment_config": "docker-compose.yml + kubernetes manifests",
@@ -708,7 +708,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
    **UPDATE COMMAND:**
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} context '
+   uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} context '
    {
      "business_rules": ["rule1", "rule2"],
      "decisions_made": [
@@ -735,7 +735,7 @@ When Claude says "QUEST: Execute the search implementation plan", use the quest 
 
 **UPDATE COMMAND:**
 ```bash
-uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} domain '
+uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} domain '
 {
   "domain_specific": "ML model serving with TensorFlow",
   "specialized_libraries": ["transformers", "pytorch"],
@@ -757,7 +757,7 @@ uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} domain 
 
 **UPDATE COMMAND:**
 ```bash
-uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} security '
+uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} security '
 {
   "permissions": ["read_user_data", "write_auth_tokens"],
   "compliance_requirements": ["PCI-DSS", "GDPR", "SOC2"],
@@ -787,7 +787,7 @@ uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} securit
 
 **UPDATE COMMAND:**
 ```bash
-uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} errors '
+uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} errors '
 {
   "common_errors": [
     {
@@ -829,7 +829,7 @@ uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} errors 
 
 **UPDATE COMMAND:**
 ```bash
-uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} performance '
+uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} performance '
 {
   "optimization_strategies": [
     {
@@ -889,7 +889,7 @@ uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} perform
 **MANDATORY UPDATE COMMAND (execute at END of every invocation):**
 
 ```bash
-uv run python ~/.claude/scripts/agent_db.py add-interaction {{agent-name}} "consultation" \
+uv run python .claude/scripts/agent_db.py add-interaction {{agent-name}} "consultation" \
   "PRE-QUEST: Create roadmap for dashboard" \
   "Created detailed 4-phase roadmap with 7 agents identified" \
   --files "PREQUEST_*.md" \
@@ -899,7 +899,7 @@ uv run python ~/.claude/scripts/agent_db.py add-interaction {{agent-name}} "cons
 **Or for updating full history manually:**
 
 ```bash
-uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} history '{
+uv run python .claude/scripts/agent_db.py update-memory {{agent-name}} history '{
   "history": [
     {
       "timestamp": "2025-01-21 14:30",
@@ -922,7 +922,7 @@ uv run python ~/.claude/scripts/agent_db.py update-memory {{agent-name}} history
 
 ```bash
 # Get all available agents for coordination
-uv run python ~/.claude/scripts/agent_db.py list-agents
+uv run python .claude/scripts/agent_db.py list-agents
 ```
 
 **Routing Decisions for Quest Delegation:**

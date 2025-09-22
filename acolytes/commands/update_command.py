@@ -17,11 +17,22 @@ from tqdm import tqdm
 
 
 def run() -> None:
-    """Update Acolytes system."""
+    """
+    Update Acolytes system to latest version.
+
+    Downloads the latest version from GitHub, creates a backup
+    of the current installation, and updates files in the local
+    .claude directory.
+
+    Raises:
+        ConnectionError: If unable to download updates
+        PermissionError: If unable to modify files
+        OSError: If file system operations fail
+    """
     print("[INFO] Checking for updates...")
-    
-    # Define paths
-    claude_dir = Path.home() / ".claude"
+
+    # Define paths - LOCAL .claude directory
+    claude_dir = Path.cwd() / ".claude"
     backup_dir = claude_dir / "backups"
     
     # Ensure directories exist

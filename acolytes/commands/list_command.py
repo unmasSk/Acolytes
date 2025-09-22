@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-List command for acolytes CLI - Lists all global agents from ~/.claude/agents/
+List command for acolytes CLI - Lists all global agents from .claude/agents/
 """
 
 import os
@@ -26,20 +26,32 @@ class AgentInfo:
     color: str = None
 
 def get_agents_directory() -> Path:
-    """Get the agents directory path."""
-    # Try different possible locations
+    """
+    Get the agents directory path, prioritizing local .claude directory.
+
+    Searches for agents directory in order of preference:
+    1. Current project's .claude/agents/
+    2. Fallback to home directory (for compatibility)
+
+    Returns:
+        Path to agents directory
+
+    Raises:
+        FileNotFoundError: If no agents directory is found
+    """
+    # Try different possible locations - prioritize local
     possible_paths = [
-        Path.home() / ".claude" / "agents",
-        Path.cwd() / ".claude" / "agents",
+        Path.cwd() / ".claude" / "agents",  # LOCAL FIRST
+        Path.home() / ".claude" / "agents",  # Global fallback
         Path(__file__).parent.parent.parent.parent / ".claude" / "agents"
     ]
-    
+
     for path in possible_paths:
         if path.exists() and path.is_dir():
             return path
-    
-    # Fallback to user's home directory
-    return Path.home() / ".claude" / "agents"
+
+    # Fallback to local directory (create if needed)
+    return Path.cwd() / ".claude" / "agents"
 
 def parse_agent_file(file_path: Path) -> Optional[AgentInfo]:
     """Parse an agent markdown file to extract metadata."""
@@ -221,7 +233,15 @@ def display_agent_list(agents_by_category: Dict[str, List[AgentInfo]]) -> None:
             safe_print("")
 
 def run() -> None:
-    """Main function to list all agents."""
+    """
+    Main function to list all agents from local .claude directory.
+
+    Displays a comprehensive listing of all available agents organized
+    by category, with color-coded output and agent statistics.
+
+    Raises:
+        SystemExit: If agents directory cannot be accessed
+    """
     try:
         # Ensure stdout can handle unicode on Windows
         if sys.platform == 'win32':
@@ -232,7 +252,7 @@ def run() -> None:
         
         if not agents_dir.exists():
             print(f"{Fore.RED}Error: Agents directory not found at {agents_dir}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}Expected location: ~/.claude/agents/{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Expected location: .claude/agents/{Style.RESET_ALL}")
             sys.exit(1)
         
         # Collect all agent files

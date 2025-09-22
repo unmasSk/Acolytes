@@ -86,7 +86,7 @@ Claude → 🎯 "Quest completed: OAuth system ready"
 **🚨 CRITICAL**: Before using Acolytes, you MUST read the complete documentation:
 
 - **[📋 INSTALLATION.md](./docs/INSTALLATION.md)** - Complete setup guide with proper command sequences
-- **[📖 HOW-TO.md](./docs/HOW-TO.md)** - How to use the Quest system and communicate with agents  
+- **[📖 HOW-TO.md](./docs/HOW-TO.md)** - How to use the Quest system and communicate with agents
 - **[💾 SAVE.md](./docs/SAVE.md)** - Memory system and session persistence
 - **[🚀 QUEST.md](./docs/QUEST.md)** - Understanding the revolutionary Quest coordination
 
@@ -104,7 +104,7 @@ Claude → 🎯 "Quest completed: OAuth system ready"
 # Install Acolytes package
 pip install acolytes
 
-# Initialize Acolytes system (copies all files to ~/.claude)
+# Initialize Acolytes system (copies all files to .claude)
 acolytes --init
 
 # Navigate to YOUR project
@@ -166,7 +166,7 @@ claude --dangerously-skip-permissions -c
 ```
 Main Claude Session (Orchestrator)
     │
-    ├── 🌍 GLOBAL AGENTS (58) - ~/.claude/agents/
+    ├── 🌍 GLOBAL AGENTS (58) - .claude/resources/agents/
     │   ├── 💻 Backend & Frontend Engineers
     │   ├── 🎛️ Coordinators: Strategic architects for complex decisions
     │   ├── 💾 Database Experts: All major databases + vector stores
@@ -191,7 +191,7 @@ Main Claude Session (Orchestrator)
 ### SQLite Database (8 Active Tables)
 
 1. **`agents_catalog`** - Directory of all 60 agents with routing rules
-2. **`agents_memory`** - Deep knowledge storage for each agent/module  
+2. **`agents_memory`** - Deep knowledge storage for each agent/module
 3. **`sessions`** - Conversation history with context preservation
 4. **`messages`** - Individual message tracking with metadata
 5. **`tool_logs`** - Execution history for optimization
@@ -359,7 +359,7 @@ All decisions preserved in Jobs system for future reference
 **🚀 The V2.0.0 Vision:**
 
 - **Stateful multi-agent orchestration** - First-ever persistent agent coordination
-- **Zero context loss** - Perfect memory continuity across sessions  
+- **Zero context loss** - Perfect memory continuity across sessions
 - **Turn-based communication** - Conflict-free agent collaboration
 - **Autonomous task completion** - Agents work together without human intervention
 
@@ -381,15 +381,15 @@ With commands like /todo, /acolytes, /save, and /mcp, Acolytes for Claude Code p
 
 ## 🎯 Acolytes for Claude Code vs Standard Claude Code
 
-| Feature              | Standard Claude Code  | Acolytes for Claude Code                        |
-| -------------------- | --------------------- | ----------------------------------------------- |
-| **Agents**           | Single AI assistant   | **60 agents (55 specialized + 5 setup) + project Acolytes**    |
-| **Memory**           | Session-only context  | **Persistent SQLite + cross-session Jobs**      |
-| **Coordination**     | Manual task switching | **Automatic Quest system with handoffs**        |
-| **Agent Selection**  | User must specify     | **Auto-routing based on context**               |
-| **Setup**            | Manual configuration  | **Auto-detection + 6-phase analysis**           |
-| **Project Learning** | Starts from zero      | **Builds cumulative module knowledge**          |
-| **Error Recovery**   | Manual intervention   | **Automatic cross-agent coordination** |
+| Feature              | Standard Claude Code  | Acolytes for Claude Code                                    |
+| -------------------- | --------------------- | ----------------------------------------------------------- |
+| **Agents**           | Single AI assistant   | **60 agents (55 specialized + 5 setup) + project Acolytes** |
+| **Memory**           | Session-only context  | **Persistent SQLite + cross-session Jobs**                  |
+| **Coordination**     | Manual task switching | **Automatic Quest system with handoffs**                    |
+| **Agent Selection**  | User must specify     | **Auto-routing based on context**                           |
+| **Setup**            | Manual configuration  | **Auto-detection + 6-phase analysis**                       |
+| **Project Learning** | Starts from zero      | **Builds cumulative module knowledge**                      |
+| **Error Recovery**   | Manual intervention   | **Automatic cross-agent coordination**                      |
 
 ## 🐛 Issues & Bug Reports
 

@@ -163,7 +163,7 @@ class EnvironmentChecker:
     
     def check_directory_structure(self) -> Tuple[bool, str]:
         """Verify Acolytes for Claude Code global installation"""
-        # Check GLOBAL installation at ~/.claude, not local project
+        # Check GLOBAL installation at .claude, not local project
         home = Path.home()
         global_claude = home / ".claude"
         
@@ -173,7 +173,7 @@ class EnvironmentChecker:
         
         for dir_name in required_dirs:
             if not (global_claude / dir_name).exists():
-                missing.append(f"~/.claude/{dir_name}")
+                missing.append(f".claude/{dir_name}")
         
         # Essential scripts that must exist for the system to work
         essential_scripts = [
@@ -194,7 +194,7 @@ class EnvironmentChecker:
         elif missing_scripts:
             return False, f"Missing essential scripts FAIL: {', '.join(missing_scripts)}"
         else:
-            return True, f"Acolytes system installed OK at ~/.claude/ ({global_claude})"
+            return True, f"Acolytes system installed OK at .claude/ ({global_claude})"
     
     def install_uv_if_missing(self) -> bool:
         """Attempt to install uv package manager"""

@@ -50,7 +50,7 @@ Requirements:
 3. For EACH phase, identify needed workers SEPARATELY
 4. BEFORE naming workers, use this command to find the right specialists:
    ```bash
-   uv run python ~/.claude/scripts/agent_db.py search-agents "[capability needed]" 5
+   uv run python .claude/scripts/agent_db.py search-agents "[capability needed]" 5
    ```
    Example: search-agents "time-series database" → finds @database.timescale
 5. Include external consultants if needed (e.g., @coordinator.* for strategic decisions)

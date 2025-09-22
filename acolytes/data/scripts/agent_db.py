@@ -1,17 +1,28 @@
 #!/usr/bin/env python3
 """
-SQLite helper for agents and Claude to manage the database
-Usage: python agent_db.py [command] [args]
+SQLite helper for agents and Claude to manage the database.
+
+This module provides comprehensive database management functionality for the Acolytes system,
+including agent creation, memory management, job coordination, and semantic agent search.
+The database serves as the central coordination point for multi-agent collaboration.
+
+Usage:
+    python agent_db.py [command] [args]
 
 Commands:
-  init                      - Initialize database with schema
-  create-agent [name] --module [module] [--sub-module [sub]]  - Create acolyte with catalog entry
-  update-memory [agent] [type] [content] - Update specific memory
-  get-memory [agent] [type] - Get specific memory content
-  list-agents              - List all agents
-  query [sql]              - Run read-only query
-  execute [sql]            - Run write operation
-  search-agents [query]    - Search agents semantically by tags/tech_stack (e.g., "JWT authentication")
+    init                      - Initialize database with schema
+    create-agent [name] --module [module] [--sub-module [sub]]  - Create acolyte with catalog entry
+    update-memory [agent] [type] [content] - Update specific memory
+    get-memory [agent] [type] - Get specific memory content
+    list-agents              - List all agents
+    query [sql]              - Run read-only query
+    execute [sql]            - Run write operation
+    search-agents [query]    - Search agents semantically by tags/tech_stack (e.g., "JWT authentication")
+    --job                    - Job management operations
+
+Note:
+    This script uses local database paths (.claude/memory/project.db) relative to the current
+    working directory, not the user's home directory.
 """
 import sqlite3
 import json
@@ -22,7 +33,11 @@ from typing import Optional
 from db_locator import get_project_db_path
 
 def get_timestamp():
-    """Get current timestamp in local time format"""
+    """Get current timestamp in local time format.
+
+    Returns:
+        str: Formatted timestamp string in 'YYYY-MM-DD HH:MM' format
+    """
     return datetime.now().strftime('%Y-%m-%d %H:%M')
 
 # Use centralized database locator - no fallbacks allowed

@@ -28,7 +28,7 @@ I am skilled in these areas:
 
 ## CRITICAL: Git Bash Path Resolution and code-index use
 
-**MANDATORY**: Can use `~/.claude/` paths - they expand correctly in Git Bash on Windows for scripts. But the project is in project location.
+**MANDATORY**: Can use `.claude/` paths - they expand correctly in Git Bash on Windows for scripts. The project is in project location.
 **MANDATORY**: Use MCP code-index for instant file counting: `mcp__code-index__find_files("path/*")`
 
 ## Investigation Process
@@ -50,7 +50,7 @@ AGENT_FILE_STRATEGY:
   multiple_agents_naming: "acolyte.[module]-[submodule].md"
 
 AGENT_FILE_CREATION:
-  - Load template from ~/.claude/resources/templates/acolytes-template.md
+  - Load template from .claude/resources/templates/acolytes-template.md
   - Fill template variables with documentation data
   - Create agent files in .claude/agents/
 ```
@@ -72,7 +72,7 @@ AGENT_FILE_STRATEGY:
   multiple_agents_naming: "acolyte.[module]-[submodule].md"
 
 AGENT_FILE_CREATION:
-  - Load template from ~/.claude/resources/templates/acolytes-template.md
+  - Load template from .claude/resources/templates/acolytes-template.md
   - Fill template variables with documentation data
   - Create agent files in .claude/agents/
 ```
@@ -141,7 +141,7 @@ For each module that needs an agent, follow this exact sequence:
 
 ```bash
 # Read the template file
-cat ~/.claude/resources/templates/acolytes-template.md
+cat .claude/resources/templates/acolytes-template.md
 ```
 
 #### 3.2: Determine Agent Naming & Check Existence
@@ -151,7 +151,7 @@ IF module_size < 31 files: agent_name = "acolyte.{module}" # Example: acolyte.au
 ELSE: agent_name = "acolyte.{module}-{submodule}" # Example: acolyte.api-auth
 
 # Check if agent already exists in catalog
-existing_check=$(uv run python ~/.claude/scripts/agent_db.py query "SELECT name FROM agents_catalog WHERE name = '@{{agent_name}}'")
+existing_check=$(uv run python .claude/scripts/agent_db.py query "SELECT name FROM agents_catalog WHERE name = '@{{agent_name}}'")
 IF agent_exists:
     SKIP this agent creation (already exists)
     CONTINUE to next module
@@ -181,15 +181,15 @@ echo "[filled_template_content]" > .claude/agents/{{agent_name}}.md
 ```bash
 # Single command - creates agent + 14 memories + catalog entry
 # NOTE: The @ is added automatically by the script for database storage
-uv run python ~/.claude/scripts/agent_db.py create-agent \
+uv run python .claude/scripts/agent_db.py create-agent \
   "{{agent_name}}" \
   --module "{{module}}" \
   --sub-module "{{sub_module}}"  # Optional, only for >30 file modules
 
 # Examples:
 # Simple module (30 files):
-uv run python ~/.claude/scripts/agent_db.py create-agent "acolyte.auth" --module "auth"
+uv run python .claude/scripts/agent_db.py create-agent "acolyte.auth" --module "auth"
 
 # Complex module (>30 files):
-uv run python ~/.claude/scripts/agent_db.py create-agent "acolyte.api-auth" --module "api" --sub-module "auth"
+uv run python .claude/scripts/agent_db.py create-agent "acolyte.api-auth" --module "api" --sub-module "auth"
 ```

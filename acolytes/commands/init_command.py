@@ -22,14 +22,22 @@ except ImportError:
 
 
 def run() -> None:
-    """Initialize Acolytes system."""
+    """
+    Initialize Acolytes system in local .claude directory.
+
+    Creates the complete Acolytes infrastructure in the current project's
+    .claude directory instead of the global .claude location.
+
+    Raises:
+        SystemExit: If initialization fails
+    """
     print("Initializing Acolytes system...")
     
     try:
         # Step 1: Install uv if not present
         _install_uv_if_needed()
         
-        # Step 2: Copy data files to ~/.claude/
+        # Step 2: Copy data files to .claude/
         _copy_data_files()
         
         # Step 3: Generate settings.json
@@ -49,7 +57,16 @@ def run() -> None:
 
 
 def _install_uv_if_needed() -> None:
-    """Install uv if not present on the system."""
+    """
+    Install uv package manager if not present on the system.
+
+    Attempts to install uv using platform-specific methods:
+    - Windows: winget or PowerShell
+    - Unix-like: curl installer
+
+    Raises:
+        subprocess.CalledProcessError: If installation fails
+    """
     print("Checking for uv installation...")
     
     # Check if uv is already installed
@@ -74,7 +91,14 @@ def _install_uv_if_needed() -> None:
 
 
 def _install_uv_windows() -> None:
-    """Install uv on Windows using winget or PowerShell."""
+    """
+    Install uv on Windows using winget or PowerShell fallback.
+
+    Tries winget first, then falls back to PowerShell installer.
+
+    Raises:
+        subprocess.CalledProcessError: If both installation methods fail
+    """
     # Try winget first
     try:
         print("Attempting installation with winget...")
@@ -93,7 +117,14 @@ def _install_uv_windows() -> None:
 
 
 def _install_uv_unix() -> None:
-    """Install uv on Linux/Mac using curl."""
+    """
+    Install uv on Linux/Mac using curl installer.
+
+    Downloads and executes the official uv installer script.
+
+    Raises:
+        subprocess.CalledProcessError: If installation fails
+    """
     print("Installing uv with curl...")
     curl_cmd = [
         "curl", "-LsSf", "https://astral.sh/uv/install.sh"
@@ -107,11 +138,27 @@ def _install_uv_unix() -> None:
 
 
 def _copy_data_files() -> None:
-    """Copy data files to ~/.claude/ directory."""
-    print("Copying data files to ~/.claude/...")
-    
-    # Get target directory
-    claude_dir = Path.home() / ".claude"
+    """
+    Copy data files to local .claude/ directory.
+
+    Copies all necessary files from the acolytes package data directory
+    to the current project's .claude directory instead of global .claude.
+
+    Creates the following structure:
+    - .claude/agents/
+    - .claude/commands/
+    - .claude/scripts/
+    - .claude/hooks/
+    - .claude/resources/
+
+    Raises:
+        FileNotFoundError: If source data directory cannot be located
+        PermissionError: If unable to create target directories
+    """
+    print("Copying data files to .claude/...")
+
+    # Get target directory - LOCAL .claude in current project
+    claude_dir = Path.cwd() / ".claude"
     claude_dir.mkdir(exist_ok=True)
     
     # Get package data directory
@@ -133,7 +180,7 @@ def _copy_data_files() -> None:
     # Define directories to copy
     directories_to_copy = ['agents', 'commands', 'scripts', 'hooks', 'resources']
     total_files_copied = 0
-    
+
     for dir_name in directories_to_copy:
         source_dir = data_dir / dir_name
         target_dir = claude_dir / dir_name
@@ -158,7 +205,20 @@ def _copy_data_files() -> None:
 
 
 def _copy_directory_contents(source: Path, target: Path) -> int:
-    """Copy directory contents recursively and return file count."""
+    """
+    Copy directory contents recursively and return file count.
+
+    Args:
+        source: Source directory path
+        target: Target directory path
+
+    Returns:
+        Number of files copied
+
+    Raises:
+        PermissionError: If unable to copy files
+        OSError: If file system operation fails
+    """
     files_copied = 0
     
     for item in source.rglob('*'):
@@ -178,10 +238,19 @@ def _copy_directory_contents(source: Path, target: Path) -> int:
 
 
 def _generate_settings_json() -> None:
-    """Generate settings.json configuration file."""
+    """
+    Generate settings.json configuration file with local paths.
+
+    Creates settings.json in the local .claude directory with all paths
+    configured to use the local .claude structure instead of global .claude.
+
+    Raises:
+        PermissionError: If unable to write settings file
+        OSError: If file system operation fails
+    """
     print("Generating settings.json...")
-    
-    claude_dir = Path.home() / ".claude"
+
+    claude_dir = Path.cwd() / ".claude"
     settings_file = claude_dir / "settings.json"
     
     # Detect Python command
@@ -201,7 +270,15 @@ def _generate_settings_json() -> None:
 
 
 def _detect_python_command() -> str:
-    """Detect the best Python command to use."""
+    """
+    Detect the best Python command to use on this system.
+
+    Tests various Python command candidates and returns the first
+    one that supports Python 3.
+
+    Returns:
+        Python command string (e.g., 'python3', 'python', 'py -3')
+    """
     # List of candidates: can be single command or command with args
     candidates = [
         ['python3', '--version'],
@@ -229,7 +306,12 @@ def _detect_python_command() -> str:
 
 
 def _is_uv_available() -> bool:
-    """Check if uv is available on the system."""
+    """
+    Check if uv package manager is available on the system.
+
+    Returns:
+        True if uv is available, False otherwise
+    """
     try:
         subprocess.run(['uv', '--version'], capture_output=True, check=True)
         return True
@@ -238,7 +320,19 @@ def _is_uv_available() -> bool:
 
 
 def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, Any]:
-    """Create the settings configuration dictionary in Claude Code format."""
+    """
+    Create the settings configuration dictionary in Claude Code format.
+
+    Generates a complete Claude Code settings configuration with hooks,
+    permissions, and commands configured for local .claude directory.
+
+    Args:
+        python_cmd: Python command to use (e.g., 'python3')
+        uv_available: Whether uv package manager is available
+
+    Returns:
+        Settings dictionary ready for JSON serialization
+    """
     
     # Base Python command
     if uv_available:
@@ -247,15 +341,15 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
         base_cmd = python_cmd
     
     # Get the correct path format based on OS
-    # IMPORTANT: The hooks are installed in ~/.claude/ (user's home directory)
-    # Windows doesn't expand ~ correctly, so we need absolute paths
+    # IMPORTANT: The hooks are installed in .claude/ (local project directory)
+    # Windows doesn't expand relative paths in some contexts, so we need absolute paths
     if platform.system() == 'Windows':
         # Windows needs full absolute path with forward slashes
-        claude_path = str(Path.home() / ".claude").replace('\\', '/')
+        claude_path = str(Path.cwd() / ".claude").replace('\\', '/')
         script_prefix = claude_path
     else:
-        # Unix-like systems can use ~/ which will be expanded by the shell
-        script_prefix = "~/.claude"
+        # Unix-like systems can use absolute path
+        script_prefix = str(Path.cwd() / ".claude")
     
     settings = {
         "permissions": {
@@ -298,7 +392,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                 "hooks": [
                 {
                     "type": "command",
-                    "command": "uv run python C:/Users/bextia/.claude/hooks/post_tool_use.py"
+                    "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py"
                 }
                 ]
             },
@@ -307,7 +401,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                 "hooks": [
                 {
                     "type": "command",
-                    "command": "uv run python C:/Users/bextia/.claude/hooks/post_tool_use.py --todowrite"
+                    "command": f"{base_cmd} {script_prefix}/hooks/post_tool_use.py --todowrite"
                 }
                 ]
             },
@@ -316,7 +410,7 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
                 "hooks": [
                 {
                     "type": "command",
-                    "command": "uv run python C:/Users/bextia/.claude/hooks/capture_code_changes.py"
+                    "command": f"{base_cmd} {script_prefix}/hooks/capture_code_changes.py"
                 }
                 ]
             }
@@ -383,7 +477,21 @@ def _create_settings_config(python_cmd: str, uv_available: bool) -> Dict[str, An
 
 
 def _create_local_project_structure() -> None:
-    """Create local .claude/ structure in current project directory."""
+    """
+    Create local .claude/ structure in current project directory.
+
+    Creates the complete directory structure needed for local project operation:
+    - .claude/project/ (for project documentation)
+    - .claude/memory/ (for persistent data)
+    - .claude/memory/chat/ (for session history)
+    - .claude/agents/ (for project-specific acolytes)
+
+    Also creates initial session files to ensure hooks work properly.
+
+    Raises:
+        PermissionError: If unable to create directories
+        OSError: If file system operation fails
+    """
     print("[LOCAL] Creating local project structure...")
     
     # Get current working directory
@@ -398,13 +506,16 @@ def _create_local_project_structure() -> None:
         'project': claude_project_dir / 'project',
         'memory': claude_project_dir / 'memory',
         'memory_chat': claude_project_dir / 'memory' / 'chat',
-        'agents': claude_project_dir / 'agents'
+        'agents': claude_project_dir / 'agents',  # Para acólitos activos del proyecto
+        'resources_agents': claude_project_dir / 'resources' / 'agents'  # Pool de agentes no activos
     }
     
     for name, path in directories.items():
         path.mkdir(parents=True, exist_ok=True)
         if name == 'memory_chat':
             print("  [OK] Created memory/chat/")
+        elif name == 'resources_agents':
+            print("  [OK] Created resources/agents/")
         else:
             print(f"  [OK] Created {name}/")
     
@@ -458,10 +569,18 @@ This is the initial session created during project setup.
 
 
 def _show_final_status() -> None:
-    """Show final status and requirements check."""
+    """
+    Show final status and requirements check.
+
+    Displays a comprehensive status report including:
+    - Directory structure verification
+    - Settings file confirmation
+    - Python and uv availability
+    - Next steps for user
+    """
     print("\n[STATUS] Final Status Check:")
-    
-    claude_dir = Path.home() / ".claude"
+
+    claude_dir = Path.cwd() / ".claude"
     
     # Check directory structure
     required_dirs = ['agents', 'commands', 'scripts', 'hooks', 'resources']

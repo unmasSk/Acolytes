@@ -3,7 +3,7 @@ Repair command for Acolytes - System repair.
 
 Repairs common configuration issues and corrupted files including:
 - Fix settings.json with proper Python/uv detection
-- Restore missing directories in ~/.claude/
+- Restore missing directories in .claude/
 - Restore missing core hooks from package data
 - Fix file permissions on Unix systems
 - Backup old configurations before changes
@@ -40,11 +40,16 @@ class SystemRepairer:
     """System repair manager for Acolytes."""
     
     def __init__(self):
+        """
+        Initialize the system repairer.
+
+        Sets up counters and determines the local .claude directory path.
+        """
         self.repairs_made = 0
         self.warnings_found = 0
         self.backups_created = 0
         self.is_windows = platform.system() == "Windows"
-        self.claude_dir = Path.home() / ".claude"
+        self.claude_dir = Path.cwd() / ".claude"
         
     def _print_header(self, title: str) -> None:
         """Print a section header."""
@@ -241,7 +246,7 @@ class SystemRepairer:
             self._print_action("Write settings.json", "FAIL", f"error: {e}")
     
     def restore_directories(self) -> None:
-        """Restore missing directories in ~/.claude/."""
+        """Restore missing directories in .claude/."""
         self._print_header("Directory Structure Repair")
         
         required_directories = [
@@ -257,13 +262,13 @@ class SystemRepairer:
             "docs"
         ]
         
-        # Create ~/.claude if it doesn't exist
+        # Create .claude if it doesn't exist
         if not self.claude_dir.exists():
             try:
                 self.claude_dir.mkdir(parents=True, exist_ok=True)
-                self._print_action("Create ~/.claude", "CREATED", str(self.claude_dir))
+                self._print_action("Create .claude", "CREATED", str(self.claude_dir))
             except Exception as e:
-                self._print_action("Create ~/.claude", "FAIL", f"error: {e}")
+                self._print_action("Create .claude", "FAIL", f"error: {e}")
                 return
         
         # Create required subdirectories
@@ -459,7 +464,7 @@ def run() -> None:
     
     Performs comprehensive system repair including:
     - Fix settings.json with proper Python/uv detection
-    - Restore missing directories in ~/.claude/
+    - Restore missing directories in .claude/
     - Restore missing core hooks from package data
     - Fix file permissions on Unix systems
     - Backup old configurations before changes

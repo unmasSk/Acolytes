@@ -303,13 +303,9 @@ def save_to_database_enhanced(session_data, parsed_args):
                 dir_hash = hashlib.sha256(current_dir.encode()).hexdigest()[:16]
                 sanitized_dir = f"project-{dir_hash}"
             
-            # Projects directory is in GLOBAL Claude directory
-            # Check environment variable first, then fallback to ~/.claude
-            claude_base = os.environ.get('CLAUDE_HOME')
-            if not claude_base:
-                claude_base = Path.home() / ".claude"
-            else:
-                claude_base = Path(claude_base)
+            # Projects directory is in LOCAL Claude directory
+            # Use local .claude directory in current project
+            claude_base = Path.cwd() / ".claude"
             
             claude_projects_dir = claude_base / "projects" / sanitized_dir
             

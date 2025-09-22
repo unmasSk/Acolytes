@@ -213,7 +213,7 @@ def play_stop_sound():
     """Play work complete sound at 20% volume when subagent stops"""
     try:
         # Path to work complete sound
-        sound_file = Path('~/.claude/resources/sfx/work-complete.wav').expanduser()
+        sound_file = Path('.claude/resources/sfx/work-complete.wav')
         
         if sound_file.exists():
             system = platform.system()

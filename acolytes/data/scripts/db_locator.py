@@ -65,7 +65,7 @@ def _print_database_missing_error(project_root, claude_dir, expected_db):
     print(f"Database exists: {expected_db.exists()}", file=sys.stderr)
     print("", file=sys.stderr)
     print("SOLUTION: Initialize database with:", file=sys.stderr)
-    print(f"  uv run python ~/.claude/scripts/agent_db.py init", file=sys.stderr)
+    print(f"  uv run python .claude/scripts/agent_db.py init", file=sys.stderr)
     print("=" * 80, file=sys.stderr)
     sys.exit(1)
 
@@ -87,7 +87,7 @@ def _print_no_claude_error(original_cwd, searched_paths):
     print("SOLUTIONS:", file=sys.stderr)
     print("  1. Run from within a project directory containing .claude/", file=sys.stderr)
     print("  2. Initialize project with: mkdir -p .claude/memory", file=sys.stderr)
-    print("  3. Create database with: uv run python ~/.claude/scripts/agent_db.py init", file=sys.stderr)
+    print("  3. Create database with: uv run python .claude/scripts/agent_db.py init", file=sys.stderr)
     print("=" * 80, file=sys.stderr)
     sys.exit(1)
 

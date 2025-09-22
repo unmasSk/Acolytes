@@ -188,7 +188,7 @@ After completing my environment analysis, I MUST:
 
 #### 1. **`team-preferences.md`** (Development Environment section)
 
-Using insights from `~/.claude/resources/templates/template-tech-stack.md`, I update:
+Using insights from `.claude/resources/templates/template-tech-stack.md`, I update:
 
 - **Required development tools** and versions
 - **IDE configurations** and recommended extensions
@@ -198,7 +198,7 @@ Using insights from `~/.claude/resources/templates/template-tech-stack.md`, I up
 
 #### 2. **`technical-decisions.md`** (Environment section)
 
-Using **Technology Rationale** from `~/.claude/resources/templates/template-tech-stack.md`, I update:
+Using **Technology Rationale** from `.claude/resources/templates/template-tech-stack.md`, I update:
 
 - **Tool selection rationale** (Node.js version, Python version, etc.)
 - **Development environment standardization** decisions

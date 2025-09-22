@@ -59,9 +59,9 @@ class QuestMonitor:
                 print(f"[TIMEOUT] Monitor exiting after {loop_count-1} checks (100 seconds)")
                 print(f"\n[CRITICAL] YOU MUST IMMEDIATELY RUN THE MONITOR AGAIN!")
                 if self.quest_id:
-                    print(f"python acolytes/data/scripts/acolytes_quest/quest_monitor.py --role leader --quest {self.quest_id} --agent {self.agent_name}")
+                    print(f"uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role leader --quest {self.quest_id} --agent {self.agent_name}")
                 else:
-                    print(f"python acolytes/data/scripts/acolytes_quest/quest_monitor.py --role leader --agent {self.agent_name}")
+                    print(f"uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role leader --agent {self.agent_name}")
                 print(f"\n[WHY]: Workers still processing. This is NORMAL.")
                 print(f"[ACTION]: Keep monitoring until workers respond. DO NOT STOP.")
                 print(f"{'='*70}\n")
@@ -142,7 +142,7 @@ class QuestMonitor:
                 print(f"\n{'='*70}")
                 print(f"[TIMEOUT] Monitor exiting after {loop_count-1} checks (100 seconds)")
                 print(f"\n[CRITICAL] YOU MUST IMMEDIATELY RUN THE MONITOR AGAIN!")
-                print(f"python acolytes/data/scripts/acolytes_quest/quest_monitor.py --role worker --agent {self.agent_name}")
+                print(f"uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent {self.agent_name}")
                 print(f"\n[WHY]: No tasks assigned yet. This is NORMAL.")
                 print(f"[ACTION]: Keep monitoring until tasks arrive. DO NOT STOP.")
                 print(f"{'='*70}\n")

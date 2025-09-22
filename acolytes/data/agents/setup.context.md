@@ -146,7 +146,7 @@ After completing my context analysis, I MUST:
 
 ### Template Usage Instructions
 
-I use `~/.claude/resources/templates/template-vision.md` to create documentation with these enhanced sections:
+I use `.claude/resources/templates/template-vision.md` to create documentation with these enhanced sections:
 
 - **Pitch** - Clear elevator pitch describing what the project does
 - **Target Users** - Primary customers and detailed user personas

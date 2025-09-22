@@ -3,7 +3,7 @@ Clean command for Acolytes - System cleanup and maintenance.
 
 Performs comprehensive cleanup of the Acolytes system including:
 - Removing orphaned .pyc and __pycache__ files
-- Cleaning empty directories in ~/.claude/
+- Cleaning empty directories in .claude/
 - Removing duplicate agents (keeps newest)
 - Fixing broken symlinks if any
 - Shows what was cleaned with file counts
@@ -37,6 +37,11 @@ class SystemCleaner:
     """System cleaner for Acolytes."""
     
     def __init__(self):
+        """
+        Initialize the system cleaner.
+
+        Sets up counters for tracking cleanup operations.
+        """
         self.files_removed = 0
         self.dirs_removed = 0
         self.duplicates_removed = 0
@@ -87,10 +92,10 @@ class SystemCleaner:
         """Remove orphaned .pyc files and __pycache__ directories."""
         self._print_header("Python Cache Cleanup")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if not claude_dir.exists():
-            self._print_action("Python cache cleanup", "SKIP", "~/.claude not found")
+            self._print_action("Python cache cleanup", "SKIP", ".claude not found")
             return
         
         pyc_files = []
@@ -152,13 +157,13 @@ class SystemCleaner:
             self._print_action("__pycache__ directories", "INFO", "none found")
     
     def clean_empty_directories(self) -> None:
-        """Remove empty directories in ~/.claude/."""
+        """Remove empty directories in .claude/."""
         self._print_header("Empty Directory Cleanup")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if not claude_dir.exists():
-            self._print_action("Empty directory cleanup", "SKIP", "~/.claude not found")
+            self._print_action("Empty directory cleanup", "SKIP", ".claude not found")
             return
         
         # Protected directories that should not be removed even if empty
@@ -218,7 +223,7 @@ class SystemCleaner:
         """Remove duplicate agents, keeping the newest version."""
         self._print_header("Duplicate Agent Cleanup")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         agents_dir = claude_dir / "agents"
         
         if not agents_dir.exists():
@@ -277,10 +282,10 @@ class SystemCleaner:
         """Fix or remove broken symlinks."""
         self._print_header("Symlink Cleanup")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if not claude_dir.exists():
-            self._print_action("Symlink cleanup", "SKIP", "~/.claude not found")
+            self._print_action("Symlink cleanup", "SKIP", ".claude not found")
             return
         
         broken_symlinks = []
@@ -322,10 +327,10 @@ class SystemCleaner:
         """Clean temporary and backup files."""
         self._print_header("Temporary File Cleanup")
         
-        claude_dir = Path.home() / ".claude"
+        claude_dir = Path.cwd() / ".claude"
         
         if not claude_dir.exists():
-            self._print_action("Temp file cleanup", "SKIP", "~/.claude not found")
+            self._print_action("Temp file cleanup", "SKIP", ".claude not found")
             return
         
         # Common temporary file patterns
@@ -404,7 +409,7 @@ def run() -> None:
     
     Performs comprehensive system cleanup including:
     - Removing orphaned .pyc and __pycache__ files
-    - Cleaning empty directories in ~/.claude/
+    - Cleaning empty directories in .claude/
     - Removing duplicate agents (keeps newest)
     - Fixing broken symlinks if any
     - Shows what was cleaned with file counts

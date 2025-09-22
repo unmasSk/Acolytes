@@ -26,7 +26,11 @@ MEMORY_LIMITS = {
 }
 
 def get_timestamp():
-    """Get current timestamp in local time"""
+    """Get current timestamp in local time format.
+
+    Returns:
+        str: Formatted timestamp string in 'YYYY-MM-DD HH:MM' format
+    """
     return datetime.now().strftime('%Y-%m-%d %H:%M')
 
 def get_memory_size_kb(content):

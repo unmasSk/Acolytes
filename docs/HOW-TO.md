@@ -1,4 +1,5 @@
 # 📖 Acolytes How-To Guide
+
 ## **Master the World's First Multi-Agent Coordination System**
 
 > **Step-by-step guide** to unleash the power of coordinated AI development
@@ -8,6 +9,7 @@
 ## 📋 **HOW-TO OVERVIEW**
 
 This guide assumes you've completed the [Installation](INSTALL.md). Now learn how to:
+
 - **🎮 Use the Quest System** for coordinated development
 - **💾 Leverage persistent memory** across sessions
 - **🎯 Optimize workflows** for maximum productivity
@@ -40,6 +42,7 @@ This guide assumes you've completed the [Installation](INSTALL.md). Now learn ho
 Claude has access to **55 specialized agents + 5 setup agents** through an intelligent routing system. When you make requests, Claude automatically selects the right agents based on:
 
 #### **🔍 Agent Discovery Commands**
+
 ```bash
 # Find agents by domain/technology
 "What agents handle authentication?"
@@ -55,11 +58,13 @@ Claude has access to **55 specialized agents + 5 setup agents** through an intel
 #### **📋 Routing Rules (How Claude Decides)**
 
 **Strategy vs Implementation:**
+
 - 🧠 **"choose", "select", "compare", "decide", "architecture"** → **Coordinator first**
 - ⚙️ **"implement", "configure", "optimize", "debug", "code"** → **Specialist directly**
 - 🔄 **Both strategy + implementation** → **Coordinator → Specialist** (sequential)
 
 **Example Routing:**
+
 ```bash
 ❌ "Build authentication" → Claude confused, multiple options
 ✅ "Implement JWT authentication with OAuth2" → @service.auth directly
@@ -70,28 +75,32 @@ Claude has access to **55 specialized agents + 5 setup agents** through an intel
 #### **🎭 Agent Categories**
 
 **🎛️ Coordinators (Strategy/Architecture):**
+
 - `@coordinator.backend` - Backend architecture decisions
-- `@coordinator.database` - Data architecture strategy  
+- `@coordinator.database` - Data architecture strategy
 - `@coordinator.frontend` - UI architecture planning
 - `@coordinator.security` - Security strategy & compliance
 - `@coordinator.infrastructure` - Cloud & infrastructure design
 
 **💻 Implementation Specialists:**
+
 - `@backend.nodejs` `@backend.python` `@backend.java` etc.
 - `@frontend.react` `@frontend.vue` `@frontend.angular`
 - `@database.postgres` `@database.mongodb` `@database.redis`
 - `@service.auth` `@service.payment` `@service.ai`
 
-**⚙️ Operations Experts:**  
+**⚙️ Operations Experts:**
+
 - `@ops.containers` `@ops.cicd` `@ops.monitoring`
 - `@ops.performance` `@ops.troubleshooting`
 
 #### **💡 Communication Best Practices**
 
 **Be Specific About Technology:**
+
 ```bash
 ✅ "Create React components with TypeScript and hooks"
-✅ "Optimize PostgreSQL queries with indexing" 
+✅ "Optimize PostgreSQL queries with indexing"
 ✅ "Setup Kubernetes deployment with Helm"
 
 ❌ "Build frontend" (which framework?)
@@ -100,21 +109,23 @@ Claude has access to **55 specialized agents + 5 setup agents** through an intel
 ```
 
 **Use Clear Action Words:**
+
 ```bash
 Strategy: "choose", "design", "plan", "architect", "evaluate"
 Implementation: "implement", "create", "build", "configure", "deploy"
-Optimization: "optimize", "improve", "enhance", "tune", "scale"  
+Optimization: "optimize", "improve", "enhance", "tune", "scale"
 Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ```
 
 **Leverage Agent Expertise:**
+
 ```bash
 # Instead of generic request
 ❌ "Help with my API"
 
 # Be specific about what you need
 ✅ "Design RESTful API architecture with @backend.api"
-✅ "Implement Node.js endpoints with @backend.nodejs"  
+✅ "Implement Node.js endpoints with @backend.nodejs"
 ✅ "Setup API authentication with @service.auth"
 ✅ "Deploy API infrastructure with @coordinator.infrastructure"
 ```
@@ -122,18 +133,21 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **🔄 Multi-Agent Coordination**
 
 **Parallel Execution (Claude invokes simultaneously):**
+
 ```bash
 "Build full-stack user management system"
 → @database.postgres + @backend.nodejs + @frontend.vue (parallel)
 ```
 
 **Sequential Execution (Dependencies):**
-```bash  
+
+```bash
 "Design then implement authentication system"
 → @coordinator.security → @service.auth → @backend.nodejs (sequential)
 ```
 
 **Complex Workflows:**
+
 ```bash
 "Create e-commerce platform with payments"
 → @coordinator.backend (architecture)
@@ -149,17 +163,19 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **What /prequest does:**
 
 1. **🎯 Module Analysis**
+
    - Relevant acolyte examines their module + roadmap
    - Identifies the specific task from roadmap (or user request)
    - Analyzes current codebase state
 
 2. **📋 Micro-Roadmap Creation**
+
    ```
    PREQUEST_20250902_143000.md created in module directory
-   
+
    Contains:
    ├─ Specific files to create/modify
-   ├─ Exact functions to implement  
+   ├─ Exact functions to implement
    ├─ Required worker agents identified
    ├─ Dependencies and execution order
    ├─ Success criteria and testing approach
@@ -179,6 +195,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **Advanced /prequest Usage**
 
 #### **Be Specific for Better Results**
+
 ```bash
 ✅ /prequest implement JWT authentication with refresh tokens and rate limiting
 ✅ /prequest create REST API with CRUD operations for user management
@@ -190,6 +207,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ```
 
 #### **Reference Roadmap Tasks**
+
 ```bash
 # If you have a roadmap, reference specific points:
 /prequest implement roadmap task 2.3: User Profile Management
@@ -197,6 +215,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ```
 
 #### **Custom Requirements**
+
 ```bash
 # Add specific constraints or requirements:
 /prequest implement payment processing with Stripe integration and webhook handling
@@ -210,11 +229,13 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **What /quest does:**
 
 1. **🚀 Parallel Agent Invocation**
+
    - **Claude automatically knows** which agents to invoke
-   - **Exact prompts prepared** for each specialist  
+   - **Exact prompts prepared** for each specialist
    - **All agents launched simultaneously** in single message
 
 2. **🎭 Role-Based Coordination**
+
    ```
    LEADER (@coordinator.backend):
    ├─ Creates quest in SQLite database
@@ -234,7 +255,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
    Quest Timeline Example:
    00:00 → Leader creates quest, assigns database work
    00:03 → @database.postgres creates schema
-   00:05 → Leader assigns backend work  
+   00:05 → Leader assigns backend work
    00:15 → @backend.nodejs creates API endpoints
    00:16 → Leader assigns frontend work in parallel
    00:25 → @frontend.vue creates login forms
@@ -246,6 +267,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **What You'll See During /quest**
 
 #### **Real Agent Conversations**
+
 ```
 🎭 @coordinator.backend: "Creating quest for user authentication system"
    ↓ Quest #1847 created
@@ -285,14 +307,16 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ```
 
 **What gets saved:**
+
 - 💬 **Complete conversation history** with all agents
 - 🧠 **Agent memory states** (all 14 memory types per agent)
-- 🎯 **Quest states** and coordination history  
+- 🎯 **Quest states** and coordination history
 - 📋 **Job progress** and session organization
 - 🔍 **Code analysis** and architectural decisions
 - 📚 **Documentation updates** and knowledge base
 
 **Result: TRUE PERSISTENT MEMORY**
+
 - Claude remembers everything across sessions
 - Acolytes never forget project details
 - Context preserved indefinitely
@@ -300,6 +324,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **🧠 Agent Memory System**
 
 **Each acolyte maintains 14 memory types:**
+
 ```
 1. identity       → Core role and specialization
 2. history        → Actions taken and results
@@ -307,7 +332,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 4. preferences    → Style and approach choices
 5. context        → Current project understanding
 6. objectives     → Goals and priorities
-7. constraints    → Limitations and requirements  
+7. constraints    → Limitations and requirements
 8. relationships  → Dependencies on other agents
 9. resources      → Tools and references used
 10. experiences   → Lessons learned from past work
@@ -320,6 +345,7 @@ Debugging: "debug", "fix", "troubleshoot", "diagnose", "resolve"
 ### **📚 Auto-Context Loading**
 
 **Every time an agent is invoked:**
+
 - ✅ Reads `.claude/project/` documentation
 - ✅ Loads their 14 memory types from SQLite
 - ✅ **Born with full project context**
@@ -346,6 +372,7 @@ cd ~/my-ecommerce-project
 ```
 
 **What happens:**
+
 - 8 agents coordinate automatically
 - **@database.postgres**: Product tables with optimized indexes
 - **@backend.nodejs**: REST API with search endpoints
@@ -368,6 +395,7 @@ cd ~/healthcare-app
 ```
 
 **What happens:**
+
 - 12 agents coordinate with compliance focus
 - **@audit.compliance**: HIPAA requirement analysis
 - **@database.postgres**: Encrypted patient data schema
@@ -383,11 +411,12 @@ cd ~/healthcare-app
 cd ~/mobile-backend
 /setup
 
-/prequest create mobile API with authentication and push notifications  
+/prequest create mobile API with authentication and push notifications
 /quest
 ```
 
 **What happens:**
+
 - 6 agents coordinate for mobile optimization
 - **@backend.nodejs**: JWT authentication system
 - **@database.postgres**: Optimized mobile-friendly schema
@@ -400,7 +429,7 @@ cd ~/mobile-backend
 ### **🔄 Example 4: Legacy System Migration**
 
 ```bash
-cd ~/legacy-php-app  
+cd ~/legacy-php-app
 /setup
 
 # Existing project analysis of PHP codebase
@@ -410,6 +439,7 @@ cd ~/legacy-php-app
 ```
 
 **What happens:**
+
 - 9 agents coordinate complex migration
 - **@backend.nodejs**: New JWT microservice
 - **@database.postgres**: Migration scripts for user data
@@ -426,12 +456,13 @@ cd ~/legacy-php-app
 ### **🔗 Chaining Quests**
 
 **Sequential Development:**
+
 ```bash
 # Quest 1: Foundation
 /prequest implement basic user authentication
 /quest
 
-# Quest 2: Build on foundation  
+# Quest 2: Build on foundation
 /prequest add OAuth2 social login to existing auth system
 /quest
 
@@ -443,6 +474,7 @@ cd ~/legacy-php-app
 ### **🎭 Custom Agent Combinations**
 
 **For complex tasks, mention specific agents:**
+
 ```bash
 /prequest implement real-time chat system requiring @backend.nodejs for WebSocket server, @database.redis for session management, @frontend.vue for real-time UI, and @service.communication for notifications
 ```
@@ -450,6 +482,7 @@ cd ~/legacy-php-app
 ### **📊 Multi-Domain Projects**
 
 **For projects spanning multiple domains:**
+
 ```bash
 /prequest create fintech dashboard requiring @audit.compliance for financial regulations, @service.payment for transaction processing, @database.postgres for financial data, and @frontend.vue for trading interface
 ```
@@ -461,6 +494,7 @@ cd ~/legacy-php-app
 ### **Quest Issues**
 
 #### **❌ "No prequest found" during /quest**
+
 ```bash
 # Solution: Always run /prequest first
 /prequest [describe your task]
@@ -468,6 +502,7 @@ cd ~/legacy-php-app
 ```
 
 #### **❌ Agents not responding in quest**
+
 ```bash
 # Solution 1: Check agent names are correct
 # Use exact names: @backend.nodejs NOT @backend-nodejs
@@ -482,17 +517,19 @@ claude --dangerously-skip-permissions -c
 ```
 
 #### **❌ Quest gets stuck or incomplete**
+
 ```bash
 # Solution: Save current state and restart
 /save
 
 # Then check quest status (advanced users)
-python ~/.claude/scripts/acolytes_quest/quest_status.py --list
+python .claude/scripts/acolytes_quest/quest_status.py --list
 ```
 
 ### **Memory Issues**
 
 #### **❌ "Agent doesn't remember previous work"**
+
 ```bash
 # Solution: Use /save regularly
 /save
@@ -501,6 +538,7 @@ python ~/.claude/scripts/acolytes_quest/quest_status.py --list
 ```
 
 #### **❌ "Context lost between sessions"**
+
 ```bash
 # Solution 1: Always restart with -c flag
 claude --dangerously-skip-permissions -c
@@ -516,21 +554,25 @@ claude --dangerously-skip-permissions -c
 ### **💡 Optimization Tips**
 
 1. **Use /save regularly**
+
    ```bash
    /save  # After major milestones or before breaks
    ```
 
 2. **Be specific in /prequest**
+
    ```bash
    ✅ /prequest implement JWT authentication with refresh tokens, rate limiting, and RBAC
    ❌ /prequest add authentication
    ```
 
 3. **Let agents specialize**
+
    - Don't ask @frontend.vue to do database work
-   - Use @coordinator.* for multi-domain coordination
+   - Use @coordinator.\* for multi-domain coordination
 
 4. **Follow the dopamine roadmap**
+
    - Use the roadmap system for motivation
    - Celebrate completed milestones
    - Break large features into satisfying chunks
@@ -543,6 +585,7 @@ claude --dangerously-skip-permissions -c
 ### **🚀 Power User Features**
 
 #### **Custom Workflows**
+
 ```bash
 # Create custom development flows
 /prequest implement feature X following our established patterns from feature Y
@@ -554,6 +597,7 @@ claude --dangerously-skip-permissions -c
 ```
 
 #### **Multi-Project Management**
+
 ```bash
 # Each project has independent .claude/ directory
 # Switch between projects seamlessly
@@ -564,6 +608,7 @@ cd ~/project-b && /prequest implement different feature
 ```
 
 #### **Advanced Coordination**
+
 ```bash
 # Complex multi-service coordination
 /prequest integrate 5 different payment providers with failover logic, webhook handling, and comprehensive testing
@@ -577,6 +622,7 @@ cd ~/project-b && /prequest implement different feature
 ## 📋 **COMMANDS CHEAT SHEET**
 
 ### **Essential Commands**
+
 ```bash
 /setup               # Setup project (first time)
 /prequest [task]     # Create implementation plan
@@ -585,6 +631,7 @@ cd ~/project-b && /prequest implement different feature
 ```
 
 ### **Job Management**
+
 ```bash
 "Create a job for [task]"                    # Create new job
 "Pause current job and switch to [task]"    # Switch jobs
@@ -593,6 +640,7 @@ cd ~/project-b && /prequest implement different feature
 ```
 
 ### **Advanced Usage**
+
 ```bash
 # Restart with continuation
 claude --dangerously-skip-permissions -c
@@ -615,17 +663,19 @@ acolytes --list
 ✅ **Code reviews happen between agents** - Quality is maintained  
 ✅ **Tests run automatically** - Bugs caught immediately  
 ✅ **Documentation generated** - No manual documentation needed  
-✅ **Consistent patterns** - Agents follow established conventions  
+✅ **Consistent patterns** - Agents follow established conventions
 
 ### **Performance Metrics**
 
 **Compare your results:**
+
 - **Simple CRUD API**: Should complete in ~12 minutes
-- **Full-stack MVP**: Should complete in ~45 minutes  
+- **Full-stack MVP**: Should complete in ~45 minutes
 - **Enterprise system**: Should complete in ~2-4 hours
 - **Complex integration**: Should complete in ~1 day
 
 If times are longer, check:
+
 - Specificity of /prequest instructions
 - Network connection stability
 - System resource availability
@@ -635,6 +685,7 @@ If times are longer, check:
 ## 🎉 **MASTERY ACHIEVED**
 
 **You now know how to:**
+
 - ✨ Coordinate **60+ AI specialists** for any task
 - 🧠 Leverage **persistent memory** across sessions
 - ⚡ Deliver **enterprise systems** in hours
@@ -648,11 +699,13 @@ If times are longer, check:
 ## 📞 **READY FOR MORE?**
 
 **Explore advanced topics:**
+
 - 📚 [Quest System Deep Dive](QUEST.md) - Understand the coordination magic
 - 🎭 [Agent Catalog](../acolytes/data/resources/rules/agent-routing-catalog.md) - Complete list of all available agents
 - 🧠 [Agent Routing Rules](../acolytes/data/resources/rules/agent-routing-rules.md) - How Claude selects agents automatically
 
 **Need help?**
+
 - Run `acolytes --doctor` for diagnostics
 - Use `/save` before asking for support
 - Reference specific quest IDs for troubleshooting
@@ -665,8 +718,9 @@ If times are longer, check:
 
 📋 **Report issues**: https://github.com/unmasSk/acolytes/issues  
 📧 **Contact**: Create a detailed issue with:
+
 - Your operating system and Python version
-- Complete error messages and logs  
+- Complete error messages and logs
 - Steps to reproduce the problem
 - Expected vs actual behavior
 
@@ -674,5 +728,5 @@ If times are longer, check:
 
 ---
 
-*📖 Acolytes for Claude Code - How-To Guide*  
-*⚡ Master the impossible. Make it routine.*
+_📖 Acolytes for Claude Code - How-To Guide_  
+_⚡ Master the impossible. Make it routine._

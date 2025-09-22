@@ -193,11 +193,11 @@ mcp__code-index__find_files("package*.json")        # Node deps
 ```bash
 # Use this if code-index MCP is not available
 # IMPORTANT: Use system Python, NOT uv from the target project!
-python ~/.claude/scripts/infrastructure_check.py
+python .claude/scripts/infrastructure_check.py
 
 # Alternative commands if python doesn't work:
-# python3 ~/.claude/scripts/infrastructure_check.py
-# py ~/.claude/scripts/infrastructure_check.py
+# python3 .claude/scripts/infrastructure_check.py
+# py .claude/scripts/infrastructure_check.py
 ```
 
 ## Intelligence Analysis
@@ -264,7 +264,7 @@ After completing my infrastructure analysis, I MUST:
 
 ### Template Usage Instructions
 
-I use `~/.claude/resources/templates/template-infrastructure.md` to create documentation with these enhanced sections:
+I use `.claude/resources/templates/template-infrastructure.md` to create documentation with these enhanced sections:
 
 - **Hosting Architecture** - Platform, deployment model, region strategy
 - **Environment Strategy** - Development, staging, production setup

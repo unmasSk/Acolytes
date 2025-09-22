@@ -21,7 +21,7 @@ def play_stop_sound():
     """Play work complete sound at 20% volume when session stops"""
     try:
         # Path to work complete sound
-        sound_file = Path('~/.claude/resources/sfx/ready-ogre.wav').expanduser()
+        sound_file = Path('.claude/resources/sfx/ready-ogre.wav')
         
         if sound_file.exists():
             system = platform.system()

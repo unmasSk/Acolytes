@@ -12,15 +12,24 @@ from typing import List, Tuple
 
 
 def run() -> None:
-    """Backup Acolytes system with comprehensive functionality."""
+    """
+    Backup Acolytes system with comprehensive functionality.
+
+    Creates a timestamped backup of the local .claude directory
+    including all agents, hooks, scripts, and configurations.
+
+    Raises:
+        PermissionError: If unable to create backup directory
+        OSError: If backup operation fails
+    """
     print("💾 Starting Acolytes system backup...")
-    
-    # Define paths
-    claude_dir = Path.home() / ".claude"
-    backup_root = Path.home() / ".claude_backups"
-    
+
+    # Define paths - LOCAL .claude directory
+    claude_dir = Path.cwd() / ".claude"
+    backup_root = Path.cwd() / ".claude_backups"
+
     if not claude_dir.exists():
-        print("❌ ~/.claude directory not found. Nothing to backup.")
+        print("❌ .claude directory not found. Nothing to backup.")
         return
     
     # Create backup directory if it doesn't exist

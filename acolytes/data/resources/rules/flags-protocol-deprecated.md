@@ -55,7 +55,7 @@ FLAGS are asynchronous coordination messages between agents stored in an SQLite 
 
 ```bash
 # Find the right agent for your task
-uv run python ~/.claude/scripts/agent_db.py search-agents "JWT authentication implementation" 3
+uv run python .claude/scripts/agent_db.py search-agents "JWT authentication implementation" 3
 
 # Example output:
 # {
@@ -77,19 +77,19 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "JWT authentication im
 
 ```bash
 # Authentication tasks
-uv run python ~/.claude/scripts/agent_db.py search-agents "OAuth JWT token implementation"
+uv run python .claude/scripts/agent_db.py search-agents "OAuth JWT token implementation"
 → Result: @service.auth (score: 195)
 
 # Database optimization
-uv run python ~/.claude/scripts/agent_db.py search-agents "PostgreSQL query performance tuning"
+uv run python .claude/scripts/agent_db.py search-agents "PostgreSQL query performance tuning"
 → Result: @database.postgres (score: 165)
 
 # Frontend component work
-uv run python ~/.claude/scripts/agent_db.py search-agents "React TypeScript components state management"
+uv run python .claude/scripts/agent_db.py search-agents "React TypeScript components state management"
 → Result: @frontend.react (score: 180)
 
 # DevOps and deployment
-uv run python ~/.claude/scripts/agent_db.py search-agents "Docker Kubernetes deployment pipeline"
+uv run python .claude/scripts/agent_db.py search-agents "Docker Kubernetes deployment pipeline"
 → Result: @ops.containers (score: 170)
 ```
 
@@ -100,7 +100,7 @@ Search first, then create FLAG to the top-ranked specialist to eliminate routing
 ```bash
 # Check pending flags before starting work
 # Use Python command (not MCP SQLite)
-uv run python ~/.claude/scripts/agent_db.py get-agent-flags "@YOUR-AGENT-NAME"
+uv run python .claude/scripts/agent_db.py get-agent-flags "@YOUR-AGENT-NAME"
 # Returns only status='pending' flags automatically
 # Replace @YOUR-AGENT-NAME with your actual agent name
 ```
@@ -191,17 +191,17 @@ Your Action:
 
 ```bash
 # Mark as done when implementation complete
-uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
+uv run python .claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
 ```
 
 ### Lock/Unlock for Bidirectional Communication
 
 ```bash
 # Lock when need clarification
-uv run python ~/.claude/scripts/agent_db.py lock-flag [FLAG_ID]
+uv run python .claude/scripts/agent_db.py lock-flag [FLAG_ID]
 
 # Create information request
-uv run python ~/.claude/scripts/agent_db.py create-flag \
+uv run python .claude/scripts/agent_db.py create-flag \
   --flag_type "information_request" \
   --source_agent "@YOUR-AGENT-NAME" \
   --target_agent "@[EXPERT]" \
@@ -210,15 +210,15 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
   --impact_level "high"
 
 # After receiving response
-uv run python ~/.claude/scripts/agent_db.py unlock-flag [FLAG_ID]
-uv run python ~/.claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
+uv run python .claude/scripts/agent_db.py unlock-flag [FLAG_ID]
+uv run python .claude/scripts/agent_db.py complete-flag [FLAG_ID] "@YOUR-AGENT-NAME"
 ```
 
 ### Find Correct Target Agent
 
 ```bash
 # RECOMMENDED: Use semantic search
-uv run python ~/.claude/scripts/agent_db.py search-agents "your task description" 3
+uv run python .claude/scripts/agent_db.py search-agents "your task description" 3
 
 # Examples:
 # Database changes → search-agents "PostgreSQL schema migration"
@@ -231,7 +231,7 @@ uv run python ~/.claude/scripts/agent_db.py search-agents "your task description
 
 ```bash
 # Manual SQL query (less precise)
-uv run python ~/.claude/scripts/agent_db.py query \
+uv run python .claude/scripts/agent_db.py query \
   "SELECT name, module, description, capabilities \
    FROM agents_catalog WHERE status='active' AND module LIKE '%[domain]%'"
 ```
@@ -239,7 +239,7 @@ uv run python ~/.claude/scripts/agent_db.py query \
 ### Create FLAG When Your Changes Affect Others
 
 ```bash
-uv run python ~/.claude/scripts/agent_db.py create-flag \
+uv run python .claude/scripts/agent_db.py create-flag \
   --flag_type "[type]" \
   --source_agent "@YOUR-AGENT-NAME" \
   --target_agent "@[TARGET]" \
@@ -316,7 +316,7 @@ uv run python ~/.claude/scripts/agent_db.py create-flag \
 # You need to update models, which affects API
 
 # Create chained FLAG
-uv run python ~/.claude/scripts/agent_db.py create-flag \
+uv run python .claude/scripts/agent_db.py create-flag \
   --flag_type "breaking_change" \
   --source_agent "@YOUR-AGENT-NAME" \
   --target_agent "@backend.api" \

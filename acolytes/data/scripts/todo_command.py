@@ -19,7 +19,7 @@ def get_timestamp():
 def add_todo(task, priority='medium', due_date=None):
     """Add a new TODO with AI categorization"""
     if not DB_PATH.exists():
-        print("[ERROR] Database not initialized. Run: python ~/.claude/scripts/agent_db.py init")
+        print("[ERROR] Database not initialized. Run: uv run python .claude/scripts/agent_db.py init")
         return
     
     conn = sqlite3.connect(str(DB_PATH))
@@ -515,7 +515,7 @@ def session_end_todos():
     import subprocess
     try:
         result = subprocess.run(
-            ['uv', 'run', '.claude/hooks/session_end.py'],
+            ['uv', 'run', 'python', '.claude/hooks/session_end.py'],
             capture_output=True,
             text=True,
             check=False  # Don't raise exception on non-zero exit

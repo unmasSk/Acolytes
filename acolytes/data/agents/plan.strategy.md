@@ -319,7 +319,7 @@ Production Deployment (4h)
 
 ```bash
 # Foundation Job Example
-uv run python ~/.claude/scripts/agent_db.py create-job \
+uv run python .claude/scripts/agent_db.py create-job \
   --title "Authentication System Implementation" \
   --description "Implement secure authentication system using [expert-recommended tech stack]. Include user registration, login, password reset, and JWT token management with proper validation and security measures." \
   --priority "high" \
@@ -332,7 +332,7 @@ uv run python ~/.claude/scripts/agent_db.py create-job \
   --success_criteria "Authentication flows work correctly, security audit passed, all edge cases handled"
 
 # Core Feature Job Example
-uv run python ~/.claude/scripts/agent_db.py create-job \
+uv run python .claude/scripts/agent_db.py create-job \
   --title "[Feature Name] Implementation" \
   --description "Develop [specific feature] using expert-recommended architecture. Implement both frontend components and backend APIs with proper data validation, error handling, and user experience considerations." \
   --priority "medium" \

@@ -51,20 +51,20 @@ Claude's single message contains:
 
 ````yaml
 ENVIRONMENT_CHECK:
-  - Execute: uv run python ~/.claude/scripts/environment_check.py
+  - Execute: uv run python .claude/scripts/environment_check.py
   - Validates: Python 3.8+, Git 2.0+, Node 18+, uv package manager
   - Creates environment report in .claude/project/environment-status.md
   - Auto-fixes common issues where possible
 
 DATABASE_AND_MCP:
   1. Initialize database schema:
-    - Execute: cat ~/.claude/scripts/init_db.sql | sqlite3 .claude/memory/project.db
+    - Execute: cat .claude/scripts/init_db.sql | sqlite3 .claude/memory/project.db
     - Database will auto-create: agents_catalog (52 agents), jobs table with initial job, sessions, messages, etc.
     - Initial job 'Project Setup' automatically created with high priority
     - All tables, indexes, triggers, and constraints ready
 
   2. Configure MCP SQLite:
-    - Run: uv run python ~/.claude/scripts/setup_mcp.py
+    - Run: uv run python .claude/scripts/setup_mcp.py
     - After this step, restart Claude CLI: exit, then run `claude --dangerously-skip-permissions -c`
 
   3. Initialize code-index MCP silently (NO COMMENTARY):
@@ -323,7 +323,7 @@ Do NOT proceed to Phase 3 until critical dependencies are installed or user expl
 ```yaml
 CLAUDE_MD_GENERATION:
   source: Aggregated information from Phase 2
-  template: ~/.claude/resources/templates/claude-template.md
+  template: .claude/resources/templates/claude-template.md
   destination: [PROJECT_ROOT]/CLAUDE.md
 
   context_lite_generation:

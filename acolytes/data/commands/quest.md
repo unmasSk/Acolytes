@@ -51,13 +51,13 @@ You have these workers available:
 STEP 1 - CREATE THE QUEST:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_create.py --mission "[task description]" --agents "@[leader],@[worker1],@[worker2],@[worker3]"
+uv run python .claude/scripts/acolytes_quest/quest_create.py --mission "[task description]" --agents "@[leader],@[worker1],@[worker2],@[worker3]"
 ```
 
 STEP 2 - RUN MONITOR MODE:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_monitor.py --role leader --quest [ID] --agent "@[leader]"
+uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role leader --quest [ID] --agent "@[leader]"
 ```
 
 CRITICAL RULES:
@@ -74,6 +74,12 @@ DURING QUEST:
 - Document worker outputs in 'code_patterns'
 - Track progress in 'performance_metrics'
 - Record issues/solutions in 'error_handling'
+
+🚨 QUALITY GATES VERIFICATION (MANDATORY):
+Workers must report QUALITY GATES completion before work acceptance:
+- Linting passed (composer lint / npm run lint:all)
+- Tests executed and results
+- Manual verification completed
 
 BEFORE FINAL REPORT TO CLAUDE:
 
@@ -112,7 +118,7 @@ BEFORE ENTERING MONITOR MODE:
 THEN RUN THIS MONITOR MODE COMMAND:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@backend.[language]"
+uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@backend.[language]"
 ```
 
 CRITICAL INSTRUCTIONS:
@@ -126,7 +132,11 @@ CRITICAL INSTRUCTIONS:
 7. Test EVERYTHING before marking complete
 8. To run servers: use Bash tool with run_in_background=true
 9. NO emojis in Python code (Windows errors)
-10. STAY IN MONITOR MODE even after work done until quest status='completed'
+10. BEFORE REPORTING COMPLETE - MANDATORY QUALITY GATES:
+    ✅ Linting: Run composer lint - report results
+    ✅ Testing: Execute tests - report results  
+    ✅ Manual check: Verify functionality - describe testing
+11. STAY IN MONITOR MODE even after work done until quest status='completed'
 
 🚨 CRITICAL: MONITOR MODE LOOP IS MANDATORY
 
@@ -156,7 +166,7 @@ BEFORE ENTERING MONITOR MODE:
 THEN RUN THIS MONITOR MODE COMMAND:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@frontend.[framework]"
+uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@frontend.[framework]"
 ```
 
 CRITICAL INSTRUCTIONS:
@@ -169,7 +179,11 @@ CRITICAL INSTRUCTIONS:
 6. Test with Playwright MCP or open HTML directly
 7. Verify dashboard loads and connects to API
 8. If you need server running, ask and it will run in background
-9. STAY IN MONITOR MODE even after work done until quest status='completed'
+9. BEFORE REPORTING COMPLETE - MANDATORY QUALITY GATES:
+   ✅ Linting: Run npm run lint:all - report results
+   ✅ Testing: Execute tests - report results
+   ✅ Manual check: Verify UI functionality - describe testing
+10. STAY IN MONITOR MODE even after work done until quest status='completed'
 
 🚨 CRITICAL: MONITOR MODE LOOP IS MANDATORY
 
@@ -199,7 +213,7 @@ BEFORE ENTERING MONITOR MODE:
 THEN RUN THIS MONITOR MODE COMMAND:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@database.[type]"
+uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@database.[type]"
 ```
 
 CRITICAL INSTRUCTIONS:
@@ -213,7 +227,11 @@ CRITICAL INSTRUCTIONS:
 7. Verify tables are created correctly
 8. Test queries with sample data
 9. Ensure indexes are optimized
-10. STAY IN MONITOR MODE even after work done until quest status='completed'
+10. BEFORE REPORTING COMPLETE - MANDATORY QUALITY GATES:
+    ✅ Schema validation: Verify table structure - report results
+    ✅ Query testing: Test all queries - report results
+    ✅ Manual check: Verify data integrity - describe testing
+11. STAY IN MONITOR MODE even after work done until quest status='completed'
 
 🚨 CRITICAL: MONITOR MODE LOOP IS MANDATORY
 
@@ -245,7 +263,7 @@ BEFORE ENTERING MONITOR MODE:
 THEN RUN THIS MONITOR MODE COMMAND:
 
 ```bash
-uv run python ~/.claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@[type].[specialty]"
+uv run python .claude/scripts/acolytes_quest/quest_monitor.py --role worker --agent "@[type].[specialty]"
 ```
 
 CRITICAL INSTRUCTIONS:
@@ -257,7 +275,11 @@ CRITICAL INSTRUCTIONS:
 5. Use REAL names and configurations from existing files
 6. NO invented configurations - use what EXISTS
 7. Test EVERYTHING before marking complete
-8. STAY IN MONITOR MODE even after work done until quest status='completed'
+8. BEFORE REPORTING COMPLETE - MANDATORY QUALITY GATES:
+   ✅ Validation: Run appropriate linting/testing - report results
+   ✅ Testing: Execute functionality tests - report results
+   ✅ Manual check: Verify implementation - describe testing
+9. STAY IN MONITOR MODE even after work done until quest status='completed'
 
 🚨 CRITICAL: MONITOR MODE LOOP IS MANDATORY
 
